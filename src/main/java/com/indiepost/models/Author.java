@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -44,7 +45,7 @@ public class Author {
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
-    private String registeredAt;
+    private Date registeredAt;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -113,12 +114,20 @@ public class Author {
         this.phone = phone;
     }
 
-    public String getRegisteredAt() {
+    public Date getRegisteredAt() {
         return registeredAt;
     }
 
-    public void setRegisteredAt(String registeredAt) {
+    public void setRegisteredAt(Date registeredAt) {
         this.registeredAt = registeredAt;
+    }
+
+    public Set<Subscription> getSubscriptions() {
+        return subscriptions;
+    }
+
+    public void setSubscriptions(Set<Subscription> subscriptions) {
+        this.subscriptions = subscriptions;
     }
 
     public Status getStatus() {

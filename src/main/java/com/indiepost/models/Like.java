@@ -11,17 +11,21 @@ import java.util.Date;
 @Table(name = "likes")
 public class Like {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
-    User user;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "post_id")
-    Post post;
+    private Post post;
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
-    Date likedAt;
+    private Date likedAt;
 
     public User getUser() {
         return user;

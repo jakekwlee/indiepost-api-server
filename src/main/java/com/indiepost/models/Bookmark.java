@@ -11,6 +11,10 @@ import java.util.Date;
 @Table(name = "bookmarks")
 public class Bookmark {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;

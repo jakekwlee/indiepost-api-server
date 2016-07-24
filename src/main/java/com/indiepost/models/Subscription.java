@@ -11,17 +11,29 @@ import java.util.Date;
 @Table(name = "subscriptions")
 public class Subscription {
 
-    @ManyToOne
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id")
     private Author author;
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date subscriptedAt;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public Author getAuthor() {
         return author;

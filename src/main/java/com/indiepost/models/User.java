@@ -68,9 +68,6 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Set<Like> likes;
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "likedUsers")
-    private Set<Post> likedPosts;
-
     public int getId() {
         return id;
     }
@@ -157,14 +154,6 @@ public class User {
 
     public void setGender(Gender gender) {
         this.gender = gender;
-    }
-
-    public Set<Post> getLikedPosts() {
-        return likedPosts;
-    }
-
-    public void setLikedPosts(Set<Post> likedPosts) {
-        this.likedPosts = likedPosts;
     }
 
     public enum Status {
