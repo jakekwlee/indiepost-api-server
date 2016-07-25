@@ -17,6 +17,7 @@ public class Category {
     private int id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
     private Category parent;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "parent", orphanRemoval = true)

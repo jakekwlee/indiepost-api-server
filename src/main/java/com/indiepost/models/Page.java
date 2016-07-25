@@ -2,6 +2,7 @@ package com.indiepost.models;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -9,7 +10,9 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "pages")
-public class Page {
+public class Page implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,8 +32,8 @@ public class Page {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "administrator_id", nullable = false)
     private Administrator administrator;
 
     public int getId() {

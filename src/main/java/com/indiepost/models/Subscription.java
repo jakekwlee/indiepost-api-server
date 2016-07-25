@@ -2,6 +2,7 @@ package com.indiepost.models;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -9,16 +10,16 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "subscriptions")
-public class Subscription {
+public class Subscription implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Id
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id")
     private Author author;
@@ -26,14 +27,6 @@ public class Subscription {
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date subscriptedAt;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public Author getAuthor() {
         return author;

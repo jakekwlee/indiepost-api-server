@@ -2,6 +2,7 @@ package com.indiepost.models;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -9,16 +10,16 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "likes")
-public class Like {
+public class Like implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Id
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;

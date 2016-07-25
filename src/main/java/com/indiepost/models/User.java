@@ -68,6 +68,9 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Set<Like> likes;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
+    private Set<Comment> comments;
+
     public int getId() {
         return id;
     }

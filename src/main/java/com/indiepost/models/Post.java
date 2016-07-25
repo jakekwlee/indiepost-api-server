@@ -72,12 +72,15 @@ public class Post {
     private Status status;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "administrator_id", nullable = false)
     private Administrator administrator;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
     private Author author;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -95,7 +98,6 @@ public class Post {
             inverseJoinColumns = {@JoinColumn(name = "tag_id")}
     )
     private Set<Tag> tags;
-
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @LazyCollection(LazyCollectionOption.EXTRA)

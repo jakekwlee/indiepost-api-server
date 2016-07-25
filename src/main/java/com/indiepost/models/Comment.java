@@ -2,6 +2,7 @@ package com.indiepost.models;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -9,21 +10,20 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "comments")
-public class Comment {
+public class Comment implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "User_Comment",
-            joinColumns = {@JoinColumn(name = "comment_id")},
-            inverseJoinColumns = {@JoinColumn(name = "user_id")}
-    )
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
     @NotNull
@@ -36,10 +36,6 @@ public class Comment {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
-    private String ip;
-
-    private String agent;
-
     public int getId() {
         return id;
     }
@@ -47,6 +43,10 @@ public class Comment {
     public void setId(int id) {
         this.id = id;
     }
+
+    private String ip;
+
+    private String agent;
 
     public User getUser() {
         return user;
