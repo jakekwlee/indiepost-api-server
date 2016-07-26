@@ -1,7 +1,7 @@
 spring:
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/NewIndiepost
+    url: jdbc:mysql://localhost:3306/indiepost
     username: indiepost
     password: indiepost
   jpa:

@@ -1,4 +1,4 @@
-package com.indiepost.models;
+package com.indiepost.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -9,24 +9,24 @@ import java.util.Date;
  * Created by jake on 7/25/16.
  */
 @Entity
-@Table(name = "likes")
-public class Like implements Serializable {
+@Table(name = "Bookmarks")
+public class Bookmark implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userId")
     private User user;
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "post_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "postId")
     private Post post;
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
-    private Date likedAt;
+    private Date bookmarkedAt;
 
     public User getUser() {
         return user;
@@ -44,11 +44,11 @@ public class Like implements Serializable {
         this.post = post;
     }
 
-    public Date getLikedAt() {
-        return likedAt;
+    public Date getBookmarkedAt() {
+        return bookmarkedAt;
     }
 
-    public void setLikedAt(Date likedAt) {
-        this.likedAt = likedAt;
+    public void setBookmarkedAt(Date bookmarkedAt) {
+        this.bookmarkedAt = bookmarkedAt;
     }
 }

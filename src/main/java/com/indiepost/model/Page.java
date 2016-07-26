@@ -1,7 +1,8 @@
-package com.indiepost.models;
+package com.indiepost.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -9,7 +10,7 @@ import java.util.Date;
  * Created by jake on 7/25/16.
  */
 @Entity
-@Table(name = "pages")
+@Table(name = "Pages")
 public class Page implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -19,9 +20,12 @@ public class Page implements Serializable {
     private int id;
 
     @NotNull
+    @Size(min = 2, max = 100)
     private String title;
 
     @NotNull
+    @Size(min = 2)
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @NotNull
@@ -33,8 +37,8 @@ public class Page implements Serializable {
     private Date modifiedAt;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "administrator_id", nullable = false)
-    private Administrator administrator;
+    @JoinColumn(name = "userId", nullable = false)
+    private User user;
 
     public int getId() {
         return id;
@@ -76,11 +80,11 @@ public class Page implements Serializable {
         this.modifiedAt = modifiedAt;
     }
 
-    public Administrator getAdministrator() {
-        return administrator;
+    public User getUser() {
+        return user;
     }
 
-    public void setAdministrator(Administrator administrator) {
-        this.administrator = administrator;
+    public void setUser(User user) {
+        this.user = user;
     }
 }

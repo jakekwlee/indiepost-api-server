@@ -1,4 +1,4 @@
-package com.indiepost.models;
+package com.indiepost.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -9,30 +9,30 @@ import java.util.Date;
  * Created by jake on 7/25/16.
  */
 @Entity
-@Table(name = "subscriptions")
+@Table(name = "Subscriptions")
 public class Subscription implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     private User user;
 
     @Id
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "author_id")
-    private Author author;
+    @JoinColumn(name = "authorId")
+    private User author;
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date subscriptedAt;
 
-    public Author getAuthor() {
+    public User getAuthor() {
         return author;
     }
 
-    public void setAuthor(Author author) {
+    public void setAuthor(User author) {
         this.author = author;
     }
 

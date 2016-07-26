@@ -1,4 +1,4 @@
-package com.indiepost.models;
+package com.indiepost.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -10,7 +10,7 @@ import java.util.Set;
  * Created by jake on 7/24/16.
  */
 @Entity
-@Table(name = "media_contents")
+@Table(name = "MediaContents")
 public class MediaContent {
 
     @Id

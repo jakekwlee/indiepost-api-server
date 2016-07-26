@@ -1,4 +1,4 @@
-package com.indiepost.models;
+package com.indiepost.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -8,30 +8,28 @@ import java.util.Set;
 /**
  * Created by jake on 7/25/16.
  */
+
 @Entity
-@Table(name = "categories")
-public class Category {
+@Table(name = "Tags")
+public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
-    private Category parent;
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "parent", orphanRemoval = true)
-    private Set<Category> categories;
-
     @NotNull
-    @Size(min = 3, max = 20)
+    @Size(min = 1, max = 50)
+    @Column(unique = true)
     private String name;
 
     @NotNull
-    @Size(min = 3, max = 20)
+    @Size(min = 1, max = 50)
+    @Column(unique = true)
     private String slug;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "category")
+    @NotNull
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
+    @OrderBy(value = "publishedAt")
     private Set<Post> posts;
 
     public int getId() {
@@ -40,22 +38,6 @@ public class Category {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Category getParent() {
-        return parent;
-    }
-
-    public void setParent(Category parent) {
-        this.parent = parent;
-    }
-
-    public Set<Category> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(Set<Category> categories) {
-        this.categories = categories;
     }
 
     public String getName() {

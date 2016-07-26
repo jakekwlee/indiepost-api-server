@@ -1,4 +1,4 @@
-package com.indiepost.models;
+package com.indiepost.model;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -14,7 +14,7 @@ import java.util.Set;
  * Created by jake on 7/24/16.
  */
 @Entity
-@Table(name = "posts")
+@Table(name = "Posts")
 public class Post {
 
     @Id
@@ -26,14 +26,13 @@ public class Post {
     private String title;
 
     @NotNull
+    @Column(columnDefinition = "LONGTEXT")
+    @Size(min = 2)
     private String content;
 
     @NotNull
-    private String authorName;
-
-    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createAt;
+    private Date createdAt;
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
@@ -65,37 +64,37 @@ public class Post {
 
     @NotNull
     @Min(0)
-    private int commentCount = 0;
+    private int commentsCount = 0;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     private Status status;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "administrator_id", nullable = false)
-    private Administrator administrator;
+    @JoinColumn(name = "editorId", nullable = false)
+    private User editor;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", nullable = false)
-    private Author author;
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @JoinColumn(name = "authorId", nullable = false)
+    private User author;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @JoinColumn(name = "categoryId", nullable = false)
     private Category category;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "post_media_content",
-            joinColumns = {@JoinColumn(name = "post_id")},
-            inverseJoinColumns = {@JoinColumn(name = "media_content_id")}
+            name = "Posts_MediaContents",
+            joinColumns = {@JoinColumn(name = "postId")},
+            inverseJoinColumns = {@JoinColumn(name = "mediaContentId")}
     )
     private Set<MediaContent> mediaContents;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "post_tag",
-            joinColumns = {@JoinColumn(name = "post_id")},
-            inverseJoinColumns = {@JoinColumn(name = "tag_id")}
+            name = "Posts_Tags",
+            joinColumns = {@JoinColumn(name = "postId")},
+            inverseJoinColumns = {@JoinColumn(name = "tagId")}
     )
     private Set<Tag> tags;
 
@@ -136,20 +135,12 @@ public class Post {
         this.content = content;
     }
 
-    public String getAuthorName() {
-        return authorName;
-    }
-
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
-    }
-
     public Date getCreateAt() {
-        return createAt;
+        return createdAt;
     }
 
     public void setCreateAt(Date createAt) {
-        this.createAt = createAt;
+        this.createdAt = createAt;
     }
 
     public Date getModifiedAt() {
@@ -208,12 +199,12 @@ public class Post {
         this.bookmarkedCount = bookmarkedCount;
     }
 
-    public int getCommentCount() {
-        return commentCount;
+    public int getCommentsCount() {
+        return commentsCount;
     }
 
-    public void setCommentCount(int commentCount) {
-        this.commentCount = commentCount;
+    public void setCommentsCount(int commentsCount) {
+        this.commentsCount = commentsCount;
     }
 
     public Status getStatus() {
@@ -222,22 +213,6 @@ public class Post {
 
     public void setStatus(Status status) {
         this.status = status;
-    }
-
-    public Administrator getAdministrator() {
-        return administrator;
-    }
-
-    public void setAdministrator(Administrator administrator) {
-        this.administrator = administrator;
-    }
-
-    public Author getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(Author author) {
-        this.author = author;
     }
 
     public Category getCategory() {
@@ -286,6 +261,30 @@ public class Post {
 
     public void setBookmarks(Set<Bookmark> bookmarks) {
         this.bookmarks = bookmarks;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public User getEditor() {
+        return editor;
+    }
+
+    public void setEditor(User editor) {
+        this.editor = editor;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
     public enum Status {

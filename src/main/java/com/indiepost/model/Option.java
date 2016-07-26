@@ -1,4 +1,4 @@
-package com.indiepost.models;
+package com.indiepost.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -8,7 +8,7 @@ import javax.validation.constraints.Size;
  * Created by jake on 7/25/16.
  */
 @Entity
-@Table(name = "options")
+@Table(name = "Options")
 public class Option {
 
     @Id
