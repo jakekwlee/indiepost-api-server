@@ -3,6 +3,7 @@ package com.indiepost.config;
 import com.indiepost.model.User.Roles;
 import com.indiepost.service.IndiepostUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,6 +30,7 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(passwordEncoder);
     }
 
+    @Bean
     @Override
     public UserDetailsService userDetailsServiceBean() throws Exception {
         return new IndiepostUserDetailService();
@@ -38,13 +40,18 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/**").permitAll()
                 .antMatchers("/cms/**").hasAuthority(Roles.Editor.toString())
+                .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
                 .and()
                 .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/login");
         ;
+    }
+
+    @Autowired
+    public void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsServiceBean());
     }
 }

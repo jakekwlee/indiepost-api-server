@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <div>
+            <ul class="post-list">
+                <li th:each="post : ${posts}" class="post-list-cell">
+                    <div class="post-list-title-image">
+                        <img th:src="@{${post.titleImage}}" th:alt="${post.title}" />
+                    </div>
+                    <h1 class="post-list-title" th:text="${post.title}"></h1>
+                    <div class="post-list-excerpt" th:text="${post.excerpt}"></div>
+                </li>
+            </ul>
+    </div>
+</body>
+</html>

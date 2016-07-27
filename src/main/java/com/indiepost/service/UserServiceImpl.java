@@ -1,8 +1,7 @@
 package com.indiepost.service;
 
-import com.indiepost.dao.UserDAO;
-import com.indiepost.model.Role;
 import com.indiepost.model.User;
+import com.indiepost.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,9 +15,8 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    UserDAO userDAO;
+    UserRepository userRepository;
 
-    // TODO: 7/27/16 make RoleDAO and wire
     @Autowired
     PasswordEncoder passwordEncoder;
 
@@ -27,17 +25,17 @@ public class UserServiceImpl implements UserService {
         String rawPassword = user.getPassword();
         String encodedPassword = passwordEncoder.encode(rawPassword);
         user.setPassword(encodedPassword);
-        userDAO.add(user);
+        userRepository.save(user);
     }
 
     @Override
     public void update(User user) {
-        userDAO.update(user);
+        userRepository.save(user);
     }
 
     @Override
     public void delete(User user) {
-        userDAO.delete(user);
+        userRepository.delete(user);
     }
 
     @Override
@@ -45,57 +43,56 @@ public class UserServiceImpl implements UserService {
         User user = getUserByUsername(username, oldPassword);
         String encodedPassword = passwordEncoder.encode(newPassword);
         user.setPassword(encodedPassword);
-        userDAO.add(user);
+        userRepository.save(user);
     }
 
 
     @Override
     public User getUserById(int id) {
-        return userDAO.getUserById(id);
+        return userRepository.findOne(id);
     }
 
     @Override
     public User getUserByUsername(String username) {
-        return userDAO.getUserByUsername(username);
+        return userRepository.findByUsername(username);
     }
 
     @Override
     public User getUserByUsername(String username, String password) {
         String encodedPassword = passwordEncoder.encode(password);
-        User user = userDAO.getUserByUsername(username, encodedPassword);
-        if (user == null) {
-            // TODO: 7/27/16 throw user not found Exception
-        }
-        return user;
+        return userRepository.findByUsernameAndPassword(username, encodedPassword);
     }
 
     @Override
     public boolean isUsernameExist(String username) {
-        return userDAO.isUsernameExist(username);
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public boolean isEmailExist(String email) {
-        return userDAO.isEmailExist(email);
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public List<User> getUsers() {
-        return userDAO.getUsers();
+        return userRepository.findAll();
     }
 
     @Override
     public List<User> getUsersByState(User.State state) {
-        return null;
+        return userRepository.findByState(state);
     }
 
     @Override
     public List<User> getUsersByGender(User.Gender gender) {
-        return null;
-    }
-
-    @Override
-    public List<User> getUsersByRole(Role role) {
-        return null;
+        return userRepository.findByGender(gender);
     }
 }

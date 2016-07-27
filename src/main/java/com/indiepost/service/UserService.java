@@ -1,6 +1,5 @@
 package com.indiepost.service;
 
-import com.indiepost.model.Role;
 import com.indiepost.model.User;
 
 import java.util.List;
@@ -32,6 +31,4 @@ public interface UserService {
     List<User> getUsersByState(User.State state);
 
     List<User> getUsersByGender(User.Gender gender);
-
-    List<User> getUsersByRole(Role role);
 }

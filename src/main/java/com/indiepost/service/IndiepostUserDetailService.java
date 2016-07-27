@@ -1,9 +1,10 @@
 package com.indiepost.service;
 
-import com.indiepost.dao.UserDAO;
 import com.indiepost.model.Role;
 import com.indiepost.model.User;
+import com.indiepost.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,12 +24,17 @@ import java.util.Set;
 public class IndiepostUserDetailService implements UserDetailsService {
 
     @Autowired
-    private UserDAO userDAO;
+    private UserRepository userRepository;
+
+    @Autowired
+    public void registerAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+        authenticationManagerBuilder.userDetailsService(new IndiepostUserDetailService());
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
-            User user = userDAO.getUserByUsername(username);
+            User user = userRepository.findByUsername(username);
             return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), this.getAuthorities(user));
         } catch (Exception e) {
             throw new UsernameNotFoundException("User not found");
