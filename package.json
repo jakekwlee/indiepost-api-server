@@ -1,0 +1,36 @@
+{
+  "name": "indiepost-migration",
+  "version": "1.0.0",
+  "description": "indiepost database migration project",
+  "main": "app.js",
+  "scripts": {
+    "start": "babel-node --presets es2015 ./migration.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jakekwlee/new-indeipost.git"
+  },
+  "keywords": [
+    "indiepost"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jakekwlee/new-indeipost/issues"
+  },
+  "homepage": "https://github.com/jakekwlee/new-indeipost#readme",
+  "dependencies": {
+    "async": "^2.0.1",
+    "babel-cli": "^6.11.4",
+    "babel-preset-es2015": "^6.9.0",
+    "bootstrap": "^3.3.7",
+    "fs-extra": "^0.30.0",
+    "jquery": "^3.1.0",
+    "mkdirp": "^0.5.1",
+    "mysql": "^2.11.1",
+    "path": "^0.12.7",
+    "randomstring": "^1.1.5",
+    "uuid": "^2.0.2"
+  }
+}
