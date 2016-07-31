@@ -1,14 +1,21 @@
 package com.indiepost.repository;
 
 import com.indiepost.model.User;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
 /**
  * Created by jake on 7/26/16.
  */
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository {
+
+    void save(User user);
+
+    void update(User user);
+
+    void delete(User user);
+
+    User findOne(int id);
 
     User findByUsername(String username);
 

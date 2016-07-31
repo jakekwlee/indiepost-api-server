@@ -15,14 +15,11 @@
 <header th:replace="fragments/homeFragments :: header"></header>
 <div class="container">
     <div class="row">
-        <div class="list-group post-list">
-            <a th:each="post : ${posts}" th:href="'/category/' + ${post.category.slug} + '/' + ${post.id}" class="list-group-item post-list-cell">
-                <div class="post-list-title-image">
-                    <img class="img-responsive" th:src="@{${post.titleImage}}" th:alt="${post.title}"/>
-                </div>
-                <h3 class="list-group-item-heading post-list-title" th:text="${post.title}"></h3>
-                <div class="list-group-item-text post-list-excerpt" th:text="${post.excerpt}"></div>
-            </a>
+        <div class="col-md-12">
+            <h1 th:text="${post.title}"></h1>
+            <div>Date <span th:text="${post.publishedAt}"></span> | By <span th:text="${post.author.displayName}"></span></div>
+            <div th:utext="${post.content}">
+            </div>
         </div>
     </div>
 </div>

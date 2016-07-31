@@ -5,6 +5,7 @@ import com.indiepost.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
  * Created by jake on 7/27/16.
  */
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -79,11 +81,6 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         return true;
-    }
-
-    @Override
-    public List<User> getUsers() {
-        return userRepository.findAll();
     }
 
     @Override

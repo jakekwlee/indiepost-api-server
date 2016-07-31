@@ -1,5 +1,6 @@
 package com.indiepost.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.hibernate.validator.constraints.Email;
 
 import javax.persistence.*;
@@ -14,6 +15,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "Users")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
 
     @Id
@@ -80,7 +82,7 @@ public class User {
     private Set<Comment> comments;
 
     @NotNull
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "Users_Roles",
             joinColumns = @JoinColumn(name = "userId"),

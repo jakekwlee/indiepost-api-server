@@ -20,7 +20,7 @@ public class Category {
     @JoinColumn(name = "parentId")
     private Category parent;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent", orphanRemoval = true)
+    @OneToMany(mappedBy = "parent", orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Category> categories;
 
     @NotNull
@@ -34,7 +34,7 @@ public class Category {
     @NotNull
     private int displayOrder;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "category")
+    @OneToMany(mappedBy = "category")
     private Set<Post> posts;
 
     public int getDisplayOrder() {

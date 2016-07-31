@@ -4,32 +4,39 @@ import com.indiepost.model.Category;
 import com.indiepost.model.Post;
 import com.indiepost.model.User;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
 /**
  * Created by jake on 7/26/16.
  */
-public interface PostRepository extends JpaRepository<Post, Integer> {
+public interface PostRepository {
 
-    List<Post> findByCategory(Category category);
+    void save(Post post);
 
-    List<Post> findByCategoryOrderByIdAsc(Category category, Pageable pageable);
+    void update(Post post);
 
-    List<Post> findByCategoryOrderByIdDesc(Category category, Pageable pageable);
+    void delete(Post post);
 
-    List<Post> findByAuthor(User author);
+    Post findById(int id);
 
-    List<Post> findByAuthorOrderByIdAsc(User author, Pageable pageable);
+    Post findByIdForUser(int id);
 
-    List<Post> findByAuthorOrderByIdDesc(User author, Pageable pageable);
+    List<Post> findByCategory(Category category, Pageable pageable);
 
-    List<Post> findByEditor(User editor);
+    List<Post> findByCategoryForUser(Category category, Pageable pageable);
 
-    List<Post> findByEditorOrderByIdAsc(User editor, Pageable pageable);
+    List<Post> findByCategorySlugForUser(String slug, Pageable pageable);
 
-    List<Post> findByEditorOrderByIdDesc(User editor, Pageable pageable);
+    List<Post> findByAuthor(User author, Pageable pageable);
 
-    List<Post> findAllByOrderByIdDesc(Pageable pageable);
+    List<Post> findByAuthorForUser(User author, Pageable pageable);
+
+    List<Post> findByAuthorUsernameForUser(String username, Pageable pageable);
+
+    List<Post> findByEditor(User editor, Pageable pageable);
+
+    List<Post> findAll(Pageable pageable);
+
+    List<Post> findAllForUser(Pageable pageable);
 }

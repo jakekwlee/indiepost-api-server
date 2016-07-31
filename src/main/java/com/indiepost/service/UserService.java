@@ -26,8 +26,6 @@ public interface UserService {
 
     boolean isEmailExist(String email);
 
-    List<User> getUsers();
-
     List<User> getUsersByState(User.State state);
 
     List<User> getUsersByGender(User.Gender gender);

@@ -1,5 +1,8 @@
 package com.indiepost.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -15,6 +18,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "Posts")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Post {
 
     @Id
@@ -70,19 +74,22 @@ public class Post {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "editorId", nullable = false)
     private User editor;
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false)
+    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "authorId", nullable = false)
     private User author;
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false)
+    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "categoryId", nullable = false)
     private Category category;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "Posts_MediaContents",
             joinColumns = {@JoinColumn(name = "postId")},
@@ -90,7 +97,7 @@ public class Post {
     )
     private Set<MediaContent> mediaContents;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "Posts_Tags",
             joinColumns = {@JoinColumn(name = "postId")},
@@ -98,16 +105,16 @@ public class Post {
     )
     private Set<Tag> tags;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.EXTRA)
     @OrderBy("createdAt")
     private Set<Comment> comments;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("likedAt DESC")
     private Set<Like> likes;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy(value = "bookmarkedAt DESC")
     private Set<Bookmark> bookmarks;
 
