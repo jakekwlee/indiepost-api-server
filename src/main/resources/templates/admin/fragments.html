@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head">
+</head>
+<body class="cms" >
+<header id="indiepost-navbar" class="navbar bs-docs-nav" name="navigation" th:fragment="header">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/cms">Indiepost CMS</a>
+        </div>
+        <div class="collapse navbar-collapse" id="cms-nav">
+            <ul class="nav navbar-nav">
+                <li><a class="disabled" href="#"><span class="glyphicon glyphicon-signal"></span> Stats</a></li>
+                <li><a href="/cms/posts"><span class="glyphicon glyphicon-list-alt"></span> Posts</a></li>
+                <li><a class="disabled" href="#"><span class="glyphicon glyphicon-comment"></span> Comments</a></li>
+                <li><a class="disabled" href="#"><span class="glyphicon glyphicon-file"></span> Pages</a></li>
+                <li><a class="disabled" href="#"><span class="glyphicon glyphicon-folder-open"></span> Categories</a></li>
+                <li><a class="disabled" href="#"><span class="glyphicon glyphicon-picture"></span> Media</a></li>
+                <li><a class="disabled" href="#"><span class="glyphicon glyphicon-tag"></span> Tags</a></li>
+                <li><a class="disabled" href="#"><span class="glyphicon glyphicon-user"></span> Users</a></li>
+                <li><a class="disabled" href="#"><span class="glyphicon glyphicon-cloud-upload"></span> MCN</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a class="disabled" href="#"><span class="glyphicon glyphicon-cog"></span> Options</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <span class="glyphicon glyphicon-user"></span> <span th:text="${user.displayName}"></span>
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li><a class="disabled" href="#">Profile</a></li>
+                        <li><a href="/">Homepage</a></li>
+                        <li name="separator" class="divider"></li>
+                        <li><a th:href="@{/logout}">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</header>
+<footer class="container" th:fragment="footer">
+    <div id="row">
+        <p>(주)인디포스트앤미디어 INDIEPOST&MEDIA<br>
+            04030) 서울시 마포구 동교로18길 5, 3층 TEL. 02.6326.2475 통신판매업신고번호 : 2016-서울마포-0945<br>
+            CopyRight (c) INDIEPOST&MEDIA. All Rights Reserved.</p>
+    </div>
+</footer>
+</body>
+</html>

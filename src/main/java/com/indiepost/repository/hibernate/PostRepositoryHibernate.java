@@ -6,6 +6,7 @@ import com.indiepost.model.User;
 import com.indiepost.repository.PostRepository;
 import com.indiepost.util.AliasToBeanNestedResultTransformer;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
@@ -17,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 /**
@@ -25,13 +28,14 @@ import java.util.List;
 @Repository
 public class PostRepositoryHibernate implements PostRepository {
 
-    @Autowired
-    private SessionFactory sessionFactory;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public Post findById(int id) {
         return (Post) getCriteria()
                 .add(Restrictions.eq("id", id))
+                .setFetchMode("mediaContents", FetchMode.JOIN)
                 .uniqueResult();
     }
 
@@ -86,24 +90,16 @@ public class PostRepositoryHibernate implements PostRepository {
 
     @Override
     public Post findByIdForUser(int id) {
-        return (Post) getCriteria()
-                .createAlias("author", "a")
-                .createAlias("category", "c")
-                //.createAlias("mediaContents", "m")
-                .setProjection(Projections.projectionList()
-                        .add(Property.forName("id"), "id")
-                        .add(Property.forName("title"), "title")
-                        .add(Property.forName("content"), "content")
-                        .add(Property.forName("publishedAt"), "publishedAt")
-                        .add(Property.forName("a.displayName"), "author.displayName")
-                        .add(Property.forName("c.name"), "category.name")
-//                        .add(Property.forName("m.location"), "mediaContents.location")
-//                        .add(Property.forName("m.mimeType"), "mediaContents.mimeType")
-                )
-                .add(Restrictions.eq("id", id))
-                .setResultTransformer(new AliasToBeanNestedResultTransformer(Post.class))
-                .uniqueResult();
-        // TODO: 8/1/16 hibernate should return unique result!
+        Post post = findById(id);
+        Post postForUser = new Post();
+        postForUser.setId(post.getId());
+        postForUser.setTitle(post.getTitle());
+        postForUser.setContent(post.getContent());
+        postForUser.setPublishedAt(post.getPublishedAt());
+        postForUser.setAuthor(post.getAuthor());
+        postForUser.setCategory(post.getCategory());
+        postForUser.setMediaContents(post.getMediaContents());
+        return postForUser;
     }
 
     @Override
@@ -139,7 +135,7 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     private Session getSession() {
-        return this.sessionFactory.getCurrentSession();
+        return entityManager.unwrap(Session.class);
     }
 
     private Criteria getCriteria() {
@@ -166,6 +162,7 @@ public class PostRepositoryHibernate implements PostRepository {
     private Criteria getCriteriaForHomeUser(Pageable pageable) {
         Criteria criteria = getCriteria(pageable);
         criteria.createAlias("author", "a")
+                .createAlias("editor", "e")
                 .createAlias("category", "c")
                 .setProjection(Projections.projectionList()
                         .add(Property.forName("id"), "id")
@@ -175,6 +172,7 @@ public class PostRepositoryHibernate implements PostRepository {
                         .add(Property.forName("publishedAt"), "publishedAt")
                         .add(Property.forName("likesCount"), "likesCount")
                         .add(Property.forName("a.displayName"), "author.displayName")
+                        .add(Property.forName("e.displayName"), "editor.displayName")
                         .add(Property.forName("c.name"), "category.name")
                         .add(Property.forName("c.slug"), "category.slug")
                 )

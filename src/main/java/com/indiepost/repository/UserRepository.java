@@ -1,5 +1,6 @@
 package com.indiepost.repository;
 
+import com.indiepost.model.Role;
 import com.indiepost.model.User;
 
 import java.util.List;

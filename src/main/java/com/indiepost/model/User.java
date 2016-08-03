@@ -1,6 +1,8 @@
 package com.indiepost.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.Email;
 
 import javax.persistence.*;
@@ -28,7 +30,7 @@ public class User {
     private String username;
 
     @NotNull
-    @Size(min = 6, max = 50)
+    @Size(min = 3, max = 50)
     private String password;
 
     @NotNull
@@ -232,6 +234,10 @@ public class User {
 
     public void setGender(Gender gender) {
         this.gender = gender;
+    }
+
+    public boolean hasRole(Roles roles) {
+        return getRoles().contains(roles);
     }
 
     public enum State {

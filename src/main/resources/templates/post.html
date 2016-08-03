@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Getting Started: Serving Web Content</title>
+    <title th:text="|Indiepost > ${post.category.name} > ${post.title}|"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" th:href="@{/resources/css/bootstrap.min.css}">
@@ -12,17 +12,17 @@
     <script th:src="@{/resources/js/docs.min.js}"></script>
 </head>
 <body>
-<header th:replace="fragments/homeFragments :: header"></header>
+<header th:replace="fragments :: header"></header>
 <div class="container">
     <div class="row">
         <div class="col-md-12">
             <h1 th:text="${post.title}"></h1>
-            <div>Date <span th:text="${post.publishedAt}"></span> | By <span th:text="${post.author.displayName}"></span></div>
+            <div>Date <span th:text="${#calendars.format(post.publishedAt, 'yyyy/MM/dd')}"></span> | By <span th:text="${post.author.displayName}"></span></div>
             <div th:utext="${post.content}">
             </div>
         </div>
     </div>
 </div>
-<header th:replace="fragments/homeFragments :: footer"></header>
+<header th:replace="fragments :: footer"></header>
 </body>
 </html>

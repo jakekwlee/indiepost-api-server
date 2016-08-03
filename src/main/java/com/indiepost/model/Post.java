@@ -74,7 +74,7 @@ public class Post {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false)
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "editorId", nullable = false)
     private User editor;

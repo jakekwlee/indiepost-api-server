@@ -1,12 +1,14 @@
 package com.indiepost.service;
 
 import com.indiepost.model.User;
+import com.indiepost.repository.RoleRepository;
 import com.indiepost.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,13 +19,16 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
-    public void add(User user) {
+    public void save(User user) {
         String rawPassword = user.getPassword();
         String encodedPassword = passwordEncoder.encode(rawPassword);
         user.setPassword(encodedPassword);
@@ -42,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updatePassword(String username, String oldPassword, String newPassword) {
-        User user = getUserByUsername(username, oldPassword);
+        User user = findByUsername(username, oldPassword);
         String encodedPassword = passwordEncoder.encode(newPassword);
         user.setPassword(encodedPassword);
         userRepository.save(user);
@@ -50,17 +55,17 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User getUserById(int id) {
+    public User findById(int id) {
         return userRepository.findOne(id);
     }
 
     @Override
-    public User getUserByUsername(String username) {
+    public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
     @Override
-    public User getUserByUsername(String username, String password) {
+    public User findByUsername(String username, String password) {
         String encodedPassword = passwordEncoder.encode(password);
         return userRepository.findByUsernameAndPassword(username, encodedPassword);
     }
@@ -84,12 +89,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getUsersByState(User.State state) {
+    public List<User> findByState(User.State state) {
         return userRepository.findByState(state);
     }
 
     @Override
-    public List<User> getUsersByGender(User.Gender gender) {
+    public List<User> findByGender(User.Gender gender) {
         return userRepository.findByGender(gender);
+    }
+
+    @Override
+    public List<User> findByRolesEnum(User.Roles role) {
+        List<User> users = new ArrayList<>(roleRepository.findByRolesEnum(role).getUsers());
+        return users;
     }
 }

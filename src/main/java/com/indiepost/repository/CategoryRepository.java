@@ -9,7 +9,17 @@ import java.util.List;
  */
 public interface CategoryRepository {
 
-    Category getCategoryBySlug(String slug);
+    void save(Category category);
 
-    List<Category> getCategoriesByParent(Category parent);
+    void update(Category category);
+
+    void delete(Category category);
+
+    Category findById(int id);
+
+    Category findBySlug(String slug);
+
+    List<Category> findByParent(Category parent);
+
+    List<Category> findAll();
 }

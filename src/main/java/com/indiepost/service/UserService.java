@@ -8,7 +8,7 @@ import java.util.List;
  * Created by jake on 7/27/16.
  */
 public interface UserService {
-    void add(User user);
+    void save(User user);
 
     void update(User user);
 
@@ -16,17 +16,19 @@ public interface UserService {
 
     void updatePassword(String username, String oldPassword, String newPassword);
 
-    User getUserById(int id);
+    User findById(int id);
 
-    User getUserByUsername(String username);
+    User findByUsername(String username);
 
-    User getUserByUsername(String username, String password);
+    User findByUsername(String username, String password);
 
     boolean isUsernameExist(String username);
 
     boolean isEmailExist(String email);
 
-    List<User> getUsersByState(User.State state);
+    List<User> findByState(User.State state);
 
-    List<User> getUsersByGender(User.Gender gender);
+    List<User> findByGender(User.Gender gender);
+
+    List<User> findByRolesEnum(User.Roles role);
 }

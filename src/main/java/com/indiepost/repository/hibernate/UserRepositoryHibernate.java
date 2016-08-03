@@ -4,11 +4,11 @@ import com.indiepost.model.User;
 import com.indiepost.repository.UserRepository;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 /**
@@ -17,8 +17,8 @@ import java.util.List;
 @Repository
 public class UserRepositoryHibernate implements UserRepository {
 
-    @Autowired
-    SessionFactory sessionFactory;
+    @PersistenceContext
+    private EntityManager entityManager;
 
 
     @Override
@@ -80,7 +80,7 @@ public class UserRepositoryHibernate implements UserRepository {
     }
 
     private Session getSession() {
-        return this.sessionFactory.getCurrentSession();
+        return entityManager.unwrap(Session.class);
     }
 
     private Criteria getCriteria() {

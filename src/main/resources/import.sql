@@ -11,25 +11,27 @@ CREATE TABLE `DetaillistReformed` (
   ENGINE = InnoDB
   AUTO_INCREMENT = 28880
   DEFAULT CHARSET = utf8;
+
 INSERT INTO DetaillistReformed
   SELECT parent AS id,
     GROUP_CONCAT(IF(type = 1, CONCAT('<p>', data, '</p>'), CONCAT('<p><img src="', data, '"></p>'))ORDER BY iorder ASC SEPARATOR '') AS content,
     ispay
   FROM detaillist
+  WHERE iorder > 2
   GROUP BY parent;
 
 -- Create User Roles
 
-INSERT INTO Roles (role) VALUES ('User');
-INSERT INTO Roles (role) VALUES ('Author');
-INSERT INTO Roles (role) VALUES ('Editor');
-INSERT INTO Roles (role) VALUES ('EditorInChief');
-INSERT INTO Roles (role) VALUES ('Administrator');
+INSERT INTO Roles (name) VALUES ('User');
+INSERT INTO Roles (name) VALUES ('Author');
+INSERT INTO Roles (name) VALUES ('Editor');
+INSERT INTO Roles (name) VALUES ('EditorInChief');
+INSERT INTO Roles (name) VALUES ('Administrator');
 
 -- Create Users
 
 INSERT INTO Users (username, password, displayname, email, phone, registeredAt, state, gender) VALUES
-  ('admin', '*4ACFE3202A5FF5CF467898FC58AAB1D615029441', 'Indiepost', 'sysadmin@indiepost.co.kr', '01073691070', NOW(),
+  ('indiepost', '*4ACFE3202A5FF5CF467898FC58AAB1D615029441', 'Indiepost', 'sysadmin@indiepost.co.kr', '01073691070', NOW(),
    'ACTIVATED', 'UNIDENTIFIED');
 
 INSERT INTO Users (username, password, displayname, email, phone, registeredAt, state, gender) VALUES
@@ -41,19 +43,19 @@ INSERT INTO Users (username, password, displayname, email, phone, registeredAt, 
    'ACTIVATED', 'MALE');
 
 INSERT INTO Users (username, password, displayname, email, phone, registeredAt, state, gender) VALUES
-  ('imyou', '*8AD29C47922B10281FFAC430F7842C905CEC26E4', 'Youchung Im ', 'habibono@naver.com', '01091564828', NOW(),
+  ('imyou', '*8AD29C47922B10281FFAC430F7842C905CEC26E4', 'Im Youchung', 'habibono@naver.com', '01091564828', NOW(),
    'ACTIVATED', 'FEMALE');
 
 INSERT INTO Users (username, password, displayname, email, phone, registeredAt, state, gender) VALUES
-  ('lsm', '*C568277650E828192B3EE6217888DCE96B0B007E', 'Samin Lee', 'lsm@indiepost.co.kr', '01092515860', NOW(),
+  ('lsm', '*C568277650E828192B3EE6217888DCE96B0B007E', 'LEE SAMIN', 'lsm@indiepost.co.kr', '01092515860', NOW(),
    'ACTIVATED', 'FEMALE');
 
 INSERT INTO Users (username, password, displayname, email, phone, registeredAt, state, gender) VALUES
-  ('rheejae', '*FC05031C3F911B8873C55D5C3273FCCFA905B242', 'Yijae Lee', 'leeyijae@indiepost.co.kr', '01075155197',
+  ('rheejae', '*FC05031C3F911B8873C55D5C3273FCCFA905B242', 'LEE YI JAE', 'leeyijae@indiepost.co.kr', '01075155197',
    NOW(), 'ACTIVATED', 'FEMALE');
 
 INSERT INTO Users (username, password, displayname, email, phone, registeredAt, state, gender) VALUES
-  ('you', '*0C32C69841EBA547CBD06BF2BDC5A806CFBE55F5', 'Mirae You', 'youandmirae@indiepost.co.kr', '01042690922', NOW(),
+  ('you', '*0C32C69841EBA547CBD06BF2BDC5A806CFBE55F5', 'You Mirae', 'youandmirae@indiepost.co.kr', '01042690922', NOW(),
    'ACTIVATED', 'FEMALE');
 
 INSERT INTO Users (username, password, displayName, email, phone, registeredAt, state, gender)
@@ -102,7 +104,7 @@ INSERT INTO Users_Roles (userId, roleId) VALUES (9, 2);
 
 INSERT INTO Categories (id, displayOrder, name, slug) VALUES (2, 1, 'Film', 'film');
 INSERT INTO Categories (id, displayOrder, name, slug) VALUES (3, 7, 'Award', 'award');
-INSERT INTO Categories (id, displayOrder, name, slug) VALUES (7, 6, 'visual', 'visual');
+INSERT INTO Categories (id, displayOrder, name, slug) VALUES (7, 6, 'Visual', 'visual');
 INSERT INTO Categories (id, displayOrder, name, slug) VALUES (8, 5, 'Venue', 'venue');
 INSERT INTO Categories (id, displayOrder, name, slug) VALUES (9, 8, 'Event', 'event');
 INSERT INTO Categories (id, displayOrder, name, slug) VALUES (10, 4, 'People', 'people');
@@ -114,7 +116,7 @@ INSERT INTO Categories (id, displayOrder, name, slug) VALUES (22, 9, 'Project', 
 INSERT INTO MediaContents (id, location, mimeType, price, isPaidContent)
   SELECT no, data, 'image/jpeg', 0, 0
   FROM detaillist
-  WHERE type = 2;
+  WHERE type = 2 AND iorder > 2;
 
 -- Migrate Posts
 INSERT INTO Posts (id, title, titleImage, excerpt, content, status, bookmarkedCount, commentsCount, likesCount,
@@ -129,7 +131,7 @@ INSERT INTO Posts (id, title, titleImage, excerpt, content, status, bookmarkedCo
 INSERT INTO Posts_MediaContents (postId, mediaContentId)
   SELECT parent, no
   FROM detaillist
-  WHERE type = 2;
+  WHERE type = 2 AND iorder > 2;
 
 -- Delete Temporal Table
 DROP TABLE IF EXISTS `DetaillistReformed`;

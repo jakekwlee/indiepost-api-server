@@ -2,3 +2,15 @@
 img {
     width: 100%;
 }
+
+#cms-nav .nav>li>a {
+    padding: 15px 10px 15px 10px;
+}
+
+#cms-nav .disabled {
+    color: darkgray;
+}
+
+#cms-nav a.navbar-brand {
+    padding-left: 0px;
+}

@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const randomstring = require('randomstring');
 const mkdirp = require('mkdirp');
-const EventEmitter = require('events');
+
 
 const oldDirBase = '/home/jake/backup';
 const newDirBase = '/data/uploads';
@@ -15,7 +15,6 @@ const mysqlPool = mysql.createPool({
     password: 'indiepost',
     database: 'indiepost'
 });
-
 
 let updateTitleImages = () => {
     "use strict";
@@ -34,17 +33,21 @@ let updateTitleImages = () => {
                 let newFilepath = path.resolve(newFileDir, newFileName);
                 mkdirp(newFileDir, (err) => {
                     if (err) {
+                        console.log(err);
                     }
                     fs.copy(oldFilePath, newFilepath, (err) => {
                         if (err) {
+                            console.log(err);
                         }
                         console.log(oldFilePath + ' -> ' + newFilepath);
                         newFilepath = '/uploads' + newFilepath.replace(newDirBase, '');
                         let update = "UPDATE contentlist SET IMAGEURL='" + newFilepath + "' WHERE no=" + row.no;
                         conn.query(update, (err) => {
-                            if(err) {}
+                            if(err) {
+                                console.log(err);
+                            }
+                            console.log(update);
                         });
-                        console.log(update);
                     });
                 });
             }
@@ -56,7 +59,7 @@ let updateTitleImages = () => {
 let updateContentImages = () => {
     "use strict";
     mysqlPool.getConnection((err, conn) => {
-        let query = 'SELECT d.no as no, d.data as data, c.REGDATE as date FROM contentlist as c INNER JOIN detaillist as d ON c.no = d.parent WHERE d.type = 2';
+        let query = 'SELECT d.no as no, d.data as data, c.REGDATE as date FROM contentlist as c INNER JOIN detaillist as d ON c.no = d.parent WHERE d.type = 2 AND d.iorder > 2';
 
         conn.query(query, (err, results) => {
             if (err) {
@@ -70,15 +73,19 @@ let updateContentImages = () => {
                 let newFilepath = path.resolve(newFileDir, newFileName);
                 mkdirp(newFileDir, (err) => {
                     if (err) {
+                        console.log(err);
                     }
                     fs.copy(oldFilePath, newFilepath, (err) => {
                         if (err) {
+                            console.log(err);
                         }
                         console.log(oldFilePath + ' -> ' + newFilepath);
                         newFilepath = '/uploads' + newFilepath.replace(newDirBase, '');
                         let update = "UPDATE detaillist SET data='" + newFilepath + "' WHERE no=" + row.no;
                         conn.query(update, (err) => {
-                            if(err) {}
+                            if(err) {
+                                console.log(err);
+                            }
                         });
                         console.log(update);
                     });
@@ -88,5 +95,7 @@ let updateContentImages = () => {
         });
     });
 };
+
+
 updateTitleImages();
 updateContentImages();

@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Indiepost CMS > New Post</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/resources/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/resources/css/docs.min.css}">
+    <link rel="stylesheet" th:href="@{/resources/css/bootstrap-datetimepicker.min.css}">
+    <link rel="stylesheet" th:href="@{/resources/css/style.css}">
+    <script th:src="@{/resources/js/moment.min.js}"></script>
+    <script th:src="@{/resources/js/jquery.min.js}"></script>
+    <script th:src="@{/resources/js/bootstrap.min.js}"></script>
+    <script th:src="@{/resources/js/bootstrap-datetimepicker.min.js}"></script>
+    <script th:src="@{/resources/tinymce/tinymce.min.js}"></script>
+</head>
+<body>
+<header th:replace="admin/fragments :: header"></header>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>New Post</h1>
+            <div class="row">
+                <form>
+                    <div class="col-md-9 form-group form-group-lg">
+                        <input type="text" class="form-control" id="title" placeholder="Title">
+                    </div>
+                    <div class="col-md-3 form-group form-group-lg">
+                        <select class="form-control">
+                            <option selected disabled>Choose Caterory</option>
+                            <option th:each="category: ${categories}" th:value="${category.id}"
+                                    th:text="${category.name}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 form-group form-group-lg">
+                        <select class="form-control">
+                            <option selected disabled>Choose Editor</option>
+                            <option th:each="editor: ${editors}" th:value="${editor.id}"
+                                    th:text="${editor.displayName}">Editor
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 form-group form-group-lg">
+                        <div class='input-group date' id='publishedAt'>
+                            <input type='text' class="form-control" disabled>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 form-group form-group-lg">
+                        <div class='input-group date' id='reservedAt'>
+                            <input type='text' class="form-control" disabled>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 form-group form-group-lg">
+                        <select class="form-control">
+                            <option selected disabled>Choose Status</option>
+                            <option th:each="status: ${statuses}" th:value="${status.toString()}"
+                                    th:text="${status.toString()}">Status
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-12 form-group form-group-lg">
+                        <textarea id="content-textarea" class="form-control" name="content" id="content" cols="30" rows="50"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-primary btn-lg">Save</button>
+                        <button type="button" class="btn btn-lg">Cancel</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<footer th:replace="admin/fragments :: footer"></footer>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.date').datetimepicker({format: 'yyyy-mm-dd hh:ii', minuteStep: 30});
+        tinymce.init({
+            selector: 'textarea'
+        });
+    });
+</script>
+</body>
+</html>
