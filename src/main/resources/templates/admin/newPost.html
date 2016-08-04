@@ -23,10 +23,12 @@
             <div class="row">
                 <form>
                     <div class="col-md-9 form-group form-group-lg">
+                        <label for="title">Title</label>
                         <input type="text" class="form-control" id="title" placeholder="Title">
                     </div>
                     <div class="col-md-3 form-group form-group-lg">
-                        <select class="form-control">
+                        <input type="text" class="form-control" id="title" placeholder="Title">
+                        <select id="categories" class="form-control">
                             <option selected disabled>Choose Caterory</option>
                             <option th:each="category: ${categories}" th:value="${category.id}"
                                     th:text="${category.name}"></option>
@@ -65,7 +67,7 @@
                         </select>
                     </div>
                     <div class="col-md-12 form-group form-group-lg">
-                        <textarea id="content-textarea" class="form-control" name="content" id="content" cols="30" rows="50"></textarea>
+                        <textarea id="content-textarea" class="form-control" name="content" id="content" cols="30" rows="24"></textarea>
                     </div>
                     <div class="col-md-4">
                         <button type="button" class="btn btn-primary btn-lg">Save</button>

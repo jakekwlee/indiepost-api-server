@@ -29,7 +29,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post findByIdForUser(int id) {
-        return postRepository.findByIdForUser(id);
+        return postRepository.findById(id);
     }
 
     @Override

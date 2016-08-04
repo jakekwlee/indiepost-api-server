@@ -3,6 +3,7 @@ package com.indiepost.model;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.Set;
 
 /**
@@ -11,7 +12,9 @@ import java.util.Set;
 
 @Entity
 @Table(name = "Tags")
-public class Tag {
+public class Tag implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
@@ -19,7 +20,9 @@ import java.util.Set;
 @Entity
 @Table(name = "Posts")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Post {
+public class Post implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

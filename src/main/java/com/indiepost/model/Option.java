@@ -3,13 +3,16 @@ package com.indiepost.model;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 /**
  * Created by jake on 7/25/16.
  */
 @Entity
 @Table(name = "Options")
-public class Option {
+public class Option implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

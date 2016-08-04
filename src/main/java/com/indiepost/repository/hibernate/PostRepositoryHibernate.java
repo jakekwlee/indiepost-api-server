@@ -8,12 +8,10 @@ import com.indiepost.util.AliasToBeanNestedResultTransformer;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
@@ -35,7 +33,7 @@ public class PostRepositoryHibernate implements PostRepository {
     public Post findById(int id) {
         return (Post) getCriteria()
                 .add(Restrictions.eq("id", id))
-                .setFetchMode("mediaContents", FetchMode.JOIN)
+                //.setFetchMode("mediaContents", FetchMode.JOIN)
                 .uniqueResult();
     }
 
