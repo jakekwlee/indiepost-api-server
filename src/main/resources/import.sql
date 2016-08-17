@@ -112,25 +112,23 @@ INSERT INTO Categories (id, displayOrder, name, slug) VALUES (11, 2, 'Music', 'm
 INSERT INTO Categories (id, displayOrder, name, slug) VALUES (21, 3, 'Short', 'short');
 INSERT INTO Categories (id, displayOrder, name, slug) VALUES (22, 9, 'Project', 'project');
 
--- Migrate Media Contents
-INSERT INTO MediaContents (id, location, mimeType, price, isPaidContent)
-  SELECT no, data, 'image/jpeg', 0, 0
-  FROM detaillist
-  WHERE type = 2 AND iorder > 2;
 
 -- Migrate Posts
-INSERT INTO Posts (id, title, titleImage, excerpt, content, status, bookmarkedCount, commentsCount, likesCount,
-                   createdAt, modifiedAt, publishedAt, reservedAt, authorId, editorId, categoryId)
+INSERT INTO Posts (id, title, featuredImage, excerpt, content, status, type, bookmarkedCount, commentsCount, likesCount,
+                   createdAt, modifiedAt, publishedAt, authorId, editorId, categoryId)
   SELECT c.no, c.CONTENTNAME, c.IMAGEURL, c.CONTENTTEXT,
-    d.content, 'PUBLISHED', 0, 0, 0, NOW(), NOW(), NOW(), NOW(), 1, 1, c.MENUNO
+    d.content, 'PUBLISHED', 'POST', 0, 0, 0, STR_TO_DATE(c.REGDATE, '%Y%m%d'), STR_TO_DATE(c.REGDATE, '%Y%m%d'), STR_TO_DATE(c.REGDATE, '%Y%m%d'), 1, 1, c.MENUNO
   FROM contentlist AS c
     INNER JOIN DetaillistReformed AS d
       ON c.no = d.id;
 
--- Make Relation Posts and Media Contents
-INSERT INTO Posts_MediaContents (postId, mediaContentId)
-  SELECT parent, no
-  FROM detaillist
+-- Migrate Images
+INSERT INTO Images (id, directory, original, postId, height, width, isFeatured, uploadedAt)
+  SELECT d.no, SUBSTRING_INDEX(d.data, '/', 6), SUBSTRING_INDEX(d.data, '/', -1), d.parent, 0, 0, FALSE, STR_TO_DATE(c.REGDATE, '%Y%m%d')
+  FROM detaillist AS d
+  INNER JOIN
+  contentlist AS c
+  ON d.parent = c.no
   WHERE type = 2 AND iorder > 2;
 
 -- Delete Temporal Table

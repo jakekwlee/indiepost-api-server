@@ -54,10 +54,10 @@ public class AdminController {
     public String editPost(Model model, Authentication authentication, Principal principal) {
         User user = userService.findByUsername(principal.getName());
         List<Category> categories = categoryService.findAll();
-        List<User> editors = userService.findByRolesEnum(User.Roles.Editor);
+        List<User> authors = userService.findByRolesEnum(User.Roles.Author);
         model.addAttribute("categories", categories);
         model.addAttribute("user", user);
-        model.addAttribute("editors", editors);
+        model.addAttribute("authors", authors);
         model.addAttribute("statuses", Post.Status.values());
         return "admin/newPost";
     }

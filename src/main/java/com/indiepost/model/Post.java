@@ -50,15 +50,11 @@ public class Post implements Serializable {
     private Date publishedAt;
 
     @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date reservedAt;
+    @Size(min = 5, max = 120)
+    private String featuredImage;
 
     @NotNull
-    @Size(min = 5, max = 100)
-    private String titleImage;
-
-    @NotNull
-    @Size(min = 2, max = 300)
+    @Size(max = 300)
     private String excerpt;
 
     @NotNull
@@ -77,6 +73,10 @@ public class Post implements Serializable {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Type type;
+
     @ManyToOne(optional = false)
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "editorId", nullable = false)
@@ -92,13 +92,8 @@ public class Post implements Serializable {
     @JoinColumn(name = "categoryId", nullable = false)
     private Category category;
 
-    @ManyToMany
-    @JoinTable(
-            name = "Posts_MediaContents",
-            joinColumns = {@JoinColumn(name = "postId")},
-            inverseJoinColumns = {@JoinColumn(name = "mediaContentId")}
-    )
-    private Set<MediaContent> mediaContents;
+    @OneToMany(mappedBy = "post")
+    private Set<Image> images;
 
     @ManyToMany
     @JoinTable(
@@ -169,20 +164,12 @@ public class Post implements Serializable {
         this.publishedAt = publishedAt;
     }
 
-    public Date getReservedAt() {
-        return reservedAt;
+    public String getFeaturedImage() {
+        return featuredImage;
     }
 
-    public void setReservedAt(Date reservedAt) {
-        this.reservedAt = reservedAt;
-    }
-
-    public String getTitleImage() {
-        return titleImage;
-    }
-
-    public void setTitleImage(String titleImage) {
-        this.titleImage = titleImage;
+    public void setFeaturedImage(String featuredImage) {
+        this.featuredImage = featuredImage;
     }
 
     public String getExcerpt() {
@@ -233,12 +220,12 @@ public class Post implements Serializable {
         this.category = category;
     }
 
-    public Set<MediaContent> getMediaContents() {
-        return mediaContents;
+    public Set<Image> getImages() {
+        return images;
     }
 
-    public void setMediaContents(Set<MediaContent> mediaContents) {
-        this.mediaContents = mediaContents;
+    public void setImages(Set<Image> images) {
+        this.images = images;
     }
 
     public Set<Tag> getTags() {
@@ -297,7 +284,19 @@ public class Post implements Serializable {
         this.author = author;
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
     public enum Status {
         DELETED, DRAFT, RESERVED, PUBLISHED
+    }
+
+    public enum Type {
+        POST, PAGE, NOTICE
     }
 }

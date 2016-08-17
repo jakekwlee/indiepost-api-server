@@ -3,15 +3,16 @@ package com.indiepost.repository.hibernate;
 import com.indiepost.model.Category;
 import com.indiepost.model.Post;
 import com.indiepost.model.User;
+import com.indiepost.repository.CriteriaMaker;
 import com.indiepost.repository.PostRepository;
 import com.indiepost.util.AliasToBeanNestedResultTransformer;
 import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
@@ -29,11 +30,13 @@ public class PostRepositoryHibernate implements PostRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private CriteriaMaker criteriaMaker;
+
     @Override
     public Post findById(int id) {
         return (Post) getCriteria()
                 .add(Restrictions.eq("id", id))
-                //.setFetchMode("mediaContents", FetchMode.JOIN)
                 .uniqueResult();
     }
 
@@ -96,7 +99,7 @@ public class PostRepositoryHibernate implements PostRepository {
         postForUser.setPublishedAt(post.getPublishedAt());
         postForUser.setAuthor(post.getAuthor());
         postForUser.setCategory(post.getCategory());
-        postForUser.setMediaContents(post.getMediaContents());
+        postForUser.setImages(post.getImages());
         return postForUser;
     }
 
@@ -141,20 +144,7 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     private Criteria getCriteria(Pageable pageable) {
-        Criteria criteria = getCriteria();
-        Sort sort = pageable.getSort();
-        if (sort != null) {
-            for (Sort.Order order : sort) {
-                if (order.getDirection().equals(Sort.Direction.ASC)) {
-                    criteria.addOrder(Order.asc(order.getProperty()));
-                } else {
-                    criteria.addOrder(Order.desc(order.getProperty()));
-                }
-            }
-        }
-        criteria.setFirstResult(pageable.getOffset());
-        criteria.setMaxResults(pageable.getPageSize());
-        return criteria;
+        return criteriaMaker.getPagedCriteria(getCriteria(), pageable);
     }
 
     private Criteria getCriteriaForHomeUser(Pageable pageable) {
@@ -165,7 +155,7 @@ public class PostRepositoryHibernate implements PostRepository {
                 .setProjection(Projections.projectionList()
                         .add(Property.forName("id"), "id")
                         .add(Property.forName("title"), "title")
-                        .add(Property.forName("titleImage"), "titleImage")
+                        .add(Property.forName("featuredImage"), "featuredImage")
                         .add(Property.forName("excerpt"), "excerpt")
                         .add(Property.forName("publishedAt"), "publishedAt")
                         .add(Property.forName("likesCount"), "likesCount")

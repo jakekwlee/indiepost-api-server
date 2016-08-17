@@ -11,6 +11,8 @@ import java.util.List;
  */
 public interface PostService {
 
+    void save(Post post);
+
     Post findById(int id);
 
     Post findByIdForUser(int id);

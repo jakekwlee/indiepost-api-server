@@ -236,3 +236,6 @@ bh_unicode_properties.cache
 GitHub.sublime-settings
 
 src/main/resources/static/uploads/
+
+#python
+venv/
