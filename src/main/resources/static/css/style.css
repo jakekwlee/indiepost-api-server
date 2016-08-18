@@ -1,10 +1,12 @@
+* {
+    border-radius: 0 !important;
+}
 
 img {
     width: 100%;
 }
 
 #home .list-group-item {
-    border-radius: 0 !important;
     border-bottom: 6px #515151 solid;
     border-top: 6px #515151 solid;
     border-left: 0;

@@ -18,7 +18,7 @@ INSERT INTO DetaillistReformed
     ispay
   FROM detaillist
   WHERE iorder > 2
-  GROUP BY parent;
+  GROUP BY parent, ispay;
 
 -- Create User Roles
 

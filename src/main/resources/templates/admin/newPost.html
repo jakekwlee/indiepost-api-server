@@ -225,7 +225,8 @@
 <script th:src="@{/resources/tinymce/tinymce.min.js}"></script>
 <script>
     $(document).ready(function () {
-//        $('.date').datetimepicker({format: 'yyyy-mm-dd hh:ii'});
+        $('.date').datetimepicker({format: 'yyyy-mm-dd hh:ii'});
+
         tinymce.init({
             selector: 'textarea',
             file_browser_callback: function (field_name, url, type, win) {
@@ -233,16 +234,13 @@
             },
             skin: 'lightgray',
             toolbar: "code",
-            plugins: "image imagetools code",
+            plugins: "image imagetools code paste",
+            paste_as_text: true,
             images_upload_url: 'postAcceptor.php',
             images_upload_base_path: '/some/basepath',
             images_upload_credentials: true
         });
-    });
-</script>
-<script>
-    $(function () {
-        'use strict';
+
         $('#fileupload').fileupload({
             // Uncomment the following to send cross-domain cookies:
             //xhrFields: {withCredentials: true},
