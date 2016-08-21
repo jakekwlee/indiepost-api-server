@@ -8,7 +8,6 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath group: 'org.zeroturnaround', name: 'gradle-jrebel-plugin', version: '1.1.2'
 
     }
 }
@@ -17,13 +16,11 @@ apply plugin: 'java'
 apply plugin: 'spring-boot'
 apply plugin: 'idea'
 apply plugin: 'war'
-apply plugin: 'rebel'
 
 war {
     baseName = 'new-indiepost'
     version = '0.0.1-SNAPSHOT'
 }
-war.dependsOn(generateRebel)
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -46,5 +43,9 @@ dependencies {
     runtime('mysql:mysql-connector-java')
     testCompile('org.springframework.boot:spring-boot-starter-test')
     compile group: 'commons-codec', name: 'commons-codec', version: '1.9'
+    compile group: 'commons-io', name: 'commons-io', version: '2.5'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+    compile group: 'org.imgscalr', name: 'imgscalr-lib', version: '4.2'
+    compile 'com.drewnoakes:metadata-extractor:2.9.1'
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 }

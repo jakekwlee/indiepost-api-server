@@ -123,8 +123,8 @@ INSERT INTO Posts (id, title, featuredImage, excerpt, content, status, type, boo
       ON c.no = d.id;
 
 -- Migrate Images
-INSERT INTO Images (id, directory, original, postId, height, width, isFeatured, uploadedAt)
-  SELECT d.no, SUBSTRING_INDEX(d.data, '/', 6), SUBSTRING_INDEX(d.data, '/', -1), d.parent, 0, 0, FALSE, STR_TO_DATE(c.REGDATE, '%Y%m%d')
+INSERT INTO Images (id, directory, original, thumbnail, postId, height, width, isFeatured, uploadedAt)
+  SELECT d.no, SUBSTRING_INDEX(d.data, '/', 5), SUBSTRING_INDEX(d.data, '/', -1), SUBSTRING_INDEX(d.data, '/', -1), d.parent, 0, 0, FALSE, STR_TO_DATE(c.REGDATE, '%Y%m%d')
   FROM detaillist AS d
   INNER JOIN
   contentlist AS c

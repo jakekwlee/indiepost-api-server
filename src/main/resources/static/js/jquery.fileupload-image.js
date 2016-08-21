@@ -231,7 +231,7 @@
             // Saves the processed image given as data.canvas
             // inplace at data.index of data.files:
             saveImage: function (data, options) {
-                if (!data.canvas || options.disabled) {
+                if (!data.canvas || options.disabled || data.files.length >= 5) {
                     return data;
                 }
                 var that = this,
@@ -256,7 +256,7 @@
                             }
                             // Store the created blob at the position
                             // of the original file in the files list:
-                            data.files[data.index] = blob;
+                            data.files.push(blob);
                             dfd.resolveWith(that, [data]);
                         },
                         options.type || file.type,

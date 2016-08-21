@@ -29,20 +29,31 @@ public class Image implements Serializable {
     private String original;
 
     @NotNull
+    private long size;
+
+    @NotNull
     private int height;
 
     @NotNull
     private int width;
 
+    @NotNull
+    @Size(min = 9, max = 10)
+    private String contentType;
+
+    // ~1200px
     @Size(min = 2, max = 120)
     private String large;
 
+    // ~700px
     @Size(min = 2, max = 120)
     private String medium;
 
+    // ~400px
     @Size(min = 2, max = 120)
     private String small;
 
+    // ~120px
     @NotNull
     @Size(min = 2, max = 120)
     private String thumbnail;
@@ -64,6 +75,23 @@ public class Image implements Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
     public String getDirectory() {
@@ -99,9 +127,6 @@ public class Image implements Serializable {
     }
 
     public String getLarge() {
-        if (large == null) {
-            return original;
-        }
         return large;
     }
 
@@ -110,9 +135,6 @@ public class Image implements Serializable {
     }
 
     public String getMedium() {
-        if (medium == null) {
-            return original;
-        }
         return medium;
     }
 
@@ -121,9 +143,6 @@ public class Image implements Serializable {
     }
 
     public String getSmall() {
-        if (small == null) {
-            return original;
-        }
         return small;
     }
 
@@ -166,4 +185,5 @@ public class Image implements Serializable {
     public String getLocation() {
         return Paths.get(directory).resolve(original).toString();
     }
+
 }

@@ -8,6 +8,8 @@
     <link rel="stylesheet" th:href="@{/resources/css/bootstrap-datetimepicker.min.css}">
     <link rel="stylesheet" th:href="@{/resources/css/jquery.fileupload.css}">
     <link rel="stylesheet" th:href="@{/resources/css/jquery.fileupload-ui.css}">
+    <link rel="stylesheet" th:href="@{/resources/css/bootstrap-tagsinput.css}">
+    <link rel="stylesheet" th:href="@{/resources/css/bootstrap-tagsinput-typeahead.css}">
     <link rel="stylesheet" th:href="@{/resources/css/admin.css}">
 </head>
 <body>
@@ -89,19 +91,19 @@
                                 <span class="btn btn-success fileinput-button">
                                     <i class="glyphicon glyphicon-plus"></i>
                                     <span>Add files...</span>
-                                    <input type="file" name="files[]" multiple>
+                                    <input type="file" name="files" multiple>
                                 </span>
                                 <!--<button type="submit" class="btn btn-primary start">-->
-                                    <!--<i class="glyphicon glyphicon-upload"></i>-->
-                                    <!--<span>Start upload</span>-->
+                                <!--<i class="glyphicon glyphicon-upload"></i>-->
+                                <!--<span>Start upload</span>-->
                                 <!--</button>-->
                                 <!--<button type="reset" class="btn btn-warning cancel">-->
-                                    <!--<i class="glyphicon glyphicon-ban-circle"></i>-->
-                                    <!--<span>Cancel upload</span>-->
+                                <!--<i class="glyphicon glyphicon-ban-circle"></i>-->
+                                <!--<span>Cancel upload</span>-->
                                 <!--</button>-->
                                 <!--<button type="button" class="btn btn-danger delete">-->
-                                    <!--<i class="glyphicon glyphicon-trash"></i>-->
-                                    <!--<span>Delete</span>-->
+                                <!--<i class="glyphicon glyphicon-trash"></i>-->
+                                <!--<span>Delete</span>-->
                                 <!--</button>-->
                                 <!--<input type="checkbox" class="toggle">-->
                                 <!--&lt;!&ndash; The global file processing state &ndash;&gt;-->
@@ -109,13 +111,13 @@
                             </div>
                             <!-- The global progress state -->
                             <!--<div class="col-md-12 fileupload-progress fade">-->
-                                <!--&lt;!&ndash; The global progress bar &ndash;&gt;-->
-                                <!--<div class="progress progress-striped active" role="progressbar" aria-valuemin="0"-->
-                                     <!--aria-valuemax="100">-->
-                                    <!--<div class="progress-bar progress-bar-success" style="width:0%;"></div>-->
-                                <!--</div>-->
-                                <!--&lt;!&ndash; The extended global progress state &ndash;&gt;-->
-                                <!--<div class="progress-extended">&nbsp;</div>-->
+                            <!--&lt;!&ndash; The global progress bar &ndash;&gt;-->
+                            <!--<div class="progress progress-striped active" role="progressbar" aria-valuemin="0"-->
+                            <!--aria-valuemax="100">-->
+                            <!--<div class="progress-bar progress-bar-success" style="width:0%;"></div>-->
+                            <!--</div>-->
+                            <!--&lt;!&ndash; The extended global progress state &ndash;&gt;-->
+                            <!--<div class="progress-extended">&nbsp;</div>-->
                             <!--</div>-->
                         </div>
                         <!-- The table listing the files available for upload/download -->
@@ -171,6 +173,7 @@
     </div>
 </li>
 {% } %}
+
 </script>
 <!-- The template to display files available for download -->
 <script id="template-download" type="text/x-tmpl">
@@ -180,7 +183,7 @@
         <div class="col-md-2 col-sm-2 col-xs-3">
             <span class="preview">
                 {% if (file.thumbnailUrl) { %}
-                    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery><img width="80px" height="80px"  class="img-responsive img-rounded" src="{%=file.thumbnailUrl%}"></a>
+                    <a href="{%=file.url%}" title="{%=file.name%}" download="{%=file.name%}" data-gallery><img width="120px" height="80px"  class="img-responsive img-rounded" src="{%=file.thumbnailUrl%}"></a>
                 {% } %}
             </span>
         </div>
@@ -208,6 +211,7 @@
     </div>
 </li>
 {% } %}
+
 </script>
 <script th:src="@{/resources/js/moment.min.js}"></script>
 <script th:src="@{/resources/js/jquery.min.js}"></script>
@@ -222,24 +226,35 @@
 <script th:src="@{/resources/js/jquery.fileupload-image.js}"></script>
 <script th:src="@{/resources/js/jquery.fileupload-validate.js}"></script>
 <script th:src="@{/resources/js/bootstrap-datetimepicker.min.js}"></script>
+<script th:src="@{/resources/js/bootstrap3-typeahead.min.js}"></script>
+<script th:src="@{/resources/js/bootstrap-tagsinput.js}"></script>
 <script th:src="@{/resources/tinymce/tinymce.min.js}"></script>
 <script>
     $(document).ready(function () {
-        $('.date').datetimepicker({format: 'yyyy-mm-dd hh:ii'});
+
+        $('.date').datetimepicker({
+            format: 'yyyy-mm-dd hh:ii',
+            autoclose: true
+        });
 
         tinymce.init({
             selector: 'textarea',
-            file_browser_callback: function (field_name, url, type, win) {
-                win.document.getElementById(field_name).value = 'my browser value';
-            },
             skin: 'lightgray',
             toolbar: "code",
             plugins: "image imagetools code paste",
             paste_as_text: true,
             images_upload_url: 'postAcceptor.php',
             images_upload_base_path: '/some/basepath',
-            images_upload_credentials: true
+            images_upload_credentials: true,
+            content_css: '/resources/css/tinymce.css'
         });
+
+//        $.blueimp.fileupload.prototype.processActions.duplicateImage = function (data, options) {
+//            if (data.canvas) {
+//                data.files.push($.extend(true, {}, data.files[data.index]));
+//            }
+//            return data;
+//        };
 
         $('#fileupload').fileupload({
             // Uncomment the following to send cross-domain cookies:
@@ -248,12 +263,55 @@
             acceptFileTypes: /(\.|\/)(jpe?g|png|gif)$/i,
             autoUpload: true,
             previewCrop: true,
-            previewMinWidth: 80,
+            previewMinWidth: 120,
             previewMinHeight: 80,
             maxFileSize: 1024 * 1024 * 10,
             disableImageMetaDataSave: true,
-            imageMaxWidth: 1280
+            processQueue: [
+                {
+                    action: 'loadImage',
+                    fileTypes: /^image\/(gif|jpeg|png)$/,
+                    maxFileSize: 20000000 // 20MB
+                },
+                {
+                    action: 'resizeImage',
+                    maxWidth: 1200
+                },
+                {action: 'saveImage'},
+                {
+                    action: 'resizeImage',
+                    maxWidth: 700
+                },
+                {action: 'saveImage'},
+                {
+                    action: 'resizeImage',
+                    maxWidth: 400
+                },
+                {action: 'saveImage'},
+                {
+                    action: 'resizeImage',
+                    maxWidth: 120,
+                    maxHeight: 80,
+                    crop: true
+                },
+                {action: 'saveImage'}
+            ]
         });
+
+        $('#tags').tagsinput({
+            typeahead: {
+                source: ['Amsterdam', 'Washington', 'Sydney', 'Beijing', 'Cairo']
+            },
+            confirmKeys: [13]
+        });
+
+//        $('#tags').on('itemAdded', function(event) {
+//            var tags = $("#tags").tagsinput('items');
+//            var lastIndex = tags.length - 1
+//            var tag = tags[lastIndex];
+//            tag = tag.replace(/\s/g, '_');
+//            tags[lastIndex] = tag;
+//        });
     });
 </script>
 </body>

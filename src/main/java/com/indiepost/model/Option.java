@@ -20,7 +20,7 @@ public class Option implements Serializable {
 
     @NotNull
     @Size(min = 2, max = 20)
-    private String key;
+    private String name;
 
     @NotNull
     @Size(min = 2, max = 20)
@@ -34,12 +34,12 @@ public class Option implements Serializable {
         this.id = id;
     }
 
-    public String getKey() {
-        return key;
+    public String getName() {
+        return name;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getValue() {

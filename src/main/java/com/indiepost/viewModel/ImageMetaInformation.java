@@ -16,13 +16,13 @@ public class ImageMetaInformation {
 
     private String deleteUrl;
 
-    private String deleteType;
+    private String deleteType = "DELETE";
 
     private String name;
 
     private String thumbnailUrl;
 
-    private int size;
+    private long size;
 
     public int getId() {
         return id;
@@ -80,11 +80,11 @@ public class ImageMetaInformation {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public int getSize() {
+    public long getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public void setSize(long size) {
         this.size = size;
     }
 }
