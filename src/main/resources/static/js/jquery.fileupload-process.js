@@ -41,12 +41,10 @@
         options: {
             // The list of processing actions:
             processQueue: [
-                /*
                 {
                     action: 'log',
                     type: 'debug'
                 }
-                */
             ],
             add: function (e, data) {
                 var $this = $(this);
@@ -58,13 +56,11 @@
         },
 
         processActions: {
-            /*
             log: function (data, options) {
                 console[options.type](
                     'Processing "' + data.files[data.index].name + '"'
                 );
             }
-            */
         },
 
         _processFile: function (data, originalData) {
@@ -152,7 +148,7 @@
                     opts.index = index;
                     that._processing += 1;
                     that._processingQueue = that._processingQueue.then(func, func)
-                        .always(function () {
+                         .always(function () {
                             that._processing -= 1;
                             if (that._processing === 0) {
                                 that._trigger('processstop');

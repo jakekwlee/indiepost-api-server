@@ -174,6 +174,12 @@
 </li>
 {% } %}
 
+
+
+
+
+
+
 </script>
 <!-- The template to display files available for download -->
 <script id="template-download" type="text/x-tmpl">
@@ -212,6 +218,12 @@
 </li>
 {% } %}
 
+
+
+
+
+
+
 </script>
 <script th:src="@{/resources/js/moment.min.js}"></script>
 <script th:src="@{/resources/js/jquery.min.js}"></script>
@@ -232,6 +244,12 @@
 <script>
     $(document).ready(function () {
 
+        var IMAGE_SIZES = [
+            {width: 1200},
+            {width: 700},
+            {width: 400},
+            {width: 120, height: 80}
+        ];
         $('.date').datetimepicker({
             format: 'yyyy-mm-dd hh:ii',
             autoclose: true
@@ -249,18 +267,20 @@
             content_css: '/resources/css/tinymce.css'
         });
 
-//        $.blueimp.fileupload.prototype.processActions.duplicateImage = function (data, options) {
-//            if (data.canvas) {
-//                data.files.push($.extend(true, {}, data.files[data.index]));
-//            }
-//            return data;
-//        };
+        $.blueimp.fileupload.prototype.processActions.duplicateImage = function (data, options) {
+            if (data.canvas) {
+                data.files.push(data.files[data.index]);
+            }
+            return data;
+        };
 
         $('#fileupload').fileupload({
             // Uncomment the following to send cross-domain cookies:
             //xhrFields: {withCredentials: true},
             url: '/api/v1/images',
             acceptFileTypes: /(\.|\/)(jpe?g|png|gif)$/i,
+            disableImageResize: /Android(?!.*Chrome)|Opera/
+                    .test(window.navigator && navigator.userAgent),
             autoUpload: true,
             previewCrop: true,
             previewMinWidth: 120,
@@ -278,16 +298,19 @@
                     maxWidth: 1200
                 },
                 {action: 'saveImage'},
+                {action: 'duplicateImage'},
                 {
                     action: 'resizeImage',
                     maxWidth: 700
                 },
                 {action: 'saveImage'},
+                {action: 'duplicateImage'},
                 {
                     action: 'resizeImage',
-                    maxWidth: 400
+                    maxWidth: 400,
                 },
                 {action: 'saveImage'},
+                {action: 'duplicateImage'},
                 {
                     action: 'resizeImage',
                     maxWidth: 120,
@@ -305,13 +328,13 @@
             confirmKeys: [13]
         });
 
-//        $('#tags').on('itemAdded', function(event) {
-//            var tags = $("#tags").tagsinput('items');
-//            var lastIndex = tags.length - 1
-//            var tag = tags[lastIndex];
-//            tag = tag.replace(/\s/g, '_');
-//            tags[lastIndex] = tag;
-//        });
+        //        $('#tags').on('itemAdded', function(event) {
+        //            var tags = $("#tags").tagsinput('items');
+        //            var lastIndex = tags.length - 1
+        //            var tag = tags[lastIndex];
+        //            tag = tag.replace(/\s/g, '_');
+        //            tags[lastIndex] = tag;
+        //        });
     });
 </script>
 </body>
