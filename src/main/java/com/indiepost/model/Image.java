@@ -29,7 +29,7 @@ public class Image implements Serializable {
     private String original;
 
     @NotNull
-    private long size;
+    private long filesize;
 
     @NotNull
     private int height;
@@ -37,7 +37,6 @@ public class Image implements Serializable {
     @NotNull
     private int width;
 
-    @NotNull
     @Size(min = 9, max = 10)
     private String contentType;
 
@@ -78,12 +77,12 @@ public class Image implements Serializable {
     }
 
 
-    public long getSize() {
-        return size;
+    public long getFilesize() {
+        return filesize;
     }
 
-    public void setSize(long size) {
-        this.size = size;
+    public void setFilesize(long size) {
+        this.filesize = size;
     }
 
     public String getContentType() {

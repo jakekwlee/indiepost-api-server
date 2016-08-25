@@ -78,9 +78,8 @@ public class ImageServiceImpl implements ImageService {
 
         Image image = new Image();
         image.setOriginal(newFilename);
-        image.setContentType(contentType);
         image.setDirectory(baseUrl);
-        image.setSize(originalImage.getSize());
+        image.setFilesize(originalImage.getSize());
         image.setWidth(width);
         image.setHeight(height);
         image.setFeatured(false);
@@ -160,7 +159,7 @@ public class ImageServiceImpl implements ImageService {
         imageMetaInformation.setId(image.getId());
         imageMetaInformation.setName(image.getOriginal());
         imageMetaInformation.setType(image.getContentType());
-        imageMetaInformation.setSize(image.getSize());
+        imageMetaInformation.setSize(image.getFilesize());
         imageMetaInformation.setDeleteUrl("/api/v1/images/" + image.getId());
         imageMetaInformation.setUrl(image.getLocation());
         imageMetaInformation.setThumbnailUrl(image.getDirectory() + '/' + image.getThumbnail());

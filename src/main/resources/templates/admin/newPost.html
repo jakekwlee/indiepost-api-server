@@ -180,6 +180,7 @@
 
 
 
+
 </script>
 <!-- The template to display files available for download -->
 <script id="template-download" type="text/x-tmpl">
@@ -224,13 +225,14 @@
 
 
 
+
 </script>
 <script th:src="@{/resources/js/moment.min.js}"></script>
 <script th:src="@{/resources/js/jquery.min.js}"></script>
 <script th:src="@{/resources/js/jquery-ui.min.js}"></script>
 <script th:src="@{/resources/js/tmpl.min.js}"></script>
-<script th:src="@{/resources/js/load-image.all.min.js}"></script>
-<script th:src="@{/resources/js/canvas-to-blob.min.js}"></script>
+<script th:src="@{/resources/js/load-image.js}"></script>
+<script th:src="@{/resources/js/canvas-to-blob.js}"></script>
 <script th:src="@{/resources/js/bootstrap.min.js}"></script>
 <script th:src="@{/resources/js/jquery.fileupload.js}"></script>
 <script th:src="@{/resources/js/jquery.fileupload-ui.js}"></script>
@@ -240,36 +242,31 @@
 <script th:src="@{/resources/js/bootstrap-datetimepicker.min.js}"></script>
 <script th:src="@{/resources/js/bootstrap3-typeahead.min.js}"></script>
 <script th:src="@{/resources/js/bootstrap-tagsinput.js}"></script>
-<script th:src="@{/resources/tinymce/tinymce.min.js}"></script>
+<!--<script th:src="@{/resources/tinymce/tinymce.min.js}"></script>-->
 <script>
     $(document).ready(function () {
 
-        var IMAGE_SIZES = [
-            {width: 1200},
-            {width: 700},
-            {width: 400},
-            {width: 120, height: 80}
-        ];
         $('.date').datetimepicker({
             format: 'yyyy-mm-dd hh:ii',
             autoclose: true
         });
 
-        tinymce.init({
-            selector: 'textarea',
-            skin: 'lightgray',
-            toolbar: "code",
-            plugins: "image imagetools code paste",
-            paste_as_text: true,
-            images_upload_url: 'postAcceptor.php',
-            images_upload_base_path: '/some/basepath',
-            images_upload_credentials: true,
-            content_css: '/resources/css/tinymce.css'
-        });
+//        tinymce.init({
+//            selector: 'textarea',
+//            skin: 'lightgray',
+//            toolbar: "code",
+//            plugins: "image imagetools code paste",
+//            paste_as_text: true,
+//            images_upload_url: 'postAcceptor.php',
+//            images_upload_base_path: '/some/basepath',
+//            images_upload_credentials: true,
+//            content_css: '/resources/css/tinymce.css'
+//        });
 
         $.blueimp.fileupload.prototype.processActions.duplicateImage = function (data, options) {
-            if (data.canvas) {
-                data.files.push(data.files[data.index]);
+            if (data.img) {
+                data.files.push(data.files[data.files.length - 1]);
+                data.index++;
             }
             return data;
         };
@@ -282,10 +279,8 @@
             disableImageResize: /Android(?!.*Chrome)|Opera/
                     .test(window.navigator && navigator.userAgent),
             autoUpload: true,
-            previewCrop: true,
-            previewMinWidth: 120,
-            previewMinHeight: 80,
             maxFileSize: 1024 * 1024 * 10,
+            disableImagePreview: true,
             disableImageMetaDataSave: true,
             processQueue: [
                 {
@@ -293,6 +288,7 @@
                     fileTypes: /^image\/(gif|jpeg|png)$/,
                     maxFileSize: 20000000 // 20MB
                 },
+                {action: 'duplicateImage'},
                 {
                     action: 'resizeImage',
                     maxWidth: 1200
@@ -307,7 +303,7 @@
                 {action: 'duplicateImage'},
                 {
                     action: 'resizeImage',
-                    maxWidth: 400,
+                    maxWidth: 400
                 },
                 {action: 'saveImage'},
                 {action: 'duplicateImage'},
@@ -317,9 +313,21 @@
                     maxHeight: 80,
                     crop: true
                 },
-                {action: 'saveImage'}
+                {action: 'saveImage'},
+                {action: 'deleteImageReferences'}
             ]
+        }).bind('fileuploadprocessalways', function (e, data) {
+            var files = data.files;
+            var newFiles = [];
+            newFiles.push(data.files[0]);
+            for(var i = 1; i < files.length; i++) {
+                if(files[0].size > files[i].size) {
+                    newFiles.push(files[i]);
+                }
+            }
+            data.files = newFiles;
         });
+
 
         $('#tags').tagsinput({
             typeahead: {

@@ -2,7 +2,6 @@ package com.indiepost.model.PlayableMedia;
 
 import com.indiepost.model.Post;
 import com.indiepost.model.converter.DurationToStringConverter;
-import com.sun.org.apache.xpath.internal.operations.String;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
