@@ -1,11 +1,16 @@
 package com.indiepost.model;
 
+import com.sun.org.apache.xpath.internal.operations.String;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by jake on 8/15/16.
@@ -183,6 +188,14 @@ public class Image implements Serializable {
 
     public String getLocation() {
         return Paths.get(directory).resolve(original).toString();
+    }
+
+    public List<String> getLocations() {
+//        Path path = Paths.get(directory);
+//        List<String> locations = new ArrayList<>();
+//        locations.add()
+//        Paths.get(directory).resolve(original).toString();
+        // TODO: 16. 8. 26
     }
 
 }

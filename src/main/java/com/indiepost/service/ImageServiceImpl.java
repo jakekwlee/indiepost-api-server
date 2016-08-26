@@ -50,67 +50,76 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public ImageResponse saveUploadedImage(MultipartFile[] multipartFiles) throws FileSaveException {
-        if (multipartFiles.length != 5) {
+        boolean isResizedOnClient = true;
+        int filesLength = multipartFiles.length;
+
+        if (filesLength == 0) {
             throw new FileSaveException("File does not uploaded.");
         }
 
-        MultipartFile originalImage = multipartFiles[0];
-        String contentType = originalImage.getContentType();
-
-        if (!validateContentType(contentType)) {
-            throw new FileSaveException("File type is not accepted: " + originalImage.getContentType());
+        if (filesLength == 1) {
+            isResizedOnClient = false;
         }
 
-        String alphanumeric = RandomStringUtils.randomAlphanumeric(FILENAME_LENGTH);
-        String fileExtension = FilenameUtils.getExtension(originalImage.getOriginalFilename());
+        String contentType = multipartFiles[0].getContentType();
 
-        Dimension dimension = getDimension(multipartFiles[0]);
+        if (!validateContentType(contentType)) {
+            throw new FileSaveException("File type is not accepted: " + contentType);
+        }
 
-        int width = (int) dimension.getWidth();
-        int height = (int) dimension.getHeight();
 
-        // ex) w9cS1WqP-1280x860.jpg
-        String newFilename = String.format(FILENAME_FORMAT, alphanumeric, width, height, fileExtension);
+        String alphanumeric = RandomStringUtils.randomAlphanumeric(FILENAME_LENGTH).toUpperCase();
+        String fileExtension = FilenameUtils.getExtension(multipartFiles[0].getOriginalFilename());
+
+        String newFilename;
         SimpleDateFormat dateFormat = new SimpleDateFormat("/yyyy/MM");
         String baseUrl = BASE_URL + dateFormat.format(new Date());
         String physicalBaseUrl = ROOT_DIRECTORY + baseUrl;
-        saveToFileSystem(multipartFiles[0], physicalBaseUrl + '/' + newFilename);
 
         Image image = new Image();
-        image.setOriginal(newFilename);
         image.setDirectory(baseUrl);
-        image.setFilesize(originalImage.getSize());
-        image.setWidth(width);
-        image.setHeight(height);
-        image.setFeatured(false);
         image.setUploadedAt(new Date());
+        image.setFeatured(false);
 
-        if (width > 1200) {
-            dimension = getDimension(multipartFiles[1]);
-            newFilename = String.format(FILENAME_FORMAT, alphanumeric, (int) dimension.getWidth(), (int) dimension.getHeight(), fileExtension);
-            saveToFileSystem(multipartFiles[1], physicalBaseUrl + '/' + newFilename);
-            image.setLarge(newFilename);
-        }
-        if (width > 700) {
-            dimension = getDimension(multipartFiles[2]);
-            newFilename = String.format(FILENAME_FORMAT, alphanumeric, (int) dimension.getWidth(), (int) dimension.getHeight(), fileExtension);
-            saveToFileSystem(multipartFiles[2], physicalBaseUrl + '/' + newFilename);
-            image.setMedium(newFilename);
-        }
-        if (width > 400) {
-            dimension = getDimension(multipartFiles[3]);
-            newFilename = String.format(FILENAME_FORMAT, alphanumeric, (int) dimension.getWidth(), (int) dimension.getHeight(), fileExtension);
-            saveToFileSystem(multipartFiles[3], physicalBaseUrl + '/' + newFilename);
-            image.setSmall(newFilename);
-        }
+        int width;
+        int height;
+        Dimension dimension;
 
-        dimension = getDimension(multipartFiles[4]);
-        newFilename = String.format(FILENAME_FORMAT, alphanumeric, (int) dimension.getWidth(), (int) dimension.getHeight(), fileExtension);
-        saveToFileSystem(multipartFiles[4], physicalBaseUrl + '/' + newFilename);
-        image.setThumbnail(newFilename);
+        for (int i = 0; i < filesLength; ) {
+            dimension = getDimension(multipartFiles[i]);
+            width = (int) dimension.getWidth();
+            height = (int) dimension.getHeight();
+            image.setWidth(width);
+            image.setHeight(height);
+            newFilename = String.format(FILENAME_FORMAT, alphanumeric, (int) dimension.getWidth(), (int) dimension.getHeight(), fileExtension);
+            long size = saveToFileSystem(multipartFiles[i], physicalBaseUrl + '/' + newFilename).length();
 
+            if (i == 0) {
+                image.setOriginal(newFilename);
+                image.setFilesize(size);
+                ++i;
+            }
+            else if (1200 < width) {
+                image.setLarge(newFilename);
+                width = 1000;
+                ++i;
+            }
+            else if (700 < width && width < 1200) {
+                image.setMedium(newFilename);
+                width = 500;
+                ++i;
+            }
+            else if (400 < width && width < 700) {
+                image.setSmall(newFilename);
+                width = 300;
+                ++i;
+            }
+            else {
+                image.setThumbnail(newFilename);
+                ++i;
+            }
+        }
         imageRepository.save(image);
-
         return generateImageResponse(image);
     }
 
@@ -162,7 +171,12 @@ public class ImageServiceImpl implements ImageService {
         imageMetaInformation.setSize(image.getFilesize());
         imageMetaInformation.setDeleteUrl("/api/v1/images/" + image.getId());
         imageMetaInformation.setUrl(image.getLocation());
-        imageMetaInformation.setThumbnailUrl(image.getDirectory() + '/' + image.getThumbnail());
+
+        if (image.getThumbnail() != null) {
+            imageMetaInformation.setThumbnailUrl(image.getDirectory() + '/' + image.getThumbnail());
+        } else {
+            imageMetaInformation.setThumbnailUrl(image.getDirectory() + '/' + image.getOriginal());
+        }
 
         List<ImageMetaInformation> imageMetaInformations = new ArrayList<>();
         imageMetaInformations.add(imageMetaInformation);
@@ -190,13 +204,14 @@ public class ImageServiceImpl implements ImageService {
         return null;
     }
 
-    private void saveToFileSystem(MultipartFile multipartFile, String path) throws FileSaveException {
+    private File saveToFileSystem(MultipartFile multipartFile, String path) throws FileSaveException {
         try {
             File file = new File(path);
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
             }
             FileUtils.writeByteArrayToFile(file, multipartFile.getBytes());
+            return file;
         } catch (IOException ioe) {
             throw new FileSaveException("Image Upload Failed: " + path, ioe);
         }
