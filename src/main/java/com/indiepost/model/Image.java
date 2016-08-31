@@ -1,7 +1,5 @@
 package com.indiepost.model;
 
-import com.sun.org.apache.xpath.internal.operations.String;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -191,11 +189,15 @@ public class Image implements Serializable {
     }
 
     public List<String> getLocations() {
-//        Path path = Paths.get(directory);
-//        List<String> locations = new ArrayList<>();
-//        locations.add()
-//        Paths.get(directory).resolve(original).toString();
-        // TODO: 16. 8. 26
-    }
+        Path path = Paths.get(directory);
+        List<String> locations = new ArrayList<>();
+        String[] filenames = {original, large, medium, small, thumbnail};
 
+        for (String filename : filenames) {
+            if (filename != null) {
+                locations.add(path.resolve(filename).toString());
+            }
+        }
+        return locations;
+    }
 }

@@ -1,10 +1,10 @@
 const mysql = require('promise-mysql');
-const migrate = require('./migrate-image');
-mysql.createConnection({
+const imageMigration = require('./image-migration');
+const pool = mysql.createPool({
     host: 'localhost',
     user: 'indiepost',
     password: 'indiepost',
     database: 'indiepost'
-}).then(conn => {
-    migrate.migrate(conn);
 });
+
+imageMigration.migrate(pool);

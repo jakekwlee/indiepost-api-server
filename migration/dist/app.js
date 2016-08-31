@@ -1,13 +1,13 @@
 'use strict';
 
 var mysql = require('promise-mysql');
-var migrate = require('./migrate-image');
-mysql.createConnection({
+var imageMigration = require('./image-migration');
+var pool = mysql.createPool({
     host: 'localhost',
     user: 'indiepost',
     password: 'indiepost',
     database: 'indiepost'
-}).then(function (conn) {
-    migrate.migrate(conn);
 });
+
+imageMigration.migrate(pool);
 //# sourceMappingURL=app.js.map
