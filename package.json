@@ -28,6 +28,7 @@
     "eonasdan-bootstrap-datetimepicker": "^4.17.42",
     "fs-extra": "^0.30.0",
     "gm": "^1.23.0",
+    "gulp-run": "^1.7.1",
     "jquery": "^3.1.0",
     "jquery-ui": "^1.12.0",
     "moment": "^2.14.1",

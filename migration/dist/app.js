@@ -9,5 +9,7 @@ var pool = mysql.createPool({
     database: 'indiepost'
 });
 
-imageMigration.migrate(pool);
+imageMigration.migrate(pool).then(function () {
+    pool.end();
+});
 //# sourceMappingURL=app.js.map

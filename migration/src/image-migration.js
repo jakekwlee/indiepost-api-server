@@ -39,7 +39,7 @@ module.exports = (()=> {
     }
 
     function makeNewFilenames(imagesArray) {
-        return Promise.map(imagesArray, (image) => {
+        return Promise.map(imagesArray, image => {
             return sharp(image.oldFilePath).metadata().then(metadata => {
                 let newFileStr = randomstring.generate({
                     length: 6,
@@ -81,14 +81,12 @@ module.exports = (()=> {
                 .then(() => {
                     console.log('copy: ' + image.oldFilePath + ' -> ' + image.newFilePath);
                 })
-                .catch((err) => {
-                    console.log(err);
-                });
+                .catch(console.log);
         });
     }
 
     function makeThumbnails(imagesArray) {
-        return Promise.each(imagesArray, (image) => {
+        return Promise.each(imagesArray, image => {
             return sharp(image.oldFilePath)
                 .resize(120, 80)
                 .crop(sharp.strategy.center)
@@ -96,39 +94,23 @@ module.exports = (()=> {
                 .then(() => {
                     console.log('thumbnail: ' + image.thumbnailPath);
                 })
-                .catch((err) => {
-                    console.log(err);
-                });
+                .catch(console.log);
         });
     }
 
     function migrate(pool) {
         return Promise.all([
             getImagesFromDb(pool, SELECT_TITLE_IMAGES_QUERY)
-                .then(imagesArray => {
-                    return makeNewFilenames(imagesArray);
-                })
-                .then(imagesArray => {
-                    return makeDirectories(imagesArray);
-                })
+                .then(makeNewFilenames).then(makeDirectories)
                 .then(imagesArray => {
                     return Promise.all([copyImages(imagesArray), makeThumbnails(imagesArray), updateDb(imagesArray, pool, UPDATE_TITLE_IMAGE_QUERY)]);
                 }),
             getImagesFromDb(pool, SELECT_CONTENT_IMAGES_QUERY)
-                .then(imagesArray => {
-                    return makeNewFilenames(imagesArray);
-                })
-                .then(imagesArray => {
-                    return makeDirectories(imagesArray);
-                })
+                .then(makeNewFilenames).then(makeDirectories)
                 .then(imagesArray => {
                     return Promise.all([copyImages(imagesArray), makeThumbnails(imagesArray), updateDb(imagesArray, pool, UPDATE_CONTENT_IMAGE_QUERY)]);
                 })
-        ]).then(() => {
-            pool.end();
-        }).catch(err => {
-            console.log(err);
-        });
+        ]).catch(console.log);
     }
 
     return {

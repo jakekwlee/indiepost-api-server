@@ -98,23 +98,11 @@ module.exports = function () {
     }
 
     function migrate(pool) {
-        return Promise.all([getImagesFromDb(pool, SELECT_TITLE_IMAGES_QUERY).then(function (imagesArray) {
-            return makeNewFilenames(imagesArray);
-        }).then(function (imagesArray) {
-            return makeDirectories(imagesArray);
-        }).then(function (imagesArray) {
+        return Promise.all([getImagesFromDb(pool, SELECT_TITLE_IMAGES_QUERY).then(makeNewFilenames).then(makeDirectories).then(function (imagesArray) {
             return Promise.all([copyImages(imagesArray), makeThumbnails(imagesArray), updateDb(imagesArray, pool, UPDATE_TITLE_IMAGE_QUERY)]);
-        }), getImagesFromDb(pool, SELECT_CONTENT_IMAGES_QUERY).then(function (imagesArray) {
-            return makeNewFilenames(imagesArray);
-        }).then(function (imagesArray) {
-            return makeDirectories(imagesArray);
-        }).then(function (imagesArray) {
+        }), getImagesFromDb(pool, SELECT_CONTENT_IMAGES_QUERY).then(makeNewFilenames).then(makeDirectories).then(function (imagesArray) {
             return Promise.all([copyImages(imagesArray), makeThumbnails(imagesArray), updateDb(imagesArray, pool, UPDATE_CONTENT_IMAGE_QUERY)]);
-        })]).then(function () {
-            pool.end();
-        }).catch(function (err) {
-            console.log(err);
-        });
+        })]).catch(console.log);
     }
 
     return {

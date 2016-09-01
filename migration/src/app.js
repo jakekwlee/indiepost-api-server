@@ -7,4 +7,6 @@ const pool = mysql.createPool({
     database: 'indiepost'
 });
 
-imageMigration.migrate(pool);
+imageMigration.migrate(pool).then(() => {
+    pool.end();
+});
