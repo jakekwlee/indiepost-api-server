@@ -6,33 +6,28 @@ var mysql = require('mysql');
 var randomstring = require('randomstring');
 var sharp = require('sharp');
 var fs = require('fs-extra');
+var spawn = require('child_process').spawn;
 
 Promise.promisifyAll(fs);
 
 module.exports = function () {
 
-    var OLD_BASE_PATH = '/home/jake/backup';
-    var NEW_BASE_PATH = '/data';
-    var NEW_BASE_URL = '/uploads/images';
-    var SELECT_TITLE_IMAGES_QUERY = 'SELECT no, IMAGEURL as data, REGDATE as date FROM __contentlist';
-    var SELECT_CONTENT_IMAGES_QUERY = 'SELECT d.no, d.data, c.REGDATE as date FROM __contentlist AS c INNER JOIN __detaillist AS d ON c.no = d.parent WHERE d.type = 2 AND d.iorder > 2';
-    var UPDATE_TITLE_IMAGE_QUERY = 'UPDATE __contentlist SET IMAGEURL = ?, width = ?, height = ?, thumbnail = ? WHERE NO = ?';
-    var UPDATE_CONTENT_IMAGE_QUERY = 'UPDATE __detaillist SET data = ?, width = ?, height = ?, thumbnail = ? WHERE NO = ?';
-
-    function getImagesFromDb(pool, query) {
+    function selectFromDB(pool, query) {
         console.log('query: ' + query);
-        return pool.query(query).then(function (rows) {
-            return Promise.map(rows, function (row) {
-                return {
-                    oldFilePath: path.join(OLD_BASE_PATH, row.data),
-                    no: row.no,
-                    date: row.date
-                };
-            });
+        return pool.query(query);
+    }
+
+    function makeImagesArray(rows, oldBasePath) {
+        return Promise.map(rows, function (row) {
+            return {
+                oldFilePath: path.join(oldBasePath, row.data),
+                no: row.no,
+                date: row.date
+            };
         });
     }
 
-    function updateDb(imagesArray, pool, query) {
+    function updateDB(imagesArray, pool, query) {
         return Promise.each(imagesArray, function (image, index, length) {
             var sql = mysql.format(query, [image.newFileUrl, image.width, image.height, image.thumbnailUrl, image.no]);
             console.log('query: ' + sql);
@@ -40,7 +35,7 @@ module.exports = function () {
         });
     }
 
-    function makeNewFilenames(imagesArray) {
+    function makeNewFilenames(imagesArray, newBasePath, newBaseUrl) {
         return Promise.map(imagesArray, function (image) {
             return sharp(image.oldFilePath).metadata().then(function (metadata) {
                 var newFileStr = randomstring.generate({
@@ -48,19 +43,19 @@ module.exports = function () {
                     charset: 'alphanumeric'
                 });
                 var newFileName = newFileStr + '-' + metadata.width + 'x' + metadata.height + '.' + metadata.format;
-                var thumbnail = newFileStr + '-' + '120' + 'x' + '80' + '.' + metadata.format;
-                var baseDir = path.join(NEW_BASE_URL, image.date.substring(0, 4), image.date.substring(4, 6));
+                var thumbnail = newFileStr + '-120x80.' + metadata.format;
+                var baseDir = path.join(newBaseUrl, image.date.substring(0, 4), image.date.substring(4, 6));
                 var newFileUrl = path.join(baseDir, newFileName);
                 thumbnail = path.join(baseDir, thumbnail);
 
                 return {
                     oldFilePath: image.oldFilePath,
-                    newFilePath: path.join(NEW_BASE_PATH, newFileUrl),
+                    newFilePath: path.join(newBasePath, newFileUrl),
                     newFileUrl: newFileUrl,
                     newFileStr: newFileStr,
                     width: metadata.width,
                     height: metadata.height,
-                    thumbnailPath: path.join(NEW_BASE_PATH, thumbnail),
+                    thumbnailPath: path.join(newBasePath, thumbnail),
                     thumbnailUrl: thumbnail,
                     no: image.no
                 };
@@ -81,9 +76,7 @@ module.exports = function () {
         return Promise.each(imagesArray, function (image, index, length) {
             return fs.copyAsync(image.oldFilePath, image.newFilePath).then(function () {
                 console.log('copy: ' + image.oldFilePath + ' -> ' + image.newFilePath);
-            }).catch(function (err) {
-                console.log(err);
-            });
+            }).catch(console.log);
         });
     }
 
@@ -91,22 +84,34 @@ module.exports = function () {
         return Promise.each(imagesArray, function (image) {
             return sharp(image.oldFilePath).resize(120, 80).crop(sharp.strategy.center).toFile(image.thumbnailPath).then(function () {
                 console.log('thumbnail: ' + image.thumbnailPath);
-            }).catch(function (err) {
-                console.log(err);
-            });
+            }).catch(console.log);
         });
     }
 
-    function migrate(pool) {
-        return Promise.all([getImagesFromDb(pool, SELECT_TITLE_IMAGES_QUERY).then(makeNewFilenames).then(makeDirectories).then(function (imagesArray) {
-            return Promise.all([copyImages(imagesArray), makeThumbnails(imagesArray), updateDb(imagesArray, pool, UPDATE_TITLE_IMAGE_QUERY)]);
-        }), getImagesFromDb(pool, SELECT_CONTENT_IMAGES_QUERY).then(makeNewFilenames).then(makeDirectories).then(function (imagesArray) {
-            return Promise.all([copyImages(imagesArray), makeThumbnails(imagesArray), updateDb(imagesArray, pool, UPDATE_CONTENT_IMAGE_QUERY)]);
+    function migrate(pool, options) {
+        var oldBasePath = options.oldBasePath;
+        var newBasePath = options.newBasePath;
+        var newBaseUrl = options.newBaseUrl;
+        var selectTitleImagesQuery = options.selectTitleImagesQuery;
+        var selectContentImagesQuery = options.selectContentImagesQuery;
+        var updateTitleImageQuery = options.updateTitleImageQuery;
+        var updateContentImageQuery = options.updateContentImageQuery;
+
+        return Promise.all([selectFromDB(pool, selectTitleImagesQuery).then(function (rows) {
+            return makeImagesArray(rows, oldBasePath);
+        }).then(function (imagesArray) {
+            return makeNewFilenames(imagesArray, newBasePath, newBaseUrl);
+        }).then(makeDirectories).then(function (imagesArray) {
+            return Promise.all([copyImages(imagesArray), makeThumbnails(imagesArray), updateDB(imagesArray, pool, updateTitleImageQuery)]);
+        }), selectFromDB(pool, selectContentImagesQuery).then(function (rows) {
+            return makeImagesArray(rows, oldBasePath);
+        }).then(function (imagesArray) {
+            return makeNewFilenames(imagesArray, newBasePath, newBaseUrl);
+        }).then(makeDirectories).then(function (imagesArray) {
+            return Promise.all([copyImages(imagesArray), makeThumbnails(imagesArray), updateDB(imagesArray, pool, updateContentImageQuery)]);
         })]).catch(console.log);
     }
 
-    return {
-        migrate: migrate
-    };
+    return { migrate: migrate };
 }();
 //# sourceMappingURL=image-migration.js.map
