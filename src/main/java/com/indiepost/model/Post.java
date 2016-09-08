@@ -1,6 +1,8 @@
 package com.indiepost.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.indiepost.enums.IndiepostEnum.PostStatus;
+import com.indiepost.enums.IndiepostEnum.PostType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.LazyCollection;
@@ -71,11 +73,11 @@ public class Post implements Serializable {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private PostStatus status;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private Type type;
+    private PostType type;
 
     @ManyToOne(optional = false)
     @Fetch(FetchMode.JOIN)
@@ -204,11 +206,11 @@ public class Post implements Serializable {
         this.commentsCount = commentsCount;
     }
 
-    public Status getStatus() {
+    public PostStatus getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(PostStatus status) {
         this.status = status;
     }
 
@@ -284,19 +286,12 @@ public class Post implements Serializable {
         this.author = author;
     }
 
-    public Type getType() {
+    public PostType getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(PostType type) {
         this.type = type;
     }
 
-    public enum Status {
-        DELETED, DRAFT, RESERVED, PUBLISHED
-    }
-
-    public enum Type {
-        POST, PAGE, NOTICE
-    }
 }

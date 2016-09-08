@@ -2,7 +2,6 @@ package com.indiepost.service;
 
 import com.indiepost.exception.FileSaveException;
 import com.indiepost.model.Image;
-import com.indiepost.viewModel.ImageUploadForm;
 import com.indiepost.viewModel.ImageResponse;
 import org.springframework.web.multipart.MultipartFile;
 

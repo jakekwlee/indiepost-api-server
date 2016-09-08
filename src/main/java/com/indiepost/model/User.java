@@ -1,8 +1,9 @@
 package com.indiepost.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import com.indiepost.enums.IndiepostEnum.UserGender;
+import com.indiepost.enums.IndiepostEnum.UserRoles;
+import com.indiepost.enums.IndiepostEnum.UserState;
 import org.hibernate.validator.constraints.Email;
 
 import javax.persistence.*;
@@ -62,11 +63,11 @@ public class User implements Serializable {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private State state;
+    private UserState state;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private Gender gender;
+    private UserGender gender;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Set<Subscription> subscriptions;
@@ -207,11 +208,11 @@ public class User implements Serializable {
         this.birthday = birthday;
     }
 
-    public State getState() {
+    public UserState getState() {
         return state;
     }
 
-    public void setState(State state) {
+    public void setState(UserState state) {
         this.state = state;
     }
 
@@ -231,27 +232,16 @@ public class User implements Serializable {
         this.postsEditedByMe = postsEditedByMe;
     }
 
-    public Gender getGender() {
+    public UserGender getGender() {
         return gender;
     }
 
-    public void setGender(Gender gender) {
+    public void setGender(UserGender gender) {
         this.gender = gender;
     }
 
-    public boolean hasRole(Roles roles) {
+    public boolean hasRole(UserRoles roles) {
         return getRoles().contains(roles);
     }
 
-    public enum State {
-        PENDING, ACTIVATED, DEACTIVATED, DELETED, BANNED, EXPIRED
-    }
-
-    public enum Gender {
-        UNIDENTIFIED, FEMALE, MALE, ETC
-    }
-
-    public enum Roles {
-        User, Author, Editor, EditorInChief, Administrator
-    }
 }

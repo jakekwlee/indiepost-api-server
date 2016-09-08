@@ -96,7 +96,7 @@ public class ImageServiceImpl implements ImageService {
 
             if (i == 0) {
                 image.setOriginal(newFilename);
-                image.setFilesize(size);
+                image.setFileSize(size);
                 ++i;
             }
             else if (1200 < width) {
@@ -168,7 +168,7 @@ public class ImageServiceImpl implements ImageService {
         imageMetaInformation.setId(image.getId());
         imageMetaInformation.setName(image.getOriginal());
         imageMetaInformation.setType(image.getContentType());
-        imageMetaInformation.setSize(image.getFilesize());
+        imageMetaInformation.setSize(image.getFileSize());
         imageMetaInformation.setDeleteUrl("/api/v1/images/" + image.getId());
         imageMetaInformation.setUrl(image.getLocation());
 

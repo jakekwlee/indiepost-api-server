@@ -1,14 +1,12 @@
 package com.indiepost.model;
 
+import com.indiepost.enums.IndiepostEnum.ImageSizeType;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by jake on 8/15/16.
@@ -25,40 +23,21 @@ public class Image implements Serializable {
 
     @NotNull
     @Size(min = 2, max = 120)
-    private String directory;
+    private String source;
 
     @NotNull
-    @Size(min = 2, max = 120)
-    private String original;
-
-    @NotNull
-    private long filesize;
-
-    @NotNull
-    private int height;
+    private long fileSize;
 
     @NotNull
     private int width;
 
+    @NotNull
+    private int height;
+
+
     @Size(min = 9, max = 10)
     private String contentType;
 
-    // ~1200px
-    @Size(min = 2, max = 120)
-    private String large;
-
-    // ~700px
-    @Size(min = 2, max = 120)
-    private String medium;
-
-    // ~400px
-    @Size(min = 2, max = 120)
-    private String small;
-
-    // ~120px
-    @NotNull
-    @Size(min = 2, max = 120)
-    private String thumbnail;
 
     @NotNull
     private boolean isFeatured = false;
@@ -67,9 +46,13 @@ public class Image implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date uploadedAt;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private ImageSizeType sizeType;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "postId")
-    private Post post;
+    @JoinColumn(name = "imageSetId")
+    private ImageSet imageSet;
 
     public int getId() {
         return id;
@@ -80,12 +63,12 @@ public class Image implements Serializable {
     }
 
 
-    public long getFilesize() {
-        return filesize;
+    public long getFileSize() {
+        return fileSize;
     }
 
-    public void setFilesize(long size) {
-        this.filesize = size;
+    public void setFileSize(long size) {
+        this.fileSize = size;
     }
 
     public String getContentType() {
@@ -97,27 +80,11 @@ public class Image implements Serializable {
     }
 
     public String getDirectory() {
-        return directory;
+        return source;
     }
 
-    public void setDirectory(String directory) {
-        this.directory = directory;
-    }
-
-    public String getOriginal() {
-        return original;
-    }
-
-    public void setOriginal(String original) {
-        this.original = original;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
+    public void setDirectory(String source) {
+        this.source = source;
     }
 
     public int getWidth() {
@@ -128,36 +95,13 @@ public class Image implements Serializable {
         this.width = width;
     }
 
-    public String getLarge() {
-        return large;
+
+    public int getHeight() {
+        return height;
     }
 
-    public void setLarge(String large) {
-        this.large = large;
-    }
-
-    public String getMedium() {
-        return medium;
-    }
-
-    public void setMedium(String medium) {
-        this.medium = medium;
-    }
-
-    public String getSmall() {
-        return small;
-    }
-
-    public void setSmall(String small) {
-        this.small = small;
-    }
-
-    public String getThumbnail() {
-        return thumbnail;
-    }
-
-    public void setThumbnail(String thumbnail) {
-        this.thumbnail = thumbnail;
+    public void setHeight(int height) {
+        this.height = height;
     }
 
     public Date getUploadedAt() {
@@ -168,12 +112,20 @@ public class Image implements Serializable {
         this.uploadedAt = uploadedAt;
     }
 
-    public Post getPost() {
-        return post;
+    public String getSource() {
+        return source;
     }
 
-    public void setPost(Post post) {
-        this.post = post;
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public ImageSet getImageSet() {
+        return imageSet;
+    }
+
+    public void setImageSet(ImageSet imageSet) {
+        this.imageSet = imageSet;
     }
 
     public boolean isFeatured() {
@@ -184,20 +136,11 @@ public class Image implements Serializable {
         isFeatured = featured;
     }
 
-    public String getLocation() {
-        return Paths.get(directory).resolve(original).toString();
+    public ImageSizeType getSizeType() {
+        return sizeType;
     }
 
-    public List<String> getLocations() {
-        Path path = Paths.get(directory);
-        List<String> locations = new ArrayList<>();
-        String[] filenames = {original, large, medium, small, thumbnail};
-
-        for (String filename : filenames) {
-            if (filename != null) {
-                locations.add(path.resolve(filename).toString());
-            }
-        }
-        return locations;
+    public void setSizeType(ImageSizeType sizeType) {
+        this.sizeType = sizeType;
     }
 }
