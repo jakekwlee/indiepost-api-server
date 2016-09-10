@@ -162,7 +162,7 @@ CREATE TABLE indiepost.__posts
   publishedAt DATETIME NOT NULL,
   status VARCHAR(255) NOT NULL,
   title VARCHAR(100) NOT NULL,
-  type VARCHAR(255) NOT NULL,
+  postType VARCHAR(255) NOT NULL,
   authorId INT(11) NOT NULL,
   categoryId INT(11) NOT NULL,
   editorId INT(11) NOT NULL

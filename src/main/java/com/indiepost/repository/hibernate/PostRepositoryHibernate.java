@@ -1,5 +1,6 @@
 package com.indiepost.repository.hibernate;
 
+import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Category;
 import com.indiepost.model.Post;
 import com.indiepost.model.User;
@@ -8,13 +9,11 @@ import com.indiepost.repository.PostRepository;
 import com.indiepost.util.AliasToBeanNestedResultTransformer;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -99,7 +98,7 @@ public class PostRepositoryHibernate implements PostRepository {
         postForUser.setPublishedAt(post.getPublishedAt());
         postForUser.setAuthor(post.getAuthor());
         postForUser.setCategory(post.getCategory());
-        postForUser.setImages(post.getImages());
+        postForUser.setFeaturedImage(post.getFeaturedImage());
         return postForUser;
     }
 
@@ -164,8 +163,7 @@ public class PostRepositoryHibernate implements PostRepository {
                         .add(Property.forName("c.name"), "category.name")
                         .add(Property.forName("c.slug"), "category.slug")
                 )
-                .add(Restrictions.eq("status", Post.Status.PUBLISHED));
+                .add(Restrictions.eq("status", PostEnum.Status.PUBLISHED));
         return criteria;
     }
-
 }

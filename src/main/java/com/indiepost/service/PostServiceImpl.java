@@ -1,5 +1,6 @@
 package com.indiepost.service;
 
+import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Category;
 import com.indiepost.model.Post;
 import com.indiepost.model.User;
@@ -110,13 +111,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> findByStatus(Post.Status status, int page, int maxResults) {
+    public List<Post> findByStatus(PostEnum.Status status, int page, int maxResults) {
         page = normalizePage(page);
         return null;
     }
 
     @Override
-    public List<Post> findByStatusOrderByAsc(Post.Status status, int page, int maxResults) {
+    public List<Post> findByStatusOrderByAsc(PostEnum.Status status, int page, int maxResults) {
         page = normalizePage(page);
         return null;
     }

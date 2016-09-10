@@ -1,5 +1,6 @@
 package com.indiepost.service;
 
+import com.indiepost.enums.UserEnum;
 import com.indiepost.model.User;
 
 import java.util.List;
@@ -26,9 +27,9 @@ public interface UserService {
 
     boolean isEmailExist(String email);
 
-    List<User> findByState(User.State state);
+    List<User> findByState(UserEnum.State state);
 
-    List<User> findByGender(User.Gender gender);
+    List<User> findByGender(UserEnum.Gender gender);
 
-    List<User> findByRolesEnum(User.Roles role);
+    List<User> findByRolesEnum(UserEnum.Roles role);
 }

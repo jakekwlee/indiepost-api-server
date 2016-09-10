@@ -1,5 +1,6 @@
 package com.indiepost.service;
 
+import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Category;
 import com.indiepost.model.Post;
 import com.indiepost.model.User;
@@ -51,7 +52,7 @@ public interface PostService {
 
     List<Post> findByEditorByAsc(User editor, int page, int maxResults);
 
-    List<Post> findByStatus(Post.Status status, int page, int maxResults);
+    List<Post> findByStatus(PostEnum.Status status, int page, int maxResults);
 
-    List<Post> findByStatusOrderByAsc(Post.Status status, int page, int maxResults);
+    List<Post> findByStatusOrderByAsc(PostEnum.Status status, int page, int maxResults);
 }

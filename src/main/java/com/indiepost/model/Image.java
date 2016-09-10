@@ -1,12 +1,11 @@
 package com.indiepost.model;
 
-import com.indiepost.enums.IndiepostEnum.ImageSizeType;
+import com.indiepost.enums.ImageEnum.SizeType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * Created by jake on 8/15/16.
@@ -23,7 +22,11 @@ public class Image implements Serializable {
 
     @NotNull
     @Size(min = 2, max = 120)
-    private String source;
+    private String fileUrl;
+
+    @NotNull
+    @Size(min = 2, max = 120)
+    private String fileName;
 
     @NotNull
     private long fileSize;
@@ -34,21 +37,9 @@ public class Image implements Serializable {
     @NotNull
     private int height;
 
-
-    @Size(min = 9, max = 10)
-    private String contentType;
-
-
-    @NotNull
-    private boolean isFeatured = false;
-
-    @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date uploadedAt;
-
     @NotNull
     @Enumerated(EnumType.STRING)
-    private ImageSizeType sizeType;
+    private SizeType sizeType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "imageSetId")
@@ -62,7 +53,6 @@ public class Image implements Serializable {
         this.id = id;
     }
 
-
     public long getFileSize() {
         return fileSize;
     }
@@ -71,20 +61,12 @@ public class Image implements Serializable {
         this.fileSize = size;
     }
 
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
     public String getDirectory() {
-        return source;
+        return fileUrl;
     }
 
     public void setDirectory(String source) {
-        this.source = source;
+        this.fileUrl = source;
     }
 
     public int getWidth() {
@@ -95,7 +77,6 @@ public class Image implements Serializable {
         this.width = width;
     }
 
-
     public int getHeight() {
         return height;
     }
@@ -104,20 +85,12 @@ public class Image implements Serializable {
         this.height = height;
     }
 
-    public Date getUploadedAt() {
-        return uploadedAt;
+    public String getFileUrl() {
+        return fileUrl;
     }
 
-    public void setUploadedAt(Date uploadedAt) {
-        this.uploadedAt = uploadedAt;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
     }
 
     public ImageSet getImageSet() {
@@ -128,19 +101,19 @@ public class Image implements Serializable {
         this.imageSet = imageSet;
     }
 
-    public boolean isFeatured() {
-        return isFeatured;
-    }
-
-    public void setFeatured(boolean featured) {
-        isFeatured = featured;
-    }
-
-    public ImageSizeType getSizeType() {
+    public SizeType getSizeType() {
         return sizeType;
     }
 
-    public void setSizeType(ImageSizeType sizeType) {
+    public void setSizeType(SizeType sizeType) {
         this.sizeType = sizeType;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

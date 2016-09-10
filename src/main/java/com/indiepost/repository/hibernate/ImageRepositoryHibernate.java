@@ -1,12 +1,11 @@
 package com.indiepost.repository.hibernate;
 
 import com.indiepost.model.Image;
+import com.indiepost.model.ImageSet;
 import com.indiepost.repository.CriteriaMaker;
 import com.indiepost.repository.ImageRepository;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -29,54 +28,48 @@ public class ImageRepositoryHibernate implements ImageRepository {
     private CriteriaMaker criteriaMaker;
 
     @Override
-    public void save(Image image) {
-        getSession().save(image);
+    public void save(ImageSet imageSet) {
+        getSession().save(imageSet);
 
     }
 
     @Override
-    public Image findById(int id) {
-        return (Image) getCriteria()
+    public ImageSet findById(int id) {
+        return (ImageSet) getCriteria()
                 .add(Restrictions.eq("id", id))
                 .uniqueResult();
     }
 
     @Override
-    public Image findByFilename(String filename) {
-        return (Image) getCriteria()
-                .add(Restrictions.eq("filename", filename))
-                .uniqueResult();
-    }
-
-    @Override
-    public List<Image> findByPostId(int id, Pageable pageable) {
-        Criteria criteria = getCriteria(pageable);
-        criteria.setProjection(Projections.projectionList()
-                .add(Property.forName("id"), "id")
-                .add(Property.forName("directory"), "directory")
-                .add(Property.forName("filename"), "filename")
-                .add(Property.forName("width"), "width")
-                .add(Property.forName("height"), "height")
-                .add(Property.forName("isFeatured"), "isFeatured")
-                .add(Property.forName("uploadedAt"), "uploadedAt")
-        ).add(Restrictions.eq("postId", id));
+    public List<ImageSet> findByPostId(int id, Pageable pageable) {
+        Criteria criteria = getCriteria(pageable)
+                .add(Restrictions.eq("postId", id));
 
         return criteria.list();
     }
 
     @Override
-    public List<Image> findAll(Pageable pageable) {
+    public List<ImageSet> findAll(Pageable pageable) {
         return getCriteria(pageable).list();
     }
 
     @Override
-    public void update(Image image) {
-        getSession().update(image);
+    public ImageSet findByFileName(String fileName) {
+        Image image = (Image) getCriteriaForSingleImage().add(Restrictions.eq("fileName", fileName)).uniqueResult();
+        if (image != null) {
+            return image.getImageSet();
+        }
+        return null;
     }
 
     @Override
-    public void delete(Image image) {
-        getSession().delete(image);
+    public void update(ImageSet imageSet) {
+        getSession().update(imageSet);
+    }
+
+    @Override
+    public void delete(ImageSet imageSet) {
+        getSession().delete(imageSet);
     }
 
     @Override
@@ -89,6 +82,10 @@ public class ImageRepositoryHibernate implements ImageRepository {
     }
 
     private Criteria getCriteria() {
+        return getSession().createCriteria(ImageSet.class);
+    }
+
+    private Criteria getCriteriaForSingleImage() {
         return getSession().createCriteria(Image.class);
     }
 

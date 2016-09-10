@@ -1,8 +1,7 @@
 package com.indiepost.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.indiepost.enums.IndiepostEnum.PostStatus;
-import com.indiepost.enums.IndiepostEnum.PostType;
+import com.indiepost.enums.PostEnum;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.LazyCollection;
@@ -73,11 +72,11 @@ public class Post implements Serializable {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private PostStatus status;
+    private PostEnum.Status status;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private PostType type;
+    private PostEnum.Type postType;
 
     @ManyToOne(optional = false)
     @Fetch(FetchMode.JOIN)
@@ -95,7 +94,7 @@ public class Post implements Serializable {
     private Category category;
 
     @OneToMany(mappedBy = "post")
-    private Set<Image> images;
+    private Set<ImageSet> imageSets;
 
     @ManyToMany
     @JoinTable(
@@ -206,11 +205,11 @@ public class Post implements Serializable {
         this.commentsCount = commentsCount;
     }
 
-    public PostStatus getStatus() {
+    public PostEnum.Status getStatus() {
         return status;
     }
 
-    public void setStatus(PostStatus status) {
+    public void setStatus(PostEnum.Status status) {
         this.status = status;
     }
 
@@ -222,12 +221,12 @@ public class Post implements Serializable {
         this.category = category;
     }
 
-    public Set<Image> getImages() {
-        return images;
+    public Set<ImageSet> getImageSets() {
+        return imageSets;
     }
 
-    public void setImages(Set<Image> images) {
-        this.images = images;
+    public void setImageSets(Set<ImageSet> imageSets) {
+        this.imageSets = imageSets;
     }
 
     public Set<Tag> getTags() {
@@ -286,12 +285,12 @@ public class Post implements Serializable {
         this.author = author;
     }
 
-    public PostType getType() {
-        return type;
+    public PostEnum.Type getPostType() {
+        return postType;
     }
 
-    public void setType(PostType type) {
-        this.type = type;
+    public void setPostType(PostEnum.Type postType) {
+        this.postType = postType;
     }
 
 }

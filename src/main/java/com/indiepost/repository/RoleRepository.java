@@ -1,20 +1,20 @@
 package com.indiepost.repository;
 
+import com.indiepost.enums.UserEnum.Roles;
 import com.indiepost.model.Role;
-import com.indiepost.model.User;
 
 /**
  * Created by jake on 7/27/16.
  */
 public interface RoleRepository {
 
-    void save(Role role);
+    void save(Roles role);
 
-    void update(Role role);
+    void update(Roles role);
 
-    void delete(Role role);
+    void delete(Roles role);
 
     Role findById(int id);
 
-    Role findByRolesEnum(User.Roles role);
+    Role findByRolesEnum(Roles role);
 }

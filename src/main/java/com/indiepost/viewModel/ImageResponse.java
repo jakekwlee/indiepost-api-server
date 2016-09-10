@@ -7,13 +7,13 @@ import java.util.List;
  */
 public class ImageResponse {
 
-    private List<ImageMetaInformation> files;
+    private List<ImageMeta> files;
 
-    public List<ImageMetaInformation> getFiles() {
+    public List<ImageMeta> getFiles() {
         return files;
     }
 
-    public void setFiles(List<ImageMetaInformation> files) {
+    public void setFiles(List<ImageMeta> files) {
         this.files = files;
     }
 }

@@ -1,7 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.exception.FileSaveException;
-import com.indiepost.model.Image;
+import com.indiepost.model.ImageSet;
 import com.indiepost.viewModel.ImageResponse;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,20 +12,19 @@ import java.util.List;
  */
 public interface ImageService {
 
-    void save(Image image);
+    void save(ImageSet imageSet);
 
     ImageResponse saveUploadedImage(MultipartFile[] multipartFiles) throws FileSaveException;
 
-    Image findById(int id);
+    ImageSet findById(int id);
 
-    Image findByFilename(String filename);
+    ImageSet findByFileName(String fileName);
 
-    List<Image> findAll(int page, int maxResults);
+    List<ImageSet> findAll(int page, int maxResults);
 
-    void update(Image image);
+    void update(ImageSet imageSet);
 
-    void delete(Image image);
+    void delete(ImageSet imageSet);
 
     void deleteById(int id);
-
 }

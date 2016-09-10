@@ -1,9 +1,11 @@
 package com.indiepost.model;
 
-import com.indiepost.enums.IndiepostEnum.ImageSizeType;
+import com.indiepost.enums.ImageEnum.SizeType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,8 +25,20 @@ public class ImageSet {
     @OneToMany(mappedBy = "imageSet", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Image> images;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "postId")
+    private Post post;
+
     @NotNull
-    private String wildcardPrefix;
+    @Size(min = 9, max = 10)
+    private String contentType;
+
+    @NotNull
+    private boolean isFeatured;
+
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date uploadedAt;
 
     public int getId() {
         return id;
@@ -42,39 +56,59 @@ public class ImageSet {
         this.images = images;
     }
 
-    public String getWildcardPrefix() {
-        return wildcardPrefix;
-    }
-
-    public void setWildcardPrefix(String wildcardPrefix) {
-        this.wildcardPrefix = wildcardPrefix;
-    }
-
     public Image getOriginal() {
-        return findByImageSize(ImageSizeType.Original);
-    }
-
-    public Image getXLarge() {
-        return findByImageSize(ImageSizeType.Xlarge);
+        return findByImageSize(SizeType.Original);
     }
 
     public Image getLarge() {
-        return findByImageSize(ImageSizeType.Large);
+        return findByImageSize(SizeType.Large);
     }
 
     public Image getMedium() {
-        return findByImageSize(ImageSizeType.Medium);
+        return findByImageSize(SizeType.Medium);
     }
 
     public Image getSmall() {
-        return findByImageSize(ImageSizeType.Small);
+        return findByImageSize(SizeType.Small);
     }
 
     public Image getThumbnail() {
-        return findByImageSize(ImageSizeType.Thumbnail);
+        return findByImageSize(SizeType.Thumbnail);
     }
 
-    private Image findByImageSize(ImageSizeType sizeType) {
+    public Date getUploadedAt() {
+        return uploadedAt;
+    }
+
+    public void setUploadedAt(Date uploadedAt) {
+        this.uploadedAt = uploadedAt;
+    }
+
+    public Post getPost() {
+        return post;
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public boolean isFeatured() {
+        return isFeatured;
+    }
+
+    public void setFeatured(boolean featured) {
+        isFeatured = featured;
+    }
+
+    private Image findByImageSize(SizeType sizeType) {
         for (Image image : images) {
             if (image.getSizeType() == sizeType) {
                 return image;

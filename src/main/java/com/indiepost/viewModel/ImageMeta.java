@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Created by jake on 8/17/16.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ImageMetaInformation {
+public class ImageMeta {
 
     private int id;
 

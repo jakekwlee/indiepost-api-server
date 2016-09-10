@@ -34,8 +34,7 @@ public class ContentTypeMultipartFileValidator implements ConstraintValidator<Co
     @Override
     public boolean isValid(MultipartFile value, ConstraintValidatorContext context) {
         if (value == null || value.isEmpty())
-            return true;
-
+            return false;
         return ContentTypeMultipartFileValidator.acceptContentType(value.getContentType(), acceptedContentTypes);
     }
 }

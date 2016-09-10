@@ -1,6 +1,6 @@
 package com.indiepost.repository;
 
-import com.indiepost.model.Role;
+import com.indiepost.enums.UserEnum;
 import com.indiepost.model.User;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public interface UserRepository {
 
     User findByEmail(String email);
 
-    List<User> findByState(User.State state);
+    List<User> findByState(UserEnum.State state);
 
-    List<User> findByGender(User.Gender gender);
+    List<User> findByGender(UserEnum.Gender gender);
 }

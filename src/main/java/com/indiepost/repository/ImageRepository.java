@@ -1,6 +1,6 @@
 package com.indiepost.repository;
 
-import com.indiepost.model.Image;
+import com.indiepost.model.ImageSet;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -10,19 +10,19 @@ import java.util.List;
  */
 public interface ImageRepository {
 
-    void save(Image image);
+    void save(ImageSet imageSet);
 
-    Image findById(int id);
+    ImageSet findById(int id);
 
-    Image findByFilename(String filename);
+    ImageSet findByFileName(String fileName);
 
-    List<Image> findByPostId(int id, Pageable pageable);
+    List<ImageSet> findByPostId(int id, Pageable pageable);
 
-    List<Image> findAll(Pageable pageable);
+    List<ImageSet> findAll(Pageable pageable);
 
-    void update(Image image);
+    void update(ImageSet imageSet);
 
-    void delete(Image image);
+    void delete(ImageSet imageSet);
 
     void deleteById(int id);
 

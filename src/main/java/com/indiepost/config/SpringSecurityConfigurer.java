@@ -1,6 +1,6 @@
 package com.indiepost.config;
 
-import com.indiepost.model.User.Roles;
+import com.indiepost.enums.UserEnum;
 import com.indiepost.service.IndiepostUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -40,14 +40,13 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/cms/**").hasAuthority(Roles.Editor.toString())
+                .antMatchers("/cms/**").hasAuthority(UserEnum.Roles.Editor.toString())
                 .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
                 .and()
                 .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/login");
-        ;
     }
 
     @Autowired

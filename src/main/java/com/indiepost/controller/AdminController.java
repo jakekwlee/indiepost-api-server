@@ -1,8 +1,9 @@
 package com.indiepost.controller;
 
+import com.indiepost.enums.PostEnum;
+import com.indiepost.enums.UserEnum;
 import com.indiepost.model.Category;
 import com.indiepost.model.Post;
-import com.indiepost.model.Role;
 import com.indiepost.model.User;
 import com.indiepost.service.CategoryService;
 import com.indiepost.service.PostService;
@@ -51,18 +52,18 @@ public class AdminController {
     }
 
     @RequestMapping("posts/new")
-    public String editPost(Model model, Authentication authentication, Principal principal) {
+    public String newPost(Model model, Authentication authentication, Principal principal) {
         User user = userService.findByUsername(principal.getName());
         List<Category> categories = categoryService.findAll();
-        List<User> authors = userService.findByRolesEnum(User.Roles.Author);
+        List<User> authors = userService.findByRolesEnum(UserEnum.Roles.Author);
         model.addAttribute("categories", categories);
         model.addAttribute("user", user);
         model.addAttribute("authors", authors);
-        model.addAttribute("statuses", Post.Status.values());
+        model.addAttribute("statuses", PostEnum.Status.values());
         return "admin/newPost";
     }
 
     private Boolean hasRoleEditorInChief(Authentication authentication) {
-        return authentication.getAuthorities().contains(new SimpleGrantedAuthority(User.Roles.EditorInChief.toString()));
+        return authentication.getAuthorities().contains(new SimpleGrantedAuthority(UserEnum.Roles.EditorInChief.toString()));
     }
 }

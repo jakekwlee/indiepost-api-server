@@ -1,5 +1,6 @@
 package com.indiepost.repository.hibernate;
 
+import com.indiepost.enums.UserEnum;
 import com.indiepost.model.User;
 import com.indiepost.repository.UserRepository;
 import org.hibernate.Criteria;
@@ -66,14 +67,14 @@ public class UserRepositoryHibernate implements UserRepository {
     }
 
     @Override
-    public List<User> findByState(User.State state) {
+    public List<User> findByState(UserEnum.State state) {
         return getCriteria()
                 .add(Restrictions.eq("state", state))
                 .list();
     }
 
     @Override
-    public List<User> findByGender(User.Gender gender) {
+    public List<User> findByGender(UserEnum.Gender gender) {
         return getCriteria()
                 .add(Restrictions.eq("gender", gender))
                 .list();

@@ -1,5 +1,6 @@
 package com.indiepost.controller;
 
+import com.indiepost.enums.UserEnum;
 import com.indiepost.model.Post;
 import com.indiepost.model.User;
 import com.indiepost.service.PostService;
@@ -95,6 +96,6 @@ public class HomeController {
     }
 
     private Boolean hasRoleEditor(Authentication authentication) {
-        return authentication.getAuthorities().contains(new SimpleGrantedAuthority(User.Roles.Editor.toString()));
+        return authentication.getAuthorities().contains(new SimpleGrantedAuthority(UserEnum.Roles.Editor.toString()));
     }
 }

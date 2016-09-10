@@ -1,12 +1,13 @@
 package com.indiepost.service;
 
+import com.indiepost.enums.ImageEnum;
 import com.indiepost.exception.FileSaveException;
 import com.indiepost.model.Image;
+import com.indiepost.model.ImageSet;
 import com.indiepost.repository.ImageRepository;
-import com.indiepost.viewModel.ImageMetaInformation;
+import com.indiepost.viewModel.ImageMeta;
 import com.indiepost.viewModel.ImageResponse;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -34,18 +35,19 @@ import static org.springframework.util.MimeTypeUtils.*;
 @Transactional
 public class ImageServiceImpl implements ImageService {
 
-    public static final String ROOT_DIRECTORY = "/data";
-    public static final String BASE_URL = "/uploads/images";
-    public static final int FILENAME_LENGTH = 8;
-    public static final String FILENAME_FORMAT = "%s-%dx%d.%s";
-    public static final String[] ACCECTED_TYPES = {IMAGE_JPEG_VALUE, IMAGE_PNG_VALUE, IMAGE_GIF_VALUE};
+    private static final String API_URI = "/api/v1/images/";
+    private static final String ROOT_DIRECTORY = "/data";
+    private static final String BASE_URL = "/uploads/images";
+    private static final int FILENAME_LENGTH = 6;
+    private static final String FILENAME_FORMAT = "%s-%dx%d.%s";
+    private static final String[] ACCEPTED_TYPES = {IMAGE_JPEG_VALUE, IMAGE_PNG_VALUE, IMAGE_GIF_VALUE};
 
     @Autowired
     private ImageRepository imageRepository;
 
     @Override
-    public void save(Image image) {
-        imageRepository.save(image);
+    public void save(ImageSet imageSet) {
+        imageRepository.save(imageSet);
     }
 
     @Override
@@ -67,25 +69,27 @@ public class ImageServiceImpl implements ImageService {
             throw new FileSaveException("File type is not accepted: " + contentType);
         }
 
-
-        String alphanumeric = RandomStringUtils.randomAlphanumeric(FILENAME_LENGTH).toUpperCase();
-        String fileExtension = FilenameUtils.getExtension(multipartFiles[0].getOriginalFilename());
+        String alphanumeric = RandomStringUtils.randomAlphanumeric(FILENAME_LENGTH);
+        String fileExtension = contentType.split("/")[1];
 
         String newFilename;
         SimpleDateFormat dateFormat = new SimpleDateFormat("/yyyy/MM");
         String baseUrl = BASE_URL + dateFormat.format(new Date());
         String physicalBaseUrl = ROOT_DIRECTORY + baseUrl;
 
-        Image image = new Image();
-        image.setDirectory(baseUrl);
-        image.setUploadedAt(new Date());
-        image.setFeatured(false);
+        ImageSet imageSet = new ImageSet();
+        imageSet.setContentType(contentType);
+        imageSet.setFeatured(false);
+        imageSet.setUploadedAt(new Date());
 
+        List<Image> images = new ArrayList<>();
+        Image image;
         int width;
         int height;
         Dimension dimension;
 
         for (int i = 0; i < filesLength; ) {
+            image = new Image();
             dimension = getDimension(multipartFiles[i]);
             width = (int) dimension.getWidth();
             height = (int) dimension.getHeight();
@@ -94,59 +98,64 @@ public class ImageServiceImpl implements ImageService {
             newFilename = String.format(FILENAME_FORMAT, alphanumeric, (int) dimension.getWidth(), (int) dimension.getHeight(), fileExtension);
             long size = saveToFileSystem(multipartFiles[i], physicalBaseUrl + '/' + newFilename).length();
 
+            image.setFileName(newFilename);
+            image.setFileUrl(baseUrl + '/' + newFilename);
+            image.setFileSize(size);
+
             if (i == 0) {
-                image.setOriginal(newFilename);
-                image.setFileSize(size);
+                image.setSizeType(ImageEnum.SizeType.Original);
+                images.add(image);
                 ++i;
-            }
-            else if (1200 < width) {
-                image.setLarge(newFilename);
+            } else if (1200 <= width) {
+                image.setSizeType(ImageEnum.SizeType.Large);
+                images.add(image);
                 width = 1000;
                 ++i;
-            }
-            else if (700 < width && width < 1200) {
-                image.setMedium(newFilename);
+            } else if (700 < width && width < 1200) {
+                image.setSizeType(ImageEnum.SizeType.Medium);
+                images.add(image);
                 width = 500;
                 ++i;
-            }
-            else if (400 < width && width < 700) {
-                image.setSmall(newFilename);
+            } else if (400 < width && width < 700) {
+                image.setSizeType(ImageEnum.SizeType.Small);
+                images.add(image);
                 width = 300;
                 ++i;
-            }
-            else {
-                image.setThumbnail(newFilename);
+            } else {
+                image.setSizeType(ImageEnum.SizeType.Thumbnail);
+                images.add(image);
                 ++i;
             }
+            imageSet.setImages(images);
         }
-        imageRepository.save(image);
-        return generateImageResponse(image);
+        imageRepository.save(imageSet);
+        return generateImageResponse(imageSet);
     }
 
     @Override
-    public Image findById(int id) {
+    public ImageSet findById(int id) {
         return imageRepository.findById(id);
     }
 
     @Override
-    public Image findByFilename(String filename) {
-        return imageRepository.findByFilename(filename);
+    public ImageSet findByFileName(String fileName) {
+        return imageRepository.findByFileName(fileName);
     }
 
     @Override
-    public List<Image> findAll(int page, int maxResults) {
+    public List<ImageSet> findAll(int page, int maxResults) {
         page = normalizePage(page);
         return imageRepository.findAll(new PageRequest(page, maxResults, Sort.Direction.DESC, "uploadedAt"));
     }
 
     @Override
-    public void update(Image image) {
-        imageRepository.update(image);
+    public void update(ImageSet imageSet) {
+        imageRepository.update(imageSet);
     }
 
     @Override
-    public void delete(Image image) {
-        imageRepository.delete(image);
+    public void delete(ImageSet imageSet) {
+        imageRepository.delete(imageSet);
     }
 
     @Override
@@ -160,28 +169,29 @@ public class ImageServiceImpl implements ImageService {
     }
 
     private boolean validateContentType(String contentType) {
-        return Arrays.asList(ACCECTED_TYPES).contains(contentType);
+        return Arrays.asList(ACCEPTED_TYPES).contains(contentType);
     }
 
-    private ImageResponse generateImageResponse(Image image) {
-        ImageMetaInformation imageMetaInformation = new ImageMetaInformation();
-        imageMetaInformation.setId(image.getId());
-        imageMetaInformation.setName(image.getOriginal());
-        imageMetaInformation.setType(image.getContentType());
-        imageMetaInformation.setSize(image.getFileSize());
-        imageMetaInformation.setDeleteUrl("/api/v1/images/" + image.getId());
-        imageMetaInformation.setUrl(image.getLocation());
+    private ImageResponse generateImageResponse(ImageSet imageSet) {
+        ImageMeta imageMeta = new ImageMeta();
+        Image original = imageSet.getOriginal();
+        Image thumbnail = imageSet.getThumbnail();
+        imageMeta.setId(imageSet.getId());
+        imageMeta.setName(original.getFileName());
+        imageMeta.setSize(original.getFileSize());
+        imageMeta.setType(imageSet.getContentType());
+        imageMeta.setDeleteUrl(API_URI + imageSet.getId());
+        imageMeta.setUrl(original.getFileUrl());
 
-        if (image.getThumbnail() != null) {
-            imageMetaInformation.setThumbnailUrl(image.getDirectory() + '/' + image.getThumbnail());
-        } else {
-            imageMetaInformation.setThumbnailUrl(image.getDirectory() + '/' + image.getOriginal());
+        if (thumbnail == null) {
+            thumbnail = original;
         }
+        imageMeta.setThumbnailUrl(thumbnail.getFileUrl());
 
-        List<ImageMetaInformation> imageMetaInformations = new ArrayList<>();
-        imageMetaInformations.add(imageMetaInformation);
+        List<ImageMeta> imageMetaList = new ArrayList<>();
+        imageMetaList.add(imageMeta);
         ImageResponse imageResponse = new ImageResponse();
-        imageResponse.setFiles(imageMetaInformations);
+        imageResponse.setFiles(imageMetaList);
         return imageResponse;
     }
 

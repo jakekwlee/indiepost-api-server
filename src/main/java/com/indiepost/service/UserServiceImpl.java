@@ -1,5 +1,6 @@
 package com.indiepost.service;
 
+import com.indiepost.enums.UserEnum;
 import com.indiepost.model.User;
 import com.indiepost.repository.RoleRepository;
 import com.indiepost.repository.UserRepository;
@@ -73,34 +74,27 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isUsernameExist(String username) {
         User user = userRepository.findByUsername(username);
-        if (user == null) {
-            return false;
-        }
-        return true;
+        return user != null;
     }
 
     @Override
     public boolean isEmailExist(String email) {
         User user = userRepository.findByEmail(email);
-        if (user == null) {
-            return false;
-        }
-        return true;
+        return user != null;
     }
 
     @Override
-    public List<User> findByState(User.State state) {
+    public List<User> findByState(UserEnum.State state) {
         return userRepository.findByState(state);
     }
 
     @Override
-    public List<User> findByGender(User.Gender gender) {
+    public List<User> findByGender(UserEnum.Gender gender) {
         return userRepository.findByGender(gender);
     }
 
     @Override
-    public List<User> findByRolesEnum(User.Roles role) {
-        List<User> users = new ArrayList<>(roleRepository.findByRolesEnum(role).getUsers());
-        return users;
+    public List<User> findByRolesEnum(UserEnum.Roles role) {
+        return new ArrayList<>(roleRepository.findByRolesEnum(role).getUsers());
     }
 }
