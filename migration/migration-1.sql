@@ -43,7 +43,7 @@ INSERT INTO indiepost.__posts (id, title, featuredImage, excerpt, content, statu
                                createdAt, modifiedAt, publishedAt, authorId, editorId, categoryId)
   SELECT c.no, c.CONTENTNAME, c.IMAGEURL, c.CONTENTTEXT,
     d.content, 'PUBLISHED', 'POST', c.jjim, 0, c.goods, STR_TO_DATE(c.REGDATE, '%Y%m%d'), STR_TO_DATE(c.REGDATE, '%Y%m%d'), STR_TO_DATE(c.REGDATE, '%Y%m%d'), 1, 1, c.MENUNO
-  FROM indiepost.contentlist AS c
+  FROM indiepost.__contentlist AS c
     INNER JOIN indiepost.__post_content AS d
       ON c.no = d.id;
 

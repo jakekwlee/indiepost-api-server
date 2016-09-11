@@ -26,9 +26,20 @@ module.exports = (()=> {
         });
     }
 
-    function updateLegacyDB(images, pool, query) {
+    function updateDetaillistDB(images, pool, query) {
         return Promise.each(images, (image) => {
-            let sql = mysql.format(query, [image.newFileUrl, image.width, image.height, image.dId]);
+            let sql = mysql.format(query, [image.newFileUrl, image.width, image.height, image.no]);
+            console.log('query: ' + sql);
+            return pool.query(sql);
+        });
+    }
+
+    function updateContentlistDB(images, pool, query) {
+        return Promise.each(images, (image) => {
+            if (!image.isFeatured) {
+                return Promise.resolve(image);
+            }
+            let sql = mysql.format(query, [image.newFileUrl, image.no]);
             console.log('query: ' + sql);
             return pool.query(sql);
         });
@@ -138,7 +149,7 @@ module.exports = (()=> {
             oldBasePath, newBasePath, newBaseUrl,
             selectImagesQuery,
             insertImageSetQuery, insertImageQuery,
-            updateLegacyContentQuery
+            updateContentlistQuery, updateDetaillistQuery
         } = options;
         return selectFromDB(pool, selectImagesQuery)
             .then(rows => {
@@ -155,7 +166,10 @@ module.exports = (()=> {
                 return insertImagesToDB(images, pool, insertImageQuery);
             })
             .then(images => {
-                return updateLegacyDB(images, pool, updateLegacyContentQuery);
+                return updateContentlistDB(images, pool, updateContentlistQuery);
+            })
+            .then(images => {
+                return updateDetaillistDB(images, pool, updateDetaillistQuery);
             })
             .then(copyImages)
             .then(makeThumbnails)

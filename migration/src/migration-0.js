@@ -16,7 +16,8 @@ const options = {
     selectImagesQuery: 'SELECT no, data, date,isTitle, dId FROM __image_union ORDER BY no',
     insertImageSetQuery: 'INSERT __image_sets (postId, contentType, isFeatured, uploadedAt) VALUES (?, ?, ?, ?)',
     insertImageQuery: 'INSERT __images (imageSetId, sizeType, filename, fileSize, fileUrl, width, height) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    updateLegacyContentQuery: 'UPDATE __detaillist SET data = ?, width = ?, height = ? WHERE no = ?'
+    updateContentlistQuery: 'UPDATE __contentlist SET IMAGEURL = ? WHERE no = ?',
+    updateDetaillistQuery: 'UPDATE __detaillist SET data = ?, width = ?, height = ? WHERE no = ?'
 };
 
 migrate(pool, options).then(() => {

@@ -173,6 +173,11 @@ CREATE TABLE __images
   imageSetId INT(11)
 );
 
+DROP TABLE IF EXISTS indiepost.__contentlist;
+CREATE TABLE indiepost.__contentlist LIKE indiepost.contentlist;
+INSERT indiepost.__contentlist
+  SELECT * FROM indiepost.contentlist;
+
 DROP TABLE IF EXISTS indiepost.__detaillist;
 CREATE TABLE indiepost.__detaillist LIKE indiepost.detaillist;
 INSERT indiepost.__detaillist
