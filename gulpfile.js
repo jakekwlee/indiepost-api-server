@@ -1,4 +1,3 @@
-var Promise = require('bluebird');
 var gulp = require('gulp');
 var babel = require('gulp-babel');
 var sourcemaps = require('gulp-sourcemaps');
@@ -25,17 +24,21 @@ gulp.task('remove-uploads', function () {
 });
 
 gulp.task('db-before', function () {
-    return run('mysql -uindiepost -pindiepost indiepost < ./migration/migration-before.sql').exec();
+    return run('mysql -uindiepost -pindiepost indiepost < ./migration/migration-0.sql').exec();
 });
 
 gulp.task('db-after', function () {
-    return run('mysql -uindiepost -pindiepost indiepost < ./migration/migration-after.sql').exec();
+    return run('mysql -uindiepost -pindiepost indiepost < ./migration/migration-1.sql').exec();
 });
 
 gulp.task('prepare', ['remove-uploads', 'db-before', 'babel', 'lint'], function () {});
 
-gulp.task('migrate', ['prepare'], function () {
-    return run('node ./migration/dist/app.js > ./migration.log').exec();
+gulp.task('migrate0', ['prepare'], function () {
+    return run('node ./migration/dist/migration-0.js > ./migration.log').exec();
+});
+
+gulp.task('migrate1', ['babel', 'lint', 'db-after'], function () {
+    return run('node ./migration/dist/migration-1.js > ./migration.log').exec();
 });
 
 gulp.task('watch', function () {

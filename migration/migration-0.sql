@@ -1,20 +1,6 @@
 SET @@group_concat_max_len = 15000;
 SET NAMES 'utf8';
 
-DROP TABLE IF EXISTS indiepost.__post_content;
-CREATE TABLE indiepost.__post_content (
-  `id`      INT(11)    NOT NULL AUTO_INCREMENT,
-  `content` LONGTEXT   NOT NULL,
-  PRIMARY KEY (`id`)
-);
-
-INSERT INTO indiepost.__post_content
-  SELECT parent AS no,
-         GROUP_CONCAT(IF(type = 1, CONCAT('<p>', data, '</p>'), CONCAT('<figure><img src="', data, '"><figcaption>###</figcaption>###</figure>')) ORDER BY iorder ASC SEPARATOR '') AS content
-  FROM indiepost.__detaillist
-  WHERE iorder > 2
-  GROUP BY parent, ispay;
-
 DROP TABLE IF EXISTS indiepost.__users;
 CREATE TABLE indiepost.__users
 (
@@ -84,9 +70,10 @@ DROP TABLE IF EXISTS indiepost.__users_roles;
 CREATE TABLE indiepost.__users_roles
 (
   userId INT(11) NOT NULL,
-  roleId INT(11) NOT NULL
+  roleId INT(11) NOT NULL,
+  CONSTRAINT `PRIMARY` PRIMARY KEY (userId, roleId)
 );
-
+CREATE INDEX FK_ip96vnhrw2po8jipg11g84h75 ON indiepost.__users_roles (roleId);
 
 
 -- Grant Authorities to Users
@@ -146,49 +133,49 @@ INSERT INTO indiepost.__categories (id, displayOrder, name, slug) VALUES (11, 2,
 INSERT INTO indiepost.__categories (id, displayOrder, name, slug) VALUES (21, 3, 'Short', 'short');
 INSERT INTO indiepost.__categories (id, displayOrder, name, slug) VALUES (22, 9, 'Project', 'project');
 
-
-DROP TABLE IF EXISTS indiepost.__posts;
-CREATE TABLE indiepost.__posts
+-- Migrate Images
+DROP TABLE IF EXISTS indiepost.__image_union;
+CREATE TABLE indiepost.__image_union
 (
-  id INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
-  bookmarkedCount INT(11) NOT NULL,
-  commentsCount INT(11) NOT NULL,
-  content LONGTEXT NOT NULL,
-  createdAt DATETIME NOT NULL,
-  excerpt VARCHAR(300) NOT NULL,
-  featuredImage VARCHAR(120) NOT NULL,
-  likesCount INT(11) NOT NULL,
-  modifiedAt DATETIME NOT NULL,
-  publishedAt DATETIME NOT NULL,
-  status VARCHAR(255) NOT NULL,
-  title VARCHAR(100) NOT NULL,
-  postType VARCHAR(255) NOT NULL,
-  authorId INT(11) NOT NULL,
-  categoryId INT(11) NOT NULL,
-  editorId INT(11) NOT NULL
+  no INT(11),
+  dId INT(11),
+  data VARCHAR(255) NOT NULL,
+  date DATETIME NOT NULL,
+  isTitle BIT(1) NOT NULL
 );
 
-DROP TABLE IF EXISTS indiepost.__contentlist;
-CREATE TABLE indiepost.__contentlist LIKE indiepost.contentlist;
-INSERT indiepost.__contentlist
-  SELECT * FROM indiepost.contentlist;
-ALTER TABLE indiepost.__contentlist ADD (thumbnail VARCHAR(200));
-ALTER TABLE indiepost.__contentlist ADD (width INT);
-ALTER TABLE indiepost.__contentlist ADD (height INT);
+INSERT indiepost.__image_union
+  SELECT no, 0 as dId, IMAGEURL as data, REGDATE as date, 1 as isTitle FROM contentlist
+    UNION
+  SELECT c.no, d.no as dId, d.data, c.REGDATE as date, 0 as isTitle FROM contentlist AS c INNER JOIN detaillist AS d ON c.no = d.parent WHERE d.type = 2 AND d.iorder > 2;
+
+
+DROP TABLE IF EXISTS indiepost.__image_sets;
+CREATE TABLE __image_sets
+(
+  id INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  contentType VARCHAR(10) NOT NULL,
+  isFeatured BIT(1) NOT NULL,
+  uploadedAt DATETIME NOT NULL,
+  postId INT(11)
+);
+
+DROP TABLE IF EXISTS indiepost.__images;
+CREATE TABLE __images
+(
+  id INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  fileName VARCHAR(120) NOT NULL,
+  fileSize BIGINT(20) NOT NULL,
+  fileUrl VARCHAR(120) NOT NULL,
+  height INT(11) NOT NULL,
+  sizeType VARCHAR(255) NOT NULL,
+  width INT(11) NOT NULL,
+  imageSetId INT(11)
+);
 
 DROP TABLE IF EXISTS indiepost.__detaillist;
 CREATE TABLE indiepost.__detaillist LIKE indiepost.detaillist;
 INSERT indiepost.__detaillist
   SELECT * FROM indiepost.detaillist;
-ALTER TABLE indiepost.__detaillist ADD (thumbnail VARCHAR(200));
 ALTER TABLE indiepost.__detaillist ADD (width INT);
 ALTER TABLE indiepost.__detaillist ADD (height INT);
-
-INSERT INTO indiepost.__posts (id, title, featuredImage, excerpt, content, status, type, bookmarkedCount, commentsCount, likesCount,
-                   createdAt, modifiedAt, publishedAt, authorId, editorId, categoryId)
-  SELECT c.no, c.CONTENTNAME, c.IMAGEURL, c.CONTENTTEXT,
-    d.content, 'PUBLISHED', 'POST', c.jjim, 0, c.goods, STR_TO_DATE(c.REGDATE, '%Y%m%d'), STR_TO_DATE(c.REGDATE, '%Y%m%d'), STR_TO_DATE(c.REGDATE, '%Y%m%d'), 1, 1, c.MENUNO
-  FROM indiepost.__contentlist AS c
-    INNER JOIN indiepost.__post_content AS d
-      ON c.no = d.no;
-
