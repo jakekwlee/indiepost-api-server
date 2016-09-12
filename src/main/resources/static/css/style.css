@@ -1,9 +1,12 @@
 * {
     border-radius: 0 !important;
 }
-
 img {
     width: 100%;
+}
+
+figure > img {
+    height: 100%;
 }
 
 #home .list-group-item {

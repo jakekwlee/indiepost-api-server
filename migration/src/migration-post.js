@@ -67,8 +67,9 @@ module.exports = (()=> {
                 tags.push(tag);
             });
         });
+        tags.sort();
         tags = _.pull(tags, '', ' ');
-        return _.uniq(tags);
+        return _.sortedUniq(tags);
     }
 
     function insertTagsToDB(posts, pool, query) {

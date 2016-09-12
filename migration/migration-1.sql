@@ -47,6 +47,8 @@ INSERT INTO indiepost.__posts (id, title, featuredImage, excerpt, content, statu
     INNER JOIN indiepost.__post_content AS d
       ON c.no = d.id;
 
+UPDATE indiepost.__posts SET content = REPLACE(content, '\r\n', '<br>') WHERE id < 99999999;
+
 DROP TABLE IF EXISTS indiepost.__tags;
 CREATE TABLE indiepost.__tags
 (

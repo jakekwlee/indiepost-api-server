@@ -28,7 +28,7 @@ module.exports = (()=> {
 
     function updateDetaillistDB(images, pool, query) {
         return Promise.each(images, (image) => {
-            let sql = mysql.format(query, [image.newFileUrl, image.width, image.height, image.no]);
+            let sql = mysql.format(query, [image.newFileUrl, image.width, image.height, image.dId]);
             console.log('query: ' + sql);
             return pool.query(sql);
         });
