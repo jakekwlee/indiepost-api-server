@@ -3,8 +3,10 @@ package com.indiepost.service;
 import com.indiepost.exception.FileSaveException;
 import com.indiepost.model.ImageSet;
 import com.indiepost.viewModel.ImageResponse;
+import org.json.JSONObject;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -24,7 +26,7 @@ public interface ImageService {
 
     void update(ImageSet imageSet);
 
-    void delete(ImageSet imageSet);
+    void delete(ImageSet imageSet) throws IOException;
 
-    void deleteById(int id);
+    JSONObject deleteById(int id) throws IOException;
 }

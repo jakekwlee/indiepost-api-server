@@ -9,6 +9,7 @@ import com.indiepost.viewModel.ImageMeta;
 import com.indiepost.viewModel.ImageResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -104,30 +105,27 @@ public class ImageServiceImpl implements ImageService {
 
             if (i == 0) {
                 image.setSizeType(ImageEnum.SizeType.Original);
-                images.add(image);
                 ++i;
             } else if (1200 <= width) {
                 image.setSizeType(ImageEnum.SizeType.Large);
-                images.add(image);
                 width = 1000;
                 ++i;
-            } else if (700 < width && width < 1200) {
+            } else if (700 <= width && width < 1200) {
                 image.setSizeType(ImageEnum.SizeType.Medium);
-                images.add(image);
                 width = 500;
                 ++i;
-            } else if (400 < width && width < 700) {
+            } else if (400 <= width && width < 700) {
                 image.setSizeType(ImageEnum.SizeType.Small);
-                images.add(image);
                 width = 300;
                 ++i;
-            } else {
+            } else if (width < 400) {
                 image.setSizeType(ImageEnum.SizeType.Thumbnail);
-                images.add(image);
                 ++i;
             }
-            imageSet.setImages(images);
+            image.setImageSet(imageSet);
+            images.add(image);
         }
+        imageSet.setImages(images);
         imageRepository.save(imageSet);
         return generateImageResponse(imageSet);
     }
@@ -154,13 +152,24 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public void delete(ImageSet imageSet) {
+    public void delete(ImageSet imageSet) throws IOException {
+        List<Image> images = imageSet.getImages();
+        for (Image image : images) {
+            deleteFileFromFileSystem(image);
+        }
         imageRepository.delete(imageSet);
     }
 
     @Override
-    public void deleteById(int id) {
-        imageRepository.deleteById(id);
+    public JSONObject deleteById(int id) throws IOException {
+        ImageSet imageSet = findById(id);
+        JSONObject deletedFile = new JSONObject();
+        deletedFile.put(imageSet.getOriginal().getFileName(), true);
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("files", deletedFile);
+
+        delete(imageSet);
+        return jsonResponse;
     }
 
     private int normalizePage(int page) {
@@ -196,14 +205,16 @@ public class ImageServiceImpl implements ImageService {
     }
 
     private Dimension getDimension(MultipartFile multipartFile) throws FileSaveException {
-
-        try (ImageInputStream in = ImageIO.createImageInputStream(multipartFile.getInputStream())) {
+        try {
+            ImageInputStream in = ImageIO.createImageInputStream(multipartFile.getInputStream());
             final Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
             if (readers.hasNext()) {
                 ImageReader reader = readers.next();
                 try {
                     reader.setInput(in);
                     return new Dimension(reader.getWidth(0), reader.getHeight(0));
+                } catch (IOException e) {
+
                 } finally {
                     reader.dispose();
                 }
@@ -225,5 +236,10 @@ public class ImageServiceImpl implements ImageService {
         } catch (IOException ioe) {
             throw new FileSaveException("Image Upload Failed: " + path, ioe);
         }
+    }
+
+    private boolean deleteFileFromFileSystem(Image image) throws IOException {
+        File fileToDelete = FileUtils.getFile(new File(ROOT_DIRECTORY + image.getFileUrl()));
+        return FileUtils.deleteQuietly(fileToDelete);
     }
 }

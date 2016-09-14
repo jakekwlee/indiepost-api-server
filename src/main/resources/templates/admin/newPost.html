@@ -182,6 +182,10 @@
 
 
 
+
+
+
+
 </script>
 <!-- The template to display files available for download -->
 <script id="template-download" type="text/x-tmpl">
@@ -219,6 +223,10 @@
     </div>
 </li>
 {% } %}
+
+
+
+
 </script>
 <script th:src="@{/resources/js/moment.min.js}"></script>
 <script th:src="@{/resources/js/jquery.min.js}"></script>
@@ -236,7 +244,9 @@
 <script th:src="@{/resources/js/bootstrap3-typeahead.min.js}"></script>
 <script th:src="@{/resources/js/bootstrap-tagsinput.js}"></script>
 <!--<script th:src="@{/resources/tinymce/tinymce.min.js}"></script>-->
-<script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
     $(document).ready(function () {
 
         $('.date').datetimepicker({
@@ -254,7 +264,7 @@
 //            images_upload_base_path: '/some/basepath',
 //            images_upload_credentials: true,
 //            content_css: '/resources/css/tinymce.css'
-//        });
+//        });$(
 
         $.blueimp.fileupload.prototype.processActions.duplicateImage = function (data, options) {
             var length = data.files.length;
@@ -267,6 +277,12 @@
             }
             return data;
         };
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': [[${_csrf.token}]]
+            }
+        });
 
         $('#fileupload').fileupload({
             // Uncomment the following to send cross-domain cookies:
@@ -328,19 +344,22 @@
 
         $('#tags').tagsinput({
             typeahead: {
-                source: ['Amsterdam', 'Washington', 'Sydney', 'Beijing', 'Cairo']
+                source: ['Amsterdam', 'Washington', 'Sydney', 'Beijing', 'Cairo'],
+                afterSelect: function (val) {
+                    this.$element.val('');
+                }
             },
+            cancelConfirmKeysOnEmpty: true,
+            trimValue: true,
             confirmKeys: [13]
         });
 
-        //        $('#tags').on('itemAdded', function(event) {
-        //            var tags = $("#tags").tagsinput('items');
-        //            var lastIndex = tags.length - 1
-        //            var tag = tags[lastIndex];
-        //            tag = tag.replace(/\s/g, '_');
-        //            tags[lastIndex] = tag;
-        //        });
+        $('#tags').on('beforeItemAdd', function (event) {
+            event.item = event.item.replace(/\s/g, '_');
+            $('#tags').first('input').val(event.item);
+        });
     });
+    /*]]>*/
 </script>
 </body>
 </html>

@@ -3,17 +3,16 @@ package com.indiepost.controller.api.v1;
 import com.indiepost.exception.FileSaveException;
 import com.indiepost.service.ImageService;
 import com.indiepost.viewModel.ImageResponse;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 /**
  * Created by jake on 8/14/16.
@@ -35,6 +34,11 @@ public class ImageRestController {
 
         ImageResponse imageResponse = imageService.saveUploadedImage(multipartFiles);
         return ResponseEntity.ok(imageResponse);
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = {"application/json; charset=UTF-8"})
+    public String handleImageDelete(@PathVariable int id) throws IOException {
+        return imageService.deleteById(id).toString();
     }
 
     @RequestMapping(value = "/videos", method = RequestMethod.POST)

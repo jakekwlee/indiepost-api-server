@@ -14,7 +14,7 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
 public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
             "classpath:/META-INF/resources/", "classpath:/resources/",
-            "classpath:/static/", "classpath:/public/" };
+            "classpath:/static/", "file:/data/resources/" };
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry

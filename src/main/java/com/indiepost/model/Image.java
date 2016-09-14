@@ -61,14 +61,6 @@ public class Image implements Serializable {
         this.fileSize = size;
     }
 
-    public String getDirectory() {
-        return fileUrl;
-    }
-
-    public void setDirectory(String source) {
-        this.fileUrl = source;
-    }
-
     public int getWidth() {
         return width;
     }
