@@ -51,17 +51,17 @@ public class AdminController {
         return "admin/posts";
     }
 
-    @RequestMapping("posts/new")
-    public String newPost(Model model, Authentication authentication, Principal principal) {
-        User user = userService.findByUsername(principal.getName());
-        List<Category> categories = categoryService.findAll();
-        List<User> authors = userService.findByRolesEnum(UserEnum.Roles.Author);
-        model.addAttribute("categories", categories);
-        model.addAttribute("user", user);
-        model.addAttribute("authors", authors);
-        model.addAttribute("statuses", PostEnum.Status.values());
-        return "admin/newPost";
-    }
+//    @RequestMapping("posts/new")
+//    public String newPost(Model model, Authentication authentication, Principal principal) {
+//        User user = userService.findByUsername(principal.getName());
+//        List<Category> categories = categoryService.findAll();
+//        List<User> authors = userService.findByRolesEnum(UserEnum.Roles.Author);
+//        model.addAttribute("categories", categories);
+//        model.addAttribute("user", user);
+//        model.addAttribute("authors", authors);
+//        model.addAttribute("statuses", PostEnum.Status.values());
+//        return "admin/newPost";
+//    }
 
     private Boolean hasRoleEditorInChief(Authentication authentication) {
         return authentication.getAuthorities().contains(new SimpleGrantedAuthority(UserEnum.Roles.EditorInChief.toString()));

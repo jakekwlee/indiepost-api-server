@@ -161,7 +161,6 @@ public class PostRepositoryHibernate implements PostRepository {
                         .add(Property.forName("a.displayName"), "author.displayName")
                         .add(Property.forName("e.displayName"), "editor.displayName")
                         .add(Property.forName("c.name"), "category.name")
-                        .add(Property.forName("c.slug"), "category.slug")
                 )
                 .add(Restrictions.eq("status", PostEnum.Status.PUBLISHED));
         return criteria;

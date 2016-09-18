@@ -125,7 +125,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<Post> findAllForUser(int page, int maxResults) {
         page = normalizePage(page);
-        return postRepository.findAllForUser(new PageRequest(page, maxResults, Sort.Direction.DESC, "id"));
+        return postRepository.findAllForUser(new PageRequest(page, maxResults, Sort.Direction.DESC, "createdAt"));
     }
 
     @Override

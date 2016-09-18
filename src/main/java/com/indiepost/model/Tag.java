@@ -26,11 +26,6 @@ public class Tag implements Serializable {
     private String name;
 
     @NotNull
-    @Size(min = 1, max = 50)
-    @Column(unique = true)
-    private String slug;
-
-    @NotNull
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
     @OrderBy(value = "publishedAt")
     private Set<Post> posts;
@@ -49,14 +44,6 @@ public class Tag implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getSlug() {
-        return slug;
-    }
-
-    public void setSlug(String slug) {
-        this.slug = slug;
     }
 
     public Set<Post> getPosts() {
