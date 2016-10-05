@@ -73,7 +73,7 @@ public class HomeController {
     @RequestMapping("/author/{username}")
     public String getHomeByAuthor(Model model, Authentication authentication, Principal principal, @PathVariable("username") String username) {
         getUserFromPrincipal(model, authentication, principal);
-        List<Post> posts = postService.findByAuthoUsernamerForUser(username, 0, 10);
+        List<Post> posts = postService.findByAuthorUsernamerForUser(username, 0, 10);
         model.addAttribute("posts", posts);
         return "home";
     }

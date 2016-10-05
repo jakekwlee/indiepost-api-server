@@ -1,31 +1,21 @@
 package com.indiepost.model;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by jake on 7/25/16.
  */
-@Entity
-@Table(name = "Subscriptions")
+//@Entity
+//@Table(name = "Subscriptions")
 public class Subscription implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "userId")
     private User user;
 
-    @Id
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "authorId")
     private User author;
 
-    @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
     private Date subscriptedAt;
 
     public User getAuthor() {

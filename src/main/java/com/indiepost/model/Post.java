@@ -39,6 +39,10 @@ public class Post implements Serializable {
     private String content;
 
     @NotNull
+    @Size(min = 2, max = 30)
+    private String authorName;
+
+    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
@@ -80,11 +84,6 @@ public class Post implements Serializable {
 
     @ManyToOne(optional = false)
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "editorId", nullable = false)
-    private User editor;
-
-    @ManyToOne(optional = false)
-    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "authorId", nullable = false)
     private User author;
 
@@ -92,9 +91,6 @@ public class Post implements Serializable {
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "categoryId", nullable = false)
     private Category category;
-
-    @OneToMany(mappedBy = "post")
-    private Set<ImageSet> imageSets;
 
     @ManyToMany
     @JoinTable(
@@ -143,6 +139,14 @@ public class Post implements Serializable {
 
     public Date getCreateAt() {
         return createdAt;
+    }
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
     }
 
     public void setCreateAt(Date createAt) {
@@ -221,14 +225,6 @@ public class Post implements Serializable {
         this.category = category;
     }
 
-    public Set<ImageSet> getImageSets() {
-        return imageSets;
-    }
-
-    public void setImageSets(Set<ImageSet> imageSets) {
-        this.imageSets = imageSets;
-    }
-
     public Set<Tag> getTags() {
         return tags;
     }
@@ -269,14 +265,6 @@ public class Post implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public User getEditor() {
-        return editor;
-    }
-
-    public void setEditor(User editor) {
-        this.editor = editor;
-    }
-
     public User getAuthor() {
         return author;
     }
@@ -292,5 +280,4 @@ public class Post implements Serializable {
     public void setPostType(PostEnum.Type postType) {
         this.postType = postType;
     }
-
 }

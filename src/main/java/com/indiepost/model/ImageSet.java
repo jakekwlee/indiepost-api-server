@@ -29,10 +29,6 @@ public class ImageSet {
     @Cascade({CascadeType.ALL, CascadeType.SAVE_UPDATE})
     private List<Image> images;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "postId")
-    private Post post;
-
     @NotNull
     @Size(min = 9, max = 10)
     private String contentType;
@@ -86,14 +82,6 @@ public class ImageSet {
 
     public void setUploadedAt(Date uploadedAt) {
         this.uploadedAt = uploadedAt;
-    }
-
-    public Post getPost() {
-        return post;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
     }
 
     public String getContentType() {

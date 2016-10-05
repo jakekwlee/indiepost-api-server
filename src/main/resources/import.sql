@@ -16,8 +16,8 @@ INSERT indiepost.Categories
   SELECT *
   FROM indiepost.`__categories`;
 
-INSERT indiepost.Posts (id, bookmarkedCount, commentsCount, content, createdAt, excerpt, featuredImage, likesCount, modifiedAt, publishedAt, status, title, postType, authorId, categoryId, editorId)
-  SELECT id, bookmarkedCount, commentsCount, content, createdAt, excerpt, featuredImage, likesCount, modifiedAt, publishedAt, status, title, postType, authorId, categoryId, editorId
+INSERT indiepost.Posts (id, bookmarkedCount, commentsCount, content, createdAt, excerpt, featuredImage, likesCount, modifiedAt, publishedAt, status, title, postType, authorId, categoryId)
+  SELECT id, bookmarkedCount, commentsCount, content, createdAt, excerpt, featuredImage, likesCount, modifiedAt, publishedAt, status, title, postType, authorId, categoryId
   FROM indiepost.`__posts`;
 
 INSERT indiepost.Tags

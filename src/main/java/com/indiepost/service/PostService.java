@@ -42,15 +42,13 @@ public interface PostService {
 
     List<Post> findByAuthor(User author, int page, int maxResults);
 
+    List<Post> findByAuthorName(String authorName, int page, int maxResults);
+
     List<Post> findByAuthorForUser(User author, int page, int maxResults);
 
-    List<Post> findByAuthoUsernamerForUser(String username, int page, int maxResults);
+    List<Post> findByAuthorUsernamerForUser(String username, int page, int maxResults);
 
     List<Post> findByAuthorOrderByAsc(User author, int page, int maxResults);
-
-    List<Post> findByEditor(User editor, int page, int maxResults);
-
-    List<Post> findByEditorByAsc(User editor, int page, int maxResults);
 
     List<Post> findByStatus(PostEnum.Status status, int page, int maxResults);
 

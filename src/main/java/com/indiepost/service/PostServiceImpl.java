@@ -99,13 +99,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> findByEditor(User editor, int page, int maxResults) {
-        page = normalizePage(page);
-        return null;
-    }
-
-    @Override
-    public List<Post> findByEditorByAsc(User editor, int page, int maxResults) {
+    public List<Post> findByAuthorName(String authorName, int page, int maxResults) {
         page = normalizePage(page);
         return null;
     }
@@ -141,7 +135,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> findByAuthoUsernamerForUser(String username, int page, int maxResults) {
+    public List<Post> findByAuthorUsernamerForUser(String username, int page, int maxResults) {
         page = normalizePage(page);
         return postRepository.findByAuthorUsernameForUser(username, new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
     }
