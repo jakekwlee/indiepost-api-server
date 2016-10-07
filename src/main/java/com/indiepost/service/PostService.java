@@ -3,6 +3,7 @@ package com.indiepost.service;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Category;
 import com.indiepost.model.Post;
+import com.indiepost.model.Tag;
 import com.indiepost.model.User;
 
 import java.util.List;
@@ -16,41 +17,43 @@ public interface PostService {
 
     Post findById(int id);
 
-    Post findByIdForUser(int id);
-
     void update(Post post);
 
     void delete(Post post);
 
     List<Post> findAll(int page, int maxResults);
 
-    List<Post> findAllForUser(int page, int maxResults);
+    List<Post> findAll(PostEnum.Status status, User author, Category category, int page, int maxResults);
 
     List<Post> findAllOrderByAsc(int page, int maxResults);
 
-    List<Post> findByCategory(Category category, int page, int maxResults);
+    List<Post> findAllOrderByAsc(PostEnum.Status status, User author, Category category, int page, int maxResults);
 
-    List<Post> findByCategoryForUser(Category category, int page, int maxResults);
+    List<Post> findByCategory(Category category, int page, int maxResults);
 
     List<Post> findByCategoryOrderByAsc(Category category, int page, int maxResults);
 
     List<Post> findByCategorySlug(String slug, int page, int maxResults);
 
-    List<Post> findByCategorySlugForUser(String slug, int page, int maxResults);
-
     List<Post> findByCategorySlugOrderByAsc(String slug, int page, int maxResults);
 
     List<Post> findByAuthor(User author, int page, int maxResults);
 
+    List<Post> findByAuthorOrderByAsc(User author, int page, int maxResults);
+
     List<Post> findByAuthorName(String authorName, int page, int maxResults);
 
-    List<Post> findByAuthorForUser(User author, int page, int maxResults);
-
-    List<Post> findByAuthorUsernamerForUser(String username, int page, int maxResults);
-
-    List<Post> findByAuthorOrderByAsc(User author, int page, int maxResults);
+    List<Post> findByAuthorNameOrderByAsc(String authorName, int page, int maxResults);
 
     List<Post> findByStatus(PostEnum.Status status, int page, int maxResults);
 
     List<Post> findByStatusOrderByAsc(PostEnum.Status status, int page, int maxResults);
+
+    List<Post> findByTag(Tag tag, int page, int maxResults);
+
+    List<Post> findByTagOrderByAsc(Tag tag, int page, int maxResults);
+
+    List<Post> findByTagName(String tagName, int page, int maxResults);
+
+    List<Post> findByTagOrderByAsc(String tagName, int page, int maxResults);
 }

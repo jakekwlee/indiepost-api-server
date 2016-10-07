@@ -1,14 +1,16 @@
 package com.indiepost.repository.hibernate;
 
-import com.indiepost.enums.PostEnum;
+import com.indiepost.enums.PostEnum.Status;
 import com.indiepost.model.Category;
 import com.indiepost.model.Post;
+import com.indiepost.model.Tag;
 import com.indiepost.model.User;
 import com.indiepost.repository.CriteriaMaker;
 import com.indiepost.repository.PostRepository;
 import com.indiepost.util.AliasToBeanNestedResultTransformer;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
@@ -18,7 +20,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by jake on 7/30/16.
@@ -31,6 +33,10 @@ public class PostRepositoryHibernate implements PostRepository {
 
     @Autowired
     private CriteriaMaker criteriaMaker;
+
+    private Map<String, String> alias = new HashMap<>();
+
+    private Map<String, String> projections = new HashMap<>();
 
     @Override
     public Post findById(int id) {
@@ -56,82 +62,132 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     @Override
+    public List<Post> findAll(Pageable pageable) {
+        return findAll(pageable, true);
+    }
+
+    @Override
+    public List<Post> findAll(Pageable pageable, boolean condensed) {
+        return getCriteria(pageable, condensed)
+                .list();
+    }
+
+    @Override
+    public List<Post> findAll(Status status, User author, Category category, Pageable pageable) {
+        return findAll(status, author, category, pageable, true);
+    }
+
+    @Override
+    public List<Post> findAll(Status status, User author, Category category, Pageable pageable, boolean condensed) {
+        Criteria criteria =  getCriteria(pageable, condensed);
+        if (!condensed) {
+            criteria.createAlias("category", "c");
+            criteria.createAlias("author", "a");
+        }
+        if (status != null) {
+            criteria.add(Restrictions.eq("status", status));
+        }
+        if (category != null && category.getId() != 1) {
+            criteria.add(Restrictions.eq("c.id", category.getId()));
+        }
+        if (author != null) {
+             criteria.add(Restrictions.eq("a.id", author.getId()));
+        }
+        return criteria.list();
+    }
+
+    @Override
     public List<Post> findByCategory(Category category, Pageable pageable) {
-        return getCriteria(pageable)
-                .add(Restrictions.eq("categoryId", category.getId()))
+        return findByCategory(category, pageable, true);
+    }
+
+    @Override
+    public List<Post> findByCategory(Category category, Pageable pageable, boolean condensed) {
+        return getCriteria(pageable, condensed)
+                .add(Restrictions.eq("c.id", category.getId()))
+                .list();
+    }
+
+    @Override
+    public List<Post> findByCategorySlug(String slug, Pageable pageable) {
+        return findByCategorySlug(slug, pageable, true);
+    }
+
+    @Override
+    public List<Post> findByCategorySlug(String slug, Pageable pageable, boolean condensed) {
+        Criteria criteria = getCriteria(pageable, condensed);
+        if (!condensed) {
+            criteria.createAlias("category", "c");
+        }
+        return criteria
+                .add(Restrictions.eq("c.slug", slug))
                 .list();
     }
 
     @Override
     public List<Post> findByAuthor(User author, Pageable pageable) {
-        return getCriteria(pageable)
-                .add(Restrictions.eq("authorId", author.getId()))
+        return findByAuthor(author, pageable, true);
+    }
+
+    @Override
+    public List<Post> findByAuthor(User author, Pageable pageable, boolean condensed) {
+        Criteria criteria = getCriteria(pageable, condensed);
+        if (!condensed) {
+            criteria.createAlias("author", "a");
+        }
+        return criteria
+                .add(Restrictions.eq("a.id", author.getId()))
                 .list();
     }
 
     @Override
-    public List<Post> findByEditor(User editor, Pageable pageable) {
-        return getCriteria(pageable)
-                .add(Restrictions.eq("editorId", editor.getId()))
+    public List<Post> findByAuthorName(String authorName, Pageable pageable) {
+        return findByAuthorName(authorName, pageable, true);
+    }
+
+    @Override
+    public List<Post> findByAuthorName(String authorName, Pageable pageable, boolean condensed) {
+        return getCriteria(pageable, condensed)
+                .add(Restrictions.eq("authorName", authorName))
                 .list();
     }
 
     @Override
-    public List<Post> findAll(Pageable pageable) {
-        return getCriteria(pageable).list();
+    public List<Post> findByTag(Tag tag, Pageable pageable) {
+        return findByTag(tag, pageable, true);
     }
 
     @Override
-    public List<Post> findAllForUser(Pageable pageable) {
-        return getCriteriaForHomeUser(pageable)
-                .setResultTransformer(new AliasToBeanNestedResultTransformer(Post.class))
+    public List<Post> findByTag(Tag tag, Pageable pageable, boolean condensed) {
+        return getCriteria(pageable, condensed)
+                .createAlias("tags", "t")
+                .add(Restrictions.eq("tags.id", tag.getId()))
                 .list();
     }
 
     @Override
-    public Post findByIdForUser(int id) {
-        Post post = findById(id);
-        Post postForUser = new Post();
-        postForUser.setId(post.getId());
-        postForUser.setTitle(post.getTitle());
-        postForUser.setContent(post.getContent());
-        postForUser.setPublishedAt(post.getPublishedAt());
-        postForUser.setAuthor(post.getAuthor());
-        postForUser.setCategory(post.getCategory());
-        postForUser.setFeaturedImage(post.getFeaturedImage());
-        return postForUser;
+    public List<Post> findByTagName(String tagName, Pageable pageable) {
+        return findByTagName(tagName, pageable, true);
     }
 
     @Override
-    public List<Post> findByCategoryForUser(Category category, Pageable pageable) {
-        return getCriteriaForHomeUser(pageable)
-                .add(Restrictions.eq("categoryId", category.getId()))
-                .setResultTransformer(new AliasToBeanNestedResultTransformer(Post.class))
+    public List<Post> findByTagName(String tagName, Pageable pageable, boolean condensed) {
+        return getCriteria(pageable, condensed)
+                .createAlias("tags", "t")
+                .add(Restrictions.eq("t.name", tagName))
                 .list();
     }
 
     @Override
-    public List<Post> findByCategorySlugForUser(String slug, Pageable pageable) {
-        return getCriteriaForHomeUser(pageable)
-                .add(Restrictions.eq("c.slug", slug))
-                .setResultTransformer(new AliasToBeanNestedResultTransformer(Post.class))
-                .list();
+    public List<Post> findByStatus(Status status, Pageable pageable) {
+        return findByStatus(status, pageable, true);
     }
 
     @Override
-    public List<Post> findByAuthorForUser(User author, Pageable pageable) {
-        return getCriteriaForHomeUser(pageable)
-                .add(Restrictions.eq("a.id.", author.getId()))
-                .setResultTransformer(new AliasToBeanNestedResultTransformer(Post.class))
-                .list();
-    }
-
-    @Override
-    public List<Post> findByAuthorUsernameForUser(String username, Pageable pageable) {
-        return getCriteriaForHomeUser(pageable)
-                .add(Restrictions.eq("a.username", username))
-                .setResultTransformer(new AliasToBeanNestedResultTransformer(Post.class))
-                .list();
+    public List<Post> findByStatus(Status status, Pageable pageable, boolean condensed) {
+        return getCriteria(pageable, condensed)
+                        .add(Restrictions.eq("status", status))
+                        .list();
     }
 
     private Session getSession() {
@@ -139,30 +195,66 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     private Criteria getCriteria() {
+        alias.clear();
+        projections.clear();
         return getSession().createCriteria(Post.class);
+    }
+
+    private Criteria getCriteria(Pageable pageable, boolean condensed) {
+        if (condensed) {
+            return getCriteriaWithProjections(pageable);
+        }
+        return getCriteria(pageable);
     }
 
     private Criteria getCriteria(Pageable pageable) {
         return criteriaMaker.getPagedCriteria(getCriteria(), pageable);
     }
 
-    private Criteria getCriteriaForHomeUser(Pageable pageable) {
+    private Criteria getCriteriaWithProjections(Pageable pageable) {
         Criteria criteria = getCriteria(pageable);
-        criteria.createAlias("author", "a")
-                .createAlias("editor", "e")
-                .createAlias("category", "c")
-                .setProjection(Projections.projectionList()
-                        .add(Property.forName("id"), "id")
-                        .add(Property.forName("title"), "title")
-                        .add(Property.forName("featuredImage"), "featuredImage")
-                        .add(Property.forName("excerpt"), "excerpt")
-                        .add(Property.forName("publishedAt"), "publishedAt")
-                        .add(Property.forName("likesCount"), "likesCount")
-                        .add(Property.forName("a.displayName"), "author.displayName")
-                        .add(Property.forName("e.displayName"), "editor.displayName")
-                        .add(Property.forName("c.name"), "category.name")
-                )
-                .add(Restrictions.eq("status", PostEnum.Status.PUBLISHED));
+
+        alias.put("author", "a");
+        alias.put("category", "c");
+
+        projections.put("id", "id");
+        projections.put("title", "title");
+        projections.put("featuredImage", "featuredImage");
+        projections.put("excerpt", "excerpt");
+        projections.put("publishedAt", "publishedAt");
+        projections.put("likesCount", "likesCount");
+        projections.put("commentsCount", "commentsCount");
+        projections.put("status", "status");
+        projections.put("a.id", "author.id");
+        projections.put("a.displayName", "author.displayName");
+        projections.put("c.id", "category.id");
+        projections.put("c.name", "category.name");
+        projections.put("c.slug", "category.slug");
+
+        setAlias(criteria);
+        setProjections(criteria);
+        criteria.add(Restrictions.eq("status", Status.PUBLISHED))
+                .setResultTransformer(new AliasToBeanNestedResultTransformer(Post.class));
+
         return criteria;
+    }
+
+    private Criteria setAlias(Criteria criteria) {
+        Iterator<String> keys = alias.keySet().iterator();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            criteria.createAlias(key, alias.get(key));
+        }
+        return criteria;
+    }
+
+    private Criteria setProjections(Criteria criteria) {
+        Iterator<String> keys = projections.keySet().iterator();
+        ProjectionList projectionList = Projections.projectionList();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            projectionList.add(Property.forName(key), projections.get(key));
+        }
+        return criteria.setProjection(projectionList);
     }
 }

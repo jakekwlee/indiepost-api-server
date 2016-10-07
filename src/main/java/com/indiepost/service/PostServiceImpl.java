@@ -3,6 +3,7 @@ package com.indiepost.service;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Category;
 import com.indiepost.model.Post;
+import com.indiepost.model.Tag;
 import com.indiepost.model.User;
 import com.indiepost.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +35,6 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post findByIdForUser(int id) {
-        return postRepository.findById(id);
-    }
-
-    @Override
     public void update(Post post) {
         postRepository.update(post);
     }
@@ -61,6 +57,18 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public List<Post> findAll(PostEnum.Status status, User author, Category category, int page, int maxResults) {
+        page = normalizePage(page);
+        return postRepository.findAll(status, author, category, new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
+    }
+
+    @Override
+    public List<Post> findAllOrderByAsc(PostEnum.Status status, User author, Category category, int page, int maxResults) {
+        page = normalizePage(page);
+        return postRepository.findAll(status, author, category, new PageRequest(page, maxResults, Sort.Direction.ASC, "publishedAt"));
+    }
+
+    @Override
     public List<Post> findByCategory(Category category, int page, int maxResults) {
         page = normalizePage(page);
         return postRepository
@@ -77,77 +85,88 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<Post> findByCategorySlug(String slug, int page, int maxResults) {
         page = normalizePage(page);
-        return null;
+        return postRepository
+                .findByCategorySlug(slug, new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
     }
 
     @Override
     public List<Post> findByCategorySlugOrderByAsc(String slug, int page, int maxResults) {
         page = normalizePage(page);
-        return null;
+        return postRepository
+                .findByCategorySlug(slug, new PageRequest(page, maxResults, Sort.Direction.ASC, "publishedAt"));
     }
 
     @Override
     public List<Post> findByAuthor(User user, int page, int maxResults) {
         page = normalizePage(page);
-        return null;
+        return postRepository
+                .findByAuthor(user, new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
     }
 
     @Override
     public List<Post> findByAuthorOrderByAsc(User user, int page, int maxResults) {
         page = normalizePage(page);
-        return null;
+        return postRepository
+                .findByAuthor(user, new PageRequest(page, maxResults, Sort.Direction.ASC, "publishedAt"));
     }
 
     @Override
     public List<Post> findByAuthorName(String authorName, int page, int maxResults) {
         page = normalizePage(page);
-        return null;
+        return postRepository
+                .findByAuthorName(authorName, new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
+    }
+
+    @Override
+    public List<Post> findByAuthorNameOrderByAsc(String authorName, int page, int maxResults) {
+        page = normalizePage(page);
+        return postRepository
+                .findByAuthorName(authorName, new PageRequest(page, maxResults, Sort.Direction.ASC, "publishedAt"));
     }
 
     @Override
     public List<Post> findByStatus(PostEnum.Status status, int page, int maxResults) {
         page = normalizePage(page);
-        return null;
+        return postRepository
+                .findByStatus(status, new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
     }
 
     @Override
     public List<Post> findByStatusOrderByAsc(PostEnum.Status status, int page, int maxResults) {
         page = normalizePage(page);
-        return null;
+        return postRepository
+                .findByStatus(status, new PageRequest(page, maxResults, Sort.Direction.ASC, "publishedAt"));
     }
 
     @Override
-    public List<Post> findAllForUser(int page, int maxResults) {
+    public List<Post> findByTag(Tag tag, int page, int maxResults) {
         page = normalizePage(page);
-        return postRepository.findAllForUser(new PageRequest(page, maxResults, Sort.Direction.DESC, "createdAt"));
+        return postRepository
+                .findByTag(tag, new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
     }
 
     @Override
-    public List<Post> findByCategoryForUser(Category category, int page, int maxResults) {
+    public List<Post> findByTagOrderByAsc(Tag tag, int page, int maxResults) {
         page = normalizePage(page);
-        return postRepository.findByCategoryForUser(category, new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
+        return postRepository
+                .findByTag(tag, new PageRequest(page, maxResults, Sort.Direction.ASC, "publishedAt"));
     }
 
     @Override
-    public List<Post> findByCategorySlugForUser(String slug, int page, int maxResults) {
+    public List<Post> findByTagName(String tagName, int page, int maxResults) {
         page = normalizePage(page);
-        return postRepository.findByCategorySlugForUser(slug, new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
+        return postRepository
+                .findByTagName(tagName, new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
     }
 
     @Override
-    public List<Post> findByAuthorUsernamerForUser(String username, int page, int maxResults) {
+    public List<Post> findByTagOrderByAsc(String tagName, int page, int maxResults) {
         page = normalizePage(page);
-        return postRepository.findByAuthorUsernameForUser(username, new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
-    }
-
-    @Override
-    public List<Post> findByAuthorForUser(User author, int page, int maxResults) {
-        page = normalizePage(page);
-        return postRepository.findByAuthorForUser(author, new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
+        return postRepository
+                .findByTagName(tagName, new PageRequest(page, maxResults, Sort.Direction.ASC, "publishedAt"));
     }
 
     private int normalizePage(int page) {
-        page = page < 1 ? 0 : page - 1;
-        return page;
+        return page < 1 ? 0 : page - 1;
     }
 }

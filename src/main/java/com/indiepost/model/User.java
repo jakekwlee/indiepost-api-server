@@ -66,18 +66,12 @@ public class User implements Serializable {
     @NotNull
     @Enumerated(EnumType.STRING)
     private UserEnum.Gender gender;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private Set<Bookmark> bookmarkes;
-
+    
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Set<Like> likes;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "author")
-    private Set<Post> postsAuthoredByMe;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "editor")
-    private Set<Post> postsEditedByMe;
+    private Set<Post> posts;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private Set<Comment> comments;
@@ -90,14 +84,6 @@ public class User implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "roleId")
     )
     private Set<Role> roles;
-
-    public Set<Bookmark> getBookmarkes() {
-        return bookmarkes;
-    }
-
-    public void setBookmarkes(Set<Bookmark> bookmarkes) {
-        this.bookmarkes = bookmarkes;
-    }
 
     public Set<Like> getLikes() {
         return likes;
@@ -203,20 +189,12 @@ public class User implements Serializable {
         this.state = state;
     }
 
-    public Set<Post> getPostsAuthoredByMe() {
-        return postsAuthoredByMe;
+    public Set<Post> getPosts() {
+        return posts;
     }
 
-    public void setPostsAuthoredByMe(Set<Post> postsAuthoredByMe) {
-        this.postsAuthoredByMe = postsAuthoredByMe;
-    }
-
-    public Set<Post> getPostsEditedByMe() {
-        return postsEditedByMe;
-    }
-
-    public void setPostsEditedByMe(Set<Post> postsEditedByMe) {
-        this.postsEditedByMe = postsEditedByMe;
+    public void setPosts(Set<Post> posts) {
+        this.posts = posts;
     }
 
     public UserEnum.Gender getGender() {

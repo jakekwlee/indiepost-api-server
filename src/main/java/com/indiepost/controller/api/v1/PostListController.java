@@ -21,6 +21,6 @@ public class PostListController {
 
     @RequestMapping(method = RequestMethod.GET)
     public List<Post> getPosts() {
-        return postService.findAllForUser(0, 10);
+        return postService.findAll(0, 10);
     }
 }

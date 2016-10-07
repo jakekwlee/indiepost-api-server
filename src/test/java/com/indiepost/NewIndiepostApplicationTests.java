@@ -1,5 +1,11 @@
 package com.indiepost;
 
+import com.indiepost.enums.PostEnum;
+import com.indiepost.model.Category;
+import com.indiepost.model.User;
+import com.indiepost.service.CategoryService;
+import com.indiepost.service.PostService;
+import com.indiepost.service.UserService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +23,15 @@ public class NewIndiepostApplicationTests {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private PostService postService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private CategoryService categoryService;
+
     @Test
     public void contextLoads() {
     }
@@ -26,5 +41,15 @@ public class NewIndiepostApplicationTests {
         String rawPassword = "admin";
         String encodedPassword = "*4ACFE3202A5FF5CF467898FC58AAB1D615029441";
         Assert.assertEquals(encodedPassword, this.passwordEncoder.encode(rawPassword));
+    }
+
+    @Test
+    public void postServiceWorksCorrectly() throws Exception {
+        User user = userService.findById(1);
+        Category category = categoryService.findBySlug("music");
+        postService.findAll(1, 50);
+        postService.findAll(PostEnum.Status.QUEUED, user, category, 1, 50);
+        postService.findByAuthorName("Indiepost", 1, 50);
+        postService.findByStatusOrderByAsc(PostEnum.Status.PUBLISHED, 1, 100);
     }
 }

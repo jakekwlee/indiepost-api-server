@@ -31,7 +31,7 @@ public class HomeController {
     @RequestMapping("/")
     public String getHome(Model model, Authentication authentication, Principal principal) {
         getUserFromPrincipal(model, authentication, principal);
-        List<Post> posts = postService.findAllForUser(0, 10);
+        List<Post> posts = postService.findAll(0, 10);
         model.addAttribute("posts", posts);
         return "home";
     }
@@ -39,7 +39,7 @@ public class HomeController {
     @RequestMapping("/page/{page}")
     public String getHome(Model model, Authentication authentication, Principal principal, @PathVariable("page") int page) {
         getUserFromPrincipal(model, authentication, principal);
-        List<Post> posts = postService.findAllForUser(page, 10);
+        List<Post> posts = postService.findAll(page, 10);
         model.addAttribute("posts", posts);
         return "home";
     }
@@ -47,7 +47,7 @@ public class HomeController {
     @RequestMapping("/category/{slug}")
     public String getHomeByCategory(Model model, Authentication authentication, Principal principal, @PathVariable("slug") String slug) {
         getUserFromPrincipal(model, authentication, principal);
-        List<Post> posts = postService.findByCategorySlugForUser(slug, 0, 10);
+        List<Post> posts = postService.findByCategorySlug(slug, 0, 10);
         String title = "";
         if (posts.size() > 0) {
             title = posts.get(0).getCategory().getName();
@@ -60,7 +60,7 @@ public class HomeController {
     @RequestMapping("/category/{slug}/{page}")
     public String getHomeByCategory(Model model, Authentication authentication, Principal principal, @PathVariable("slug") String slug, @PathVariable int page) {
         getUserFromPrincipal(model, authentication, principal);
-        List<Post> posts = postService.findByCategorySlugForUser(slug, page, 10);
+        List<Post> posts = postService.findByCategorySlug(slug, page, 10);
         String title = "";
         if (posts.size() > 0) {
             title = posts.get(0).getCategory().getName();
@@ -73,7 +73,7 @@ public class HomeController {
     @RequestMapping("/author/{username}")
     public String getHomeByAuthor(Model model, Authentication authentication, Principal principal, @PathVariable("username") String username) {
         getUserFromPrincipal(model, authentication, principal);
-        List<Post> posts = postService.findByAuthorUsernamerForUser(username, 0, 10);
+        List<Post> posts = postService.findByAuthorName(username, 0, 10);
         model.addAttribute("posts", posts);
         return "home";
     }
@@ -81,7 +81,7 @@ public class HomeController {
     @RequestMapping("/archives/{id}")
     public String getPost(Model model, Authentication authentication, Principal principal, @PathVariable int id) {
         getUserFromPrincipal(model, authentication, principal);
-        Post post = postService.findByIdForUser(id);
+        Post post = postService.findById(id);
         model.addAttribute("post", post);
         return "post";
     }

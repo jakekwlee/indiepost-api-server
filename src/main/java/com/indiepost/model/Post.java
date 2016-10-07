@@ -30,6 +30,14 @@ public class Post implements Serializable {
     private int id;
 
     @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "originalId")
+    private Post original;
+
+    @OneToMany(mappedBy = "original", orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Post> versions;
+
+    @NotNull
     @Size(min = 2, max = 100)
     private String title;
 
@@ -65,10 +73,6 @@ public class Post implements Serializable {
     @NotNull
     @Min(0)
     private int likesCount = 0;
-
-    @NotNull
-    @Min(0)
-    private int bookmarkedCount = 0;
 
     @NotNull
     @Min(0)
@@ -108,10 +112,6 @@ public class Post implements Serializable {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("likedAt DESC")
     private Set<Like> likes;
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy(value = "bookmarkedAt DESC")
-    private Set<Bookmark> bookmarks;
 
     public int getId() {
         return id;
@@ -193,14 +193,6 @@ public class Post implements Serializable {
         this.likesCount = likesCount;
     }
 
-    public int getBookmarkedCount() {
-        return bookmarkedCount;
-    }
-
-    public void setBookmarkedCount(int bookmarkedCount) {
-        this.bookmarkedCount = bookmarkedCount;
-    }
-
     public int getCommentsCount() {
         return commentsCount;
     }
@@ -249,14 +241,6 @@ public class Post implements Serializable {
         this.likes = likes;
     }
 
-    public Set<Bookmark> getBookmarks() {
-        return bookmarks;
-    }
-
-    public void setBookmarks(Set<Bookmark> bookmarks) {
-        this.bookmarks = bookmarks;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -279,5 +263,21 @@ public class Post implements Serializable {
 
     public void setPostType(PostEnum.Type postType) {
         this.postType = postType;
+    }
+
+    public Post getOriginal() {
+        return original;
+    }
+
+    public void setOriginal(Post original) {
+        this.original = original;
+    }
+
+    public Set<Post> getVersions() {
+        return versions;
+    }
+
+    public void setVersions(Set<Post> versions) {
+        this.versions = versions;
     }
 }
