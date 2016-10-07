@@ -68,9 +68,6 @@ public class User implements Serializable {
     private UserEnum.Gender gender;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private Set<Subscription> subscriptions;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Set<Bookmark> bookmarkes;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
@@ -93,14 +90,6 @@ public class User implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "roleId")
     )
     private Set<Role> roles;
-
-    public Set<Subscription> getSubscriptions() {
-        return subscriptions;
-    }
-
-    public void setSubscriptions(Set<Subscription> subscriptions) {
-        this.subscriptions = subscriptions;
-    }
 
     public Set<Bookmark> getBookmarkes() {
         return bookmarkes;
