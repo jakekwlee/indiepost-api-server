@@ -1,4 +1,4 @@
-package com.indiepost.controller.api.v1;
+package com.indiepost.controller.api;
 
 import com.indiepost.model.Post;
 import com.indiepost.service.PostService;
@@ -13,7 +13,7 @@ import java.util.List;
  * Created by jake on 7/31/16.
  */
 @RestController
-@RequestMapping("/api/v1/posts")
+@RequestMapping("/api/posts")
 public class PostListController {
 
     @Autowired

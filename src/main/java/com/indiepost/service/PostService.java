@@ -21,6 +21,18 @@ public interface PostService {
 
     void delete(Post post);
 
+    int count();
+
+    int countPublished();
+
+    int countBooked();
+
+    int countQueued();
+
+    int countDraft();
+
+    int countDeleted();
+
     List<Post> findAll(int page, int maxResults);
 
     List<Post> findAll(PostEnum.Status status, User author, Category category, int page, int maxResults);

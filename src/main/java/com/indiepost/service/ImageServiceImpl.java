@@ -36,7 +36,7 @@ import static org.springframework.util.MimeTypeUtils.*;
 @Transactional
 public class ImageServiceImpl implements ImageService {
 
-    private static final String API_URI = "/api/v1/images/";
+    private static final String API_URI = "/api/images/";
     private static final String ROOT_DIRECTORY = "/data";
     private static final String BASE_URL = "/uploads/images";
     private static final int FILENAME_LENGTH = 6;

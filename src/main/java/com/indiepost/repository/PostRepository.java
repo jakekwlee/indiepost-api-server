@@ -22,6 +22,12 @@ public interface PostRepository {
 
     Post findById(int id);
 
+    int count();
+
+    int count(PostEnum.Status status);
+
+    int count(PostEnum.Status status, String username);
+
     List<Post> findByTag(Tag tag, Pageable pageable);
 
     List<Post> findByTag(Tag tag, Pageable pageable, boolean condensed);

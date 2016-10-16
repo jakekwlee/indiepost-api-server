@@ -1,4 +1,4 @@
-package com.indiepost.controller.api.v1;
+package com.indiepost.controller.api;
 
 import com.indiepost.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 
 @RestController
-@RequestMapping("/api/v1/tags")
+@RequestMapping("/api/tags")
 public class TagRestController {
 
     @Autowired

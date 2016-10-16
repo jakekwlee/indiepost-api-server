@@ -15,7 +15,7 @@ import java.security.Principal;
  * Created by jake on 8/1/16.
  */
 @Controller
-@RequestMapping("/cms")
+@RequestMapping("/management")
 public class AdminController {
     @Autowired
     private PostService postService;

@@ -5,6 +5,8 @@ import com.indiepost.model.User;
 import com.indiepost.repository.RoleRepository;
 import com.indiepost.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +60,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(int id) {
         return userRepository.findOne(id);
+    }
+
+
+    @Override
+    public User getCurrentUser() {
+        String username = getCurrentUsername();
+        return findByUsername(username);
+    }
+
+    @Override
+    public String getCurrentUsername() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        return securityContext.getAuthentication().getName();
     }
 
     @Override

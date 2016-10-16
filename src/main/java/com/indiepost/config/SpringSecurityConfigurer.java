@@ -40,7 +40,8 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/cms/**").hasAuthority(UserEnum.Roles.Editor.toString())
+                .antMatchers("/management/**").hasAuthority(UserEnum.Roles.Editor.toString())
+                .antMatchers("/api/management/**").hasAuthority(UserEnum.Roles.Editor.toString())
                 .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
                 .and()

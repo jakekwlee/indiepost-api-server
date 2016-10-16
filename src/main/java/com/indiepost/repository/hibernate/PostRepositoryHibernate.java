@@ -20,7 +20,12 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import static java.lang.Math.toIntExact;
 
 /**
  * Created by jake on 7/30/16.
@@ -61,6 +66,31 @@ public class PostRepositoryHibernate implements PostRepository {
         getSession().update(post);
     }
 
+
+    @Override
+    public int count() {
+        return toIntExact((Long) getCriteria().setProjection(Projections.rowCount())
+                .uniqueResult());
+    }
+
+    @Override
+    public int count(Status status) {
+        return toIntExact((Long) getCriteria()
+                .add(Restrictions.eq("status", status))
+                .setProjection(Projections.rowCount())
+                .uniqueResult());
+    }
+
+    @Override
+    public int count(Status status, String username) {
+        return toIntExact((Long) getCriteria()
+                .createAlias("author", "a")
+                .add(Restrictions.eq("a.username", username))
+                .add(Restrictions.eq("status", status))
+                .setProjection(Projections.rowCount())
+                .uniqueResult());
+    }
+
     @Override
     public List<Post> findAll(Pageable pageable) {
         return findAll(pageable, true);
@@ -69,6 +99,7 @@ public class PostRepositoryHibernate implements PostRepository {
     @Override
     public List<Post> findAll(Pageable pageable, boolean condensed) {
         return getCriteria(pageable, condensed)
+                .add(Restrictions.eq("status", Status.PUBLISHED))
                 .list();
     }
 
@@ -79,7 +110,7 @@ public class PostRepositoryHibernate implements PostRepository {
 
     @Override
     public List<Post> findAll(Status status, User author, Category category, Pageable pageable, boolean condensed) {
-        Criteria criteria =  getCriteria(pageable, condensed);
+        Criteria criteria = getCriteria(pageable, condensed);
         if (!condensed) {
             criteria.createAlias("category", "c");
             criteria.createAlias("author", "a");
@@ -91,7 +122,7 @@ public class PostRepositoryHibernate implements PostRepository {
             criteria.add(Restrictions.eq("c.id", category.getId()));
         }
         if (author != null) {
-             criteria.add(Restrictions.eq("a.id", author.getId()));
+            criteria.add(Restrictions.eq("a.id", author.getId()));
         }
         return criteria.list();
     }
@@ -105,6 +136,7 @@ public class PostRepositoryHibernate implements PostRepository {
     public List<Post> findByCategory(Category category, Pageable pageable, boolean condensed) {
         return getCriteria(pageable, condensed)
                 .add(Restrictions.eq("c.id", category.getId()))
+                .add(Restrictions.eq("status", Status.PUBLISHED))
                 .list();
     }
 
@@ -121,6 +153,7 @@ public class PostRepositoryHibernate implements PostRepository {
         }
         return criteria
                 .add(Restrictions.eq("c.slug", slug))
+                .add(Restrictions.eq("status", Status.PUBLISHED))
                 .list();
     }
 
@@ -137,6 +170,7 @@ public class PostRepositoryHibernate implements PostRepository {
         }
         return criteria
                 .add(Restrictions.eq("a.id", author.getId()))
+                .add(Restrictions.eq("status", Status.PUBLISHED))
                 .list();
     }
 
@@ -149,6 +183,7 @@ public class PostRepositoryHibernate implements PostRepository {
     public List<Post> findByAuthorName(String authorName, Pageable pageable, boolean condensed) {
         return getCriteria(pageable, condensed)
                 .add(Restrictions.eq("authorName", authorName))
+                .add(Restrictions.eq("status", Status.PUBLISHED))
                 .list();
     }
 
@@ -162,6 +197,7 @@ public class PostRepositoryHibernate implements PostRepository {
         return getCriteria(pageable, condensed)
                 .createAlias("tags", "t")
                 .add(Restrictions.eq("tags.id", tag.getId()))
+                .add(Restrictions.eq("status", Status.PUBLISHED))
                 .list();
     }
 
@@ -175,6 +211,7 @@ public class PostRepositoryHibernate implements PostRepository {
         return getCriteria(pageable, condensed)
                 .createAlias("tags", "t")
                 .add(Restrictions.eq("t.name", tagName))
+                .add(Restrictions.eq("status", Status.PUBLISHED))
                 .list();
     }
 
@@ -186,8 +223,9 @@ public class PostRepositoryHibernate implements PostRepository {
     @Override
     public List<Post> findByStatus(Status status, Pageable pageable, boolean condensed) {
         return getCriteria(pageable, condensed)
-                        .add(Restrictions.eq("status", status))
-                        .list();
+                .add(Restrictions.eq("status", status))
+                .add(Restrictions.eq("status", Status.PUBLISHED))
+                .list();
     }
 
     private Session getSession() {
@@ -221,11 +259,15 @@ public class PostRepositoryHibernate implements PostRepository {
         projections.put("title", "title");
         projections.put("featuredImage", "featuredImage");
         projections.put("excerpt", "excerpt");
+        projections.put("authorName", "authorName");
         projections.put("publishedAt", "publishedAt");
+        projections.put("createdAt", "createdAt");
         projections.put("likesCount", "likesCount");
         projections.put("commentsCount", "commentsCount");
         projections.put("status", "status");
         projections.put("a.id", "author.id");
+        projections.put("a.username", "author.username");
+        projections.put("a.email", "author.email");
         projections.put("a.displayName", "author.displayName");
         projections.put("c.id", "category.id");
         projections.put("c.name", "category.name");
@@ -233,8 +275,7 @@ public class PostRepositoryHibernate implements PostRepository {
 
         setAlias(criteria);
         setProjections(criteria);
-        criteria.add(Restrictions.eq("status", Status.PUBLISHED))
-                .setResultTransformer(new AliasToBeanNestedResultTransformer(Post.class));
+        criteria.setResultTransformer(new AliasToBeanNestedResultTransformer(Post.class));
 
         return criteria;
     }

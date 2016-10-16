@@ -5,7 +5,7 @@ package com.indiepost.enums;
  */
 public interface PostEnum {
     enum Status {
-        DELETED, DRAFT, QUEUED, RESERVED, PUBLISHED
+        DELETED, AUTOSAVED, DRAFT, QUEUED, BOOKED, PUBLISHED
     }
 
     enum Type {

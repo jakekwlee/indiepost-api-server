@@ -1,9 +1,8 @@
-package com.indiepost.controller.api.v1;
+package com.indiepost.controller.api;
 
 import com.indiepost.exception.FileSaveException;
 import com.indiepost.service.ImageService;
 import com.indiepost.viewModel.ImageResponse;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,7 @@ import java.io.IOException;
  * Created by jake on 8/14/16.
  */
 @RestController
-@RequestMapping("/api/v1/images")
+@RequestMapping("/api/images")
 public class ImageRestController {
 
     @Autowired
