@@ -15,7 +15,7 @@ public interface RoleService {
 
     void delete(UserEnum.Roles role);
 
-    Role findById(int id);
+    Role findById(Long id);
 
     Role findByName(String name);
 

@@ -131,7 +131,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public ImageSet findById(int id) {
+    public ImageSet findById(Long id) {
         return imageRepository.findById(id);
     }
 
@@ -142,7 +142,6 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public List<ImageSet> findAll(int page, int maxResults) {
-        page = normalizePage(page);
         return imageRepository.findAll(new PageRequest(page, maxResults, Sort.Direction.DESC, "uploadedAt"));
     }
 
@@ -161,7 +160,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public JSONObject deleteById(int id) throws IOException {
+    public JSONObject deleteById(Long id) throws IOException {
         ImageSet imageSet = findById(id);
         JSONObject deletedFile = new JSONObject();
         deletedFile.put(imageSet.getOriginal().getFileName(), true);
@@ -170,11 +169,6 @@ public class ImageServiceImpl implements ImageService {
 
         delete(imageSet);
         return jsonResponse;
-    }
-
-    private int normalizePage(int page) {
-        page = page < 1 ? 0 : page - 1;
-        return page;
     }
 
     private boolean validateContentType(String contentType) {

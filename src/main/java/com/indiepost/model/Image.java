@@ -18,7 +18,7 @@ public class Image implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @NotNull
     @Size(min = 2, max = 120)
@@ -45,11 +45,11 @@ public class Image implements Serializable {
     @JoinColumn(name = "imageSetId")
     private ImageSet imageSet;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

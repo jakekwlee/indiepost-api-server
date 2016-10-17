@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ImageMeta {
 
-    private int id;
+    private Long id;
 
     private String url;
 
@@ -24,11 +24,11 @@ public class ImageMeta {
 
     private long size;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

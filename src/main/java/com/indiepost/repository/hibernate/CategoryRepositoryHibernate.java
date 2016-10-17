@@ -16,6 +16,7 @@ import java.util.List;
  * Created by jake on 8/4/16.
  */
 @Repository
+@SuppressWarnings("unchecked")
 public class CategoryRepositoryHibernate implements CategoryRepository {
 
     @PersistenceContext
@@ -37,7 +38,7 @@ public class CategoryRepositoryHibernate implements CategoryRepository {
     }
 
     @Override
-    public Category findById(int id) {
+    public Category findById(Long id) {
         return (Category) getCriteria()
                 .add(Restrictions.eq("id", id))
                 .uniqueResult();
@@ -51,9 +52,9 @@ public class CategoryRepositoryHibernate implements CategoryRepository {
     }
 
     @Override
-    public List<Category> findByParent(Category parent) {
+    public List<Category> findByParentId(Long parentId) {
         return getCriteria()
-                .add(Restrictions.eq("parent", parent))
+                .add(Restrictions.eq("parentId", parentId))
                 .list();
     }
 

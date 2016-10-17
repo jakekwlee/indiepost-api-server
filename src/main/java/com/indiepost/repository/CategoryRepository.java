@@ -15,11 +15,11 @@ public interface CategoryRepository {
 
     void delete(Category category);
 
-    Category findById(int id);
+    Category findById(Long id);
 
     Category findBySlug(String slug);
 
-    List<Category> findByParent(Category parent);
+    List<Category> findByParentId(Long parentId);
 
     List<Category> findAll();
 }

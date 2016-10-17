@@ -169,9 +169,9 @@ public class ManagementServiceImpl implements ManagementService {
     }
 
     @Override
-    public TopLevelResponse getInitialState() {
+    public AdminInitialResponse getInitialState() {
         User currentUser = userService.getCurrentUser();
-        TopLevelResponse response = new TopLevelResponse();
+        AdminInitialResponse response = new AdminInitialResponse();
         response.setCurrentUser(getUserMetaFromUser(currentUser));
         List<List<PostMeta>> publicPosts = new ArrayList<>();
         publicPosts.add(getPublicPosts(0, 50, true));

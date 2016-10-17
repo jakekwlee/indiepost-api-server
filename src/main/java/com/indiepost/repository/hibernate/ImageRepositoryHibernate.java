@@ -2,8 +2,8 @@ package com.indiepost.repository.hibernate;
 
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
-import com.indiepost.repository.CriteriaMaker;
 import com.indiepost.repository.ImageRepository;
+import com.indiepost.repository.helper.CriteriaMaker;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
@@ -19,6 +19,7 @@ import java.util.List;
  * Created by jake on 8/17/16.
  */
 @Repository
+@SuppressWarnings("unchecked")
 public class ImageRepositoryHibernate implements ImageRepository {
 
     @PersistenceContext
@@ -34,16 +35,16 @@ public class ImageRepositoryHibernate implements ImageRepository {
     }
 
     @Override
-    public ImageSet findById(int id) {
+    public ImageSet findById(Long id) {
         return (ImageSet) getCriteria()
                 .add(Restrictions.eq("id", id))
                 .uniqueResult();
     }
 
     @Override
-    public List<ImageSet> findByPostId(int id, Pageable pageable) {
+    public List<ImageSet> findByPostId(Long postId, Pageable pageable) {
         Criteria criteria = getCriteria(pageable)
-                .add(Restrictions.eq("postId", id));
+                .add(Restrictions.eq("postId", postId));
 
         return criteria.list();
     }
@@ -56,10 +57,10 @@ public class ImageRepositoryHibernate implements ImageRepository {
     @Override
     public ImageSet findByFileName(String fileName) {
         Image image = (Image) getCriteriaForSingleImage().add(Restrictions.eq("fileName", fileName)).uniqueResult();
-        if (image != null) {
-            return image.getImageSet();
+        if (image == null) {
+            return null;
         }
-        return null;
+        return image.getImageSet();
     }
 
     @Override
@@ -73,7 +74,7 @@ public class ImageRepositoryHibernate implements ImageRepository {
     }
 
     @Override
-    public void deleteById(int id) {
+    public void deleteById(Long id) {
         delete(findById(id));
     }
 

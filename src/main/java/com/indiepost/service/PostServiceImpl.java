@@ -33,7 +33,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post findById(int id) {
+    public Post findById(Long id) {
         return postRepository.findById(id);
     }
 
@@ -48,33 +48,33 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public int count() {
+    public Long count() {
         return postRepository.count();
     }
 
     @Override
-    public int countPublished() {
+    public Long countPublished() {
         return postRepository.count(PostEnum.Status.PUBLISHED);
     }
 
     @Override
-    public int countBooked() {
+    public Long countBooked() {
         return postRepository.count(PostEnum.Status.BOOKED);
     }
 
     @Override
-    public int countQueued() {
+    public Long countQueued() {
         return postRepository.count(PostEnum.Status.QUEUED);
     }
 
     @Override
-    public int countDraft() {
+    public Long countDraft() {
         String username = userService.getCurrentUsername();
         return postRepository.count(PostEnum.Status.DRAFT, username);
     }
 
     @Override
-    public int countDeleted() {
+    public Long countDeleted() {
         String username = userService.getCurrentUsername();
         return postRepository.count(PostEnum.Status.DELETED, username);
     }
@@ -91,24 +91,24 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<Post> findAll(PostEnum.Status status, User author, Category category, int page, int maxResults) {
-        return postRepository.findAll(status, author, category, new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
+        return postRepository.findAll(status, author.getId(), category.getId(), new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
     }
 
     @Override
     public List<Post> findAllOrderByAsc(PostEnum.Status status, User author, Category category, int page, int maxResults) {
-        return postRepository.findAll(status, author, category, new PageRequest(page, maxResults, Sort.Direction.ASC, "publishedAt"));
+        return postRepository.findAll(status, author.getId(), category.getId(), new PageRequest(page, maxResults, Sort.Direction.ASC, "publishedAt"));
     }
 
     @Override
     public List<Post> findByCategory(Category category, int page, int maxResults) {
         return postRepository
-                .findByCategory(category, new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
+                .findByCategoryId(category.getId(), new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
     }
 
     @Override
     public List<Post> findByCategoryOrderByAsc(Category category, int page, int maxResults) {
         return postRepository
-                .findByCategory(category, new PageRequest(page, maxResults, Sort.Direction.ASC, "publishedAt"));
+                .findByCategoryId(category.getId(), new PageRequest(page, maxResults, Sort.Direction.ASC, "publishedAt"));
     }
 
     @Override
@@ -126,13 +126,13 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<Post> findByAuthor(User user, int page, int maxResults) {
         return postRepository
-                .findByAuthor(user, new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
+                .findByAuthorId(user.getId(), new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
     }
 
     @Override
     public List<Post> findByAuthorOrderByAsc(User user, int page, int maxResults) {
         return postRepository
-                .findByAuthor(user, new PageRequest(page, maxResults, Sort.Direction.ASC, "publishedAt"));
+                .findByAuthorId(user.getId(), new PageRequest(page, maxResults, Sort.Direction.ASC, "publishedAt"));
     }
 
     @Override
@@ -162,13 +162,13 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<Post> findByTag(Tag tag, int page, int maxResults) {
         return postRepository
-                .findByTag(tag, new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
+                .findByTagId(tag.getId(), new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt"));
     }
 
     @Override
     public List<Post> findByTagOrderByAsc(Tag tag, int page, int maxResults) {
         return postRepository
-                .findByTag(tag, new PageRequest(page, maxResults, Sort.Direction.ASC, "publishedAt"));
+                .findByTagId(tag.getId(), new PageRequest(page, maxResults, Sort.Direction.ASC, "publishedAt"));
     }
 
     @Override

@@ -3,11 +3,11 @@ package com.indiepost;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Category;
 import com.indiepost.model.User;
-import com.indiepost.service.ManagementService;
 import com.indiepost.service.CategoryService;
+import com.indiepost.service.ManagementService;
 import com.indiepost.service.PostService;
 import com.indiepost.service.UserService;
-import com.indiepost.viewModel.cms.TopLevelResponse;
+import com.indiepost.viewModel.cms.AdminInitialResponse;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.junit.After;
 import org.junit.Assert;
@@ -86,7 +86,7 @@ public class NewIndiepostApplicationTests {
 
     @Test
     public void cmsInitialResponseWorksCorrectly() throws Exception {
-        TopLevelResponse response = managementService.getInitialState();
+        AdminInitialResponse response = managementService.getInitialState();
         String dump = ReflectionToStringBuilder.toString(response);
         System.out.println(dump);
     }

@@ -14,7 +14,7 @@ public interface CategoryService {
 
     void delete(Category category);
 
-    Category findById(int id);
+    Category findById(Long id);
 
     Category findBySlug(String slug);
 

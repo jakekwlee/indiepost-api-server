@@ -16,6 +16,7 @@ import java.util.List;
  * Created by jake on 7/30/16.
  */
 @Repository
+@SuppressWarnings("unchecked")
 public class UserRepositoryHibernate implements UserRepository {
 
     @PersistenceContext
@@ -38,7 +39,7 @@ public class UserRepositoryHibernate implements UserRepository {
     }
 
     @Override
-    public User findOne(int id) {
+    public User findById(Long id) {
         return (User) getCriteria()
                 .add(Restrictions.eq("id", id))
                 .uniqueResult();

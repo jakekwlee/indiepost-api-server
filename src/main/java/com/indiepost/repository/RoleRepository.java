@@ -14,7 +14,7 @@ public interface RoleRepository {
 
     void delete(Roles role);
 
-    Role findById(int id);
+    Role findById(Long id);
 
     Role findByRolesEnum(Roles role);
 }

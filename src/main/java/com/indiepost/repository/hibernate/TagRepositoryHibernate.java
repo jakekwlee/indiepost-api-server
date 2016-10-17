@@ -1,8 +1,8 @@
 package com.indiepost.repository.hibernate;
 
 import com.indiepost.model.Tag;
-import com.indiepost.repository.CriteriaMaker;
 import com.indiepost.repository.TagRepository;
+import com.indiepost.repository.helper.CriteriaMaker;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
@@ -19,6 +19,7 @@ import java.util.List;
  * Created by jake on 9/17/16.
  */
 @Repository
+@SuppressWarnings("unchecked")
 public class TagRepositoryHibernate implements TagRepository {
 
     @PersistenceContext
@@ -40,7 +41,7 @@ public class TagRepositoryHibernate implements TagRepository {
     }
 
     @Override
-    public Tag findById(int id) {
+    public Tag findById(Long id) {
         return (Tag) getCriteria()
                 .add(Restrictions.eq("id", id))
                 .uniqueResult();

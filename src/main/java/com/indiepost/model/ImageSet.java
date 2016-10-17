@@ -1,12 +1,10 @@
 package com.indiepost.model;
 
 import com.indiepost.enums.ImageEnum.SizeType;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
@@ -23,7 +21,7 @@ public class ImageSet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @OneToMany(mappedBy = "imageSet", orphanRemoval = true, fetch = FetchType.LAZY)
     @Cascade({CascadeType.ALL, CascadeType.SAVE_UPDATE})
@@ -40,11 +38,11 @@ public class ImageSet {
     @Temporal(TemporalType.TIMESTAMP)
     private Date uploadedAt;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

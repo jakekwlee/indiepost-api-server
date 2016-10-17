@@ -15,23 +15,23 @@ public interface PostService {
 
     void save(Post post);
 
-    Post findById(int id);
+    Post findById(Long id);
 
     void update(Post post);
 
     void delete(Post post);
 
-    int count();
+    Long count();
 
-    int countPublished();
+    Long countPublished();
 
-    int countBooked();
+    Long countBooked();
 
-    int countQueued();
+    Long countQueued();
 
-    int countDraft();
+    Long countDraft();
 
-    int countDeleted();
+    Long countDeleted();
 
     List<Post> findAll(int page, int maxResults);
 

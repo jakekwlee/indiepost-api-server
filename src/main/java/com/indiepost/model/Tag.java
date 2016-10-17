@@ -18,7 +18,7 @@ public class Tag implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @NotNull
     @Size(min = 1, max = 50)
@@ -30,11 +30,11 @@ public class Tag implements Serializable {
     @OrderBy(value = "publishedAt")
     private Set<Post> posts;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -12,11 +12,11 @@ public interface ImageRepository {
 
     void save(ImageSet imageSet);
 
-    ImageSet findById(int id);
+    ImageSet findById(Long id);
 
     ImageSet findByFileName(String fileName);
 
-    List<ImageSet> findByPostId(int id, Pageable pageable);
+    List<ImageSet> findByPostId(Long postId, Pageable pageable);
 
     List<ImageSet> findAll(Pageable pageable);
 
@@ -24,6 +24,6 @@ public interface ImageRepository {
 
     void delete(ImageSet imageSet);
 
-    void deleteById(int id);
+    void deleteById(Long id);
 
 }

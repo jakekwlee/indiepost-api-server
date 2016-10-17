@@ -27,7 +27,7 @@ public class Post implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -113,11 +113,11 @@ public class Post implements Serializable {
     @OrderBy("likedAt DESC")
     private Set<Like> likes;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -141,16 +141,16 @@ public class Post implements Serializable {
         return createdAt;
     }
 
+    public void setCreateAt(Date createAt) {
+        this.createdAt = createAt;
+    }
+
     public String getAuthorName() {
         return authorName;
     }
 
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
-    }
-
-    public void setCreateAt(Date createAt) {
-        this.createdAt = createAt;
     }
 
     public Date getModifiedAt() {

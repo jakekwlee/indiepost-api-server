@@ -34,7 +34,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category findById(int id) {
+    public Category findById(Long id) {
         return categoryRepository.findById(id);
     }
 
@@ -50,6 +50,6 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<Category> findByParent(Category parent) {
-        return categoryRepository.findByParent(parent);
+        return categoryRepository.findByParentId(parent.getId());
     }
 }

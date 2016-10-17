@@ -36,7 +36,7 @@ public class RoleRepositoryHibernate implements RoleRepository {
     }
 
     @Override
-    public Role findById(int id) {
+    public Role findById(Long id) {
         return (Role) getCriteria()
                 .add(Restrictions.eq("id", id))
                 .uniqueResult();

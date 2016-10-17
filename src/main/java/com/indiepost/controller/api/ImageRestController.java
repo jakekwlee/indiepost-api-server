@@ -20,11 +20,10 @@ import java.io.IOException;
 @RequestMapping("/api/images")
 public class ImageRestController {
 
-    @Autowired
-    private ImageService imageService;
-
     public static final String ROOT = "/data/uploads";
     private static final Logger log = LoggerFactory.getLogger(ImageRestController.class);
+    @Autowired
+    private ImageService imageService;
 
     @RequestMapping(method = RequestMethod.POST, produces = {"application/json; charset=UTF-8"})
     public ResponseEntity<ImageResponse> handleImageUpload(
@@ -36,7 +35,7 @@ public class ImageRestController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = {"application/json; charset=UTF-8"})
-    public String handleImageDelete(@PathVariable int id) throws IOException {
+    public String handleImageDelete(@PathVariable Long id) throws IOException {
         return imageService.deleteById(id).toString();
     }
 

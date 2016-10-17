@@ -10,7 +10,7 @@ import java.util.List;
 public interface TagService {
     void save(Tag tag);
 
-    Tag findById(int id);
+    Tag findById(Long id);
 
     Tag findByName(String name);
 

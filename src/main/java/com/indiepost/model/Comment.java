@@ -17,7 +17,7 @@ public class Comment implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -40,18 +40,16 @@ public class Comment implements Serializable {
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
+    private String ip;
+    private String agent;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
-
-    private String ip;
-
-    private String agent;
 
     public User getUser() {
         return user;

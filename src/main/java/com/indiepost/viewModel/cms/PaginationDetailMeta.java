@@ -7,35 +7,35 @@ public class PaginationDetailMeta {
 
     private static final long serialVersionUID = 1L;
 
-    private int pageAt = 0;
+    private Integer pageAt = 0;
 
-    private int postPerPage = 50;
+    private Integer postPerPage = 50;
 
-    private int count;
+    private Long count;
 
     private boolean descending = true;
 
-    public int getPageAt() {
+    public Integer getPageAt() {
         return pageAt;
     }
 
-    public void setPageAt(int pageAt) {
+    public void setPageAt(Integer pageAt) {
         this.pageAt = pageAt;
     }
 
-    public int getPostPerPage() {
+    public Integer getPostPerPage() {
         return postPerPage;
     }
 
-    public void setPostPerPage(int postPerPage) {
+    public void setPostPerPage(Integer postPerPage) {
         this.postPerPage = postPerPage;
     }
 
-    public int getCount() {
+    public Long getCount() {
         return count;
     }
 
-    public void setCount(int count) {
+    public void setCount(Long count) {
         this.count = count;
     }
 

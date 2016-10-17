@@ -21,7 +21,7 @@ public interface UserService {
 
     String getCurrentUsername();
 
-    User findById(int id);
+    User findById(Long id);
 
     User findByUsername(String username);
 

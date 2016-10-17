@@ -18,7 +18,7 @@ public interface ImageService {
 
     ImageResponse saveUploadedImage(MultipartFile[] multipartFiles) throws FileSaveException;
 
-    ImageSet findById(int id);
+    ImageSet findById(Long id);
 
     ImageSet findByFileName(String fileName);
 
@@ -28,5 +28,5 @@ public interface ImageService {
 
     void delete(ImageSet imageSet) throws IOException;
 
-    JSONObject deleteById(int id) throws IOException;
+    JSONObject deleteById(Long id) throws IOException;
 }

@@ -1,4 +1,4 @@
-package com.indiepost.repository;
+package com.indiepost.repository.helper;
 
 import org.hibernate.Criteria;
 import org.springframework.data.domain.Pageable;

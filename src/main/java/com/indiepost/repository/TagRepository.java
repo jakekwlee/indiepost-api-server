@@ -14,7 +14,7 @@ public interface TagRepository {
 
     Tag findByTagName(String name);
 
-    Tag findById(int id);
+    Tag findById(Long id);
 
     List<Tag> findAll();
 

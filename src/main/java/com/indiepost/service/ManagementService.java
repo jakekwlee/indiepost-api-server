@@ -29,5 +29,5 @@ public interface ManagementService {
 
     PaginationMeta getPagination();
 
-    TopLevelResponse getInitialState();
+    AdminInitialResponse getInitialState();
 }
