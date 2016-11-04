@@ -1,5 +1,6 @@
 package com.indiepost;
 
+import com.indiepost.config.ImageConfig;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Category;
 import com.indiepost.model.User;
@@ -7,7 +8,7 @@ import com.indiepost.service.CategoryService;
 import com.indiepost.service.ManagementService;
 import com.indiepost.service.PostService;
 import com.indiepost.service.UserService;
-import com.indiepost.viewModel.cms.AdminInitialResponse;
+import com.indiepost.viewModel.cms.MetaInformation;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.junit.After;
 import org.junit.Assert;
@@ -48,6 +49,9 @@ public class NewIndiepostApplicationTests {
     @Autowired
     private ApplicationContext context;
 
+    @Autowired
+    private ImageConfig imageConfig;
+
     private Authentication authentication;
 
     @Test
@@ -58,7 +62,7 @@ public class NewIndiepostApplicationTests {
     public void init() {
         AuthenticationManager authenticationManager = this.context
                 .getBean(AuthenticationManager.class);
-        this.authentication = authenticationManager.authenticate(
+        authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken("indiepost", "*4ACFE3202A5FF5CF467898FC58AAB1D615029441"));
     }
 
@@ -76,18 +80,24 @@ public class NewIndiepostApplicationTests {
 
     @Test
     public void postServiceWorksCorrectly() throws Exception {
-        User user = userService.findById(1);
+        User user = userService.findById(new Long(1));
         Category category = categoryService.findBySlug("music");
-        postService.findAll(1, 50);
-        postService.findAll(PostEnum.Status.QUEUED, user, category, 1, 50);
-        postService.findByAuthorName("Indiepost", 1, 50);
-        postService.findByStatusOrderByAsc(PostEnum.Status.PUBLISHED, 1, 100);
+        postService.findAll(1, 50, true);
+        postService.findAll(PostEnum.Status.QUEUED, user, category, 1, 50, true);
+        postService.findByAuthorName("Indiepost", 1, 50, true);
+        postService.findByStatus(PostEnum.Status.PUBLISHED, 1, 100, true);
     }
 
     @Test
-    public void cmsInitialResponseWorksCorrectly() throws Exception {
-        AdminInitialResponse response = managementService.getInitialState();
+    public void cmsMetaInformationWorksCorrectly() throws Exception {
+        MetaInformation response = managementService.getMetaInformation();
         String dump = ReflectionToStringBuilder.toString(response);
+        System.out.println(dump);
+    }
+
+    @Test
+    public void imageConfigWiredCorrectly() throws Exception {
+        String dump = ReflectionToStringBuilder.toString(imageConfig);
         System.out.println(dump);
     }
 }

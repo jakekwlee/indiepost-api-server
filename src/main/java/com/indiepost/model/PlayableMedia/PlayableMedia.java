@@ -8,7 +8,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Duration;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by jake on 7/24/16.
@@ -51,7 +51,7 @@ abstract class PlayableMedia {
 
     @NotNull
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "audios")
-    private Set<Post> posts;
+    private List<Post> posts;
 
     public int getId() {
         return id;
@@ -117,11 +117,11 @@ abstract class PlayableMedia {
         this.price = price;
     }
 
-    public Set<Post> getPosts() {
+    public List<Post> getPosts() {
         return posts;
     }
 
-    public void setPosts(Set<Post> posts) {
+    public void setPosts(List<Post> posts) {
         this.posts = posts;
     }
 }

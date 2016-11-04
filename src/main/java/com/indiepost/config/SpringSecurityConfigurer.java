@@ -1,6 +1,7 @@
 package com.indiepost.config;
 
 import com.indiepost.enums.UserEnum;
+import com.indiepost.repository.UserRepository;
 import com.indiepost.service.IndiepostUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,17 +24,19 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .userDetailsService(this.userDetailsServiceBean())
+        auth.userDetailsService(this.userDetailsServiceBean())
                 .passwordEncoder(passwordEncoder);
     }
 
     @Bean
     @Override
     public UserDetailsService userDetailsServiceBean() throws Exception {
-        return new IndiepostUserDetailService();
+        return new IndiepostUserDetailService(userRepository);
     }
 
     @Override

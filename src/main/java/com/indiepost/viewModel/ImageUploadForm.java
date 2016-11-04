@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import static org.springframework.util.MimeTypeUtils.*;
 
 
-public class ImageUploadForm {
+class ImageUploadForm {
 
     @NotNull
     @ContentType(value = {IMAGE_JPEG_VALUE, IMAGE_PNG_VALUE, IMAGE_GIF_VALUE}, message = "PNG나 JPG 포멧 이미지를 올려주세요!")

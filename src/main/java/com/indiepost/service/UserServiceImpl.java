@@ -5,6 +5,9 @@ import com.indiepost.model.User;
 import com.indiepost.repository.RoleRepository;
 import com.indiepost.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,14 +24,18 @@ import java.util.List;
 @Transactional
 public class UserServiceImpl implements UserService {
 
-    @Autowired
     private UserRepository userRepository;
 
-    @Autowired
     private RoleRepository roleRepository;
 
-    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public void save(User user) {
@@ -99,17 +106,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findByState(UserEnum.State state) {
-        return userRepository.findByState(state);
+    public List<User> findByState(UserEnum.State state, int page, int maxResults, boolean isDesc) {
+        Pageable pageable = getPageable(page, maxResults, isDesc);
+        return userRepository.findByState(state, pageable);
     }
 
     @Override
-    public List<User> findByGender(UserEnum.Gender gender) {
-        return userRepository.findByGender(gender);
+    public List<User> findByGender(UserEnum.Gender gender, int page, int maxResults, boolean isDesc) {
+        Pageable pageable = getPageable(page, maxResults, isDesc);
+        return userRepository.findByGender(gender, pageable);
     }
 
     @Override
-    public List<User> findByRolesEnum(UserEnum.Roles role) {
+    public List<User> findByRolesEnum(UserEnum.Roles role, int page, int maxResults, boolean isDesc) {
         return new ArrayList<>(roleRepository.findByRolesEnum(role).getUsers());
+    }
+
+    @Override
+    public List<User> findAllUsers(int page, int maxResults, boolean isDesc) {
+        Pageable pageable = getPageable(page, maxResults, isDesc);
+        return userRepository.findAll(pageable);
+    }
+
+    private Pageable getPageable(int page, int maxResults, boolean isDesc) {
+        Sort.Direction direction = isDesc ? Sort.Direction.DESC : Sort.Direction.ASC;
+        return new PageRequest(page, maxResults, direction, "joinedAt");
     }
 }

@@ -17,8 +17,12 @@ import java.util.List;
 @Transactional
 public class TagServiceImpl implements TagService {
 
-    @Autowired
     private TagRepository tagRepository;
+
+    @Autowired
+    public TagServiceImpl(TagRepository tagRepository) {
+        this.tagRepository = tagRepository;
+    }
 
     @Override
     public void save(Tag tag) {

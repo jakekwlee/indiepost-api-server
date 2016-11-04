@@ -1,0 +1,13 @@
+indiepost:
+  images:
+    fsRoot: /data
+    fsLocation: /data/uploads/images
+    dbLocation: /uploads/images
+    apiUri: /api/cms/image
+    filenameLength: 6
+    filenameFormat: %s-%dx%d.%s
+    acceptedTypes:
+      - image/jpeg
+      - image/png
+      - image/gif
+

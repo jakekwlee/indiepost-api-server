@@ -23,49 +23,23 @@ public interface PostService {
 
     Long count();
 
-    Long countPublished();
+    Long count(PostEnum.Status status);
 
-    Long countBooked();
+    List<Post> findAll(int page, int maxResults, boolean isDesc);
 
-    Long countQueued();
+    List<Post> findAll(PostEnum.Status status, User author, Category category, int page, int maxResults, boolean isDesc);
 
-    Long countDraft();
+    List<Post> findByCategory(Category category, int page, int maxResults, boolean isDesc);
 
-    Long countDeleted();
+    List<Post> findByCategorySlug(String slug, int page, int maxResults, boolean isDesc);
 
-    List<Post> findAll(int page, int maxResults);
+    List<Post> findByAuthor(User author, int page, int maxResults, boolean isDesc);
 
-    List<Post> findAll(PostEnum.Status status, User author, Category category, int page, int maxResults);
+    List<Post> findByAuthorName(String authorName, int page, int maxResults, boolean isDesc);
 
-    List<Post> findAllOrderByAsc(int page, int maxResults);
+    List<Post> findByStatus(PostEnum.Status status, int page, int maxResults, boolean isDesc);
 
-    List<Post> findAllOrderByAsc(PostEnum.Status status, User author, Category category, int page, int maxResults);
+    List<Post> findByTag(Tag tag, int page, int maxResults, boolean isDesc);
 
-    List<Post> findByCategory(Category category, int page, int maxResults);
-
-    List<Post> findByCategoryOrderByAsc(Category category, int page, int maxResults);
-
-    List<Post> findByCategorySlug(String slug, int page, int maxResults);
-
-    List<Post> findByCategorySlugOrderByAsc(String slug, int page, int maxResults);
-
-    List<Post> findByAuthor(User author, int page, int maxResults);
-
-    List<Post> findByAuthorOrderByAsc(User author, int page, int maxResults);
-
-    List<Post> findByAuthorName(String authorName, int page, int maxResults);
-
-    List<Post> findByAuthorNameOrderByAsc(String authorName, int page, int maxResults);
-
-    List<Post> findByStatus(PostEnum.Status status, int page, int maxResults);
-
-    List<Post> findByStatusOrderByAsc(PostEnum.Status status, int page, int maxResults);
-
-    List<Post> findByTag(Tag tag, int page, int maxResults);
-
-    List<Post> findByTagOrderByAsc(Tag tag, int page, int maxResults);
-
-    List<Post> findByTagName(String tagName, int page, int maxResults);
-
-    List<Post> findByTagOrderByAsc(String tagName, int page, int maxResults);
+    List<Post> findByTagName(String tagName, int page, int maxResults, boolean isDesc);
 }

@@ -1,5 +1,6 @@
 package com.indiepost.service;
 
+import com.indiepost.config.ImageConfig;
 import com.indiepost.enums.ImageEnum;
 import com.indiepost.exception.FileSaveException;
 import com.indiepost.model.Image;
@@ -24,10 +25,10 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
-
-import static org.springframework.util.MimeTypeUtils.*;
 
 /**
  * Created by jake on 8/17/16.
@@ -36,15 +37,15 @@ import static org.springframework.util.MimeTypeUtils.*;
 @Transactional
 public class ImageServiceImpl implements ImageService {
 
-    private static final String API_URI = "/api/images/";
-    private static final String ROOT_DIRECTORY = "/data";
-    private static final String BASE_URL = "/uploads/images";
-    private static final int FILENAME_LENGTH = 6;
-    private static final String FILENAME_FORMAT = "%s-%dx%d.%s";
-    private static final String[] ACCEPTED_TYPES = {IMAGE_JPEG_VALUE, IMAGE_PNG_VALUE, IMAGE_GIF_VALUE};
+    private ImageRepository imageRepository;
+
+    private ImageConfig imageConfig;
 
     @Autowired
-    private ImageRepository imageRepository;
+    public ImageServiceImpl(ImageRepository imageRepository, ImageConfig imageConfig) {
+        this.imageRepository = imageRepository;
+        this.imageConfig = imageConfig;
+    }
 
     @Override
     public void save(ImageSet imageSet) {
@@ -70,13 +71,13 @@ public class ImageServiceImpl implements ImageService {
             throw new FileSaveException("File type is not accepted: " + contentType);
         }
 
-        String alphanumeric = RandomStringUtils.randomAlphanumeric(FILENAME_LENGTH);
+        String alphanumeric = RandomStringUtils.randomAlphanumeric(imageConfig.getFilenameLength());
         String fileExtension = contentType.split("/")[1];
 
         String newFilename;
         SimpleDateFormat dateFormat = new SimpleDateFormat("/yyyy/MM");
-        String baseUrl = BASE_URL + dateFormat.format(new Date());
-        String physicalBaseUrl = ROOT_DIRECTORY + baseUrl;
+        String baseUrl = imageConfig.getDbLocation() + dateFormat.format(new Date());
+        String physicalBaseUrl = imageConfig.getFsRoot() + baseUrl;
 
         ImageSet imageSet = new ImageSet();
         imageSet.setContentType(contentType);
@@ -96,7 +97,7 @@ public class ImageServiceImpl implements ImageService {
             height = (int) dimension.getHeight();
             image.setWidth(width);
             image.setHeight(height);
-            newFilename = String.format(FILENAME_FORMAT, alphanumeric, (int) dimension.getWidth(), (int) dimension.getHeight(), fileExtension);
+            newFilename = String.format(imageConfig.getFilenameFormat(), alphanumeric, width, height, fileExtension);
             long size = saveToFileSystem(multipartFiles[i], physicalBaseUrl + '/' + newFilename).length();
 
             image.setFileName(newFilename);
@@ -172,7 +173,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     private boolean validateContentType(String contentType) {
-        return Arrays.asList(ACCEPTED_TYPES).contains(contentType);
+        return imageConfig.getAcceptedTypes().contains(contentType);
     }
 
     private ImageResponse generateImageResponse(ImageSet imageSet) {
@@ -183,7 +184,7 @@ public class ImageServiceImpl implements ImageService {
         imageMeta.setName(original.getFileName());
         imageMeta.setSize(original.getFileSize());
         imageMeta.setType(imageSet.getContentType());
-        imageMeta.setDeleteUrl(API_URI + imageSet.getId());
+        imageMeta.setDeleteUrl(imageConfig.getApiUri() + imageSet.getId());
         imageMeta.setUrl(original.getFileUrl());
 
         if (thumbnail == null) {
@@ -233,7 +234,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     private boolean deleteFileFromFileSystem(Image image) throws IOException {
-        File fileToDelete = FileUtils.getFile(new File(ROOT_DIRECTORY + image.getFileUrl()));
+        File fileToDelete = FileUtils.getFile(new File(imageConfig.getFsRoot() + image.getFileUrl()));
         return FileUtils.deleteQuietly(fileToDelete);
     }
 }

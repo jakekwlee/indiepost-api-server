@@ -31,9 +31,11 @@ public interface UserService {
 
     boolean isEmailExist(String email);
 
-    List<User> findByState(UserEnum.State state);
+    List<User> findByState(UserEnum.State state, int page, int maxResults, boolean isDesc);
 
-    List<User> findByGender(UserEnum.Gender gender);
+    List<User> findByGender(UserEnum.Gender gender, int page, int maxResults, boolean isDesc);
 
-    List<User> findByRolesEnum(UserEnum.Roles role);
+    List<User> findByRolesEnum(UserEnum.Roles role, int page, int maxResults, boolean isDesc);
+
+    List<User> findAllUsers(int page, int maxResults, boolean isDesc);
 }

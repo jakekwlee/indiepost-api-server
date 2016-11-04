@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "mycontentlist")
-public class Mycontentlist {
+class Mycontentlist {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

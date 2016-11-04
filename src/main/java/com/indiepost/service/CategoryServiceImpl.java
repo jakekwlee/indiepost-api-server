@@ -15,8 +15,12 @@ import java.util.List;
 @Transactional
 public class CategoryServiceImpl implements CategoryService {
 
-    @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private CategoryServiceImpl(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
 
     @Override
     public void save(Category category) {

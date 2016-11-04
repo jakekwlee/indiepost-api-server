@@ -1,5 +1,6 @@
 package com.indiepost;
 
+import com.indiepost.config.ImageConfig;
 import com.indiepost.security.MySQLPasswordEncoder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -30,5 +31,10 @@ public class NewIndiepostApplication extends SpringBootServletInitializer {
     @Bean
     public Java8TimeDialect java8TimeDialect() {
         return new Java8TimeDialect();
+    }
+
+    @Bean
+    public ImageConfig imageConfig() {
+        return new ImageConfig();
     }
 }

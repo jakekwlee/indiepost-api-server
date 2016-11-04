@@ -48,5 +48,8 @@ dependencies {
     compile group: 'org.imgscalr', name: 'imgscalr-lib', version: '4.2'
     compile group: 'org.json', name: 'json', version: '20160810'
     compile 'com.drewnoakes:metadata-extractor:2.9.1'
+    compile "org.springframework.boot:spring-boot-configuration-processor"
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 }
+
+compileJava.dependsOn(processResources)

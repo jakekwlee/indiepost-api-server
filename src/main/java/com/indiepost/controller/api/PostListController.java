@@ -1,6 +1,7 @@
 package com.indiepost.controller.api;
 
 import com.indiepost.model.Post;
+import com.indiepost.service.PostExcerptService;
 import com.indiepost.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,11 +17,18 @@ import java.util.List;
 @RequestMapping("/api/posts")
 public class PostListController {
 
-    @Autowired
+    private PostExcerptService postExcerptService;
+
     private PostService postService;
+
+    @Autowired
+    public PostListController(PostService postService, PostExcerptService postExcerptService) {
+        this.postService = postService;
+        this.postExcerptService = postExcerptService;
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     public List<Post> getPosts() {
-        return postService.findAll(0, 10);
+        return postExcerptService.findAll(0, 10, true);
     }
 }

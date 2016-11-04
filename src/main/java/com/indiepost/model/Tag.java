@@ -4,7 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by jake on 7/25/16.
@@ -28,7 +28,7 @@ public class Tag implements Serializable {
     @NotNull
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
     @OrderBy(value = "publishedAt")
-    private Set<Post> posts;
+    private List<Post> posts;
 
     public Long getId() {
         return id;
@@ -46,11 +46,11 @@ public class Tag implements Serializable {
         this.name = name;
     }
 
-    public Set<Post> getPosts() {
+    public List<Post> getPosts() {
         return posts;
     }
 
-    public void setPosts(Set<Post> posts) {
+    public void setPosts(List<Post> posts) {
         this.posts = posts;
     }
 }

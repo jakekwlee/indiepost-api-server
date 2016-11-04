@@ -1,6 +1,5 @@
 package com.indiepost.service;
 
-import com.indiepost.enums.PostEnum;
 import com.indiepost.enums.UserEnum;
 import com.indiepost.model.Category;
 import com.indiepost.model.Post;
@@ -21,85 +20,32 @@ import java.util.List;
 @Transactional
 public class ManagementServiceImpl implements ManagementService {
 
-    @Autowired
-    private PostService postService;
+    private PostExcerptService postExcerptService;
 
-    @Autowired
+    private CategoryService categoryService;
+
+    private TagService tagService;
+
     private UserService userService;
 
     @Autowired
-    private CategoryService categoryService;
-
-    @Autowired
-    private TagService tagService;
+    public ManagementServiceImpl(PostExcerptService postExcerptService, CategoryService categoryService, TagService tagService, UserService userService) {
+        this.postExcerptService = postExcerptService;
+        this.categoryService = categoryService;
+        this.tagService = tagService;
+        this.userService = userService;
+    }
 
     @Override
-    public List<PostMeta> getPublicPosts(int page, int maxResults, boolean descending) {
-        List<Post> posts;
+    public List<PostMeta> getAllPostsMeta(int page, int maxResults, boolean isDesc) {
 
-        if (descending) {
-            posts = postService.findAll(page, maxResults);
-        } else {
-            posts = postService.findAllOrderByAsc(page, maxResults);
-        }
+        List<Post> posts = postExcerptService.findAll(page, maxResults, isDesc);
 
         return getPostMetaList(posts);
     }
 
     @Override
-    public List<PostMeta> getBookedPosts(int page, int maxResults, boolean descending) {
-        List<Post> posts;
-
-        if (descending) {
-            posts = postService.findAll(PostEnum.Status.BOOKED, null, null, page, maxResults);
-        } else {
-            posts = postService.findAllOrderByAsc(PostEnum.Status.BOOKED, null, null, page, maxResults);
-        }
-
-        return getPostMetaList(posts);
-    }
-
-    @Override
-    public List<PostMeta> getQueuedPosts(int page, int maxResults, boolean descending) {
-        List<Post> posts;
-
-        if (descending) {
-            posts = postService.findAll(PostEnum.Status.QUEUED, null, null, page, maxResults);
-        } else {
-            posts = postService.findAllOrderByAsc(PostEnum.Status.QUEUED, null, null, page, maxResults);
-        }
-
-        return getPostMetaList(posts);
-    }
-
-    @Override
-    public List<PostMeta> getDraftPosts(User currentUser, int page, int maxResults, boolean descending) {
-        List<Post> posts;
-
-        if (descending) {
-            posts = postService.findAll(PostEnum.Status.DRAFT, currentUser, null, page, maxResults);
-        } else {
-            posts = postService.findAllOrderByAsc(PostEnum.Status.DRAFT, currentUser, null, page, maxResults);
-        }
-
-        return getPostMetaList(posts);
-    }
-
-    @Override
-    public List<PostMeta> getDeletedPosts(User currentUser, int page, int maxResults, boolean descending) {
-        List<Post> posts;
-
-        if (descending) {
-            posts = postService.findAll(PostEnum.Status.DELETED, currentUser, null, page, maxResults);
-        } else {
-            posts = postService.findAllOrderByAsc(PostEnum.Status.DELETED, currentUser, null, page, maxResults);
-        }
-
-        return getPostMetaList(posts);
-    }
-
-    @Override
-    public List<TagMeta> getAllTags() {
+    public List<TagMeta> getAllTagsMeta() {
         List<Tag> tags = tagService.findAll();
         List<TagMeta> tagMetaList = new ArrayList<>();
         for (Tag tag : tags) {
@@ -112,27 +58,25 @@ public class ManagementServiceImpl implements ManagementService {
     }
 
     @Override
-    public List<UserMeta> getAllAuthors() {
-        List<UserMeta> userMetaList = new ArrayList<>();
-        List<User> authors = userService.findByRolesEnum(UserEnum.Roles.Author);
-        for (User author : authors) {
-            UserMeta userMeta = getUserMetaFromUser(author);
-            userMetaList.add(userMeta);
-        }
-        return userMetaList;
-    }
-
-    public UserMeta getUserMetaFromUser(User user) {
-        UserMeta userMeta = new UserMeta();
-        userMeta.setId(user.getId());
-        userMeta.setUsername(user.getUsername());
-        userMeta.setDisplayName(user.getDisplayName());
-        userMeta.setEmail(user.getEmail());
-        return userMeta;
+    public List<UserMeta> getAllAuthorsMeta() {
+        List<User> authors = userService.findByRolesEnum(UserEnum.Roles.Author, 1, 1000000, true);
+        return getUserMetaList(authors);
     }
 
     @Override
-    public List<CategoryMeta> getAllCategories() {
+    public List<UserMeta> getAllUsersMeta(int page, int maxResults, boolean isDesc) {
+        List<User> userList = userService.findAllUsers(page, maxResults, isDesc);
+        return getUserMetaList(userList);
+    }
+
+    @Override
+    public UserMeta getCurrentUser() {
+        User currentUser = userService.getCurrentUser();
+        return getUserMetaFromUser(currentUser);
+    }
+
+    @Override
+    public List<CategoryMeta> getAllCategoriesMeta() {
         List<Category> categories = categoryService.findAll();
         List<CategoryMeta> categoryMetaList = new ArrayList<>();
         for (Category category : categories) {
@@ -146,77 +90,75 @@ public class ManagementServiceImpl implements ManagementService {
     }
 
     @Override
-    public PaginationMeta getPagination() {
-        PaginationDetailMeta posts = new PaginationDetailMeta();
-        PaginationDetailMeta queued = new PaginationDetailMeta();
-        PaginationDetailMeta booked = new PaginationDetailMeta();
-        PaginationDetailMeta drafts = new PaginationDetailMeta();
-        PaginationDetailMeta trash = new PaginationDetailMeta();
-
-        posts.setCount(postService.countPublished());
-        queued.setCount(postService.countQueued());
-        booked.setCount(postService.countBooked());
-        drafts.setCount(postService.countDraft());
-        trash.setCount(postService.countDeleted());
-        PaginationMeta paginationMeta = new PaginationMeta();
-        paginationMeta.setPublished(posts);
-        paginationMeta.setQueued(queued);
-        paginationMeta.setBooked(booked);
-        paginationMeta.setDraft(drafts);
-        paginationMeta.setDeleted(trash);
-
-        return paginationMeta;
+    public MetaInformation getMetaInformation() {
+        User currentUser = userService.getCurrentUser();
+        MetaInformation metaInformation = new MetaInformation();
+        metaInformation.setCurrentUser(getUserMetaFromUser(currentUser));
+        metaInformation.setAuthors(getAllAuthorsMeta());
+        metaInformation.setCategories(getAllCategoriesMeta());
+        metaInformation.setTags(getAllTagsMeta());
+        return metaInformation;
     }
 
-    @Override
-    public AdminInitialResponse getInitialState() {
-        User currentUser = userService.getCurrentUser();
-        AdminInitialResponse response = new AdminInitialResponse();
-        response.setCurrentUser(getUserMetaFromUser(currentUser));
-        List<List<PostMeta>> publicPosts = new ArrayList<>();
-        publicPosts.add(getPublicPosts(0, 50, true));
-        response.setPublished(publicPosts);
-//        response.setDraft((getDraftPosts(currentUser, 1, 50, true)));
-//        response.setDeleted((getDeletedPosts(currentUser, 1, 50, true)));
-//        response.setBooked((getBookedPosts(1, 50, true)));
-        response.setAuthors(getAllAuthors());
-        response.setCategories(getAllCategories());
-        response.setPagination(getPagination());
-        response.setTags(getAllTags());
-        return response;
+    private List<UserMeta> getUserMetaList(List<User> userList) {
+        List<UserMeta> userMetaList = new ArrayList<>();
+        for (User user : userList) {
+            userMetaList.add(getUserMetaFromUser(user));
+        }
+        return userMetaList;
     }
 
     private List<PostMeta> getPostMetaList(List<Post> posts) {
         List<PostMeta> postMetaList = new ArrayList<>();
         for (Post post : posts) {
             User author = post.getAuthor();
-            Category category = post.getCategory();
             PostMeta postMeta = new PostMeta();
             UserMeta userMeta = new UserMeta();
-            CategoryMeta categoryMeta = new CategoryMeta();
 
             userMeta.setId(author.getId());
             userMeta.setDisplayName(author.getDisplayName());
             userMeta.setEmail(author.getEmail());
             userMeta.setUsername(author.getUsername());
 
-            categoryMeta.setId(category.getId());
-            categoryMeta.setName(category.getName());
-            categoryMeta.setSlug(category.getSlug());
-
             postMeta.setId(post.getId());
-            postMeta.setAuthor(userMeta);
-            postMeta.setAuthorName(post.getAuthorName());
+            postMeta.setAuthorId(post.getAuthor().getId());
+            postMeta.setCategoryId(post.getCategory().getId());
+            postMeta.setTagIds(getTagIdsFromTag(post.getTags()));
+            postMeta.setStatus(post.getStatus().toString());
+
+            postMeta.setTitle(post.getTitle());
+            postMeta.setDisplayName(post.getDisplayName());
             postMeta.setCreatedAt(post.getCreatedAt());
             postMeta.setPublishedAt(post.getPublishedAt());
+            postMeta.setModifiedAt(post.getModifiedAt());
             postMeta.setCreatedAt(post.getCreatedAt());
-            postMeta.setTitle(post.getTitle());
-            postMeta.setAuthorName(post.getAuthorName());
+            postMeta.setDisplayName(post.getDisplayName());
             postMeta.setLikedCount(post.getLikesCount());
-            postMeta.setCategory(categoryMeta);
-            postMeta.setStatus(post.getStatus().toString());
+
             postMetaList.add(postMeta);
         }
         return postMetaList;
+    }
+
+    private List<Long> getTagIdsFromTag(List<Tag> tags) {
+        List<Long> tagIds = new ArrayList<>();
+        for (Tag tag : tags) {
+            tagIds.add(tag.getId());
+        }
+        return tagIds;
+    }
+
+    private UserMeta getUserMetaFromUser(User user) {
+        UserMeta userMeta = new UserMeta();
+        userMeta.setId(user.getId());
+        userMeta.setUsername(user.getUsername());
+        userMeta.setDisplayName(user.getDisplayName());
+        userMeta.setEmail(user.getEmail());
+        userMeta.setBirthday(user.getBirthday());
+        userMeta.setGender(user.getGender());
+        userMeta.setJoinedAt(user.getJoinedAt());
+        userMeta.setPicture(user.getPicture());
+        userMeta.setProfile(user.getProfile());
+        return userMeta;
     }
 }

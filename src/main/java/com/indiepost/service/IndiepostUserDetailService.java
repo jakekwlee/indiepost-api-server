@@ -23,12 +23,16 @@ import java.util.Set;
 @Transactional(readOnly = true)
 public class IndiepostUserDetailService implements UserDetailsService {
 
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired
+    public IndiepostUserDetailService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Autowired
     public void registerAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder.userDetailsService(new IndiepostUserDetailService());
+        authenticationManagerBuilder.userDetailsService(new IndiepostUserDetailService(userRepository));
     }
 
     @Override

@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by jake on 7/24/16.
@@ -30,14 +30,6 @@ public class Post implements Serializable {
     private Long id;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "originalId")
-    private Post original;
-
-    @OneToMany(mappedBy = "original", orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<Post> versions;
-
-    @NotNull
     @Size(min = 2, max = 100)
     private String title;
 
@@ -47,8 +39,12 @@ public class Post implements Serializable {
     private String content;
 
     @NotNull
+    @Size(max = 300)
+    private String excerpt;
+
+    @NotNull
     @Size(min = 2, max = 30)
-    private String authorName;
+    private String displayName;
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
@@ -65,10 +61,6 @@ public class Post implements Serializable {
     @NotNull
     @Size(min = 5, max = 120)
     private String featuredImage;
-
-    @NotNull
-    @Size(max = 300)
-    private String excerpt;
 
     @NotNull
     @Min(0)
@@ -102,16 +94,16 @@ public class Post implements Serializable {
             joinColumns = {@JoinColumn(name = "postId")},
             inverseJoinColumns = {@JoinColumn(name = "tagId")}
     )
-    private Set<Tag> tags;
+    private List<Tag> tags;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.EXTRA)
     @OrderBy("createdAt")
-    private Set<Comment> comments;
+    private List<Comment> comments;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("likedAt DESC")
-    private Set<Like> likes;
+    private List<Like> likes;
 
     public Long getId() {
         return id;
@@ -145,12 +137,12 @@ public class Post implements Serializable {
         this.createdAt = createAt;
     }
 
-    public String getAuthorName() {
-        return authorName;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public Date getModifiedAt() {
@@ -217,27 +209,27 @@ public class Post implements Serializable {
         this.category = category;
     }
 
-    public Set<Tag> getTags() {
+    public List<Tag> getTags() {
         return tags;
     }
 
-    public void setTags(Set<Tag> tags) {
+    public void setTags(List<Tag> tags) {
         this.tags = tags;
     }
 
-    public Set<Comment> getComments() {
+    public List<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(Set<Comment> comments) {
+    public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
 
-    public Set<Like> getLikes() {
+    public List<Like> getLikes() {
         return likes;
     }
 
-    public void setLikes(Set<Like> likes) {
+    public void setLikes(List<Like> likes) {
         this.likes = likes;
     }
 
@@ -263,21 +255,5 @@ public class Post implements Serializable {
 
     public void setPostType(PostEnum.Type postType) {
         this.postType = postType;
-    }
-
-    public Post getOriginal() {
-        return original;
-    }
-
-    public void setOriginal(Post original) {
-        this.original = original;
-    }
-
-    public Set<Post> getVersions() {
-        return versions;
-    }
-
-    public void setVersions(Set<Post> versions) {
-        this.versions = versions;
     }
 }

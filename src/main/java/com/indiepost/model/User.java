@@ -10,7 +10,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by jake on 7/24/16.
@@ -35,6 +35,11 @@ public class User implements Serializable {
     @Size(min = 3, max = 50)
     private String password;
 
+    @Size(max = 300)
+    private String profile;
+
+    private String picture;
+
     @NotNull
     @Column(unique = true)
     @Size(min = 7, max = 50)
@@ -47,7 +52,7 @@ public class User implements Serializable {
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
-    private Date registeredAt;
+    private Date joinedAt;
 
     @Pattern(regexp = "^01[\\d]{8,9}")
     @Size(min = 7, max = 15)
@@ -66,15 +71,15 @@ public class User implements Serializable {
     @NotNull
     @Enumerated(EnumType.STRING)
     private UserEnum.Gender gender;
-    
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private Set<Like> likes;
+    private List<Like> likes;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "author")
-    private Set<Post> posts;
+    private List<Post> posts;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
-    private Set<Comment> comments;
+    private List<Comment> comments;
 
     @NotNull
     @ManyToMany(cascade = CascadeType.ALL)
@@ -83,29 +88,29 @@ public class User implements Serializable {
             joinColumns = @JoinColumn(name = "userId"),
             inverseJoinColumns = @JoinColumn(name = "roleId")
     )
-    private Set<Role> roles;
+    private List<Role> roles;
 
-    public Set<Like> getLikes() {
+    public List<Like> getLikes() {
         return likes;
     }
 
-    public void setLikes(Set<Like> likes) {
+    public void setLikes(List<Like> likes) {
         this.likes = likes;
     }
 
-    public Set<Comment> getComments() {
+    public List<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(Set<Comment> comments) {
+    public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
 
-    public Set<Role> getRoles() {
+    public List<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
 
@@ -149,12 +154,12 @@ public class User implements Serializable {
         this.displayName = displayName;
     }
 
-    public Date getRegisteredAt() {
-        return registeredAt;
+    public Date getJoinedAt() {
+        return joinedAt;
     }
 
-    public void setRegisteredAt(Date registeredAt) {
-        this.registeredAt = registeredAt;
+    public void setJoinedAt(Date joinedAt) {
+        this.joinedAt = joinedAt;
     }
 
     public String getPhone() {
@@ -189,11 +194,11 @@ public class User implements Serializable {
         this.state = state;
     }
 
-    public Set<Post> getPosts() {
+    public List<Post> getPosts() {
         return posts;
     }
 
-    public void setPosts(Set<Post> posts) {
+    public void setPosts(List<Post> posts) {
         this.posts = posts;
     }
 
@@ -209,4 +214,19 @@ public class User implements Serializable {
         return getRoles().contains(roles);
     }
 
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        this.profile = profile;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
 }

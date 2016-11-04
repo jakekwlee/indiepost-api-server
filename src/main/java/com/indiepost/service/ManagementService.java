@@ -1,6 +1,5 @@
 package com.indiepost.service;
 
-import com.indiepost.model.User;
 import com.indiepost.viewModel.cms.*;
 
 import java.util.List;
@@ -9,25 +8,17 @@ import java.util.List;
  * Created by jake on 10/8/16.
  */
 public interface ManagementService {
-    List<PostMeta> getPublicPosts(int page, int maxResults, boolean descending);
+    List<PostMeta> getAllPostsMeta(int page, int maxResults, boolean isDesc);
 
-    List<PostMeta> getBookedPosts(int page, int maxResults, boolean descending);
+    List<TagMeta> getAllTagsMeta();
 
-    List<PostMeta> getQueuedPosts(int page, int maxResults, boolean descending);
+    List<UserMeta> getAllAuthorsMeta();
 
-    List<PostMeta> getDraftPosts(User currentUser, int page, int maxResults, boolean descending);
+    List<UserMeta> getAllUsersMeta(int page, int maxResults, boolean isDesc);
 
-    List<PostMeta> getDeletedPosts(User currentUser, int page, int maxResults, boolean descending);
+    UserMeta getCurrentUser();
 
-    List<TagMeta> getAllTags();
+    List<CategoryMeta> getAllCategoriesMeta();
 
-    List<UserMeta> getAllAuthors();
-
-    UserMeta getUserMetaFromUser(User user);
-
-    List<CategoryMeta> getAllCategories();
-
-    PaginationMeta getPagination();
-
-    AdminInitialResponse getInitialState();
+    MetaInformation getMetaInformation();
 }

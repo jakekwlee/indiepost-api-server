@@ -12,7 +12,7 @@ import javax.validation.ConstraintValidatorContext;
  *
  * @author Michal Kreuzman
  */
-public class ContentTypeMultipartFileValidator implements ConstraintValidator<ContentType, MultipartFile> {
+class ContentTypeMultipartFileValidator implements ConstraintValidator<ContentType, MultipartFile> {
 
     private String[] acceptedContentTypes;
 
