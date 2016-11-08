@@ -126,7 +126,7 @@ public class ManagementServiceImpl implements ManagementService {
             postMeta.setId(post.getId());
             postMeta.setAuthorDisplayName(post.getAuthor().getDisplayName());
             postMeta.setCategoryName(post.getCategory().getName());
-            postMeta.setTagIds(getTagStringArray(post.getTags()));
+            postMeta.setTags(getTagStringArray(post.getTags()));
             postMeta.setStatus(post.getStatus().toString());
 
             postMeta.setTitle(post.getTitle());
