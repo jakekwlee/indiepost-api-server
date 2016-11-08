@@ -41,10 +41,6 @@ public class Image implements Serializable {
     @Enumerated(EnumType.STRING)
     private SizeType sizeType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "imageSetId")
-    private ImageSet imageSet;
-
     public Long getId() {
         return id;
     }
@@ -83,14 +79,6 @@ public class Image implements Serializable {
 
     public void setFileUrl(String fileUrl) {
         this.fileUrl = fileUrl;
-    }
-
-    public ImageSet getImageSet() {
-        return imageSet;
-    }
-
-    public void setImageSet(ImageSet imageSet) {
-        this.imageSet = imageSet;
     }
 
     public SizeType getSizeType() {

@@ -1,6 +1,5 @@
 package com.indiepost.viewModel.cms;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,19 +17,19 @@ public class PostMeta {
 
     private String displayName;
 
-    private Long categoryId;
+    private String categoryName;
 
-    private Long authorId;
+    private String authorDisplayName;
 
-    private Date createdAt;
+    private String createdAt;
 
-    private Date publishedAt;
+    private String publishedAt;
 
-    private Date modifiedAt;
+    private String modifiedAt;
 
     private int likedCount;
 
-    private List<Long> tagIds;
+    private List<String> tags;
 
     public Long getId() {
         return id;
@@ -48,20 +47,20 @@ public class PostMeta {
         this.title = title;
     }
 
-    public Long getCategoryId() {
-        return categoryId;
+    public String getCategoryName() {
+        return categoryName;
     }
 
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
-    public Long getAuthorId() {
-        return authorId;
+    public String getAuthorDisplayName() {
+        return authorDisplayName;
     }
 
-    public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
+    public void setAuthorDisplayName(String authorDisplayName) {
+        this.authorDisplayName = authorDisplayName;
     }
 
     public String getStatus() {
@@ -72,27 +71,27 @@ public class PostMeta {
         this.status = status;
     }
 
-    public Date getPublishedAt() {
+    public String getPublishedAt() {
         return publishedAt;
     }
 
-    public void setPublishedAt(Date publishedAt) {
+    public void setPublishedAt(String publishedAt) {
         this.publishedAt = publishedAt;
     }
 
-    public Date getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getModifiedAt() {
+    public String getModifiedAt() {
         return modifiedAt;
     }
 
-    public void setModifiedAt(Date modifiedAt) {
+    public void setModifiedAt(String modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
 
@@ -112,11 +111,11 @@ public class PostMeta {
         this.displayName = displayName;
     }
 
-    public List<Long> getTagIds() {
-        return tagIds;
+    public List<String> getTagIds() {
+        return tags;
     }
 
-    public void setTagIds(List<Long> tagIds) {
-        this.tagIds = tagIds;
+    public void setTagIds(List<String> tags) {
+        this.tags = tags;
     }
 }

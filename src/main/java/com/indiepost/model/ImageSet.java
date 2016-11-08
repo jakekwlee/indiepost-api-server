@@ -1,5 +1,7 @@
 package com.indiepost.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.indiepost.enums.ImageEnum.SizeType;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -15,6 +17,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "ImageSets")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ImageSet {
 
     private static final long serialVersionUID = 1L;
@@ -23,8 +26,9 @@ public class ImageSet {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToMany(mappedBy = "imageSet", orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
     @Cascade({CascadeType.ALL, CascadeType.SAVE_UPDATE})
+    @JoinColumn(name="imageSetId")
     private List<Image> images;
 
     @NotNull
@@ -46,6 +50,7 @@ public class ImageSet {
         this.id = id;
     }
 
+    @JsonIgnore
     public List<Image> getImages() {
         return images;
     }

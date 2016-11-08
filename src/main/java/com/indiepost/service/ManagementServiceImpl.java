@@ -6,12 +6,15 @@ import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.model.User;
 import com.indiepost.viewModel.cms.*;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by jake on 10/8/16.
@@ -121,17 +124,17 @@ public class ManagementServiceImpl implements ManagementService {
             userMeta.setUsername(author.getUsername());
 
             postMeta.setId(post.getId());
-            postMeta.setAuthorId(post.getAuthor().getId());
-            postMeta.setCategoryId(post.getCategory().getId());
-            postMeta.setTagIds(getTagIdsFromTag(post.getTags()));
+            postMeta.setAuthorDisplayName(post.getAuthor().getDisplayName());
+            postMeta.setCategoryName(post.getCategory().getName());
+            postMeta.setTagIds(getTagStringArray(post.getTags()));
             postMeta.setStatus(post.getStatus().toString());
 
             postMeta.setTitle(post.getTitle());
             postMeta.setDisplayName(post.getDisplayName());
-            postMeta.setCreatedAt(post.getCreatedAt());
-            postMeta.setPublishedAt(post.getPublishedAt());
-            postMeta.setModifiedAt(post.getModifiedAt());
-            postMeta.setCreatedAt(post.getCreatedAt());
+            postMeta.setCreatedAt(getDateString(post.getCreatedAt()));
+            postMeta.setPublishedAt(getDateString(post.getPublishedAt()));
+            postMeta.setModifiedAt(getDateString(post.getModifiedAt()));
+            postMeta.setCreatedAt(getDateString(post.getCreatedAt()));
             postMeta.setDisplayName(post.getDisplayName());
             postMeta.setLikedCount(post.getLikesCount());
 
@@ -140,12 +143,17 @@ public class ManagementServiceImpl implements ManagementService {
         return postMetaList;
     }
 
-    private List<Long> getTagIdsFromTag(List<Tag> tags) {
-        List<Long> tagIds = new ArrayList<>();
+    private String getDateString(Date date) {
+        FastDateFormat fastDateFormat = FastDateFormat.getInstance("yyyy-MM-dd HH:mm a", Locale.KOREA);
+        return fastDateFormat.format(date);
+    }
+
+    private List<String> getTagStringArray(List<Tag> tags) {
+        List<String> tagStringArray = new ArrayList<>();
         for (Tag tag : tags) {
-            tagIds.add(tag.getId());
+            tagStringArray.add(tag.getName());
         }
-        return tagIds;
+        return tagStringArray;
     }
 
     private UserMeta getUserMetaFromUser(User user) {

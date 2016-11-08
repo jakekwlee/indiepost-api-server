@@ -123,7 +123,6 @@ public class ImageServiceImpl implements ImageService {
                 image.setSizeType(ImageEnum.SizeType.Thumbnail);
                 ++i;
             }
-            image.setImageSet(imageSet);
             images.add(image);
         }
         imageSet.setImages(images);
@@ -134,11 +133,6 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public ImageSet findById(Long id) {
         return imageRepository.findById(id);
-    }
-
-    @Override
-    public ImageSet findByFileName(String fileName) {
-        return imageRepository.findByFileName(fileName);
     }
 
     @Override

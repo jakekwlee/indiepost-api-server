@@ -6,8 +6,8 @@ spring:
     password: indiepost
   jpa:
     hibernate:
+      ddl-auto: update
       naming-strategy: org.hibernate.cfg.DefaultNamingStrategy
-      ddl-auto: create-drop
     show-sql: true
     generate-ddl: true
     properties:
@@ -35,7 +35,7 @@ logging:
   level:
     org:
       springframework:
-        web: debug
+        web: info
 multipart:
   max-file-size: 20MB
   max-request-size: 100MB

@@ -23,6 +23,8 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Post implements Serializable {
 
+    // TODO: 11/5/16 Update DB migration SQL
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -89,6 +91,7 @@ public class Post implements Serializable {
     private Category category;
 
     @ManyToMany
+    @Fetch(FetchMode.JOIN)
     @JoinTable(
             name = "Posts_Tags",
             joinColumns = {@JoinColumn(name = "postId")},

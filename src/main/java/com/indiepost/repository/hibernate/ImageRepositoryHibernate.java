@@ -6,6 +6,7 @@ import com.indiepost.repository.ImageRepository;
 import com.indiepost.repository.helper.CriteriaMaker;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -51,16 +52,7 @@ public class ImageRepositoryHibernate implements ImageRepository {
 
     @Override
     public List<ImageSet> findAll(Pageable pageable) {
-        return getCriteria(pageable).list();
-    }
-
-    @Override
-    public ImageSet findByFileName(String fileName) {
-        Image image = (Image) getCriteriaForSingleImage().add(Restrictions.eq("fileName", fileName)).uniqueResult();
-        if (image == null) {
-            return null;
-        }
-        return image.getImageSet();
+        return getCriteria(pageable).setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY).list();
     }
 
     @Override

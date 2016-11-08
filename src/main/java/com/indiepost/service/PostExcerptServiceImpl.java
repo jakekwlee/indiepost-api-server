@@ -39,8 +39,7 @@ public class PostExcerptServiceImpl implements PostExcerptService {
     public List<Post> findAll(int page, int maxResults, boolean isDesc) {
         Pageable pageable = getPageable(page, maxResults, isDesc);
         User currentUser = userService.getCurrentUser();
-        postExcerptRepository.findAll(currentUser.getId(), pageable);
-        return null;
+        return postExcerptRepository.findAll(currentUser.getId(), pageable);
     }
 
     @Override

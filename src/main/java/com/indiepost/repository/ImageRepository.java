@@ -14,8 +14,6 @@ public interface ImageRepository {
 
     ImageSet findById(Long id);
 
-    ImageSet findByFileName(String fileName);
-
     List<ImageSet> findByPostId(Long postId, Pageable pageable);
 
     List<ImageSet> findAll(Pageable pageable);

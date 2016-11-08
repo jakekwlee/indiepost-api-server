@@ -3,7 +3,10 @@ package com.indiepost;
 import com.indiepost.config.ImageConfig;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Category;
+import com.indiepost.model.Post;
+import com.indiepost.model.Tag;
 import com.indiepost.model.User;
+import com.indiepost.repository.PostExcerptRepository;
 import com.indiepost.service.CategoryService;
 import com.indiepost.service.ManagementService;
 import com.indiepost.service.PostService;
@@ -18,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,11 +29,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
 public class NewIndiepostApplicationTests {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -47,6 +59,9 @@ public class NewIndiepostApplicationTests {
     private ManagementService managementService;
 
     @Autowired
+    private PostExcerptRepository postExcerptRepository;
+
+    @Autowired
     private ApplicationContext context;
 
     @Autowired
@@ -54,7 +69,7 @@ public class NewIndiepostApplicationTests {
 
     private Authentication authentication;
 
-    @Test
+    //    @Test
     public void contextLoads() {
     }
 
@@ -62,7 +77,7 @@ public class NewIndiepostApplicationTests {
     public void init() {
         AuthenticationManager authenticationManager = this.context
                 .getBean(AuthenticationManager.class);
-        authentication = authenticationManager.authenticate(
+        this.authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken("indiepost", "*4ACFE3202A5FF5CF467898FC58AAB1D615029441"));
     }
 
@@ -71,14 +86,14 @@ public class NewIndiepostApplicationTests {
         SecurityContextHolder.clearContext();
     }
 
-    @Test
+    //    @Test
     public void passwordEncoderShouldEncodeProperly() throws Exception {
         String rawPassword = "admin";
         String encodedPassword = "*4ACFE3202A5FF5CF467898FC58AAB1D615029441";
         Assert.assertEquals(encodedPassword, this.passwordEncoder.encode(rawPassword));
     }
 
-    @Test
+    //    @Test
     public void postServiceWorksCorrectly() throws Exception {
         User user = userService.findById(new Long(1));
         Category category = categoryService.findBySlug("music");
@@ -88,7 +103,7 @@ public class NewIndiepostApplicationTests {
         postService.findByStatus(PostEnum.Status.PUBLISHED, 1, 100, true);
     }
 
-    @Test
+    //    @Test
     public void cmsMetaInformationWorksCorrectly() throws Exception {
         MetaInformation response = managementService.getMetaInformation();
         String dump = ReflectionToStringBuilder.toString(response);
@@ -96,6 +111,16 @@ public class NewIndiepostApplicationTests {
     }
 
     @Test
+    @Transactional
+    public void postExcerptServiceWorks() throws Exception {
+        List<Post> posts = postExcerptRepository.findAll(new Long(0), new PageRequest(0, 10000));
+        for (Post post : posts) {
+            List<Tag> tags = post.getTags();
+            System.out.println(tags.toString());
+        }
+    }
+
+    //    @Test
     public void imageConfigWiredCorrectly() throws Exception {
         String dump = ReflectionToStringBuilder.toString(imageConfig);
         System.out.println(dump);
