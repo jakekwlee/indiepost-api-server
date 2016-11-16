@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * Created by jake on 8/1/16.
  */
 @Controller
-@RequestMapping("/cms/*")
+@RequestMapping("/admin/**")
 public class AdminController {
     @RequestMapping(method = RequestMethod.GET)
     public String getDashboard() {
-        return "admin/dashboard";
+        return "admin/index";
     }
 }

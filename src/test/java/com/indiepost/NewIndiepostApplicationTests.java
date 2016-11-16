@@ -11,7 +11,7 @@ import com.indiepost.service.CategoryService;
 import com.indiepost.service.ManagementService;
 import com.indiepost.service.PostService;
 import com.indiepost.service.UserService;
-import com.indiepost.viewModel.cms.MetaInformation;
+import com.indiepost.viewModel.admin.MetaInformation;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.junit.After;
 import org.junit.Assert;

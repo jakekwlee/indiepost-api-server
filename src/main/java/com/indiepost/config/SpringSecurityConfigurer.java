@@ -1,6 +1,5 @@
 package com.indiepost.config;
 
-import com.indiepost.enums.UserEnum;
 import com.indiepost.repository.UserRepository;
 import com.indiepost.service.IndiepostUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
+
+    private static final String SPRING_SECURITY_EXPRESSION =
+            "hasAuthority('Editor') and (hasIpAddress('127.0.0.1') or hasIpAddress('192.168.0.1') or hasIpAddress('114.202.232.69') or hasIpAddress('112.161.107.44'))";
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -41,10 +43,11 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
         http
                 .authorizeRequests()
-                .antMatchers("/cms/**").hasAuthority(UserEnum.Roles.Editor.toString())
-                .antMatchers("/api/cms/**").hasAuthority(UserEnum.Roles.Editor.toString())
+                .antMatchers("/admin/**").access(SPRING_SECURITY_EXPRESSION)
+                .antMatchers("/api/admin/**").access(SPRING_SECURITY_EXPRESSION)
                 .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
                 .and()

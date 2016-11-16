@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.viewModel.cms.*;
+import com.indiepost.viewModel.admin.*;
 
 import java.util.List;
 

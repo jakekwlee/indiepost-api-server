@@ -19,7 +19,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
                 .addResourceHandler("/resources/**")
-                .addResourceLocations("file:/data/indiepost-cms/")
+                .addResourceLocations("file:/data/indiepost-react-cms/")
                 .setCachePeriod(3600)
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver());

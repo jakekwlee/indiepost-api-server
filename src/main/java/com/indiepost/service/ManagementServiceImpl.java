@@ -5,7 +5,7 @@ import com.indiepost.model.Category;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.model.User;
-import com.indiepost.viewModel.cms.*;
+import com.indiepost.viewModel.admin.*;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -126,7 +126,7 @@ public class ManagementServiceImpl implements ManagementService {
             postMeta.setId(post.getId());
             postMeta.setAuthorDisplayName(post.getAuthor().getDisplayName());
             postMeta.setCategoryName(post.getCategory().getName());
-            postMeta.setTagIds(getTagStringArray(post.getTags()));
+            postMeta.setTags(getTagStringArray(post.getTags()));
             postMeta.setStatus(post.getStatus().toString());
 
             postMeta.setTitle(post.getTitle());

@@ -1,4 +1,4 @@
-package com.indiepost.viewModel.cms;
+package com.indiepost.viewModel.admin;
 
 import com.indiepost.enums.UserEnum;
 

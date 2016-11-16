@@ -1,4 +1,4 @@
-package com.indiepost.viewModel.cms;
+package com.indiepost.viewModel.admin;
 
 /**
  * Created by jake on 10/8/16.

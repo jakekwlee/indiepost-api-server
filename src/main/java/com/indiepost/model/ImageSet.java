@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.indiepost.enums.ImageEnum.SizeType;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -26,6 +28,7 @@ public class ImageSet {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Fetch(FetchMode.SUBSELECT)
     @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
     @Cascade({CascadeType.ALL, CascadeType.SAVE_UPDATE})
     @JoinColumn(name="imageSetId")

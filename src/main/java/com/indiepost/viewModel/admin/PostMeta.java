@@ -1,4 +1,4 @@
-package com.indiepost.viewModel.cms;
+package com.indiepost.viewModel.admin;
 
 import java.util.List;
 
@@ -111,11 +111,11 @@ public class PostMeta {
         this.displayName = displayName;
     }
 
-    public List<String> getTagIds() {
+    public List<String> getTags() {
         return tags;
     }
 
-    public void setTagIds(List<String> tags) {
+    public void setTags(List<String> tags) {
         this.tags = tags;
     }
 }

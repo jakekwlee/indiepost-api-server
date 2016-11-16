@@ -1,4 +1,4 @@
-package com.indiepost.controller.api.cms;
+package com.indiepost.controller.api.admin;
 
 import com.indiepost.exception.FileSaveException;
 import com.indiepost.model.ImageSet;
@@ -6,8 +6,8 @@ import com.indiepost.service.ImageService;
 import com.indiepost.service.ManagementService;
 import com.indiepost.service.PostExcerptService;
 import com.indiepost.viewModel.ImageResponse;
-import com.indiepost.viewModel.cms.MetaInformation;
-import com.indiepost.viewModel.cms.PostMeta;
+import com.indiepost.viewModel.admin.MetaInformation;
+import com.indiepost.viewModel.admin.PostMeta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +21,8 @@ import java.util.List;
  * Created by jake on 10/8/16.
  */
 @RestController
-@RequestMapping("/api/cms")
-public class CmsRestController {
+@RequestMapping("/api/admin")
+public class AdminRestController {
 
     private ManagementService managementService;
 
@@ -31,7 +31,7 @@ public class CmsRestController {
     private ImageService imageService;
 
     @Autowired
-    public CmsRestController(ManagementService managementService, ImageService imageService, PostExcerptService postExcerptService) {
+    public AdminRestController(ManagementService managementService, ImageService imageService, PostExcerptService postExcerptService) {
         this.postExcerptService = postExcerptService;
         this.managementService = managementService;
         this.imageService = imageService;
@@ -48,8 +48,8 @@ public class CmsRestController {
     }
 
     @RequestMapping(value = "/images", method = RequestMethod.GET, produces = {"application/json; charset=UTF-8"})
-    public List<ImageSet> getImages() {
-        return imageService.findAll(0, 500);
+    public List<ImageSet> getImages(@RequestParam int page, @RequestParam int max) {
+        return imageService.findAll(page, max);
     }
 
     @RequestMapping(value = "/image", method = RequestMethod.POST, produces = {"application/json; charset=UTF-8"})
