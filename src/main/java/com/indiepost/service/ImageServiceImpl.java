@@ -6,10 +6,9 @@ import com.indiepost.exception.FileSaveException;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.repository.ImageRepository;
-import com.indiepost.viewModel.ImageMeta;
-import com.indiepost.viewModel.ImageResponse;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.imgscalr.Scalr;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -19,15 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -53,81 +49,64 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public ImageResponse saveUploadedImage(MultipartFile[] multipartFiles) throws FileSaveException {
-        boolean isResizedOnClient = true;
-        int filesLength = multipartFiles.length;
-
-        if (filesLength == 0) {
+    public List<ImageSet> saveUploadedImages(MultipartFile[] multipartFiles) throws IOException {
+        if (multipartFiles.length == 0) {
             throw new FileSaveException("File does not uploaded.");
         }
+        List<ImageSet> imageSetList = new ArrayList<>();
 
-        if (filesLength == 1) {
-            isResizedOnClient = false;
-        }
-
-        String contentType = multipartFiles[0].getContentType();
-
-        if (!validateContentType(contentType)) {
-            throw new FileSaveException("File type is not accepted: " + contentType);
-        }
-
-        String alphanumeric = RandomStringUtils.randomAlphanumeric(imageConfig.getFilenameLength());
-        String fileExtension = contentType.split("/")[1];
-
-        String newFilename;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("/yyyy/MM");
-        String baseUrl = imageConfig.getDbLocation() + dateFormat.format(new Date());
-        String physicalBaseUrl = imageConfig.getFsRoot() + baseUrl;
-
-        ImageSet imageSet = new ImageSet();
-        imageSet.setContentType(contentType);
-        imageSet.setFeatured(false);
-        imageSet.setUploadedAt(new Date());
-
-        List<Image> images = new ArrayList<>();
-        Image image;
-        int width;
-        int height;
-        Dimension dimension;
-
-        for (int i = 0; i < filesLength; ) {
-            image = new Image();
-            dimension = getDimension(multipartFiles[i]);
-            width = (int) dimension.getWidth();
-            height = (int) dimension.getHeight();
-            image.setWidth(width);
-            image.setHeight(height);
-            newFilename = String.format(imageConfig.getFilenameFormat(), alphanumeric, width, height, fileExtension);
-            long size = saveToFileSystem(multipartFiles[i], physicalBaseUrl + '/' + newFilename).length();
-
-            image.setFileName(newFilename);
-            image.setFileUrl(baseUrl + '/' + newFilename);
-            image.setFileSize(size);
-
-            if (i == 0) {
-                image.setSizeType(ImageEnum.SizeType.Original);
-                ++i;
-            } else if (1200 <= width) {
-                image.setSizeType(ImageEnum.SizeType.Large);
-                width = 1000;
-                ++i;
-            } else if (700 <= width && width < 1200) {
-                image.setSizeType(ImageEnum.SizeType.Medium);
-                width = 500;
-                ++i;
-            } else if (400 <= width && width < 700) {
-                image.setSizeType(ImageEnum.SizeType.Small);
-                width = 300;
-                ++i;
-            } else if (width < 400) {
-                image.setSizeType(ImageEnum.SizeType.Thumbnail);
-                ++i;
+        for (MultipartFile file : multipartFiles) {
+            String contentType = file.getContentType();
+            if (!validateContentType(contentType)) {
+                throw new FileSaveException("File type is not accepted: " + contentType);
             }
-            images.add(image);
+            String alphanumeric = RandomStringUtils.randomAlphanumeric(imageConfig.getFilenameLength());
+            String fileExtension = contentType.split("/")[1];
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("/yyyy/MM");
+            String baseUrl = imageConfig.getDbLocation() + dateFormat.format(new Date());
+
+            ImageSet imageSet = new ImageSet();
+            imageSet.setContentType(contentType);
+            imageSet.setUploadedAt(new Date());
+            List<Image> images = new ArrayList<>();
+
+            BufferedImage originalBufferedImage = getBufferedImageFromMultipartFile(file);
+            Image originalImage = saveUploadedImage(originalBufferedImage, ImageEnum.SizeType.ORIGINAL, alphanumeric, fileExtension, baseUrl);
+            images.add(originalImage);
+
+            BufferedImage optimizedBufferedImage = resizeImage(originalBufferedImage, 700);
+            Image optimizedImage = saveUploadedImage(optimizedBufferedImage, ImageEnum.SizeType.OPTIMIZED, alphanumeric, fileExtension, baseUrl);
+            images.add(optimizedImage);
+
+            BufferedImage thumbnailBufferedImage = generateThumbnail(optimizedBufferedImage, 120, 80);
+            Image thumbnailImage = saveUploadedImage(thumbnailBufferedImage, ImageEnum.SizeType.THUMBNAIL, alphanumeric, fileExtension, baseUrl);
+            images.add(thumbnailImage);
+
+            imageSet.setImages(images);
+            imageRepository.save(imageSet);
+            imageSetList.add(imageSet);
         }
-        imageSet.setImages(images);
-        imageRepository.save(imageSet);
-        return generateImageResponse(imageSet);
+        return imageSetList;
+    }
+
+    private Image saveUploadedImage(BufferedImage bufferedImage, ImageEnum.SizeType sizeType,
+                                    String alphanumeric, String fileExtension, String baseUrl) throws IOException {
+        int width = bufferedImage.getWidth();
+        int height = bufferedImage.getHeight();
+        String physicalBaseUrl = imageConfig.getFsRoot() + baseUrl;
+        String newFilename = String.format(imageConfig.getFilenameFormat(), alphanumeric, width, height, fileExtension);
+
+        long size = saveToFileSystem(bufferedImage, fileExtension, physicalBaseUrl + '/' + newFilename).length();
+
+        Image image = new Image();
+        image.setFileName(newFilename);
+        image.setFileUrl(baseUrl + '/' + newFilename);
+        image.setFileSize(size);
+        image.setWidth(width);
+        image.setHeight(height);
+        image.setSizeType(sizeType);
+        return image;
     }
 
     @Override
@@ -170,61 +149,48 @@ public class ImageServiceImpl implements ImageService {
         return imageConfig.getAcceptedTypes().contains(contentType);
     }
 
-    private ImageResponse generateImageResponse(ImageSet imageSet) {
-        ImageMeta imageMeta = new ImageMeta();
-        Image original = imageSet.getOriginal();
-        Image thumbnail = imageSet.getThumbnail();
-        imageMeta.setId(imageSet.getId());
-        imageMeta.setName(original.getFileName());
-        imageMeta.setSize(original.getFileSize());
-        imageMeta.setType(imageSet.getContentType());
-        imageMeta.setDeleteUrl(imageConfig.getApiUri() + imageSet.getId());
-        imageMeta.setUrl(original.getFileUrl());
-
-        if (thumbnail == null) {
-            thumbnail = original;
-        }
-        imageMeta.setThumbnailUrl(thumbnail.getFileUrl());
-
-        List<ImageMeta> imageMetaList = new ArrayList<>();
-        imageMetaList.add(imageMeta);
-        ImageResponse imageResponse = new ImageResponse();
-        imageResponse.setFiles(imageMetaList);
-        return imageResponse;
+    private BufferedImage getBufferedImageFromMultipartFile(MultipartFile file) throws IOException {
+        return ImageIO.read(file.getInputStream());
     }
 
-    private Dimension getDimension(MultipartFile multipartFile) throws FileSaveException {
-        try {
-            ImageInputStream in = ImageIO.createImageInputStream(multipartFile.getInputStream());
-            final Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
-            if (readers.hasNext()) {
-                ImageReader reader = readers.next();
-                try {
-                    reader.setInput(in);
-                    return new Dimension(reader.getWidth(0), reader.getHeight(0));
-                } catch (IOException e) {
-
-                } finally {
-                    reader.dispose();
-                }
-            }
-        } catch (IOException e) {
-            throw new FileSaveException("Failed read image header: " + multipartFile.getOriginalFilename());
+    private File saveToFileSystem(BufferedImage bufferedImage, String formatName, String path) throws IOException {
+        File file = new File(path);
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
         }
-        return null;
+        ImageIO.write(bufferedImage, formatName, file);
+        return file;
     }
 
-    private File saveToFileSystem(MultipartFile multipartFile, String path) throws FileSaveException {
-        try {
-            File file = new File(path);
-            if (!file.getParentFile().exists()) {
-                file.getParentFile().mkdirs();
-            }
-            FileUtils.writeByteArrayToFile(file, multipartFile.getBytes());
-            return file;
-        } catch (IOException ioe) {
-            throw new FileSaveException("Image Upload Failed: " + path, ioe);
+    private BufferedImage resizeImage(BufferedImage sourceImage, int definition) {
+        int width = sourceImage.getWidth();
+        BufferedImage resizedImage;
+        if (width > definition) {
+            resizedImage = Scalr.resize(sourceImage, Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH, definition);
+        } else {
+            resizedImage = sourceImage;
         }
+        return resizedImage;
+    }
+
+    private BufferedImage generateThumbnail(BufferedImage originalImage, int width, int height) {
+        int originalImageWidth = originalImage.getWidth();
+        int originalImageHeight = originalImage.getHeight();
+        int cropMargin = (int) Math.abs(Math.round(((originalImageWidth - originalImageHeight) / 2.0)));
+        int x0 = 0;
+        int y0 = 0;
+        int side = 0;
+
+        if (originalImageWidth > originalImageHeight) {
+            x0 = cropMargin;
+            side = originalImageHeight;
+        } else {
+            y0 = cropMargin;
+            side = originalImageWidth;
+        }
+
+        BufferedImage cropedImage = Scalr.crop(originalImage, x0, y0, side, side);
+        return Scalr.resize(cropedImage, Scalr.Method.QUALITY, width, height);
     }
 
     private boolean deleteFileFromFileSystem(Image image) throws IOException {

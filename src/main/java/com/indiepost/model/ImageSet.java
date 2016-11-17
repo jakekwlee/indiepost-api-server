@@ -38,8 +38,8 @@ public class ImageSet {
     @Size(min = 9, max = 10)
     private String contentType;
 
-    @NotNull
-    private boolean isFeatured;
+    @Size(max = 300)
+    private String caption;
 
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
@@ -63,23 +63,23 @@ public class ImageSet {
     }
 
     public Image getOriginal() {
-        return findByImageSize(SizeType.Original);
+        return findByImageSize(SizeType.ORIGINAL);
     }
 
-    public Image getLarge() {
-        return findByImageSize(SizeType.Large);
-    }
-
-    public Image getMedium() {
-        return findByImageSize(SizeType.Medium);
-    }
-
-    public Image getSmall() {
-        return findByImageSize(SizeType.Small);
+    public Image getOptimized() {
+        return findByImageSize(SizeType.OPTIMIZED);
     }
 
     public Image getThumbnail() {
-        return findByImageSize(SizeType.Thumbnail);
+        return findByImageSize(SizeType.THUMBNAIL);
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public void setCaption(String caption) {
+        this.caption = caption;
     }
 
     public Date getUploadedAt() {
@@ -96,14 +96,6 @@ public class ImageSet {
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
-    }
-
-    public boolean isFeatured() {
-        return isFeatured;
-    }
-
-    public void setFeatured(boolean featured) {
-        isFeatured = featured;
     }
 
     private Image findByImageSize(SizeType sizeType) {

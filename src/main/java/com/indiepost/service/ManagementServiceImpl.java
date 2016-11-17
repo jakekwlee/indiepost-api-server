@@ -27,9 +27,9 @@ public class ManagementServiceImpl implements ManagementService {
 
     private CategoryService categoryService;
 
-    private TagService tagService;
-
     private UserService userService;
+
+    private TagService tagService;
 
     @Autowired
     public ManagementServiceImpl(PostExcerptService postExcerptService, CategoryService categoryService, TagService tagService, UserService userService) {
@@ -41,9 +41,7 @@ public class ManagementServiceImpl implements ManagementService {
 
     @Override
     public List<PostMeta> getAllPostsMeta(int page, int maxResults, boolean isDesc) {
-
         List<Post> posts = postExcerptService.findAll(page, maxResults, isDesc);
-
         return getPostMetaList(posts);
     }
 

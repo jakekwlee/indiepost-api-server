@@ -16,7 +16,7 @@ public interface ImageService {
 
     void save(ImageSet imageSet);
 
-    ImageResponse saveUploadedImage(MultipartFile[] multipartFiles) throws FileSaveException;
+    List<ImageSet> saveUploadedImages(MultipartFile[] multipartFiles) throws IOException;
 
     ImageSet findById(Long id);
 
