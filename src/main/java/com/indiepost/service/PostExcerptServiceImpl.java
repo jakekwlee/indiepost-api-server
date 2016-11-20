@@ -114,6 +114,11 @@ public class PostExcerptServiceImpl implements PostExcerptService {
         return postExcerptRepository.findByConditions(status, authorId, categoryId, tagIds, searchText, pageable);
     }
 
+    @Override
+    public List<String> findAllAuthorNames() {
+        return postExcerptRepository.findAllAuthorNames();
+    }
+
     private Pageable getPageable(int page, int maxResults, boolean isDesc) {
         Sort.Direction direction = isDesc ? Sort.Direction.DESC : Sort.Direction.ASC;
         return new PageRequest(page, maxResults, direction, "publishedAt");

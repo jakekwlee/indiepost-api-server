@@ -1,9 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.exception.FileSaveException;
 import com.indiepost.model.ImageSet;
-import com.indiepost.viewModel.ImageResponse;
-import org.json.JSONObject;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -26,5 +23,5 @@ public interface ImageService {
 
     void delete(ImageSet imageSet) throws IOException;
 
-    JSONObject deleteById(Long id) throws IOException;
+    Long deleteById(Long id) throws IOException;
 }

@@ -98,6 +98,7 @@ public class ManagementServiceImpl implements ManagementService {
         metaInformation.setAuthors(getAllAuthorsMeta());
         metaInformation.setCategories(getAllCategoriesMeta());
         metaInformation.setTags(getAllTagsMeta());
+        metaInformation.setAuthorNames(postExcerptService.findAllAuthorNames());
         return metaInformation;
     }
 

@@ -110,13 +110,22 @@ public class NewIndiepostApplicationTests {
         System.out.println(dump);
     }
 
-    @Test
-    @Transactional
+//    @Test
+//    @Transactional
     public void postExcerptServiceWorks() throws Exception {
         List<Post> posts = postExcerptRepository.findAll(new Long(0), new PageRequest(0, 10000));
         for (Post post : posts) {
             List<Tag> tags = post.getTags();
             System.out.println(tags.toString());
+        }
+    }
+
+    @Test
+    @Transactional
+    public void findAllAuthorNameWorksCorrectly() throws Exception {
+        List<String> names = postExcerptRepository.findAllAuthorNames();
+        for (String name : names) {
+            System.out.println(name);
         }
     }
 

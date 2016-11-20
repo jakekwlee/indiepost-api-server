@@ -19,8 +19,8 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="new-indeipost_main" target="1.8" />
-      <module name="new-indeipost_test" target="1.8" />
+      <module name="NewIndiepost_main" target="1.8" />
+      <module name="NewIndiepost_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

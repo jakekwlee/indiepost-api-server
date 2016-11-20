@@ -11,6 +11,8 @@ public class MetaInformation {
 
     private List<UserMeta> authors;
 
+    private List<String> authorNames;
+
     private UserMeta currentUser;
 
     private List<TagMeta> tags;
@@ -47,5 +49,13 @@ public class MetaInformation {
 
     public void setCategories(List<CategoryMeta> categories) {
         this.categories = categories;
+    }
+
+    public List<String> getAuthorNames() {
+        return authorNames;
+    }
+
+    public void setAuthorNames(List<String> authorNames) {
+        this.authorNames = authorNames;
     }
 }

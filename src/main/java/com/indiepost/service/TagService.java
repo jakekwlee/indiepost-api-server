@@ -16,7 +16,7 @@ public interface TagService {
 
     List<Tag> findAll();
 
-    String[] findAllToStringArray();
+    List<String> findAllToStringList();
 
     List<Tag> findAll(int page, int maxResults);
 

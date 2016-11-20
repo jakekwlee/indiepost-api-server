@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/new-indeipost.iml" filepath="$PROJECT_DIR$/.idea/modules/new-indeipost.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/new-indeipost_main.iml" filepath="$PROJECT_DIR$/.idea/modules/new-indeipost_main.iml" group="new-indeipost" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/new-indeipost_test.iml" filepath="$PROJECT_DIR$/.idea/modules/new-indeipost_test.iml" group="new-indeipost" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/NewIndiepost.iml" filepath="$PROJECT_DIR$/.idea/modules/NewIndiepost.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/NewIndiepost_main.iml" filepath="$PROJECT_DIR$/.idea/modules/NewIndiepost_main.iml" group="NewIndiepost" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/NewIndiepost_test.iml" filepath="$PROJECT_DIR$/.idea/modules/NewIndiepost_test.iml" group="NewIndiepost" />
     </modules>
   </component>
 </project>

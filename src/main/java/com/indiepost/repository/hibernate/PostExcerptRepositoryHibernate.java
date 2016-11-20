@@ -9,6 +9,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -121,6 +122,19 @@ public class PostExcerptRepositoryHibernate implements PostExcerptRepository {
         criteria.add(restrictions);
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         return criteria.list();
+    }
+
+    @Override
+    public List<String> findAllAuthorNames() {
+        Criteria criteria = getCriteria()
+                .setProjection(
+                        Projections.distinct(
+                                Projections.projectionList()
+                                        .add(Projections.property("displayName"))
+                        )
+                );
+        List list = criteria.list();
+        return list;
     }
 
     private Session getSession() {

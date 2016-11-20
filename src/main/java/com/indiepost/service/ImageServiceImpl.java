@@ -9,7 +9,6 @@ import com.indiepost.repository.ImageRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.imgscalr.Scalr;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -134,15 +133,10 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public JSONObject deleteById(Long id) throws IOException {
+    public Long deleteById(Long id) throws IOException {
         ImageSet imageSet = findById(id);
-        JSONObject deletedFile = new JSONObject();
-        deletedFile.put(imageSet.getOriginal().getFileName(), true);
-        JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("files", deletedFile);
-
         delete(imageSet);
-        return jsonResponse;
+        return id;
     }
 
     private boolean validateContentType(String contentType) {
@@ -166,7 +160,7 @@ public class ImageServiceImpl implements ImageService {
         int width = sourceImage.getWidth();
         BufferedImage resizedImage;
         if (width > definition) {
-            resizedImage = Scalr.resize(sourceImage, Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH, definition);
+            resizedImage = Scalr.resize(sourceImage, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, definition);
         } else {
             resizedImage = sourceImage;
         }
@@ -174,23 +168,22 @@ public class ImageServiceImpl implements ImageService {
     }
 
     private BufferedImage generateThumbnail(BufferedImage originalImage, int width, int height) {
-        int originalImageWidth = originalImage.getWidth();
-        int originalImageHeight = originalImage.getHeight();
-        int cropMargin = (int) Math.abs(Math.round(((originalImageWidth - originalImageHeight) / 2.0)));
         int x0 = 0;
         int y0 = 0;
-        int side = 0;
+        BufferedImage resizedImage;
 
-        if (originalImageWidth > originalImageHeight) {
-            x0 = cropMargin;
-            side = originalImageHeight;
+        float originalRatio = (float) originalImage.getWidth() / originalImage.getHeight();
+        float thumbnailRatio = (float) width / height;
+
+        if (originalRatio >= thumbnailRatio) {
+            resizedImage = Scalr.resize(originalImage, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_HEIGHT, height);
+            x0 = (int) Math.round((resizedImage.getWidth() - width) / 2.0);
         } else {
-            y0 = cropMargin;
-            side = originalImageWidth;
+            resizedImage = Scalr.resize(originalImage, Scalr.Method.ULTRA_QUALITY, Scalr.Mode.FIT_TO_WIDTH, width);
+            y0 = (int) Math.round((resizedImage.getHeight() - height) / 2.0);
         }
 
-        BufferedImage cropedImage = Scalr.crop(originalImage, x0, y0, side, side);
-        return Scalr.resize(cropedImage, Scalr.Method.QUALITY, width, height);
+        return Scalr.crop(resizedImage, x0, y0, width, height);
     }
 
     private boolean deleteFileFromFileSystem(Image image) throws IOException {

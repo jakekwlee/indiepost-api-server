@@ -38,4 +38,6 @@ public interface PostExcerptService {
 
     List<Post> findByConditions(PostEnum.Status status, Long authorId, Long categoryId, List<Long> tagIds, String searchText, int page, int maxResults, boolean isDesc);
 
+    List<String> findAllAuthorNames();
+
 }

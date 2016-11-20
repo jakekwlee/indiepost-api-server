@@ -39,4 +39,6 @@ public interface PostExcerptRepository {
     List<Post> findByStatusAndAuthorId(PostEnum.Status status, Long authorId, Pageable pageable);
 
     List<Post> findByConditions(PostEnum.Status status, Long authorId, Long categoryId, List<Long> tagIds, String searchText, Pageable pageable);
+
+    List<String> findAllAuthorNames();
 }

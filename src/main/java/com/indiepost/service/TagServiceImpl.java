@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,13 +46,13 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public String[] findAllToStringArray() {
+    public List<String> findAllToStringList() {
         List<Tag> tags = findAll();
-        String[] tagArray = new String[tags.size()];
-        for (int i = 0; i < tagArray.length; ++i) {
-            tagArray[i] = tags.get(i).getName();
+        List<String> result = new ArrayList<>();
+        for (Tag tag : tags) {
+            result.add(tag.getName());
         }
-        return tagArray;
+        return result;
     }
 
     @Override
