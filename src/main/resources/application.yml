@@ -1,9 +1,11 @@
 spring:
   datasource:
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/indiepost
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://localhost:3306/indiepost?useUnicode=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&characterEncoding=UTF-8
     username: indiepost
     password: indiepost
+  jmx:
+    default-domain: newIndiepost
   jpa:
     hibernate:
       ddl-auto: update

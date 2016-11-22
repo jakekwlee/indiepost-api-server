@@ -76,7 +76,11 @@ public class User implements Serializable {
     private List<Like> likes;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "author")
-    private List<Post> posts;
+    private List<Post> authoredPosts;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "editor")
+    private List<Post> editedPosts;
+
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Comment> comments;
@@ -194,12 +198,20 @@ public class User implements Serializable {
         this.state = state;
     }
 
-    public List<Post> getPosts() {
-        return posts;
+    public List<Post> getAuthoredPosts() {
+        return authoredPosts;
     }
 
-    public void setPosts(List<Post> posts) {
-        this.posts = posts;
+    public void setAuthoredPosts(List<Post> authoredPosts) {
+        this.authoredPosts = authoredPosts;
+    }
+
+    public List<Post> getEditedPosts() {
+        return editedPosts;
+    }
+
+    public void setEditedPosts(List<Post> editedPosts) {
+        this.editedPosts = editedPosts;
     }
 
     public UserEnum.Gender getGender() {

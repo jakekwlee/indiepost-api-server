@@ -1,4 +1,4 @@
-package com.indiepost.viewModel;
+package com.indiepost.responseModel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

@@ -1,29 +1,22 @@
 package com.indiepost.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.indiepost.enums.PostEnum;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.CascadeType;
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by jake on 7/24/16.
  */
 @Entity
-@Table(name = "Posts")
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class Post implements Serializable {
+@Table(name = "Revisions")
+public class Revision implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -31,14 +24,10 @@ public class Post implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @LazyCollection(LazyCollectionOption.EXTRA)
-    @OrderBy("modifiedAt DESC")
-    private List<Revision> revisions;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "originalId")
-    private Post original;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "postId", nullable = false)
+    private Post post;
 
     @NotNull
     @Size(max = 100)
@@ -73,18 +62,6 @@ public class Post implements Serializable {
     private String featuredImage;
 
     @NotNull
-    @Min(0)
-    private int likesCount = 0;
-
-    @NotNull
-    @Min(0)
-    private int commentsCount = 0;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private PostEnum.Status status;
-
-    @NotNull
     @Enumerated(EnumType.STRING)
     private PostEnum.Type postType;
 
@@ -94,7 +71,7 @@ public class Post implements Serializable {
     private User author;
 
     @ManyToOne(optional = false)
-    @LazyCollection(LazyCollectionOption.EXTRA)
+    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "editorId", nullable = false)
     private User editor;
 
@@ -105,22 +82,12 @@ public class Post implements Serializable {
 
     @ManyToMany
     @Fetch(FetchMode.JOIN)
-    @Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.SAVE_UPDATE})
     @JoinTable(
-            name = "Posts_Tags",
-            joinColumns = {@JoinColumn(name = "postId")},
+            name = "Revisions_Tags",
+            joinColumns = {@JoinColumn(name = "revisionId")},
             inverseJoinColumns = {@JoinColumn(name = "tagId")}
     )
-    private Set<Tag> tags;
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @LazyCollection(LazyCollectionOption.EXTRA)
-    @OrderBy("createdAt")
-    private List<Comment> comments;
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("likedAt DESC")
-    private List<Like> likes;
+    private List<Tag> tags;
 
     public Long getId() {
         return id;
@@ -128,6 +95,14 @@ public class Post implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Post getPost() {
+        return post;
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
     }
 
     public String getTitle() {
@@ -144,6 +119,14 @@ public class Post implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Date getCreateAt() {
+        return createdAt;
+    }
+
+    public void setCreateAt(Date createAt) {
+        this.createdAt = createAt;
     }
 
     public String getDisplayName() {
@@ -186,30 +169,6 @@ public class Post implements Serializable {
         this.excerpt = excerpt;
     }
 
-    public int getLikesCount() {
-        return likesCount;
-    }
-
-    public void setLikesCount(int likesCount) {
-        this.likesCount = likesCount;
-    }
-
-    public int getCommentsCount() {
-        return commentsCount;
-    }
-
-    public void setCommentsCount(int commentsCount) {
-        this.commentsCount = commentsCount;
-    }
-
-    public PostEnum.Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(PostEnum.Status status) {
-        this.status = status;
-    }
-
     public Category getCategory() {
         return category;
     }
@@ -218,28 +177,12 @@ public class Post implements Serializable {
         this.category = category;
     }
 
-    public Set<Tag> getTags() {
+    public List<Tag> getTags() {
         return tags;
     }
 
-    public void setTags(Set<Tag> tags) {
+    public void setTags(List<Tag> tags) {
         this.tags = tags;
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
-    public List<Like> getLikes() {
-        return likes;
-    }
-
-    public void setLikes(List<Like> likes) {
-        this.likes = likes;
     }
 
     public Date getCreatedAt() {
@@ -272,21 +215,5 @@ public class Post implements Serializable {
 
     public void setPostType(PostEnum.Type postType) {
         this.postType = postType;
-    }
-
-    public List<Revision> getRevisions() {
-        return revisions;
-    }
-
-    public void setRevisions(List<Revision> revisions) {
-        this.revisions = revisions;
-    }
-
-    public Post getOriginal() {
-        return original;
-    }
-
-    public void setOriginal(Post original) {
-        this.original = original;
     }
 }

@@ -1,4 +1,4 @@
-package com.indiepost.viewModel.admin;
+package com.indiepost.responseModel.admin;
 
 /**
  * Created by jake on 10/8/16.

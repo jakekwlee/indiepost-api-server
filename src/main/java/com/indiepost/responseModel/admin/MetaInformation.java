@@ -1,4 +1,4 @@
-package com.indiepost.viewModel.admin;
+package com.indiepost.responseModel.admin;
 
 import java.util.List;
 

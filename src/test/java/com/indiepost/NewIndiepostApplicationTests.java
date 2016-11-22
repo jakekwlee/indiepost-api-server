@@ -7,11 +7,11 @@ import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.model.User;
 import com.indiepost.repository.PostExcerptRepository;
+import com.indiepost.responseModel.admin.MetaInformation;
 import com.indiepost.service.CategoryService;
 import com.indiepost.service.ManagementService;
 import com.indiepost.service.PostService;
 import com.indiepost.service.UserService;
-import com.indiepost.viewModel.admin.MetaInformation;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.junit.After;
 import org.junit.Assert;
@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Set;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = NewIndiepostApplication.class)
@@ -115,7 +116,7 @@ public class NewIndiepostApplicationTests {
     public void postExcerptServiceWorks() throws Exception {
         List<Post> posts = postExcerptRepository.findAll(new Long(0), new PageRequest(0, 10000));
         for (Post post : posts) {
-            List<Tag> tags = post.getTags();
+            Set<Tag> tags = post.getTags();
             System.out.println(tags.toString());
         }
     }

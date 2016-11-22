@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,10 +38,9 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     @Override
-    public void save(Post post) {
-        getSession().save(post);
+    public Long save(Post post) {
+        return (Long) getSession().save(post);
     }
-
 
     @Override
     public void delete(Post post) {
@@ -155,6 +155,12 @@ public class PostRepositoryHibernate implements PostRepository {
                 .add(Restrictions.eq("status", status))
                 .add(Restrictions.eq("status", Status.PUBLISHED))
                 .list();
+    }
+
+    public List<Post> findPostToPublish() {
+        return getCriteria()
+                .add(Restrictions.eq("status", Status.BOOKED))
+                .add(Restrictions.le("publishedAt", new Date())).list();
     }
 
     private Session getSession() {

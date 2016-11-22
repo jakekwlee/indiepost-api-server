@@ -1,4 +1,4 @@
-package com.indiepost.viewModel;
+package com.indiepost.responseModel;
 
 import com.indiepost.validation.ContentType;
 import org.springframework.web.multipart.MultipartFile;

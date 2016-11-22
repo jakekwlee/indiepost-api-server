@@ -1,6 +1,6 @@
-package com.indiepost.viewModel.admin;
+package com.indiepost.responseModel.admin;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by jake on 10/8/16.
@@ -29,7 +29,7 @@ public class PostMeta {
 
     private int likedCount;
 
-    private List<String> tags;
+    private Set<String> tags;
 
     public Long getId() {
         return id;
@@ -111,11 +111,11 @@ public class PostMeta {
         this.displayName = displayName;
     }
 
-    public List<String> getTags() {
+    public Set<String> getTags() {
         return tags;
     }
 
-    public void setTags(List<String> tags) {
+    public void setTags(Set<String> tags) {
         this.tags = tags;
     }
 }

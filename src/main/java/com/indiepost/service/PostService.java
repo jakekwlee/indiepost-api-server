@@ -5,6 +5,8 @@ import com.indiepost.model.Category;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.model.User;
+import com.indiepost.requestModel.admin.PostRequest;
+import com.indiepost.responseModel.admin.post.PostResponse;
 
 import java.util.List;
 
@@ -13,9 +15,17 @@ import java.util.List;
  */
 public interface PostService {
 
-    void save(Post post);
+    Long save(Post post);
+
+    Long saveDraft(PostRequest postRequest);
+
+    PostResponse save(Long id, PostRequest postRequest);
 
     Post findById(Long id);
+
+    PostResponse getPostResponse(Long id);
+
+    void publishPosts();
 
     void update(Post post);
 

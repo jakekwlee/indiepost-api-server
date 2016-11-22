@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface PostRepository {
 
-    void save(Post post);
+    Long save(Post post);
 
     void update(Post post);
 
@@ -44,4 +44,6 @@ public interface PostRepository {
     List<Post> findAll(Pageable pageable);
 
     List<Post> findAll(PostEnum.Status status, Long authorId, Long categoryId, Pageable pageable);
+
+    List<Post> findPostToPublish();
 }

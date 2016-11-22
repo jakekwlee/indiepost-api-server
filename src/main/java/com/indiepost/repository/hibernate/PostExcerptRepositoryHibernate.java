@@ -104,6 +104,7 @@ public class PostExcerptRepositoryHibernate implements PostExcerptRepository {
         Criteria criteria = getCriteria(pageable);
         Aliases aliases = Aliases.create()
                 .add("author", "a", JoinType.INNER)
+                .add("editor", "e", JoinType.INNER)
                 .add("category", "c", JoinType.INNER)
                 .add("tags", "t", JoinType.INNER);
         aliases.addToCriteria(criteria);
@@ -113,8 +114,7 @@ public class PostExcerptRepositoryHibernate implements PostExcerptRepository {
                         Restrictions.ne("author.id", userId),
                         Restrictions.or(
                                 Restrictions.eq("status", PostEnum.Status.DELETED),
-                                Restrictions.eq("status", PostEnum.Status.DRAFT),
-                                Restrictions.eq("status", PostEnum.Status.AUTOSAVED)
+                                Restrictions.eq("status", PostEnum.Status.DRAFT)
                         )
                 )
         );
@@ -127,14 +127,15 @@ public class PostExcerptRepositoryHibernate implements PostExcerptRepository {
     @Override
     public List<String> findAllAuthorNames() {
         Criteria criteria = getCriteria()
+                .add(Restrictions.ne("displayName", ""))
                 .setProjection(
                         Projections.distinct(
                                 Projections.projectionList()
                                         .add(Projections.property("displayName"))
+
                         )
                 );
-        List list = criteria.list();
-        return list;
+        return criteria.list();
     }
 
     private Session getSession() {

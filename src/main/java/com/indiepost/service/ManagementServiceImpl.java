@@ -5,16 +5,13 @@ import com.indiepost.model.Category;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.model.User;
-import com.indiepost.viewModel.admin.*;
+import com.indiepost.responseModel.admin.*;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Created by jake on 10/8/16.
@@ -147,8 +144,8 @@ public class ManagementServiceImpl implements ManagementService {
         return fastDateFormat.format(date);
     }
 
-    private List<String> getTagStringArray(List<Tag> tags) {
-        List<String> tagStringArray = new ArrayList<>();
+    private Set<String> getTagStringArray(Set<Tag> tags) {
+        Set<String> tagStringArray = new HashSet<>();
         for (Tag tag : tags) {
             tagStringArray.add(tag.getName());
         }
