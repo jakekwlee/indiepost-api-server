@@ -1,7 +1,6 @@
-package com.indiepost.repository.hibernate;
+package com.indiepost.repository;
 
 import com.indiepost.model.legacy.Detaillist;
-import com.indiepost.repository.LegacyDetailListRepository;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;

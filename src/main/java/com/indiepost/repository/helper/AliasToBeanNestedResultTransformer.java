@@ -1,4 +1,4 @@
-package com.indiepost.util;
+package com.indiepost.repository.helper;
 
 /**
  * Created by jake on 7/30/16.

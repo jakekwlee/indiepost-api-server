@@ -1,6 +1,5 @@
 package com.indiepost.task;
 
-
 import com.indiepost.service.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,7 @@ public class ScheduledTasks {
     private PostService postService;
 
 //    @Scheduled(cron = "0 0/30 * * * ?")
-    @Scheduled(fixedRate = 600000)
+    @Scheduled(fixedRate = 30000)
     public void publishPosts() {
         log.info("Publish Posts: ", dateFormat.format(new Date()));
         postService.publishPosts();

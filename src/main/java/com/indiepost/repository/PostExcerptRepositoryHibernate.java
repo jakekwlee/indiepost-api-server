@@ -1,9 +1,8 @@
-package com.indiepost.repository.hibernate;
+package com.indiepost.repository;
 
 import com.github.fluent.hibernate.request.aliases.Aliases;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Post;
-import com.indiepost.repository.PostExcerptRepository;
 import com.indiepost.repository.helper.CriteriaMaker;
 import org.hibernate.Criteria;
 import org.hibernate.Session;

@@ -3,7 +3,7 @@ package com.indiepost.responseModel.admin;
 /**
  * Created by jake on 10/8/16.
  */
-public class CategoryMeta {
+public class SimplifiedCategory {
 
     private static final long serialVersionUID = 1L;
 

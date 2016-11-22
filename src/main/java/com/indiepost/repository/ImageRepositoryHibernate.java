@@ -1,8 +1,7 @@
-package com.indiepost.repository.hibernate;
+package com.indiepost.repository;
 
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
-import com.indiepost.repository.ImageRepository;
 import com.indiepost.repository.helper.CriteriaMaker;
 import org.hibernate.Criteria;
 import org.hibernate.Session;

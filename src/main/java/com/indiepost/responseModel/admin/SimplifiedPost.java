@@ -5,7 +5,7 @@ import java.util.Set;
 /**
  * Created by jake on 10/8/16.
  */
-public class PostMeta {
+public class SimplifiedPost {
 
     private static final long serialVersionUID = 1L;
 

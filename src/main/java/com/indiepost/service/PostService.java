@@ -6,7 +6,7 @@ import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.model.User;
 import com.indiepost.requestModel.admin.PostRequest;
-import com.indiepost.responseModel.admin.post.PostResponse;
+import com.indiepost.responseModel.admin.PostResponse;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public interface PostService {
 
     Long saveDraft(PostRequest postRequest);
 
-    PostResponse save(Long id, PostRequest postRequest);
+    PostResponse update(Long id, PostRequest postRequest);
 
     Post findById(Long id);
 

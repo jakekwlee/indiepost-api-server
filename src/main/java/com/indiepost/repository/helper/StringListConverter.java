@@ -1,4 +1,4 @@
-package com.indiepost.repository.hibernate.helper;
+package com.indiepost.repository.helper;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

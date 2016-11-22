@@ -1,7 +1,6 @@
-package com.indiepost.repository.hibernate;
+package com.indiepost.repository;
 
 import com.indiepost.model.Tag;
-import com.indiepost.repository.TagRepository;
 import com.indiepost.repository.helper.CriteriaMaker;
 import org.hibernate.Criteria;
 import org.hibernate.Session;

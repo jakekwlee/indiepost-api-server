@@ -7,7 +7,7 @@ import com.indiepost.model.Tag;
 import com.indiepost.model.User;
 import com.indiepost.repository.PostRepository;
 import com.indiepost.requestModel.admin.PostRequest;
-import com.indiepost.responseModel.admin.post.PostResponse;
+import com.indiepost.responseModel.admin.PostResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -95,7 +95,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponse save(Long id, PostRequest postRequest) {
+    public PostResponse update(Long id, PostRequest postRequest) {
         Post post = findById(id);
         copyRequestToPost(post, postRequest);
         update(post);

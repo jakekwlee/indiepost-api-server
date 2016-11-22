@@ -18,7 +18,7 @@ import java.util.*;
  */
 @Service
 @Transactional
-public class ManagementServiceImpl implements ManagementService {
+public class AdminServiceImpl implements AdminService {
 
     private PostExcerptService postExcerptService;
 
@@ -29,7 +29,7 @@ public class ManagementServiceImpl implements ManagementService {
     private TagService tagService;
 
     @Autowired
-    public ManagementServiceImpl(PostExcerptService postExcerptService, CategoryService categoryService, TagService tagService, UserService userService) {
+    public AdminServiceImpl(PostExcerptService postExcerptService, CategoryService categoryService, TagService tagService, UserService userService) {
         this.postExcerptService = postExcerptService;
         this.categoryService = categoryService;
         this.tagService = tagService;
@@ -37,87 +37,87 @@ public class ManagementServiceImpl implements ManagementService {
     }
 
     @Override
-    public List<PostMeta> getAllPostsMeta(int page, int maxResults, boolean isDesc) {
+    public List<SimplifiedPost> getAllPostsMeta(int page, int maxResults, boolean isDesc) {
         List<Post> posts = postExcerptService.findAll(page, maxResults, isDesc);
         return getPostMetaList(posts);
     }
 
     @Override
-    public List<TagMeta> getAllTagsMeta() {
+    public List<SimplifiedTag> getAllTagsMeta() {
         List<Tag> tags = tagService.findAll();
-        List<TagMeta> tagMetaList = new ArrayList<>();
+        List<SimplifiedTag> simplifiedTagList = new ArrayList<>();
         for (Tag tag : tags) {
-            TagMeta tagMeta = new TagMeta();
-            tagMeta.setId(tag.getId());
-            tagMeta.setName(tag.getName());
-            tagMetaList.add(tagMeta);
+            SimplifiedTag simplifiedTag = new SimplifiedTag();
+            simplifiedTag.setId(tag.getId());
+            simplifiedTag.setName(tag.getName());
+            simplifiedTagList.add(simplifiedTag);
         }
-        return tagMetaList;
+        return simplifiedTagList;
     }
 
     @Override
-    public List<UserMeta> getAllAuthorsMeta() {
+    public List<SimplifiedUser> getAllAuthorsMeta() {
         List<User> authors = userService.findByRolesEnum(UserEnum.Roles.Author, 1, 1000000, true);
         return getUserMetaList(authors);
     }
 
     @Override
-    public List<UserMeta> getAllUsersMeta(int page, int maxResults, boolean isDesc) {
+    public List<SimplifiedUser> getAllUsersMeta(int page, int maxResults, boolean isDesc) {
         List<User> userList = userService.findAllUsers(page, maxResults, isDesc);
         return getUserMetaList(userList);
     }
 
     @Override
-    public UserMeta getCurrentUser() {
+    public SimplifiedUser getCurrentUser() {
         User currentUser = userService.getCurrentUser();
         return getUserMetaFromUser(currentUser);
     }
 
     @Override
-    public List<CategoryMeta> getAllCategoriesMeta() {
+    public List<SimplifiedCategory> getAllCategoriesMeta() {
         List<Category> categories = categoryService.findAll();
-        List<CategoryMeta> categoryMetaList = new ArrayList<>();
+        List<SimplifiedCategory> simplifiedCategoryList = new ArrayList<>();
         for (Category category : categories) {
-            CategoryMeta categoryMeta = new CategoryMeta();
-            categoryMeta.setId(category.getId());
-            categoryMeta.setSlug(category.getSlug());
-            categoryMeta.setName(category.getName());
-            categoryMetaList.add(categoryMeta);
+            SimplifiedCategory simplifiedCategory = new SimplifiedCategory();
+            simplifiedCategory.setId(category.getId());
+            simplifiedCategory.setSlug(category.getSlug());
+            simplifiedCategory.setName(category.getName());
+            simplifiedCategoryList.add(simplifiedCategory);
         }
-        return categoryMetaList;
+        return simplifiedCategoryList;
     }
 
     @Override
-    public MetaInformation getMetaInformation() {
+    public InitialResponse getMetaInformation() {
         User currentUser = userService.getCurrentUser();
-        MetaInformation metaInformation = new MetaInformation();
-        metaInformation.setCurrentUser(getUserMetaFromUser(currentUser));
-        metaInformation.setAuthors(getAllAuthorsMeta());
-        metaInformation.setCategories(getAllCategoriesMeta());
-        metaInformation.setTags(getAllTagsMeta());
-        metaInformation.setAuthorNames(postExcerptService.findAllAuthorNames());
-        return metaInformation;
+        InitialResponse initialResponse = new InitialResponse();
+        initialResponse.setCurrentUser(getUserMetaFromUser(currentUser));
+        initialResponse.setAuthors(getAllAuthorsMeta());
+        initialResponse.setCategories(getAllCategoriesMeta());
+        initialResponse.setTags(getAllTagsMeta());
+        initialResponse.setAuthorNames(postExcerptService.findAllAuthorNames());
+        return initialResponse;
     }
 
-    private List<UserMeta> getUserMetaList(List<User> userList) {
-        List<UserMeta> userMetaList = new ArrayList<>();
+    private List<SimplifiedUser> getUserMetaList(List<User> userList) {
+        List<SimplifiedUser> simplifiedUserList = new ArrayList<>();
         for (User user : userList) {
-            userMetaList.add(getUserMetaFromUser(user));
+            simplifiedUserList.add(getUserMetaFromUser(user));
         }
-        return userMetaList;
+        return simplifiedUserList;
     }
 
-    private List<PostMeta> getPostMetaList(List<Post> posts) {
-        List<PostMeta> postMetaList = new ArrayList<>();
+    private List<SimplifiedPost> getPostMetaList(List<Post> posts) {
+        List<SimplifiedPost> postMetaList = new ArrayList<>();
         for (Post post : posts) {
             User author = post.getAuthor();
-            PostMeta postMeta = new PostMeta();
-            UserMeta userMeta = new UserMeta();
+            SimplifiedPost postMeta = new SimplifiedPost();
+            SimplifiedUser simplifiedUser = new SimplifiedUser();
 
-            userMeta.setId(author.getId());
-            userMeta.setDisplayName(author.getDisplayName());
-            userMeta.setEmail(author.getEmail());
-            userMeta.setUsername(author.getUsername());
+            simplifiedUser.setId(author.getId());
+            simplifiedUser.setDisplayName(author.getDisplayName());
+            simplifiedUser.setEmail(author.getEmail());
+            simplifiedUser.setUsername(author.getUsername());
 
             postMeta.setId(post.getId());
             postMeta.setAuthorDisplayName(post.getAuthor().getDisplayName());
@@ -152,17 +152,17 @@ public class ManagementServiceImpl implements ManagementService {
         return tagStringArray;
     }
 
-    private UserMeta getUserMetaFromUser(User user) {
-        UserMeta userMeta = new UserMeta();
-        userMeta.setId(user.getId());
-        userMeta.setUsername(user.getUsername());
-        userMeta.setDisplayName(user.getDisplayName());
-        userMeta.setEmail(user.getEmail());
-        userMeta.setBirthday(user.getBirthday());
-        userMeta.setGender(user.getGender());
-        userMeta.setJoinedAt(user.getJoinedAt());
-        userMeta.setPicture(user.getPicture());
-        userMeta.setProfile(user.getProfile());
-        return userMeta;
+    private SimplifiedUser getUserMetaFromUser(User user) {
+        SimplifiedUser simplifiedUser = new SimplifiedUser();
+        simplifiedUser.setId(user.getId());
+        simplifiedUser.setUsername(user.getUsername());
+        simplifiedUser.setDisplayName(user.getDisplayName());
+        simplifiedUser.setEmail(user.getEmail());
+        simplifiedUser.setBirthday(user.getBirthday());
+        simplifiedUser.setGender(user.getGender());
+        simplifiedUser.setJoinedAt(user.getJoinedAt());
+        simplifiedUser.setPicture(user.getPicture());
+        simplifiedUser.setProfile(user.getProfile());
+        return simplifiedUser;
     }
 }

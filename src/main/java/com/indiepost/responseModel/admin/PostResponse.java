@@ -1,4 +1,4 @@
-package com.indiepost.responseModel.admin.post;
+package com.indiepost.responseModel.admin;
 
 import java.util.Date;
 import java.util.List;

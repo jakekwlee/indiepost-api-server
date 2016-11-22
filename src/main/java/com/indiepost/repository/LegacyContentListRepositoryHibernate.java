@@ -1,7 +1,6 @@
-package com.indiepost.repository.hibernate;
+package com.indiepost.repository;
 
 import com.indiepost.model.legacy.Contentlist;
-import com.indiepost.repository.LegacyContentListRepository;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;

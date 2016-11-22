@@ -5,49 +5,49 @@ import java.util.List;
 /**
  * Created by jake on 10/8/16.
  */
-public class MetaInformation {
+public class InitialResponse {
 
     private static final long serialVersionUID = 1L;
 
-    private List<UserMeta> authors;
+    private List<SimplifiedUser> authors;
 
     private List<String> authorNames;
 
-    private UserMeta currentUser;
+    private SimplifiedUser currentUser;
 
-    private List<TagMeta> tags;
+    private List<SimplifiedTag> tags;
 
-    private List<CategoryMeta> categories;
+    private List<SimplifiedCategory> categories;
 
-    public List<UserMeta> getAuthors() {
+    public List<SimplifiedUser> getAuthors() {
         return authors;
     }
 
-    public void setAuthors(List<UserMeta> authors) {
+    public void setAuthors(List<SimplifiedUser> authors) {
         this.authors = authors;
     }
 
-    public UserMeta getCurrentUser() {
+    public SimplifiedUser getCurrentUser() {
         return currentUser;
     }
 
-    public void setCurrentUser(UserMeta currentUser) {
+    public void setCurrentUser(SimplifiedUser currentUser) {
         this.currentUser = currentUser;
     }
 
-    public List<TagMeta> getTags() {
+    public List<SimplifiedTag> getTags() {
         return tags;
     }
 
-    public void setTags(List<TagMeta> tags) {
+    public void setTags(List<SimplifiedTag> tags) {
         this.tags = tags;
     }
 
-    public List<CategoryMeta> getCategories() {
+    public List<SimplifiedCategory> getCategories() {
         return categories;
     }
 
-    public void setCategories(List<CategoryMeta> categories) {
+    public void setCategories(List<SimplifiedCategory> categories) {
         this.categories = categories;
     }
 

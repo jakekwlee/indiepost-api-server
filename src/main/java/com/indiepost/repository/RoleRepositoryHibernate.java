@@ -1,8 +1,7 @@
-package com.indiepost.repository.hibernate;
+package com.indiepost.repository;
 
 import com.indiepost.enums.UserEnum;
 import com.indiepost.model.Role;
-import com.indiepost.repository.RoleRepository;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;

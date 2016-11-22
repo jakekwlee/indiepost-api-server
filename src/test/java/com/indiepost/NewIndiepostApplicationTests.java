@@ -7,9 +7,9 @@ import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.model.User;
 import com.indiepost.repository.PostExcerptRepository;
-import com.indiepost.responseModel.admin.MetaInformation;
+import com.indiepost.responseModel.admin.InitialResponse;
+import com.indiepost.service.AdminService;
 import com.indiepost.service.CategoryService;
-import com.indiepost.service.ManagementService;
 import com.indiepost.service.PostService;
 import com.indiepost.service.UserService;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -57,7 +57,7 @@ public class NewIndiepostApplicationTests {
     private CategoryService categoryService;
 
     @Autowired
-    private ManagementService managementService;
+    private AdminService adminService;
 
     @Autowired
     private PostExcerptRepository postExcerptRepository;
@@ -106,7 +106,7 @@ public class NewIndiepostApplicationTests {
 
     //    @Test
     public void cmsMetaInformationWorksCorrectly() throws Exception {
-        MetaInformation response = managementService.getMetaInformation();
+        InitialResponse response = adminService.getMetaInformation();
         String dump = ReflectionToStringBuilder.toString(response);
         System.out.println(dump);
     }

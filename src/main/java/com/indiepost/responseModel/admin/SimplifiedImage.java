@@ -1,4 +1,4 @@
-package com.indiepost.responseModel;
+package com.indiepost.responseModel.admin;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Created by jake on 8/17/16.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ImageMeta {
+public class SimplifiedImage {
 
     private Long id;
 

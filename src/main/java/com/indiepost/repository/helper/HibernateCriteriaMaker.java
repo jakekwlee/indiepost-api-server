@@ -1,6 +1,5 @@
-package com.indiepost.repository.hibernate.helper;
+package com.indiepost.repository.helper;
 
-import com.indiepost.repository.helper.CriteriaMaker;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
 import org.springframework.data.domain.Pageable;
