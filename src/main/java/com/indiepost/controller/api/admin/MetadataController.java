@@ -19,7 +19,7 @@ public class MetadataController {
 
     @RequestMapping(method = RequestMethod.GET)
     public InitialResponse getInitialResponse() {
-        return adminService.getMetaInformation();
+        return adminService.getInitialResponse();
     }
 }
 

@@ -3,6 +3,7 @@ package com.indiepost.service;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Post;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,6 +14,8 @@ public interface PostExcerptService {
     Post findById(Long id);
 
     List<Post> findAll(int page, int maxResults, boolean isDesc);
+
+    List<Post> findLastUpdated(Date timeFrom);
 
     List<Post> findByTitleLikes(String searchString, int page, int maxResults, boolean isDesc);
 

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,6 +41,12 @@ public class PostExcerptServiceImpl implements PostExcerptService {
         Pageable pageable = getPageable(page, maxResults, isDesc);
         User currentUser = userService.getCurrentUser();
         return postExcerptRepository.findAll(currentUser.getId(), pageable);
+    }
+
+    @Override
+    public List<Post> findLastUpdated(Date timeFrom) {
+        User currentUser = userService.getCurrentUser();
+        return postExcerptRepository.findLastUpdated(currentUser.getId(), timeFrom);
     }
 
     @Override

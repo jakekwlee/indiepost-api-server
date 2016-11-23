@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.JoinType;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -110,6 +111,31 @@ public class PostExcerptRepositoryHibernate implements PostExcerptRepository {
 
         Criterion restrictions = Restrictions.not(
                 Restrictions.and(
+                        Restrictions.ne("author.id", userId),
+                        Restrictions.or(
+                                Restrictions.eq("status", PostEnum.Status.DELETED),
+                                Restrictions.eq("status", PostEnum.Status.DRAFT)
+                        )
+                )
+        );
+
+        criteria.add(restrictions);
+        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+        return criteria.list();
+    }
+    @Override
+    public List<Post> findLastUpdated(Long userId, Date timeFrom) {
+        Criteria criteria = getCriteria();
+        Aliases aliases = Aliases.create()
+                .add("author", "a", JoinType.INNER)
+                .add("editor", "e", JoinType.INNER)
+                .add("category", "c", JoinType.INNER)
+                .add("tags", "t", JoinType.INNER);
+        aliases.addToCriteria(criteria);
+
+        Criterion restrictions = Restrictions.not(
+                Restrictions.and(
+                        Restrictions.ge("modifiedAt", timeFrom),
                         Restrictions.ne("author.id", userId),
                         Restrictions.or(
                                 Restrictions.eq("status", PostEnum.Status.DELETED),

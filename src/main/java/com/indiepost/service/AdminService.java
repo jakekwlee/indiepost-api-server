@@ -2,23 +2,26 @@ package com.indiepost.service;
 
 import com.indiepost.responseModel.admin.*;
 
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by jake on 10/8/16.
  */
 public interface AdminService {
-    List<SimplifiedPost> getAllPostsMeta(int page, int maxResults, boolean isDesc);
+    List<SimplifiedPost> getAllSimplifiedPosts(int page, int maxResults, boolean isDesc);
 
-    List<SimplifiedTag> getAllTagsMeta();
+    List<SimplifiedPost> getLastUpdated(Date date);
 
-    List<SimplifiedUser> getAllAuthorsMeta();
+    List<SimplifiedTag> getAllSimplifiedTags();
+
+    List<SimplifiedUser> getAllSimplifiedAuthors();
 
     List<SimplifiedUser> getAllUsersMeta(int page, int maxResults, boolean isDesc);
 
     SimplifiedUser getCurrentUser();
 
-    List<SimplifiedCategory> getAllCategoriesMeta();
+    List<SimplifiedCategory> getAllSimplifiedCategories();
 
-    InitialResponse getMetaInformation();
+    InitialResponse getInitialResponse();
 }

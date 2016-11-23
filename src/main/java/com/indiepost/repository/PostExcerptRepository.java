@@ -4,6 +4,7 @@ import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Post;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,6 +16,8 @@ public interface PostExcerptRepository {
     Post findById(Long id);
 
     List<Post> findAll(Long userId, Pageable pageable);
+
+    List<Post> findLastUpdated(Long userId, Date timeFrom);
 
     List<Post> findByTitleLikes(String searchString, Pageable pageable);
 

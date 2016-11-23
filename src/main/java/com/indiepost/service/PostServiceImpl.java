@@ -45,58 +45,65 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Long saveDraft(PostRequest postRequest) {
+    public Long createDraft(PostRequest postRequest) {
         Post post;
 
         // save the draft first time
-        if (postRequest.getId() == null) {
-            post = new Post();
-            post.setTitle("No Title");
-            post.setContent("");
-            post.setExcerpt("");
-            post.setDisplayName("");
-            post.setFeaturedImage("");
-            post.setCategory(categoryService.findBySlug("film"));
-            post.setCreatedAt(new Date());
-            post.setPublishedAt(new Date());
-            User user = userService.getCurrentUser();
-            post.setAuthor(user);
-            post.setEditor(user);
-        } else {
-            post = findById(postRequest.getId());
+        post = new Post();
+        post.setTitle("No Title");
+        post.setContent("");
+        post.setExcerpt("");
+        post.setDisplayName("");
+        post.setFeaturedImage("");
 
-            // if user edit already queued or published post
-            if (post.getStatus() != PostEnum.Status.DRAFT) {
-                Post original = post;
-                post = new Post();
-                post.setOriginal(original);
-                post.setTitle(original.getTitle());
-                post.setContent(original.getContent());
-                post.setExcerpt(original.getExcerpt());
-                post.setDisplayName(original.getDisplayName());
-                post.setFeaturedImage(original.getFeaturedImage());
-                post.setCategory(original.getCategory());
-                post.setCreatedAt(original.getCreatedAt());
-                post.setPublishedAt(original.getPublishedAt());
-                post.setAuthor(original.getAuthor());
-                post.setEditor(userService.getCurrentUser());
-            }
-        }
-        copyRequestToPost(post, postRequest);
-
+        // default category is 'film'
+        post.setCategory(categoryService.findBySlug("film"));
+        post.setCreatedAt(new Date());
+        post.setPublishedAt(new Date());
+        User user = userService.getCurrentUser();
+        post.setAuthor(user);
+        post.setEditor(user);
         post.setStatus(PostEnum.Status.DRAFT);
         post.setPostType(PostEnum.Type.POST);
-        if (post.getId() != null) {
-            // if user save draft from draft, update draft
-            update(post);
-            return post.getId();
-        }
+
+        copyRequestToPost(post, postRequest);
         return save(post);
+    }
+
+    @Override
+    public void updateDraft(Long id, PostRequest postRequest) {
+        Post post = findById(postRequest.getId());
+
+        // if user changes not the draft
+        if (post.getStatus() != PostEnum.Status.DRAFT) {
+            post = new Post();
+            Post original = post;
+            post.setOriginal(original);
+            post.setTitle(original.getTitle());
+            post.setContent(original.getContent());
+            post.setExcerpt(original.getExcerpt());
+            post.setDisplayName(original.getDisplayName());
+            post.setFeaturedImage(original.getFeaturedImage());
+            post.setCategory(original.getCategory());
+            post.setCreatedAt(original.getCreatedAt());
+            post.setPublishedAt(original.getPublishedAt());
+            post.setAuthor(original.getAuthor());
+            post.setEditor(userService.getCurrentUser());
+        }
+        copyRequestToPost(post, postRequest);
+        update(post);
     }
 
     @Override
     public PostResponse update(Long id, PostRequest postRequest) {
         Post post = findById(id);
+
+        // DRAFT -> THE OTHERS
+        if (post.getStatus() == PostEnum.Status.DRAFT && post.getOriginal() != null) {
+            Post draft = post;
+            post = draft.getOriginal();
+            postRepository.delete(draft);
+        }
         copyRequestToPost(post, postRequest);
         update(post);
         return getPostResponse(post.getId());

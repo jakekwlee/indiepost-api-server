@@ -37,13 +37,19 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<SimplifiedPost> getAllPostsMeta(int page, int maxResults, boolean isDesc) {
+    public List<SimplifiedPost> getAllSimplifiedPosts(int page, int maxResults, boolean isDesc) {
         List<Post> posts = postExcerptService.findAll(page, maxResults, isDesc);
-        return getPostMetaList(posts);
+        return getSimplifiedPostList(posts);
     }
 
     @Override
-    public List<SimplifiedTag> getAllTagsMeta() {
+    public List<SimplifiedPost> getLastUpdated(Date date) {
+        List<Post> posts = postExcerptService.findLastUpdated(date);
+        return getSimplifiedPostList(posts);
+    }
+
+    @Override
+    public List<SimplifiedTag> getAllSimplifiedTags() {
         List<Tag> tags = tagService.findAll();
         List<SimplifiedTag> simplifiedTagList = new ArrayList<>();
         for (Tag tag : tags) {
@@ -56,25 +62,25 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<SimplifiedUser> getAllAuthorsMeta() {
+    public List<SimplifiedUser> getAllSimplifiedAuthors() {
         List<User> authors = userService.findByRolesEnum(UserEnum.Roles.Author, 1, 1000000, true);
-        return getUserMetaList(authors);
+        return getSimplifiedUserList(authors);
     }
 
     @Override
     public List<SimplifiedUser> getAllUsersMeta(int page, int maxResults, boolean isDesc) {
         List<User> userList = userService.findAllUsers(page, maxResults, isDesc);
-        return getUserMetaList(userList);
+        return getSimplifiedUserList(userList);
     }
 
     @Override
     public SimplifiedUser getCurrentUser() {
         User currentUser = userService.getCurrentUser();
-        return getUserMetaFromUser(currentUser);
+        return getSimplifiedUserFromUser(currentUser);
     }
 
     @Override
-    public List<SimplifiedCategory> getAllCategoriesMeta() {
+    public List<SimplifiedCategory> getAllSimplifiedCategories() {
         List<Category> categories = categoryService.findAll();
         List<SimplifiedCategory> simplifiedCategoryList = new ArrayList<>();
         for (Category category : categories) {
@@ -88,26 +94,26 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public InitialResponse getMetaInformation() {
+    public InitialResponse getInitialResponse() {
         User currentUser = userService.getCurrentUser();
         InitialResponse initialResponse = new InitialResponse();
-        initialResponse.setCurrentUser(getUserMetaFromUser(currentUser));
-        initialResponse.setAuthors(getAllAuthorsMeta());
-        initialResponse.setCategories(getAllCategoriesMeta());
-        initialResponse.setTags(getAllTagsMeta());
+        initialResponse.setCurrentUser(getSimplifiedUserFromUser(currentUser));
+        initialResponse.setAuthors(getAllSimplifiedAuthors());
+        initialResponse.setCategories(getAllSimplifiedCategories());
+        initialResponse.setTags(getAllSimplifiedTags());
         initialResponse.setAuthorNames(postExcerptService.findAllAuthorNames());
         return initialResponse;
     }
 
-    private List<SimplifiedUser> getUserMetaList(List<User> userList) {
+    private List<SimplifiedUser> getSimplifiedUserList(List<User> userList) {
         List<SimplifiedUser> simplifiedUserList = new ArrayList<>();
         for (User user : userList) {
-            simplifiedUserList.add(getUserMetaFromUser(user));
+            simplifiedUserList.add(getSimplifiedUserFromUser(user));
         }
         return simplifiedUserList;
     }
 
-    private List<SimplifiedPost> getPostMetaList(List<Post> posts) {
+    private List<SimplifiedPost> getSimplifiedPostList(List<Post> posts) {
         List<SimplifiedPost> postMetaList = new ArrayList<>();
         for (Post post : posts) {
             User author = post.getAuthor();
@@ -152,7 +158,7 @@ public class AdminServiceImpl implements AdminService {
         return tagStringArray;
     }
 
-    private SimplifiedUser getUserMetaFromUser(User user) {
+    private SimplifiedUser getSimplifiedUserFromUser(User user) {
         SimplifiedUser simplifiedUser = new SimplifiedUser();
         simplifiedUser.setId(user.getId());
         simplifiedUser.setUsername(user.getUsername());

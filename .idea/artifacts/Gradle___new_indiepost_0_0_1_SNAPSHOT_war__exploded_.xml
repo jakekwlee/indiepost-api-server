@@ -87,6 +87,7 @@
           <element id="library" level="project" name="Gradle: antlr:antlr:2.7.7" />
           <element id="library" level="project" name="Gradle: org.jboss:jandex:1.1.0.Final" />
           <element id="library" level="project" name="Gradle: ch.qos.logback:logback-core:1.1.7" />
+          <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.zaxxer/HikariCP/2.5.1/b896b711e2d98fedf403de590559a123b5fbf1a6/HikariCP-2.5.1.jar" />
         </element>
       </element>
       <element id="directory" name="META-INF">

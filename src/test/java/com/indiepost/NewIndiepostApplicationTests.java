@@ -99,14 +99,14 @@ public class NewIndiepostApplicationTests {
         User user = userService.findById(new Long(1));
         Category category = categoryService.findBySlug("music");
         postService.findAll(1, 50, true);
-        postService.findAll(PostEnum.Status.QUEUED, user, category, 1, 50, true);
+        postService.findAll(PostEnum.Status.PENDING, user, category, 1, 50, true);
         postService.findByAuthorName("Indiepost", 1, 50, true);
         postService.findByStatus(PostEnum.Status.PUBLISHED, 1, 100, true);
     }
 
     //    @Test
     public void cmsMetaInformationWorksCorrectly() throws Exception {
-        InitialResponse response = adminService.getMetaInformation();
+        InitialResponse response = adminService.getInitialResponse();
         String dump = ReflectionToStringBuilder.toString(response);
         System.out.println(dump);
     }

@@ -17,15 +17,17 @@ public interface PostService {
 
     Long save(Post post);
 
-    Long saveDraft(PostRequest postRequest);
+    Long createDraft(PostRequest postRequest);
+
+    void updateDraft(Long id, PostRequest postRequest);
 
     PostResponse update(Long id, PostRequest postRequest);
-
-    Post findById(Long id);
 
     PostResponse getPostResponse(Long id);
 
     void publishPosts();
+
+    Post findById(Long id);
 
     void update(Post post);
 

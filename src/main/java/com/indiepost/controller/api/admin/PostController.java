@@ -7,8 +7,11 @@ import com.indiepost.responseModel.admin.SimplifiedPost;
 import com.indiepost.service.AdminService;
 import com.indiepost.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,8 +28,13 @@ public class PostController {
     private PostService postService;
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<SimplifiedPost> getPostMetaList() {
-        return adminService.getAllPostsMeta(0, 1000000, true);
+    public List<SimplifiedPost> getPostList() {
+        return adminService.getAllSimplifiedPosts(0, 1000000, true);
+    }
+
+    @RequestMapping(value = "/lastUpdated", method = RequestMethod.GET)
+    public List<SimplifiedPost> getLastUpdated() {
+        return adminService.getLastUpdated(getYesterday());
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -35,8 +43,9 @@ public class PostController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public PostResponse savePost(@RequestBody PostRequest postRequest, @PathVariable Long id) {
-        return postService.update(id, postRequest);
+    public List<SimplifiedPost> updatePost(@RequestBody PostRequest postRequest, @PathVariable Long id) {
+        postService.update(id, postRequest);
+        return adminService.getLastUpdated(getYesterday());
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
@@ -48,6 +57,20 @@ public class PostController {
 
     @RequestMapping(value = "/draft", method = RequestMethod.POST)
     public Long saveDraft(@RequestBody PostRequest postRequest) {
-        return postService.saveDraft(postRequest);
+        return postService.createDraft(postRequest);
+    }
+
+    @RequestMapping(value = "/draft/{id}", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK)
+    public void saveDraft(@RequestBody PostRequest postRequest, @PathVariable Long id) {
+        postService.updateDraft(id, postRequest);
+    }
+
+    private Date getYesterday() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.DAY_OF_YEAR, -1);
+        Date oneDayBefore = cal.getTime();
+        return oneDayBefore;
     }
 }
