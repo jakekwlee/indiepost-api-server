@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by jake on 10/8/16.
@@ -56,13 +54,15 @@ public class PostController {
     }
 
     @RequestMapping(value = "/draft", method = RequestMethod.POST)
-    public Long saveDraft(@RequestBody PostRequest postRequest) {
-        return postService.createDraft(postRequest);
+    public Map<String, Long> createDraft(@RequestBody PostRequest postRequest) {
+        HashMap<String, Long> result = new HashMap<>();
+        result.put("id", postService.createDraft(postRequest));
+        return result;
     }
 
-    @RequestMapping(value = "/draft/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/draft/{id}", method = RequestMethod.PUT)
     @ResponseStatus(value = HttpStatus.OK)
-    public void saveDraft(@RequestBody PostRequest postRequest, @PathVariable Long id) {
+    public void updateDraft(@RequestBody PostRequest postRequest, @PathVariable Long id) {
         postService.updateDraft(id, postRequest);
     }
 
