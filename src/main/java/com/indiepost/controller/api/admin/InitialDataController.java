@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
  * Created by jake on 10/8/16.
  */
 @RestController
-@RequestMapping(value = "/api/admin/metadata", produces = {"application/json; charset=UTF-8"})
-public class MetadataController {
+@RequestMapping(value = "/api/admin/init", produces = {"application/json; charset=UTF-8"})
+public class InitialDataController {
 
     @Autowired
     private AdminService adminService;

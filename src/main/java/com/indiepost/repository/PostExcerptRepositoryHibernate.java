@@ -106,7 +106,7 @@ public class PostExcerptRepositoryHibernate implements PostExcerptRepository {
                 .add("author", "a", JoinType.INNER)
                 .add("editor", "e", JoinType.INNER)
                 .add("category", "c", JoinType.INNER)
-                .add("tags", "t", JoinType.INNER);
+                .add("tags", "t", JoinType.LEFT);
         aliases.addToCriteria(criteria);
 
         Criterion restrictions = Restrictions.not(
@@ -123,6 +123,7 @@ public class PostExcerptRepositoryHibernate implements PostExcerptRepository {
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         return criteria.list();
     }
+
     @Override
     public List<Post> findLastUpdated(Long userId, Date timeFrom) {
         Criteria criteria = getCriteria();
@@ -130,21 +131,20 @@ public class PostExcerptRepositoryHibernate implements PostExcerptRepository {
                 .add("author", "a", JoinType.INNER)
                 .add("editor", "e", JoinType.INNER)
                 .add("category", "c", JoinType.INNER)
-                .add("tags", "t", JoinType.INNER);
+                .add("tags", "t", JoinType.LEFT);
         aliases.addToCriteria(criteria);
 
-        Criterion restrictions = Restrictions.not(
+        Criterion restrictions = Restrictions.and(Restrictions.not(
                 Restrictions.and(
-                        Restrictions.ge("modifiedAt", timeFrom),
                         Restrictions.ne("author.id", userId),
                         Restrictions.or(
                                 Restrictions.eq("status", PostEnum.Status.DELETED),
                                 Restrictions.eq("status", PostEnum.Status.DRAFT)
                         )
                 )
-        );
+        ));
 
-        criteria.add(restrictions);
+        criteria.add(restrictions).add(Restrictions.ge("modifiedAt", timeFrom));
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         return criteria.list();
     }
