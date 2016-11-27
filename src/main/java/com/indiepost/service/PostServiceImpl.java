@@ -277,6 +277,9 @@ public class PostServiceImpl implements PostService {
         postResponse.setFeaturedImage(post.getFeaturedImage());
         postResponse.setPostType(post.getPostType().toString());
         postResponse.setStatus(post.getStatus().toString());
+        if(post.getOriginal() != null) {
+            postResponse.setOriginalId(post.getOriginal().getId());
+        }
 
         Set<Tag> tags = post.getTags();
         List<String> tagStringList = new ArrayList<>();

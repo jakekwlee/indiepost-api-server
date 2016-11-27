@@ -36,6 +36,8 @@ public class PostResponse {
 
     private Long categoryId;
 
+    private Long originalId;
+
     private List<String> tags;
 
     private List<PostResponse> revisions;
@@ -166,5 +168,13 @@ public class PostResponse {
 
     public void setRevisions(List<PostResponse> revisions) {
         this.revisions = revisions;
+    }
+
+    public Long getOriginalId() {
+        return originalId;
+    }
+
+    public void setOriginalId(Long originalId) {
+        this.originalId = originalId;
     }
 }
