@@ -10,6 +10,8 @@ public class PostRequest {
 
     private Long id;
 
+    private Long originalId;
+
     private String title;
 
     private String content;
@@ -34,6 +36,14 @@ public class PostRequest {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getOriginalId() {
+        return originalId;
+    }
+
+    public void setOriginalId(Long originalId) {
+        this.originalId = originalId;
     }
 
     public String getTitle() {

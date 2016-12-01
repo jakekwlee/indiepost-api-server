@@ -45,9 +45,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Long createDraft(PostRequest postRequest) {
+    public PostResponse createAutosave(PostRequest postRequest) {
         Post post;
-
         // save the draft first time
         post = new Post();
         post.setTitle("No Title");
@@ -63,50 +62,36 @@ public class PostServiceImpl implements PostService {
         User user = userService.getCurrentUser();
         post.setAuthor(user);
         post.setEditor(user);
-        post.setStatus(PostEnum.Status.DRAFT);
+        post.setStatus(PostEnum.Status.AUTOSAVE);
         post.setPostType(PostEnum.Type.POST);
+        
 
         copyRequestToPost(post, postRequest);
-        return save(post);
+        Long id = save(post);
+        PostResponse postResponse = copyPostToResponse(post);
+        return postResponse;
     }
 
     @Override
-    public void updateDraft(Long id, PostRequest postRequest) {
+    public void updateAutosave(Long id, PostRequest postRequest) {
         Post post = findById(postRequest.getId());
-
-        // if user changes not the draft
-        if (post.getStatus() != PostEnum.Status.DRAFT) {
-            post = new Post();
-            Post original = post;
-            post.setOriginal(original);
-            post.setTitle(original.getTitle());
-            post.setContent(original.getContent());
-            post.setExcerpt(original.getExcerpt());
-            post.setDisplayName(original.getDisplayName());
-            post.setFeaturedImage(original.getFeaturedImage());
-            post.setCategory(original.getCategory());
-            post.setCreatedAt(original.getCreatedAt());
-            post.setPublishedAt(original.getPublishedAt());
-            post.setAuthor(original.getAuthor());
-            post.setEditor(userService.getCurrentUser());
-        }
         copyRequestToPost(post, postRequest);
         update(post);
     }
 
     @Override
     public PostResponse update(Long id, PostRequest postRequest) {
-        Post post = findById(id);
+        Post originalPost = findById(id);
 
-        // DRAFT -> THE OTHERS
-        if (post.getStatus() == PostEnum.Status.DRAFT && post.getOriginal() != null) {
-            Post draft = post;
-            post = draft.getOriginal();
-            postRepository.delete(draft);
+        // if there is original
+        if (postRequest.getOriginalId() != null && !id.equals(postRequest.getId())) {
+            Post draft = findById(postRequest.getId());
+            delete(draft);
+            postRequest.setOriginalId(null);
         }
-        copyRequestToPost(post, postRequest);
-        update(post);
-        return getPostResponse(post.getId());
+        copyRequestToPost(originalPost, postRequest);
+        update(originalPost);
+        return getPostResponse(originalPost.getId());
     }
 
     @Override
@@ -116,7 +101,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void update(Post post) {
-        if (post.getStatus() == PostEnum.Status.PUBLISHED) {
+        if (post.getStatus() == PostEnum.Status.PUBLISH &&
+                post.getStatus() == PostEnum.Status.FUTURE) {
             legacyPostService.saveOrUpdate(post);
         }
         postRepository.update(post);
@@ -124,6 +110,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void delete(Post post) {
+        legacyPostService.delete(post);
         postRepository.delete(post);
     }
 
@@ -199,11 +186,12 @@ public class PostServiceImpl implements PostService {
     public void publishPosts() {
         List<Post> posts = postRepository.findPostToPublish();
         for (Post post : posts) {
-            post.setStatus(PostEnum.Status.PUBLISHED);
+            post.setStatus(PostEnum.Status.PUBLISH);
             update(post);
         }
     }
 
+    // no id copy
     private void copyRequestToPost(Post post, PostRequest postRequest) {
         String title = postRequest.getTitle();
         String content = postRequest.getContent();
@@ -214,6 +202,7 @@ public class PostServiceImpl implements PostService {
         List<String> tagStringList = postRequest.getTags();
         Date publishedAt = postRequest.getPublishedAt();
         String status = postRequest.getStatus();
+        Long originalId = postRequest.getOriginalId();
 
         if (title != null) {
             post.setTitle(postRequest.getTitle());
@@ -239,6 +228,10 @@ public class PostServiceImpl implements PostService {
         if (status != null) {
             post.setStatus(PostEnum.Status.valueOf(status));
         }
+        if (originalId != null) {
+            Post originalPost = postRepository.findById(originalId);
+            post.setOriginal(originalPost);
+        }
         // overwrite saved tags
         if (tagStringList != null) {
             Set<Tag> tags = new HashSet<>();
@@ -261,6 +254,7 @@ public class PostServiceImpl implements PostService {
         post.setModifiedAt(new Date());
     }
 
+    // it does id copy
     private PostResponse copyPostToResponse(Post post) {
         PostResponse postResponse = new PostResponse();
         postResponse.setId(post.getId());
@@ -277,16 +271,18 @@ public class PostServiceImpl implements PostService {
         postResponse.setFeaturedImage(post.getFeaturedImage());
         postResponse.setPostType(post.getPostType().toString());
         postResponse.setStatus(post.getStatus().toString());
-        if(post.getOriginal() != null) {
+        if (post.getOriginal() != null) {
             postResponse.setOriginalId(post.getOriginal().getId());
         }
 
         Set<Tag> tags = post.getTags();
-        List<String> tagStringList = new ArrayList<>();
-        for (Tag tag : tags) {
-            tagStringList.add(tag.getName());
+        if (tags != null) {
+            List<String> tagStringList = new ArrayList<>();
+            for (Tag tag : tags) {
+                tagStringList.add(tag.getName());
+            }
+            postResponse.setTags(tagStringList);
         }
-        postResponse.setTags(tagStringList);
         return postResponse;
     }
 

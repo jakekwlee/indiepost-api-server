@@ -25,6 +25,16 @@ public class PostController {
     @Autowired
     private PostService postService;
 
+    @RequestMapping(value= "/autosave", method=RequestMethod.POST)
+    public PostResponse createAutosave(@RequestBody PostRequest postRequest) {
+        return postService.createAutosave(postRequest);
+    }
+
+    @RequestMapping(value= "/autosave", method=RequestMethod.PUT)
+    public PostResponse updateAutosave(@RequestBody PostRequest postRequest) {
+        return postService.createAutosave(postRequest);
+    }
+
     @RequestMapping(method = RequestMethod.GET)
     public List<SimplifiedPost> getPostList() {
         return adminService.getAllSimplifiedPosts(0, 1000000, true);
@@ -54,16 +64,14 @@ public class PostController {
     }
 
     @RequestMapping(value = "/draft", method = RequestMethod.POST)
-    public Map<String, Long> createDraft(@RequestBody PostRequest postRequest) {
-        HashMap<String, Long> result = new HashMap<>();
-        result.put("id", postService.createDraft(postRequest));
-        return result;
+    public PostResponse createDraft(@RequestBody PostRequest postRequest) {
+        return postService.createAutosave(postRequest);
     }
 
     @RequestMapping(value = "/draft/{id}", method = RequestMethod.PUT)
     @ResponseStatus(value = HttpStatus.OK)
     public void updateDraft(@RequestBody PostRequest postRequest, @PathVariable Long id) {
-        postService.updateDraft(id, postRequest);
+        postService.updateAutosave(id, postRequest);
     }
 
     private Date getYesterday() {

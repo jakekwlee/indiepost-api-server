@@ -101,7 +101,7 @@ public class NewIndiepostApplicationTests {
         postService.findAll(1, 50, true);
         postService.findAll(PostEnum.Status.PENDING, user, category, 1, 50, true);
         postService.findByAuthorName("Indiepost", 1, 50, true);
-        postService.findByStatus(PostEnum.Status.PUBLISHED, 1, 100, true);
+        postService.findByStatus(PostEnum.Status.PUBLISH, 1, 100, true);
     }
 
     //    @Test

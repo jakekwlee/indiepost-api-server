@@ -93,7 +93,7 @@ public class PostRepositoryHibernate implements PostRepository {
     @Override
     public List<Post> findAll(Pageable pageable) {
         return getCriteria(pageable)
-                .add(Restrictions.eq("status", Status.PUBLISHED))
+                .add(Restrictions.eq("status", Status.PUBLISH))
                 .list();
     }
 
@@ -101,7 +101,7 @@ public class PostRepositoryHibernate implements PostRepository {
     public List<Post> findByCategoryId(Long categoryId, Pageable pageable) {
         return getCriteria(pageable)
                 .add(Restrictions.eq("c.id", categoryId))
-                .add(Restrictions.eq("status", Status.PUBLISHED))
+                .add(Restrictions.eq("status", Status.PUBLISH))
                 .list();
     }
 
@@ -109,7 +109,7 @@ public class PostRepositoryHibernate implements PostRepository {
     public List<Post> findByCategorySlug(String slug, Pageable pageable) {
         return getCriteria(pageable)
                 .add(Restrictions.eq("c.slug", slug))
-                .add(Restrictions.eq("status", Status.PUBLISHED))
+                .add(Restrictions.eq("status", Status.PUBLISH))
                 .list();
     }
 
@@ -117,7 +117,7 @@ public class PostRepositoryHibernate implements PostRepository {
     public List<Post> findByAuthorId(Long authorId, Pageable pageable) {
         return getCriteria(pageable)
                 .add(Restrictions.eq("a.id", authorId))
-                .add(Restrictions.eq("status", Status.PUBLISHED))
+                .add(Restrictions.eq("status", Status.PUBLISH))
                 .list();
     }
 
@@ -125,7 +125,7 @@ public class PostRepositoryHibernate implements PostRepository {
     public List<Post> findByAuthorName(String authorName, Pageable pageable) {
         return getCriteria(pageable)
                 .add(Restrictions.eq("authorName", authorName))
-                .add(Restrictions.eq("status", Status.PUBLISHED))
+                .add(Restrictions.eq("status", Status.PUBLISH))
                 .list();
     }
 
@@ -134,7 +134,7 @@ public class PostRepositoryHibernate implements PostRepository {
         return getCriteria(pageable)
                 .createAlias("tags", "t")
                 .add(Restrictions.eq("tags.id", tagId))
-                .add(Restrictions.eq("status", Status.PUBLISHED))
+                .add(Restrictions.eq("status", Status.PUBLISH))
                 .list();
     }
 
@@ -144,7 +144,7 @@ public class PostRepositoryHibernate implements PostRepository {
         return getCriteria(pageable)
                 .createAlias("tags", "t")
                 .add(Restrictions.eq("t.name", tagName))
-                .add(Restrictions.eq("status", Status.PUBLISHED))
+                .add(Restrictions.eq("status", Status.PUBLISH))
                 .list();
     }
 
@@ -152,13 +152,13 @@ public class PostRepositoryHibernate implements PostRepository {
     public List<Post> findByStatus(Status status, Pageable pageable) {
         return getCriteria(pageable)
                 .add(Restrictions.eq("status", status))
-                .add(Restrictions.eq("status", Status.PUBLISHED))
+                .add(Restrictions.eq("status", Status.PUBLISH))
                 .list();
     }
 
     public List<Post> findPostToPublish() {
         return getCriteria()
-                .add(Restrictions.eq("status", Status.BOOKED))
+                .add(Restrictions.eq("status", Status.FUTURE))
                 .add(Restrictions.le("publishedAt", new Date())).list();
     }
 

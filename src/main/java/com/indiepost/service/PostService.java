@@ -17,9 +17,9 @@ public interface PostService {
 
     Long save(Post post);
 
-    Long createDraft(PostRequest postRequest);
+    PostResponse createAutosave(PostRequest postRequest);
 
-    void updateDraft(Long id, PostRequest postRequest);
+    void updateAutosave(Long id, PostRequest postRequest);
 
     PostResponse update(Long id, PostRequest postRequest);
 
