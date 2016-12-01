@@ -4,10 +4,10 @@
 <head>
     <meta charset="utf-8" />
     <title>Indiepost CMS</title>
-    <link rel="stylesheet" href="/cms/resources/node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/cms/resources/node_modules/text-spinners/spinners.css">
-    <link rel="stylesheet" href="/cms/resources/css/dashboard.css">
-    <link rel="stylesheet" href="/cms/resources/css/style.css">
+    <link rel="stylesheet" th:href="@{/resources/node_modules/bootstrap/dist/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/resources/node_modules/text-spinners/spinners.css}">
+    <link rel="stylesheet" th:href="@{/resources/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/resources/css/style.css}">
 </head>
 <body>
 <div id="root">
@@ -15,9 +15,10 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     CFRF_TOKEN = [[${_csrf.token}]];
+    CONTEXT_ROOT = /*[[@{/}]]*/ '';
     /*]]>*/
 </script>
-<script src="/cms/resources/node_modules/tinymce/tinymce.min.js"></script>
-<script src="/cms/resources/dist/app.bundle.js"></script>
+<script th:src="@{/resources/node_modules/tinymce/tinymce.min.js}"></script>
+<script th:src="@{/resources/dist/app.bundle.js}"></script>
 </body>
 </html>
