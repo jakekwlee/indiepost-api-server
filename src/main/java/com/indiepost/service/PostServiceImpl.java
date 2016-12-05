@@ -73,7 +73,7 @@ public class PostServiceImpl implements PostService {
             post.setComments(null);
             post.setLikes(null);
             post.setRevisions(null);
-            post.setTags(null);
+            post.setPostTags(null);
         } else {
             // save the draft first time
             post.setTitle("No Title");

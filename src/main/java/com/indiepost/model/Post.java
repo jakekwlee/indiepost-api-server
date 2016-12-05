@@ -2,20 +2,18 @@ package com.indiepost.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.indiepost.enums.PostEnum;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
-import javax.persistence.CascadeType;
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by jake on 7/24/16.
@@ -103,16 +101,6 @@ public class Post implements Serializable {
     @JoinColumn(name = "categoryId", nullable = false)
     private Category category;
 
-    @ManyToMany
-    @Fetch(FetchMode.JOIN)
-    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
-    @JoinTable(
-            name = "Posts_Tags",
-            joinColumns = {@JoinColumn(name = "postId")},
-            inverseJoinColumns = {@JoinColumn(name = "tagId")}
-    )
-    private Set<Tag> tags;
-
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.EXTRA)
     @OrderBy("createdAt")
@@ -121,6 +109,10 @@ public class Post implements Serializable {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("likedAt DESC")
     private List<Like> likes;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt DESC")
+    private List<PostTag> postTags;
 
     public Long getId() {
         return id;
@@ -218,14 +210,6 @@ public class Post implements Serializable {
         this.category = category;
     }
 
-    public Set<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<Tag> tags) {
-        this.tags = tags;
-    }
-
     public List<Comment> getComments() {
         return comments;
     }
@@ -280,6 +264,14 @@ public class Post implements Serializable {
 
     public void setRevisions(List<Revision> revisions) {
         this.revisions = revisions;
+    }
+
+    public List<PostTag> getPostTags() {
+        return postTags;
+    }
+
+    public void setPostTags(List<PostTag> postTags) {
+        this.postTags = postTags;
     }
 
     public Post getOriginal() {
