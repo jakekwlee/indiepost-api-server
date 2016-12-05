@@ -24,7 +24,7 @@ public class ScheduledTasks {
     private PostService postService;
 
 //    @Scheduled(cron = "0 0/30 * * * ?")
-//    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 60000)
     public void publishPosts() {
         log.info("Publish Posts: ", dateFormat.format(new Date()));
         postService.publishPosts();

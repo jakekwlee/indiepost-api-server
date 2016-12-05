@@ -1,5 +1,6 @@
 package com.indiepost.service;
 
+import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.model.legacy.Contentlist;
@@ -35,10 +36,11 @@ public class LegacyPostServiceImpl implements LegacyPostService {
             update(post);
             return contentlist.getNo();
         }
+        contentlist = new Contentlist();
         Detaillist detaillist = new Detaillist();
 
         copyNewToLegacy(post, contentlist, detaillist);
-        legacyContentListRepository.save(contentlist);
+        legacyContentListRepository.saveOrUpdate(contentlist);
         legacyDetailListRepository.save(detaillist);
         return post.getId();
     }
@@ -46,6 +48,9 @@ public class LegacyPostServiceImpl implements LegacyPostService {
     @Override
     public void update(Post post) {
         Contentlist contentlist = legacyContentListRepository.findByNo(post.getId());
+        if (contentlist == null) {
+            return;
+        }
         List<Detaillist> detaillistList = legacyDetailListRepository.findByParent(contentlist.getNo());
         for (Detaillist detaillist : detaillistList) {
             legacyDetailListRepository.delete(detaillist);
@@ -64,6 +69,9 @@ public class LegacyPostServiceImpl implements LegacyPostService {
     @Override
     public void deleteById(Long id) {
         Contentlist contentlist = legacyContentListRepository.findByNo(id);
+        if(contentlist == null) {
+            return;
+        }
         legacyContentListRepository.delete(contentlist);
         List<Detaillist> detaillistList = legacyDetailListRepository.findByParent(contentlist.getNo());
         for (Detaillist detaillist : detaillistList) {
@@ -72,6 +80,12 @@ public class LegacyPostServiceImpl implements LegacyPostService {
     }
 
     private void copyNewToLegacy(Post post, Contentlist contentlist, Detaillist detaillist) {
+        Long status;
+        if (post.getStatus() == PostEnum.Status.PENDING) {
+            status = new Long(0);
+        } else {
+            status = new Long(1);
+        }
         DateFormat modifyDateFormat = new SimpleDateFormat("yyyyMMddHH");
         DateFormat regDateFormat = new SimpleDateFormat("yyyyMMdd");
 
@@ -84,10 +98,16 @@ public class LegacyPostServiceImpl implements LegacyPostService {
         contentlist.setWriterid(post.getAuthor().getUsername());
         contentlist.setWritername(post.getDisplayName());
         contentlist.setImageurl(post.getFeaturedImage());
-        contentlist.setIsdisplay(new Long(1));
-        contentlist.setIsmain(new Long(1));
+        contentlist.setImageurl2("");
+        contentlist.setDataurl("");
+        contentlist.setSubs(new Long(0));
+        contentlist.setUv(new Long(0));
+        contentlist.setJjim(new Long(0));
+        contentlist.setIsdisplay(new Long(status));
+        contentlist.setIsmain(new Long(status));
         contentlist.setPrice(new Long(0));
         contentlist.setDataurl("");
+        contentlist.setHit(new Long(0));
         contentlist.setIsarticleservice(new Long(0));
         contentlist.setIsstreamingservice(new Long(0));
         contentlist.setIsdownloadservice(new Long(0));

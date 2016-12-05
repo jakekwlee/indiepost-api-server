@@ -7,10 +7,11 @@ import com.indiepost.responseModel.admin.SimplifiedPost;
 import com.indiepost.service.AdminService;
 import com.indiepost.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by jake on 10/8/16.
@@ -25,14 +26,35 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    @RequestMapping(value= "/autosave", method=RequestMethod.POST)
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public PostResponse getPost(@PathVariable Long id) {
+        return postService.getPostResponse(id);
+    }
+
+    @RequestMapping(method = RequestMethod.POST)
+    public PostResponse savePost(@RequestBody PostRequest postRequest) {
+        return postService.save(postRequest);
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    public void updatePost(@RequestBody PostRequest postRequest, @PathVariable Long id) {
+        postService.update(id, postRequest);
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public Long deletePost(@PathVariable Long id) {
+        postService.deleteById(id);
+        return id;
+    }
+
+    @RequestMapping(value = "/autosave", method = RequestMethod.POST)
     public PostResponse createAutosave(@RequestBody PostRequest postRequest) {
         return postService.createAutosave(postRequest);
     }
 
-    @RequestMapping(value= "/autosave", method=RequestMethod.PUT)
-    public PostResponse updateAutosave(@RequestBody PostRequest postRequest) {
-        return postService.createAutosave(postRequest);
+    @RequestMapping(value = "/autosave/{id}", method = RequestMethod.PUT)
+    public void updateAutosave(@PathVariable Long id, @RequestBody PostRequest postRequest) {
+        postService.updateAutosave(id, postRequest);
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -45,34 +67,6 @@ public class PostController {
         return adminService.getLastUpdated(getYesterday());
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public PostResponse getPost(@PathVariable Long id) {
-        return postService.getPostResponse(id);
-    }
-
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public List<SimplifiedPost> updatePost(@RequestBody PostRequest postRequest, @PathVariable Long id) {
-        postService.update(id, postRequest);
-        return adminService.getLastUpdated(getYesterday());
-    }
-
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public Long deletePost(@PathVariable Long id) {
-        Post post = postService.findById(id);
-        postService.delete(post);
-        return id;
-    }
-
-    @RequestMapping(value = "/draft", method = RequestMethod.POST)
-    public PostResponse createDraft(@RequestBody PostRequest postRequest) {
-        return postService.createAutosave(postRequest);
-    }
-
-    @RequestMapping(value = "/draft/{id}", method = RequestMethod.PUT)
-    @ResponseStatus(value = HttpStatus.OK)
-    public void updateDraft(@RequestBody PostRequest postRequest, @PathVariable Long id) {
-        postService.updateAutosave(id, postRequest);
-    }
 
     private Date getYesterday() {
         Calendar cal = Calendar.getInstance();

@@ -17,6 +17,8 @@ public interface PostService {
 
     Long save(Post post);
 
+    PostResponse save(PostRequest postRequest);
+
     PostResponse createAutosave(PostRequest postRequest);
 
     void updateAutosave(Long id, PostRequest postRequest);
@@ -32,6 +34,8 @@ public interface PostService {
     void update(Post post);
 
     void delete(Post post);
+
+    void deleteById(Long id);
 
     Long count();
 

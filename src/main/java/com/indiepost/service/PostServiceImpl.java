@@ -8,6 +8,7 @@ import com.indiepost.model.User;
 import com.indiepost.repository.PostRepository;
 import com.indiepost.requestModel.admin.PostRequest;
 import com.indiepost.responseModel.admin.PostResponse;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,37 +46,63 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponse createAutosave(PostRequest postRequest) {
+    public PostResponse save(PostRequest postRequest) {
         Post post;
-        // save the draft first time
         post = new Post();
-        post.setTitle("No Title");
-        post.setContent("");
-        post.setExcerpt("");
-        post.setDisplayName("");
-        post.setFeaturedImage("");
-
-        // default category is 'film'
-        post.setCategory(categoryService.findBySlug("film"));
-        post.setCreatedAt(new Date());
-        post.setPublishedAt(new Date());
+        copyRequestToPost(post, postRequest);
         User user = userService.getCurrentUser();
         post.setAuthor(user);
         post.setEditor(user);
-        post.setStatus(PostEnum.Status.AUTOSAVE);
-        post.setPostType(PostEnum.Type.POST);
-        
+        post.setCreatedAt(new Date());
+        return copyPostToResponse(post);
+    }
+
+    @Override
+    public PostResponse createAutosave(PostRequest postRequest) {
+        Post post;
+        post = new Post();
+        User user = userService.getCurrentUser();
+
+        // first of all, examine request has an ID
+        Long originalId = postRequest.getId();
+        if (originalId != null) {
+            Post originalPost = postRepository.findById(originalId);
+            BeanUtils.copyProperties(originalPost, post);
+            post.setOriginal(originalPost);
+            post.setId(null);
+            post.setComments(null);
+            post.setLikes(null);
+            post.setRevisions(null);
+            post.setTags(null);
+        } else {
+            // save the draft first time
+            post.setTitle("No Title");
+            post.setContent("");
+            post.setExcerpt("");
+            post.setDisplayName("");
+            post.setFeaturedImage("");
+
+            // default category is 'film'
+            post.setCategory(categoryService.findBySlug("film"));
+            post.setCreatedAt(new Date());
+            post.setPublishedAt(new Date());
+            post.setAuthor(user);
+            post.setPostType(PostEnum.Type.POST);
+        }
 
         copyRequestToPost(post, postRequest);
-        Long id = save(post);
-        PostResponse postResponse = copyPostToResponse(post);
-        return postResponse;
+        post.setStatus(PostEnum.Status.AUTOSAVE);
+        post.setEditor(user);
+
+        save(post);
+        return copyPostToResponse(post);
     }
 
     @Override
     public void updateAutosave(Long id, PostRequest postRequest) {
         Post post = findById(postRequest.getId());
         copyRequestToPost(post, postRequest);
+        post.setStatus(PostEnum.Status.AUTOSAVE);
         update(post);
     }
 
@@ -83,11 +110,12 @@ public class PostServiceImpl implements PostService {
     public PostResponse update(Long id, PostRequest postRequest) {
         Post originalPost = findById(id);
 
-        // if there is original
-        if (postRequest.getOriginalId() != null && !id.equals(postRequest.getId())) {
+        // if there is an original
+        if (postRequest.getOriginalId() != null) {
             Post draft = findById(postRequest.getId());
             delete(draft);
             postRequest.setOriginalId(null);
+            postRequest.setStatus(null);
         }
         copyRequestToPost(originalPost, postRequest);
         update(originalPost);
@@ -101,17 +129,24 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void update(Post post) {
-        if (post.getStatus() == PostEnum.Status.PUBLISH &&
-                post.getStatus() == PostEnum.Status.FUTURE) {
+        PostEnum.Status status = post.getStatus();
+        postRepository.update(post);
+        if (status == PostEnum.Status.PUBLISH ||
+                status == PostEnum.Status.FUTURE) {
             legacyPostService.saveOrUpdate(post);
         }
-        postRepository.update(post);
     }
 
     @Override
     public void delete(Post post) {
-        legacyPostService.delete(post);
         postRepository.delete(post);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        Post post = postRepository.findById(id);
+        delete(post);
+        legacyPostService.deleteById(id);
     }
 
     @Override
@@ -187,7 +222,7 @@ public class PostServiceImpl implements PostService {
         List<Post> posts = postRepository.findPostToPublish();
         for (Post post : posts) {
             post.setStatus(PostEnum.Status.PUBLISH);
-            update(post);
+            postRepository.save(post);
         }
     }
 

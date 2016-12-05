@@ -10,7 +10,7 @@ spring:
     hibernate:
       ddl-auto: update
       naming-strategy: org.hibernate.cfg.DefaultNamingStrategy
-    show-sql: true
+    show-sql: false
     generate-ddl: true
     properties:
       hibernate:
@@ -37,7 +37,7 @@ logging:
   level:
     org:
       springframework:
-        web: debug
+        web: info
 multipart:
   max-file-size: 20MB
   max-request-size: 100MB

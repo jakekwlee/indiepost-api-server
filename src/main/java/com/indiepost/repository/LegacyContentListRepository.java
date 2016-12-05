@@ -8,6 +8,8 @@ import com.indiepost.model.legacy.Contentlist;
 public interface LegacyContentListRepository {
     Long save(Contentlist contentlist);
 
+    void saveOrUpdate(Contentlist contentlist);
+
     void update(Contentlist contentlist);
 
     void delete(Contentlist contentlist);

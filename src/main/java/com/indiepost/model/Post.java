@@ -105,7 +105,7 @@ public class Post implements Serializable {
 
     @ManyToMany
     @Fetch(FetchMode.JOIN)
-    @Cascade({org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.SAVE_UPDATE})
+    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
     @JoinTable(
             name = "Posts_Tags",
             joinColumns = {@JoinColumn(name = "postId")},
