@@ -24,11 +24,6 @@ public class LegacyContentListRepositoryHibernate implements LegacyContentListRe
     }
 
     @Override
-    public void saveOrUpdate(Contentlist contentlist) {
-        getSession().saveOrUpdate(contentlist);
-    }
-
-    @Override
     public void update(Contentlist contentlist) {
         getSession().update(contentlist);
     }

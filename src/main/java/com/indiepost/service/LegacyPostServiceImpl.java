@@ -30,24 +30,22 @@ public class LegacyPostServiceImpl implements LegacyPostService {
     private LegacyDetailListRepository legacyDetailListRepository;
 
     @Override
-    public Long saveOrUpdate(Post post) {
-        Contentlist contentlist = legacyContentListRepository.findByNo(post.getId());
-        if (contentlist != null) {
-            update(post);
-            return contentlist.getNo();
-        }
-        contentlist = new Contentlist();
+    public Contentlist save(Post post) {
+        Contentlist contentlist = new Contentlist();
         Detaillist detaillist = new Detaillist();
 
         copyNewToLegacy(post, contentlist, detaillist);
-        legacyContentListRepository.saveOrUpdate(contentlist);
+
+        Long id = legacyContentListRepository.save(contentlist);
+        detaillist.setParent(id);
+
         legacyDetailListRepository.save(detaillist);
-        return post.getId();
+        return contentlist;
     }
 
     @Override
     public void update(Post post) {
-        Contentlist contentlist = legacyContentListRepository.findByNo(post.getId());
+        Contentlist contentlist = post.getLegacyPost();
         if (contentlist == null) {
             return;
         }
@@ -57,39 +55,38 @@ public class LegacyPostServiceImpl implements LegacyPostService {
         }
         Detaillist detaillist = new Detaillist();
         copyNewToLegacy(post, contentlist, detaillist);
+
         legacyContentListRepository.update(contentlist);
+        detaillist.setParent(contentlist.getNo());
         legacyDetailListRepository.save(detaillist);
     }
 
     @Override
     public void delete(Post post) {
-        deleteById(post.getId());
+        Contentlist contentlist = post.getLegacyPost();
+        this.deleteContentAndDetail(contentlist);
     }
 
     @Override
     public void deleteById(Long id) {
         Contentlist contentlist = legacyContentListRepository.findByNo(id);
-        if(contentlist == null) {
-            return;
-        }
-        legacyContentListRepository.delete(contentlist);
-        List<Detaillist> detaillistList = legacyDetailListRepository.findByParent(contentlist.getNo());
-        for (Detaillist detaillist : detaillistList) {
-            legacyDetailListRepository.delete(detaillist);
-        }
+        this.deleteContentAndDetail(contentlist);
     }
 
     private void copyNewToLegacy(Post post, Contentlist contentlist, Detaillist detaillist) {
         Long status;
+        Long long0 = new Long(0);
+        Long long1 = new Long(1);
+        Long long9 = new Long(9);
+
         if (post.getStatus() == PostEnum.Status.PENDING) {
-            status = new Long(0);
+            status = long0;
         } else {
-            status = new Long(1);
+            status = long1;
         }
         DateFormat modifyDateFormat = new SimpleDateFormat("yyyyMMddHH");
         DateFormat regDateFormat = new SimpleDateFormat("yyyyMMdd");
 
-        contentlist.setNo(post.getId());
         contentlist.setRegdate(regDateFormat.format(post.getCreatedAt()));
         contentlist.setModifydate(modifyDateFormat.format(post.getPublishedAt()));
         contentlist.setMenuno(post.getCategory().getId());
@@ -100,25 +97,27 @@ public class LegacyPostServiceImpl implements LegacyPostService {
         contentlist.setImageurl(post.getFeaturedImage());
         contentlist.setImageurl2("");
         contentlist.setDataurl("");
-        contentlist.setSubs(new Long(0));
-        contentlist.setUv(new Long(0));
-        contentlist.setJjim(new Long(0));
-        contentlist.setIsdisplay(new Long(status));
-        contentlist.setIsmain(new Long(status));
-        contentlist.setPrice(new Long(0));
+        contentlist.setSubs(long0);
+        contentlist.setIsdisplay(status);
+        contentlist.setIsmain(status);
+        contentlist.setPrice(long0);
         contentlist.setDataurl("");
-        contentlist.setHit(new Long(0));
-        contentlist.setIsarticleservice(new Long(0));
-        contentlist.setIsstreamingservice(new Long(0));
-        contentlist.setIsdownloadservice(new Long(0));
-        contentlist.setPrice(new Long(0));
-        contentlist.setGoods(new Long(0));
-        contentlist.setListseq(new Long(0));
-        contentlist.setListseqmain(new Long(0));
-        contentlist.setOs(new Long(0));
-        contentlist.setPlatform(new Long(0));
-        contentlist.setType1no(new Long(1));
-        contentlist.setType2no(new Long(1));
+        contentlist.setIsarticleservice(long0);
+        contentlist.setIsstreamingservice(long0);
+        contentlist.setIsdownloadservice(long0);
+        contentlist.setPrice(long0);
+        if (contentlist.getHit() == null || contentlist.getHit() == 0) {
+            contentlist.setGoods(long0);
+            contentlist.setUv(long0);
+            contentlist.setJjim(long0);
+            contentlist.setHit(long0);
+        }
+        contentlist.setListseq(long0);
+        contentlist.setListseqmain(long0);
+        contentlist.setOs(long0);
+        contentlist.setPlatform(long0);
+        contentlist.setType1no(long1);
+        contentlist.setType2no(long1);
 
         Set<Tag> tags = post.getTags();
 
@@ -131,10 +130,21 @@ public class LegacyPostServiceImpl implements LegacyPostService {
             contentlist.setKeyword(String.join(", ", tagNameArray));
         }
 
-        detaillist.setParent(post.getId());
-        detaillist.setIorder(new Long(1));
+        detaillist.setIorder(long1);
         detaillist.setData(post.getContent());
-        detaillist.setType(new Long(9));
-        detaillist.setIspay(new Long(0));
+        detaillist.setType(long9);
+        detaillist.setIspay(long0);
+    }
+
+    private void deleteContentAndDetail(Contentlist contentlist) {
+        if (contentlist == null) {
+            return;
+        }
+        Long parentId = contentlist.getNo();
+        legacyContentListRepository.delete(contentlist);
+        List<Detaillist> detaillistList = legacyDetailListRepository.findByParent(parentId);
+        for (Detaillist detaillist : detaillistList) {
+            legacyDetailListRepository.delete(detaillist);
+        }
     }
 }

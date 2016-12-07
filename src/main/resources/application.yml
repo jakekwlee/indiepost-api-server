@@ -14,6 +14,7 @@ spring:
     generate-ddl: true
     properties:
       hibernate:
+        format_sql: false
         connection:
           charSet: UTF-8
         hbm2ddl:
@@ -29,7 +30,7 @@ spring:
         fixed:
           enabled:
   thymeleaf:
-    cache: false
+    cache: true
     mode: LEGACYHTML5
     encoding: UTF-8
 

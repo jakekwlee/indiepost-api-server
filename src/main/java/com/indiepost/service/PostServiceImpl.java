@@ -5,10 +5,10 @@ import com.indiepost.model.Category;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.model.User;
+import com.indiepost.model.legacy.Contentlist;
 import com.indiepost.repository.PostRepository;
 import com.indiepost.requestModel.admin.PostRequest;
 import com.indiepost.responseModel.admin.PostResponse;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +16,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by jake on 7/30/16.
@@ -47,54 +50,42 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostResponse save(PostRequest postRequest) {
-        Post post;
-        post = new Post();
+        Post post = new Post();
         copyRequestToPost(post, postRequest);
         User user = userService.getCurrentUser();
-        post.setAuthor(user);
+        if (post.getAuthor() == null) {
+            post.setAuthor(user);
+        }
         post.setEditor(user);
         post.setCreatedAt(new Date());
+        post.setModifiedAt(new Date());
         return copyPostToResponse(post);
     }
 
     @Override
     public PostResponse createAutosave(PostRequest postRequest) {
-        Post post;
-        post = new Post();
+        Post post = new Post();
         User user = userService.getCurrentUser();
 
-        // first of all, examine request has an ID
+        post.setCreatedAt(new Date());
+        post.setModifiedAt(new Date());
+        post.setAuthor(user);
+        post.setEditor(user);
+        post.setPostType(PostEnum.Type.POST);
+        post.setStatus(PostEnum.Status.AUTOSAVE);
+
         Long originalId = postRequest.getId();
+
         if (originalId != null) {
             Post originalPost = postRepository.findById(originalId);
-            BeanUtils.copyProperties(originalPost, post);
             post.setOriginal(originalPost);
-            post.setId(null);
-            post.setComments(null);
-            post.setLikes(null);
-            post.setRevisions(null);
-            post.setTags(null);
-        } else {
-            // save the draft first time
-            post.setTitle("No Title");
-            post.setContent("");
-            post.setExcerpt("");
-            post.setDisplayName("");
-            post.setFeaturedImage("");
-
-            // default category is 'film'
-            post.setCategory(categoryService.findBySlug("film"));
-            post.setCreatedAt(new Date());
-            post.setPublishedAt(new Date());
-            post.setAuthor(user);
-            post.setPostType(PostEnum.Type.POST);
         }
 
         copyRequestToPost(post, postRequest);
         post.setStatus(PostEnum.Status.AUTOSAVE);
-        post.setEditor(user);
 
         save(post);
+
         return copyPostToResponse(post);
     }
 
@@ -108,18 +99,33 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostResponse update(Long id, PostRequest postRequest) {
-        Post originalPost = findById(id);
+        Long originalId = postRequest.getOriginalId();
+        Post post = findById(id);
 
         // if there is an original
-        if (postRequest.getOriginalId() != null) {
-            Post draft = findById(postRequest.getId());
-            delete(draft);
+        if (originalId != null && originalId != postRequest.getId()) {
             postRequest.setOriginalId(null);
             postRequest.setStatus(null);
+            Post autosaveOrDraft = findById(postRequest.getId());
+            delete(autosaveOrDraft);
         }
-        copyRequestToPost(originalPost, postRequest);
-        update(originalPost);
-        return getPostResponse(originalPost.getId());
+        copyRequestToPost(post, postRequest);
+        post.setModifiedAt(new Date());
+
+        PostEnum.Status status = post.getStatus();
+
+        if (status == PostEnum.Status.PUBLISH ||
+                status == PostEnum.Status.FUTURE) {
+            if (post.getLegacyPost() == null) {
+                Contentlist contentlist = legacyPostService.save(post);
+                post.setLegacyPost(contentlist);
+            } else {
+                legacyPostService.update(post);
+            }
+        }
+
+        update(post);
+        return getPostResponse(post.getId());
     }
 
     @Override
@@ -129,12 +135,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void update(Post post) {
-        PostEnum.Status status = post.getStatus();
         postRepository.update(post);
-        if (status == PostEnum.Status.PUBLISH ||
-                status == PostEnum.Status.FUTURE) {
-            legacyPostService.saveOrUpdate(post);
-        }
     }
 
     @Override
@@ -240,53 +241,68 @@ public class PostServiceImpl implements PostService {
         Long originalId = postRequest.getOriginalId();
 
         if (title != null) {
-            post.setTitle(postRequest.getTitle());
+            post.setTitle(title);
+        } else {
+            post.setTitle("No Title");
         }
+
         if (content != null) {
-            post.setContent(postRequest.getContent());
+            post.setContent(content);
+        } else {
+            post.setContent("");
         }
+
         if (excerpt != null) {
-            post.setExcerpt(postRequest.getExcerpt());
+            post.setExcerpt(excerpt);
+        } else {
+            post.setExcerpt("");
         }
+
         if (displayName != null) {
-            post.setDisplayName(postRequest.getDisplayName());
+            post.setDisplayName(displayName);
+        } else {
+            post.setDisplayName("Indiepost");
         }
+
         if (featuredImage != null) {
             post.setFeaturedImage(featuredImage);
+        } else {
+            post.setFeaturedImage("");
         }
+
         if (categoryId != null) {
             post.setCategory(categoryService.findById(categoryId));
+        } else {
+            post.setCategory(categoryService.findBySlug("film"));
         }
+
         if (publishedAt != null) {
             post.setPublishedAt(publishedAt);
+        } else {
+            post.setPublishedAt(new Date());
         }
+
         if (status != null) {
             post.setStatus(PostEnum.Status.valueOf(status));
         }
+
         if (originalId != null) {
             Post originalPost = postRepository.findById(originalId);
             post.setOriginal(originalPost);
         }
-        // overwrite saved tags
+
+        post.clearTags();
         if (tagStringList != null) {
-            Set<Tag> tags = new HashSet<>();
             for (String tagString : tagStringList) {
                 Tag tag = tagService.findByName(tagString);
-                Set<Post> posts;
-                if (tag != null) {
-                    posts = tag.getPosts();
-                } else {
+                if (tag == null) {
                     tag = new Tag();
                     tag.setName(tagString);
-                    posts = new HashSet<>();
+                    tagService.save(tag);
                 }
-                posts.add(post);
-                tag.setPosts(posts);
-                tags.add(tag);
+                post.addTag(tag);
             }
-            post.setTags(tags);
         }
-        post.setModifiedAt(new Date());
     }
 
     // it does id copy

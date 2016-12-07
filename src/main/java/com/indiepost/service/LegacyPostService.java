@@ -1,12 +1,13 @@
 package com.indiepost.service;
 
 import com.indiepost.model.Post;
+import com.indiepost.model.legacy.Contentlist;
 
 /**
  * Created by jake on 11/22/16.
  */
 public interface LegacyPostService {
-    Long saveOrUpdate(Post post);
+    Contentlist save(Post post);
 
     void update(Post post);
 

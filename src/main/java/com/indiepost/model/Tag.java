@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -28,7 +29,7 @@ public class Tag implements Serializable {
     @NotNull
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
     @OrderBy(value = "publishedAt")
-    private Set<Post> posts;
+    private Set<Post> posts = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -46,11 +47,27 @@ public class Tag implements Serializable {
         this.name = name;
     }
 
-    public Set<Post> getPosts() {
+    public void addPost(Post post) {
+        if (!this.posts.contains(post)) {
+            this.posts.add(post);
+            post.addTag(this);
+        }
+    }
+
+    public Long removePost(Post post) {
+        Long postId = post.getId();
+        if (this.posts.contains(post)) {
+            this.posts.remove(post);
+            post.removeTag(this);
+        }
+        return postId;
+    }
+
+    private Set<Post> getPosts() {
         return posts;
     }
 
-    public void setPosts(Set<Post> posts) {
+    private void setPosts(Set<Post> posts) {
         this.posts = posts;
     }
 }

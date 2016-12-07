@@ -1,19 +1,21 @@
 package com.indiepost.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.indiepost.enums.PostEnum;
-import org.hibernate.annotations.*;
+import com.indiepost.model.legacy.Contentlist;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
-import javax.persistence.CascadeType;
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -39,6 +41,11 @@ public class Post implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "originalId")
     private Post original;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "legacyPostId")
+    @JsonIgnore
+    private Contentlist legacyPost;
 
     @NotNull
     @Size(max = 100)
@@ -104,14 +111,13 @@ public class Post implements Serializable {
     private Category category;
 
     @ManyToMany
-    @Fetch(FetchMode.JOIN)
-    @Cascade({org.hibernate.annotations.CascadeType.SAVE_UPDATE})
+    @OrderBy("id desc")
     @JoinTable(
             name = "Posts_Tags",
             joinColumns = {@JoinColumn(name = "postId")},
             inverseJoinColumns = {@JoinColumn(name = "tagId")}
     )
-    private Set<Tag> tags;
+    private Set<Tag> tags = new HashSet<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.EXTRA)
@@ -222,16 +228,47 @@ public class Post implements Serializable {
         return tags;
     }
 
-    public void setTags(Set<Tag> tags) {
+    private void setTags(Set<Tag> tags) {
         this.tags = tags;
+    }
+
+    public void addTag(Tag tag) {
+        if (!this.tags.contains(tag)) {
+            this.tags.add(tag);
+            tag.addPost(this);
+        }
+    }
+
+    public Long removeTag(Tag tag) {
+        Long tagId = tag.getId();
+        if (this.tags.contains(tag)) {
+            this.tags.remove(tag);
+            tag.removePost(this);
+        }
+        return tagId;
+    }
+
+    public void clearTags() {
+        this.tags.clear();
     }
 
     public List<Comment> getComments() {
         return comments;
     }
 
-    public void setComments(List<Comment> comments) {
+
+    private void setComments(List<Comment> comments) {
         this.comments = comments;
+    }
+
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
+    }
+
+    public Long removeComment(Comment comment) {
+        Long commentId = comment.getId();
+        this.comments.remove(comment);
+        return commentId;
     }
 
     public List<Like> getLikes() {
@@ -288,5 +325,13 @@ public class Post implements Serializable {
 
     public void setOriginal(Post original) {
         this.original = original;
+    }
+
+    public Contentlist getLegacyPost() {
+        return legacyPost;
+    }
+
+    public void setLegacyPost(Contentlist legacyPost) {
+        this.legacyPost = legacyPost;
     }
 }
