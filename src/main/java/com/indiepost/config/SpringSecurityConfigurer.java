@@ -1,6 +1,7 @@
 package com.indiepost.config;
 
 import com.indiepost.repository.UserRepository;
+import com.indiepost.security.MySavedRequestAwareAuthenticationSuccessHandler;
 import com.indiepost.service.IndiepostUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
@@ -59,5 +61,15 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Autowired
     public void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsServiceBean());
+    }
+
+    @Bean
+    public MySavedRequestAwareAuthenticationSuccessHandler mySuccessHandler() {
+        return new MySavedRequestAwareAuthenticationSuccessHandler();
+    }
+
+    @Bean
+    public SimpleUrlAuthenticationFailureHandler myFailureHandler() {
+        return new SimpleUrlAuthenticationFailureHandler();
     }
 }
