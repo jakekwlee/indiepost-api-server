@@ -16,10 +16,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 
 /**
  * Created by jake on 7/30/16.
@@ -64,29 +62,99 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostResponse createAutosave(PostRequest postRequest) {
-        Post post = new Post();
+        Post autosave = new Post();
         User user = userService.getCurrentUser();
 
-        post.setCreatedAt(new Date());
-        post.setModifiedAt(new Date());
-        post.setAuthor(user);
-        post.setEditor(user);
-        post.setPostType(PostEnum.Type.POST);
-        post.setStatus(PostEnum.Status.AUTOSAVE);
+        autosave.setModifiedAt(new Date());
+        autosave.setStatus(PostEnum.Status.AUTOSAVE);
+        autosave.setEditor(user);
 
-        Long originalId = postRequest.getId();
+        Long originalId = postRequest.getOriginalId() != null ?
+                postRequest.getOriginalId() :
+                postRequest.getId();
 
         if (originalId != null) {
-            Post originalPost = postRepository.findById(originalId);
-            post.setOriginal(originalPost);
+            Post originalPost = postRepository.findById(postRequest.getId());
+            autosave.setOriginal(originalPost);
+
+            if (postRequest.getTitle() != null) {
+                autosave.setTitle(postRequest.getTitle());
+            } else {
+                autosave.setTitle(originalPost.getTitle());
+            }
+            if (postRequest.getContent() != null) {
+                autosave.setContent(postRequest.getContent());
+            } else {
+                autosave.setContent(originalPost.getContent());
+            }
+            if (postRequest.getExcerpt() != null) {
+                autosave.setExcerpt(postRequest.getExcerpt());
+            } else {
+                autosave.setExcerpt(originalPost.getExcerpt());
+            }
+            if (postRequest.getDisplayName() != null) {
+                autosave.setDisplayName(postRequest.getDisplayName());
+            } else {
+                autosave.setDisplayName(originalPost.getDisplayName());
+            }
+            if (postRequest.getFeaturedImage() != null) {
+                autosave.setFeaturedImage(postRequest.getFeaturedImage());
+            } else {
+                autosave.setFeaturedImage(originalPost.getFeaturedImage());
+            }
+            if (postRequest.getCategoryId() != null) {
+                Category category = categoryService.findById(
+                        postRequest.getCategoryId()
+                );
+                autosave.setCategory(category);
+            } else {
+                Category category = categoryService.findBySlug("film");
+                autosave.setCategory(category);
+            }
+            if (postRequest.getPublishedAt() != null) {
+                autosave.setPublishedAt(postRequest.getPublishedAt());
+            } else {
+                autosave.setPublishedAt(postRequest.getPublishedAt());
+            }
+            if (postRequest.getTags() != null) {
+                copyTagStringListToPost(
+                        postRequest.getTags(),
+                        autosave
+                );
+            } else {
+                for (Tag tag : originalPost.getTags()) {
+                    autosave.addTag(tag);
+                }
+            }
+
+        }
+        Date tomorrow = new Date();
+        LocalDateTime.from(tomorrow.toInstant()).plusDays(7);
+        if (postRequest.getTitle() != null) {
+           // Todo
         }
 
-        copyRequestToPost(post, postRequest);
-        post.setStatus(PostEnum.Status.AUTOSAVE);
 
-        save(post);
+//        post.setCreatedAt(new Date());
+//        post.setModifiedAt(new Date());
+//        post.setAuthor(user);
+//        post.setEditor(user);
+//        post.setPostType(PostEnum.Type.POST);
+//        post.setStatus(PostEnum.Status.AUTOSAVE);
+//
+//        Long originalId = postRequest.getId();
+//
+//        if (originalId != null) {
+//            Post originalPost = postRepository.findById(originalId);
+//            post.setOriginal(originalPost);
+//        }
+//
+//        copyRequestToPost(post, postRequest);
+//        post.setStatus(PostEnum.Status.AUTOSAVE);
+//
+//        save(post);
 
-        return copyPostToResponse(post);
+        return copyPostToResponse(autosave);
     }
 
     @Override
@@ -335,6 +403,18 @@ public class PostServiceImpl implements PostService {
             postResponse.setTags(tagStringList);
         }
         return postResponse;
+    }
+
+    private void copyTagStringListToPost(List<String> tagStringList, Post post) {
+        for (String tagString : tagStringList) {
+            Tag tag = tagService.findByName(tagString);
+            if (tag == null) {
+                tag = new Tag();
+                tag.setName(tagString);
+                tagService.save(tag);
+            }
+            post.addTag(tag);
+        }
     }
 
     private Pageable getPageable(int page, int maxResults, boolean isDesc) {

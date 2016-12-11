@@ -2,6 +2,7 @@ package com.indiepost.config;
 
 import com.indiepost.repository.UserRepository;
 import com.indiepost.security.MySavedRequestAwareAuthenticationSuccessHandler;
+import com.indiepost.security.RestAuthenticationEntryPoint;
 import com.indiepost.service.IndiepostUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +14,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
  * Created by jake on 7/26/16.
@@ -31,6 +31,15 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
+    @Autowired
+    private MySavedRequestAwareAuthenticationSuccessHandler authenticationSuccessHandler;
+
+    @Autowired
+    private SimpleUrlAuthenticationFailureHandler authenticationFailureHandler;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(this.userDetailsServiceBean())
@@ -47,6 +56,9 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http
+                .exceptionHandling()
+                .authenticationEntryPoint(restAuthenticationEntryPoint)
+                .and()
                 .authorizeRequests()
                 .antMatchers("/admin/**").access(SPRING_SECURITY_EXPRESSION)
                 .antMatchers("/api/admin/**").access(SPRING_SECURITY_EXPRESSION)
@@ -54,8 +66,10 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
+                .successHandler(authenticationSuccessHandler)
+                .failureHandler(authenticationFailureHandler)
                 .and()
-                .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/login");
+                .logout();
     }
 
     @Autowired

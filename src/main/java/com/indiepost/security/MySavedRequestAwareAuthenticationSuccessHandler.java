@@ -16,7 +16,6 @@ import java.io.IOException;
 /**
  * Created by jake on 16. 12. 8.
  */
-@Component
 public class MySavedRequestAwareAuthenticationSuccessHandler
         extends SimpleUrlAuthenticationSuccessHandler {
 
