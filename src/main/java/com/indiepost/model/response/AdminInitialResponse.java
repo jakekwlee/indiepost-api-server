@@ -1,37 +1,37 @@
-package com.indiepost.responseModel.admin;
+package com.indiepost.model.response;
 
 import java.util.List;
 
 /**
  * Created by jake on 10/8/16.
  */
-public class InitialResponse {
+public class AdminInitialResponse {
 
     private static final long serialVersionUID = 1L;
 
-    private List<SimplifiedUser> authors;
+    private List<AdminUserResponse> authors;
 
     private List<String> authorNames;
 
-    private SimplifiedUser currentUser;
+    private AdminUserResponse currentUser;
 
     private List<SimplifiedTag> tags;
 
     private List<SimplifiedCategory> categories;
 
-    public List<SimplifiedUser> getAuthors() {
+    public List<AdminUserResponse> getAuthors() {
         return authors;
     }
 
-    public void setAuthors(List<SimplifiedUser> authors) {
+    public void setAuthors(List<AdminUserResponse> authors) {
         this.authors = authors;
     }
 
-    public SimplifiedUser getCurrentUser() {
+    public AdminUserResponse getCurrentUser() {
         return currentUser;
     }
 
-    public void setCurrentUser(SimplifiedUser currentUser) {
+    public void setCurrentUser(AdminUserResponse currentUser) {
         this.currentUser = currentUser;
     }
 

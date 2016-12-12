@@ -1,4 +1,4 @@
-package com.indiepost.responseModel.admin;
+package com.indiepost.model.response;
 
 /**
  * Created by jake on 10/8/16.

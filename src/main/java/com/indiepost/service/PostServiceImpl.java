@@ -7,8 +7,8 @@ import com.indiepost.model.Tag;
 import com.indiepost.model.User;
 import com.indiepost.model.legacy.Contentlist;
 import com.indiepost.repository.PostRepository;
-import com.indiepost.requestModel.admin.PostRequest;
-import com.indiepost.responseModel.admin.PostResponse;
+import com.indiepost.model.request.AdminPostRequest;
+import com.indiepost.model.response.AdminPostResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -47,9 +47,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponse save(PostRequest postRequest) {
+    public AdminPostResponse save(AdminPostRequest adminPostRequest) {
         Post post = new Post();
-        copyRequestToPost(post, postRequest);
+        copyRequestToPost(post, adminPostRequest);
         User user = userService.getCurrentUser();
         if (post.getAuthor() == null) {
             post.setAuthor(user);
@@ -61,7 +61,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponse createAutosave(PostRequest postRequest) {
+    public AdminPostResponse createAutosave(AdminPostRequest adminPostRequest) {
         Post autosave = new Post();
         User user = userService.getCurrentUser();
 
@@ -69,56 +69,56 @@ public class PostServiceImpl implements PostService {
         autosave.setStatus(PostEnum.Status.AUTOSAVE);
         autosave.setEditor(user);
 
-        Long originalId = postRequest.getOriginalId() != null ?
-                postRequest.getOriginalId() :
-                postRequest.getId();
+        Long originalId = adminPostRequest.getOriginalId() != null ?
+                adminPostRequest.getOriginalId() :
+                adminPostRequest.getId();
 
         if (originalId != null) {
-            Post originalPost = postRepository.findById(postRequest.getId());
+            Post originalPost = postRepository.findById(adminPostRequest.getId());
             autosave.setOriginal(originalPost);
 
-            if (postRequest.getTitle() != null) {
-                autosave.setTitle(postRequest.getTitle());
+            if (adminPostRequest.getTitle() != null) {
+                autosave.setTitle(adminPostRequest.getTitle());
             } else {
                 autosave.setTitle(originalPost.getTitle());
             }
-            if (postRequest.getContent() != null) {
-                autosave.setContent(postRequest.getContent());
+            if (adminPostRequest.getContent() != null) {
+                autosave.setContent(adminPostRequest.getContent());
             } else {
                 autosave.setContent(originalPost.getContent());
             }
-            if (postRequest.getExcerpt() != null) {
-                autosave.setExcerpt(postRequest.getExcerpt());
+            if (adminPostRequest.getExcerpt() != null) {
+                autosave.setExcerpt(adminPostRequest.getExcerpt());
             } else {
                 autosave.setExcerpt(originalPost.getExcerpt());
             }
-            if (postRequest.getDisplayName() != null) {
-                autosave.setDisplayName(postRequest.getDisplayName());
+            if (adminPostRequest.getDisplayName() != null) {
+                autosave.setDisplayName(adminPostRequest.getDisplayName());
             } else {
                 autosave.setDisplayName(originalPost.getDisplayName());
             }
-            if (postRequest.getFeaturedImage() != null) {
-                autosave.setFeaturedImage(postRequest.getFeaturedImage());
+            if (adminPostRequest.getFeaturedImage() != null) {
+                autosave.setFeaturedImage(adminPostRequest.getFeaturedImage());
             } else {
                 autosave.setFeaturedImage(originalPost.getFeaturedImage());
             }
-            if (postRequest.getCategoryId() != null) {
+            if (adminPostRequest.getCategoryId() != null) {
                 Category category = categoryService.findById(
-                        postRequest.getCategoryId()
+                        adminPostRequest.getCategoryId()
                 );
                 autosave.setCategory(category);
             } else {
                 Category category = categoryService.findBySlug("film");
                 autosave.setCategory(category);
             }
-            if (postRequest.getPublishedAt() != null) {
-                autosave.setPublishedAt(postRequest.getPublishedAt());
+            if (adminPostRequest.getPublishedAt() != null) {
+                autosave.setPublishedAt(adminPostRequest.getPublishedAt());
             } else {
-                autosave.setPublishedAt(postRequest.getPublishedAt());
+                autosave.setPublishedAt(adminPostRequest.getPublishedAt());
             }
-            if (postRequest.getTags() != null) {
+            if (adminPostRequest.getTags() != null) {
                 copyTagStringListToPost(
-                        postRequest.getTags(),
+                        adminPostRequest.getTags(),
                         autosave
                 );
             } else {
@@ -130,7 +130,7 @@ public class PostServiceImpl implements PostService {
         }
         Date tomorrow = new Date();
         LocalDateTime.from(tomorrow.toInstant()).plusDays(7);
-        if (postRequest.getTitle() != null) {
+        if (adminPostRequest.getTitle() != null) {
            // Todo
         }
 
@@ -142,14 +142,14 @@ public class PostServiceImpl implements PostService {
 //        post.setPostType(PostEnum.Type.POST);
 //        post.setStatus(PostEnum.Status.AUTOSAVE);
 //
-//        Long originalId = postRequest.getId();
+//        Long originalId = adminPostRequest.getId();
 //
 //        if (originalId != null) {
 //            Post originalPost = postRepository.findById(originalId);
 //            post.setOriginal(originalPost);
 //        }
 //
-//        copyRequestToPost(post, postRequest);
+//        copyRequestToPost(post, adminPostRequest);
 //        post.setStatus(PostEnum.Status.AUTOSAVE);
 //
 //        save(post);
@@ -158,26 +158,26 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void updateAutosave(Long id, PostRequest postRequest) {
-        Post post = findById(postRequest.getId());
-        copyRequestToPost(post, postRequest);
+    public void updateAutosave(Long id, AdminPostRequest adminPostRequest) {
+        Post post = findById(adminPostRequest.getId());
+        copyRequestToPost(post, adminPostRequest);
         post.setStatus(PostEnum.Status.AUTOSAVE);
         update(post);
     }
 
     @Override
-    public PostResponse update(Long id, PostRequest postRequest) {
-        Long originalId = postRequest.getOriginalId();
+    public AdminPostResponse update(Long id, AdminPostRequest adminPostRequest) {
+        Long originalId = adminPostRequest.getOriginalId();
         Post post = findById(id);
 
         // if there is an original
-        if (originalId != null && originalId != postRequest.getId()) {
-            postRequest.setOriginalId(null);
-            postRequest.setStatus(null);
-            Post autosaveOrDraft = findById(postRequest.getId());
+        if (originalId != null && originalId != adminPostRequest.getId()) {
+            adminPostRequest.setOriginalId(null);
+            adminPostRequest.setStatus(null);
+            Post autosaveOrDraft = findById(adminPostRequest.getId());
             delete(autosaveOrDraft);
         }
-        copyRequestToPost(post, postRequest);
+        copyRequestToPost(post, adminPostRequest);
         post.setModifiedAt(new Date());
 
         PostEnum.Status status = post.getStatus();
@@ -281,7 +281,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponse getPostResponse(Long id) {
+    public AdminPostResponse getPostResponse(Long id) {
         Post post = findById(id);
         return copyPostToResponse(post);
     }
@@ -296,17 +296,17 @@ public class PostServiceImpl implements PostService {
     }
 
     // no id copy
-    private void copyRequestToPost(Post post, PostRequest postRequest) {
-        String title = postRequest.getTitle();
-        String content = postRequest.getContent();
-        String excerpt = postRequest.getExcerpt();
-        String displayName = postRequest.getDisplayName();
-        String featuredImage = postRequest.getFeaturedImage();
-        Long categoryId = postRequest.getCategoryId();
-        List<String> tagStringList = postRequest.getTags();
-        Date publishedAt = postRequest.getPublishedAt();
-        String status = postRequest.getStatus();
-        Long originalId = postRequest.getOriginalId();
+    private void copyRequestToPost(Post post, AdminPostRequest adminPostRequest) {
+        String title = adminPostRequest.getTitle();
+        String content = adminPostRequest.getContent();
+        String excerpt = adminPostRequest.getExcerpt();
+        String displayName = adminPostRequest.getDisplayName();
+        String featuredImage = adminPostRequest.getFeaturedImage();
+        Long categoryId = adminPostRequest.getCategoryId();
+        List<String> tagStringList = adminPostRequest.getTags();
+        Date publishedAt = adminPostRequest.getPublishedAt();
+        String status = adminPostRequest.getStatus();
+        Long originalId = adminPostRequest.getOriginalId();
 
         if (title != null) {
             post.setTitle(title);
@@ -374,24 +374,24 @@ public class PostServiceImpl implements PostService {
     }
 
     // it does id copy
-    private PostResponse copyPostToResponse(Post post) {
-        PostResponse postResponse = new PostResponse();
-        postResponse.setId(post.getId());
-        postResponse.setPublishedAt(post.getPublishedAt());
-        postResponse.setModifiedAt(post.getModifiedAt());
-        postResponse.setCreatedAt(post.getCreatedAt());
-        postResponse.setAuthorId(post.getAuthor().getId());
-        postResponse.setEditorId(post.getEditor().getId());
-        postResponse.setCategoryId(post.getCategory().getId());
-        postResponse.setTitle(post.getTitle());
-        postResponse.setContent(post.getContent());
-        postResponse.setExcerpt(post.getExcerpt());
-        postResponse.setDisplayName(post.getDisplayName());
-        postResponse.setFeaturedImage(post.getFeaturedImage());
-        postResponse.setPostType(post.getPostType().toString());
-        postResponse.setStatus(post.getStatus().toString());
+    private AdminPostResponse copyPostToResponse(Post post) {
+        AdminPostResponse adminPostResponse = new AdminPostResponse();
+        adminPostResponse.setId(post.getId());
+        adminPostResponse.setPublishedAt(post.getPublishedAt());
+        adminPostResponse.setModifiedAt(post.getModifiedAt());
+        adminPostResponse.setCreatedAt(post.getCreatedAt());
+        adminPostResponse.setAuthorId(post.getAuthor().getId());
+        adminPostResponse.setEditorId(post.getEditor().getId());
+        adminPostResponse.setCategoryId(post.getCategory().getId());
+        adminPostResponse.setTitle(post.getTitle());
+        adminPostResponse.setContent(post.getContent());
+        adminPostResponse.setExcerpt(post.getExcerpt());
+        adminPostResponse.setDisplayName(post.getDisplayName());
+        adminPostResponse.setFeaturedImage(post.getFeaturedImage());
+        adminPostResponse.setPostType(post.getPostType().toString());
+        adminPostResponse.setStatus(post.getStatus().toString());
         if (post.getOriginal() != null) {
-            postResponse.setOriginalId(post.getOriginal().getId());
+            adminPostResponse.setOriginalId(post.getOriginal().getId());
         }
 
         Set<Tag> tags = post.getTags();
@@ -400,9 +400,9 @@ public class PostServiceImpl implements PostService {
             for (Tag tag : tags) {
                 tagStringList.add(tag.getName());
             }
-            postResponse.setTags(tagStringList);
+            adminPostResponse.setTags(tagStringList);
         }
-        return postResponse;
+        return adminPostResponse;
     }
 
     private void copyTagStringListToPost(List<String> tagStringList, Post post) {

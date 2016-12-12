@@ -1,9 +1,9 @@
-package com.indiepost.responseModel.admin;
+package com.indiepost.model.response;
 
 /**
  * Created by jake on 16. 12. 1.
  */
-public class AutosaveResponse {
+public class AdminAutosaveResponse {
     private Long id;
     private Long originalId;
 

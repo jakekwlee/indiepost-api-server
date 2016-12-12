@@ -26,7 +26,6 @@ public class Tag implements Serializable {
     @Column(unique = true)
     private String name;
 
-    @NotNull
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
     @OrderBy(value = "publishedAt")
     private Set<Post> posts = new HashSet<>();

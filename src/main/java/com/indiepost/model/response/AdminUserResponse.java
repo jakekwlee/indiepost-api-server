@@ -1,4 +1,4 @@
-package com.indiepost.responseModel.admin;
+package com.indiepost.model.response;
 
 import com.indiepost.enums.UserEnum;
 
@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by jake on 10/8/16.
  */
-public class SimplifiedUser {
+public class AdminUserResponse {
 
     private static final long serialVersionUID = 1L;
 

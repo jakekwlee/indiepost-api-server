@@ -1,4 +1,4 @@
-package com.indiepost.responseModel.admin;
+package com.indiepost.model.request;
 
 import java.util.Date;
 import java.util.List;
@@ -6,9 +6,11 @@ import java.util.List;
 /**
  * Created by jake on 11/19/16.
  */
-public class PostResponse {
+public class AdminPostRequest {
 
     private Long id;
+
+    private Long originalId;
 
     private String title;
 
@@ -18,29 +20,15 @@ public class PostResponse {
 
     private String displayName;
 
-    private Date createdAt;
-
-    private Date modifiedAt;
-
-    private Date publishedAt;
-
     private String featuredImage;
 
     private String status;
 
-    private String postType;
-
-    private Long authorId;
-
-    private Long editorId;
-
     private Long categoryId;
 
-    private Long originalId;
+    private Date publishedAt;
 
     private List<String> tags;
-
-    private List<PostResponse> revisions;
 
     public Long getId() {
         return id;
@@ -48,6 +36,14 @@ public class PostResponse {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getOriginalId() {
+        return originalId;
+    }
+
+    public void setOriginalId(Long originalId) {
+        this.originalId = originalId;
     }
 
     public String getTitle() {
@@ -82,30 +78,6 @@ public class PostResponse {
         this.displayName = displayName;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(Date modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public Date getPublishedAt() {
-        return publishedAt;
-    }
-
-    public void setPublishedAt(Date publishedAt) {
-        this.publishedAt = publishedAt;
-    }
-
     public String getFeaturedImage() {
         return featuredImage;
     }
@@ -120,30 +92,6 @@ public class PostResponse {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getPostType() {
-        return postType;
-    }
-
-    public void setPostType(String postType) {
-        this.postType = postType;
-    }
-
-    public Long getAuthorId() {
-        return authorId;
-    }
-
-    public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
-    }
-
-    public Long getEditorId() {
-        return editorId;
-    }
-
-    public void setEditorId(Long editorId) {
-        this.editorId = editorId;
     }
 
     public Long getCategoryId() {
@@ -162,19 +110,11 @@ public class PostResponse {
         this.tags = tags;
     }
 
-    public List<PostResponse> getRevisions() {
-        return revisions;
+    public Date getPublishedAt() {
+        return publishedAt;
     }
 
-    public void setRevisions(List<PostResponse> revisions) {
-        this.revisions = revisions;
-    }
-
-    public Long getOriginalId() {
-        return originalId;
-    }
-
-    public void setOriginalId(Long originalId) {
-        this.originalId = originalId;
+    public void setPublishedAt(Date publishedAt) {
+        this.publishedAt = publishedAt;
     }
 }

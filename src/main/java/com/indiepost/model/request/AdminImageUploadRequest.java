@@ -1,4 +1,4 @@
-package com.indiepost.requestModel.admin;
+package com.indiepost.model.request;
 
 import com.indiepost.validation.ContentType;
 import org.springframework.web.multipart.MultipartFile;
@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import static org.springframework.util.MimeTypeUtils.*;
 
 
-class ImageMultipartFile {
+class AdminImageUploadRequest {
 
     @NotNull
     @ContentType(value = {IMAGE_JPEG_VALUE, IMAGE_PNG_VALUE, IMAGE_GIF_VALUE}, message = "PNG나 JPG 포멧 이미지를 올려주세요!")

@@ -49,6 +49,7 @@ dependencies {
     compile group: 'org.json', name: 'json', version: '20160810'
     compile group: 'org.imgscalr', name: 'imgscalr-lib', version: '4.2'
     compile "org.springframework.boot:spring-boot-configuration-processor"
+    compile group: 'net.sf.dozer', name: 'dozer', version: '5.5.1'
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     compile('com.github.v-ladynev:fluent-hibernate-core:0.3.1') {
         exclude group: 'org.hibernate'

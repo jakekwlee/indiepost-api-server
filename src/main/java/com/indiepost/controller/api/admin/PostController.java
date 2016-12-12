@@ -1,9 +1,8 @@
 package com.indiepost.controller.api.admin;
 
-import com.indiepost.model.Post;
-import com.indiepost.requestModel.admin.PostRequest;
-import com.indiepost.responseModel.admin.PostResponse;
-import com.indiepost.responseModel.admin.SimplifiedPost;
+import com.indiepost.model.request.AdminPostRequest;
+import com.indiepost.model.response.AdminPostResponse;
+import com.indiepost.model.response.SimplifiedPost;
 import com.indiepost.service.AdminService;
 import com.indiepost.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +26,18 @@ public class PostController {
     private PostService postService;
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public PostResponse getPost(@PathVariable Long id) {
+    public AdminPostResponse getPost(@PathVariable Long id) {
         return postService.getPostResponse(id);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public PostResponse savePost(@RequestBody PostRequest postRequest) {
-        return postService.save(postRequest);
+    public AdminPostResponse savePost(@RequestBody AdminPostRequest adminPostRequest) {
+        return postService.save(adminPostRequest);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public void updatePost(@RequestBody PostRequest postRequest, @PathVariable Long id) {
-        postService.update(id, postRequest);
+    public void updatePost(@RequestBody AdminPostRequest adminPostRequest, @PathVariable Long id) {
+        postService.update(id, adminPostRequest);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
@@ -48,13 +47,13 @@ public class PostController {
     }
 
     @RequestMapping(value = "/autosave", method = RequestMethod.POST)
-    public PostResponse createAutosave(@RequestBody PostRequest postRequest) {
-        return postService.createAutosave(postRequest);
+    public AdminPostResponse createAutosave(@RequestBody AdminPostRequest adminPostRequest) {
+        return postService.createAutosave(adminPostRequest);
     }
 
     @RequestMapping(value = "/autosave/{id}", method = RequestMethod.PUT)
-    public void updateAutosave(@PathVariable Long id, @RequestBody PostRequest postRequest) {
-        postService.updateAutosave(id, postRequest);
+    public void updateAutosave(@PathVariable Long id, @RequestBody AdminPostRequest adminPostRequest) {
+        postService.updateAutosave(id, adminPostRequest);
     }
 
     @RequestMapping(method = RequestMethod.GET)

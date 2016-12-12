@@ -1,4 +1,4 @@
-package com.indiepost.responseModel.admin;
+package com.indiepost.model.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

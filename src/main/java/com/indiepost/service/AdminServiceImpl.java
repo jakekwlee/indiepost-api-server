@@ -5,7 +5,7 @@ import com.indiepost.model.Category;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.model.User;
-import com.indiepost.responseModel.admin.*;
+import com.indiepost.model.response.*;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -62,19 +62,19 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<SimplifiedUser> getAllSimplifiedAuthors() {
+    public List<AdminUserResponse> getAllSimplifiedAuthors() {
         List<User> authors = userService.findByRolesEnum(UserEnum.Roles.Author, 1, 1000000, true);
         return getSimplifiedUserList(authors);
     }
 
     @Override
-    public List<SimplifiedUser> getAllUsersMeta(int page, int maxResults, boolean isDesc) {
+    public List<AdminUserResponse> getAllUsersMeta(int page, int maxResults, boolean isDesc) {
         List<User> userList = userService.findAllUsers(page, maxResults, isDesc);
         return getSimplifiedUserList(userList);
     }
 
     @Override
-    public SimplifiedUser getCurrentUser() {
+    public AdminUserResponse getCurrentUser() {
         User currentUser = userService.getCurrentUser();
         return getSimplifiedUserFromUser(currentUser);
     }
@@ -94,19 +94,19 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public InitialResponse getInitialResponse() {
+    public AdminInitialResponse getInitialResponse() {
         User currentUser = userService.getCurrentUser();
-        InitialResponse initialResponse = new InitialResponse();
-        initialResponse.setCurrentUser(getSimplifiedUserFromUser(currentUser));
-        initialResponse.setAuthors(getAllSimplifiedAuthors());
-        initialResponse.setCategories(getAllSimplifiedCategories());
-        initialResponse.setTags(getAllSimplifiedTags());
-        initialResponse.setAuthorNames(postExcerptService.findAllAuthorNames());
-        return initialResponse;
+        AdminInitialResponse adminInitialResponse = new AdminInitialResponse();
+        adminInitialResponse.setCurrentUser(getSimplifiedUserFromUser(currentUser));
+        adminInitialResponse.setAuthors(getAllSimplifiedAuthors());
+        adminInitialResponse.setCategories(getAllSimplifiedCategories());
+        adminInitialResponse.setTags(getAllSimplifiedTags());
+        adminInitialResponse.setAuthorNames(postExcerptService.findAllAuthorNames());
+        return adminInitialResponse;
     }
 
-    private List<SimplifiedUser> getSimplifiedUserList(List<User> userList) {
-        List<SimplifiedUser> simplifiedUserList = new ArrayList<>();
+    private List<AdminUserResponse> getSimplifiedUserList(List<User> userList) {
+        List<AdminUserResponse> simplifiedUserList = new ArrayList<>();
         for (User user : userList) {
             simplifiedUserList.add(getSimplifiedUserFromUser(user));
         }
@@ -118,7 +118,7 @@ public class AdminServiceImpl implements AdminService {
         for (Post post : posts) {
             User author = post.getAuthor();
             SimplifiedPost postMeta = new SimplifiedPost();
-            SimplifiedUser simplifiedUser = new SimplifiedUser();
+            AdminUserResponse simplifiedUser = new AdminUserResponse();
 
             simplifiedUser.setId(author.getId());
             simplifiedUser.setDisplayName(author.getDisplayName());
@@ -158,8 +158,8 @@ public class AdminServiceImpl implements AdminService {
         return tagStringArray;
     }
 
-    private SimplifiedUser getSimplifiedUserFromUser(User user) {
-        SimplifiedUser simplifiedUser = new SimplifiedUser();
+    private AdminUserResponse getSimplifiedUserFromUser(User user) {
+        AdminUserResponse simplifiedUser = new AdminUserResponse();
         simplifiedUser.setId(user.getId());
         simplifiedUser.setUsername(user.getUsername());
         simplifiedUser.setDisplayName(user.getDisplayName());

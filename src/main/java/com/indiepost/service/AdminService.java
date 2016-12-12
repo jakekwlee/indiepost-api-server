@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.responseModel.admin.*;
+import com.indiepost.model.response.*;
 
 import java.util.Date;
 import java.util.List;
@@ -15,13 +15,13 @@ public interface AdminService {
 
     List<SimplifiedTag> getAllSimplifiedTags();
 
-    List<SimplifiedUser> getAllSimplifiedAuthors();
+    List<AdminUserResponse> getAllSimplifiedAuthors();
 
-    List<SimplifiedUser> getAllUsersMeta(int page, int maxResults, boolean isDesc);
+    List<AdminUserResponse> getAllUsersMeta(int page, int maxResults, boolean isDesc);
 
-    SimplifiedUser getCurrentUser();
+    AdminUserResponse getCurrentUser();
 
     List<SimplifiedCategory> getAllSimplifiedCategories();
 
-    InitialResponse getInitialResponse();
+    AdminInitialResponse getInitialResponse();
 }
