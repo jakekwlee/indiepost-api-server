@@ -7,14 +7,15 @@ import com.indiepost.model.Tag;
 import com.indiepost.model.User;
 import com.indiepost.model.legacy.Contentlist;
 import com.indiepost.repository.PostRepository;
-import com.indiepost.model.request.AdminPostRequest;
-import com.indiepost.model.response.AdminPostResponse;
+import dto.request.AdminPostRequestDto;
+import dto.response.AdminPostResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -47,90 +48,89 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public AdminPostResponse save(AdminPostRequest adminPostRequest) {
+    public AdminPostResponseDto save(AdminPostRequestDto adminPostRequestDto) {
         Post post = new Post();
-        copyRequestToPost(post, adminPostRequest);
+        copyRequestToPost(post, adminPostRequestDto);
         User user = userService.getCurrentUser();
         if (post.getAuthor() == null) {
             post.setAuthor(user);
         }
         post.setEditor(user);
-        post.setCreatedAt(new Date());
-        post.setModifiedAt(new Date());
+        post.setCreatedAt(LocalDateTime.now());
+        post.setModifiedAt(LocalDateTime.now());
         return copyPostToResponse(post);
     }
 
     @Override
-    public AdminPostResponse createAutosave(AdminPostRequest adminPostRequest) {
+    public AdminPostResponseDto createAutosave(AdminPostRequestDto adminPostRequestDto) {
         Post autosave = new Post();
         User user = userService.getCurrentUser();
 
-        autosave.setModifiedAt(new Date());
+        autosave.setModifiedAt(LocalDateTime.now());
         autosave.setStatus(PostEnum.Status.AUTOSAVE);
         autosave.setEditor(user);
 
-        Long originalId = adminPostRequest.getOriginalId() != null ?
-                adminPostRequest.getOriginalId() :
-                adminPostRequest.getId();
+        Long originalId = adminPostRequestDto.getOriginalId() != null ?
+                adminPostRequestDto.getOriginalId() :
+                adminPostRequestDto.getId();
 
         if (originalId != null) {
-            Post originalPost = postRepository.findById(adminPostRequest.getId());
+            Post originalPost = postRepository.findById(adminPostRequestDto.getId());
             autosave.setOriginal(originalPost);
 
-            if (adminPostRequest.getTitle() != null) {
-                autosave.setTitle(adminPostRequest.getTitle());
+            if (adminPostRequestDto.getTitle() != null) {
+                autosave.setTitle(adminPostRequestDto.getTitle());
             } else {
                 autosave.setTitle(originalPost.getTitle());
             }
-            if (adminPostRequest.getContent() != null) {
-                autosave.setContent(adminPostRequest.getContent());
+            if (adminPostRequestDto.getContent() != null) {
+                autosave.setContent(adminPostRequestDto.getContent());
             } else {
                 autosave.setContent(originalPost.getContent());
             }
-            if (adminPostRequest.getExcerpt() != null) {
-                autosave.setExcerpt(adminPostRequest.getExcerpt());
+            if (adminPostRequestDto.getExcerpt() != null) {
+                autosave.setExcerpt(adminPostRequestDto.getExcerpt());
             } else {
                 autosave.setExcerpt(originalPost.getExcerpt());
             }
-            if (adminPostRequest.getDisplayName() != null) {
-                autosave.setDisplayName(adminPostRequest.getDisplayName());
+            if (adminPostRequestDto.getDisplayName() != null) {
+                autosave.setDisplayName(adminPostRequestDto.getDisplayName());
             } else {
                 autosave.setDisplayName(originalPost.getDisplayName());
             }
-            if (adminPostRequest.getFeaturedImage() != null) {
-                autosave.setFeaturedImage(adminPostRequest.getFeaturedImage());
+            if (adminPostRequestDto.getFeaturedImage() != null) {
+                autosave.setFeaturedImage(adminPostRequestDto.getFeaturedImage());
             } else {
                 autosave.setFeaturedImage(originalPost.getFeaturedImage());
             }
-            if (adminPostRequest.getCategoryId() != null) {
+            if (adminPostRequestDto.getCategoryId() != null) {
                 Category category = categoryService.findById(
-                        adminPostRequest.getCategoryId()
+                        adminPostRequestDto.getCategoryId()
                 );
                 autosave.setCategory(category);
             } else {
                 Category category = categoryService.findBySlug("film");
                 autosave.setCategory(category);
             }
-            if (adminPostRequest.getPublishedAt() != null) {
-                autosave.setPublishedAt(adminPostRequest.getPublishedAt());
-            } else {
-                autosave.setPublishedAt(adminPostRequest.getPublishedAt());
-            }
-            if (adminPostRequest.getTags() != null) {
-                copyTagStringListToPost(
-                        adminPostRequest.getTags(),
-                        autosave
-                );
-            } else {
-                for (Tag tag : originalPost.getTags()) {
-                    autosave.addTag(tag);
-                }
-            }
+//            if (adminPostRequestDto.getPublishedAt() != null) {
+//                autosave.setPublishedAt(adminPostRequestDto.getPublishedAt());
+//            } else {
+//                autosave.setPublishedAt(adminPostRequestDto.getPublishedAt());
+//            }
+//            if (adminPostRequestDto.getTags() != null) {
+//                copyTagStringListToPost(
+//                        adminPostRequestDto.getTags(),
+//                        autosave
+//                );
+//            } else {
+//                for (Tag tag : originalPost.getTags()) {
+//                    autosave.addTag(tag);
+//                }
+//            }
 
         }
-        Date tomorrow = new Date();
-        LocalDateTime.from(tomorrow.toInstant()).plusDays(7);
-        if (adminPostRequest.getTitle() != null) {
+        LocalDateTime.now().plusDays(7);
+        if (adminPostRequestDto.getTitle() != null) {
            // Todo
         }
 
@@ -142,14 +142,14 @@ public class PostServiceImpl implements PostService {
 //        post.setPostType(PostEnum.Type.POST);
 //        post.setStatus(PostEnum.Status.AUTOSAVE);
 //
-//        Long originalId = adminPostRequest.getId();
+//        Long originalId = adminPostRequestDto.getId();
 //
 //        if (originalId != null) {
 //            Post originalPost = postRepository.findById(originalId);
 //            post.setOriginal(originalPost);
 //        }
 //
-//        copyRequestToPost(post, adminPostRequest);
+//        copyRequestToPost(post, adminPostRequestDto);
 //        post.setStatus(PostEnum.Status.AUTOSAVE);
 //
 //        save(post);
@@ -158,27 +158,27 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void updateAutosave(Long id, AdminPostRequest adminPostRequest) {
-        Post post = findById(adminPostRequest.getId());
-        copyRequestToPost(post, adminPostRequest);
+    public void updateAutosave(Long id, AdminPostRequestDto adminPostRequestDto) {
+        Post post = findById(adminPostRequestDto.getId());
+        copyRequestToPost(post, adminPostRequestDto);
         post.setStatus(PostEnum.Status.AUTOSAVE);
         update(post);
     }
 
     @Override
-    public AdminPostResponse update(Long id, AdminPostRequest adminPostRequest) {
-        Long originalId = adminPostRequest.getOriginalId();
+    public AdminPostResponseDto update(Long id, AdminPostRequestDto adminPostRequestDto) {
+        Long originalId = adminPostRequestDto.getOriginalId();
         Post post = findById(id);
 
         // if there is an original
-        if (originalId != null && originalId != adminPostRequest.getId()) {
-            adminPostRequest.setOriginalId(null);
-            adminPostRequest.setStatus(null);
-            Post autosaveOrDraft = findById(adminPostRequest.getId());
+        if (originalId != null && originalId != adminPostRequestDto.getId()) {
+            adminPostRequestDto.setOriginalId(null);
+            adminPostRequestDto.setStatus(null);
+            Post autosaveOrDraft = findById(adminPostRequestDto.getId());
             delete(autosaveOrDraft);
         }
-        copyRequestToPost(post, adminPostRequest);
-        post.setModifiedAt(new Date());
+        copyRequestToPost(post, adminPostRequestDto);
+//        post.setModifiedAt(new Date());
 
         PostEnum.Status status = post.getStatus();
 
@@ -281,7 +281,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public AdminPostResponse getPostResponse(Long id) {
+    public AdminPostResponseDto getPostResponse(Long id) {
         Post post = findById(id);
         return copyPostToResponse(post);
     }
@@ -296,17 +296,17 @@ public class PostServiceImpl implements PostService {
     }
 
     // no id copy
-    private void copyRequestToPost(Post post, AdminPostRequest adminPostRequest) {
-        String title = adminPostRequest.getTitle();
-        String content = adminPostRequest.getContent();
-        String excerpt = adminPostRequest.getExcerpt();
-        String displayName = adminPostRequest.getDisplayName();
-        String featuredImage = adminPostRequest.getFeaturedImage();
-        Long categoryId = adminPostRequest.getCategoryId();
-        List<String> tagStringList = adminPostRequest.getTags();
-        Date publishedAt = adminPostRequest.getPublishedAt();
-        String status = adminPostRequest.getStatus();
-        Long originalId = adminPostRequest.getOriginalId();
+    private void copyRequestToPost(Post post, AdminPostRequestDto adminPostRequestDto) {
+        String title = adminPostRequestDto.getTitle();
+        String content = adminPostRequestDto.getContent();
+        String excerpt = adminPostRequestDto.getExcerpt();
+        String displayName = adminPostRequestDto.getDisplayName();
+        String featuredImage = adminPostRequestDto.getFeaturedImage();
+        Long categoryId = adminPostRequestDto.getCategoryId();
+        //List<String> tagStringList = adminPostRequestDto.getTags();
+//        LocalDateTime publishedAt = adminPostRequestDto.getPublishedAt();
+        String status = adminPostRequestDto.getStatus();
+        Long originalId = adminPostRequestDto.getOriginalId();
 
         if (title != null) {
             post.setTitle(title);
@@ -343,12 +343,12 @@ public class PostServiceImpl implements PostService {
         } else {
             post.setCategory(categoryService.findBySlug("film"));
         }
-
-        if (publishedAt != null) {
-            post.setPublishedAt(publishedAt);
-        } else {
-            post.setPublishedAt(new Date());
-        }
+//
+//        if (publishedAt != null) {
+//            post.setPublishedAt(publishedAt);
+//        } else {
+//            post.setPublishedAt(LocalDateTime.now());
+//        }
 
         if (status != null) {
             post.setStatus(PostEnum.Status.valueOf(status));
@@ -360,38 +360,38 @@ public class PostServiceImpl implements PostService {
         }
 
         post.clearTags();
-        if (tagStringList != null) {
-            for (String tagString : tagStringList) {
-                Tag tag = tagService.findByName(tagString);
-                if (tag == null) {
-                    tag = new Tag();
-                    tag.setName(tagString);
-                    tagService.save(tag);
-                }
-                post.addTag(tag);
-            }
-        }
+//        if (tagStringList != null) {
+//            for (String tagString : tagStringList) {
+//                Tag tag = tagService.findByName(tagString);
+//                if (tag == null) {
+//                    tag = new Tag();
+//                    tag.setName(tagString);
+//                    tagService.save(tag);
+//                }
+//                post.addTag(tag);
+//            }
+//        }
     }
 
     // it does id copy
-    private AdminPostResponse copyPostToResponse(Post post) {
-        AdminPostResponse adminPostResponse = new AdminPostResponse();
-        adminPostResponse.setId(post.getId());
-        adminPostResponse.setPublishedAt(post.getPublishedAt());
-        adminPostResponse.setModifiedAt(post.getModifiedAt());
-        adminPostResponse.setCreatedAt(post.getCreatedAt());
-        adminPostResponse.setAuthorId(post.getAuthor().getId());
-        adminPostResponse.setEditorId(post.getEditor().getId());
-        adminPostResponse.setCategoryId(post.getCategory().getId());
-        adminPostResponse.setTitle(post.getTitle());
-        adminPostResponse.setContent(post.getContent());
-        adminPostResponse.setExcerpt(post.getExcerpt());
-        adminPostResponse.setDisplayName(post.getDisplayName());
-        adminPostResponse.setFeaturedImage(post.getFeaturedImage());
-        adminPostResponse.setPostType(post.getPostType().toString());
-        adminPostResponse.setStatus(post.getStatus().toString());
+    private AdminPostResponseDto copyPostToResponse(Post post) {
+        AdminPostResponseDto adminPostResponseDto = new AdminPostResponseDto();
+        adminPostResponseDto.setId(post.getId());
+        adminPostResponseDto.setPublishedAt(post.getPublishedAt());
+        adminPostResponseDto.setModifiedAt(post.getModifiedAt());
+        adminPostResponseDto.setCreatedAt(post.getCreatedAt());
+        adminPostResponseDto.setAuthorId(post.getAuthor().getId());
+        adminPostResponseDto.setEditorId(post.getEditor().getId());
+        adminPostResponseDto.setCategoryId(post.getCategory().getId());
+        adminPostResponseDto.setTitle(post.getTitle());
+        adminPostResponseDto.setContent(post.getContent());
+        adminPostResponseDto.setExcerpt(post.getExcerpt());
+        adminPostResponseDto.setDisplayName(post.getDisplayName());
+        adminPostResponseDto.setFeaturedImage(post.getFeaturedImage());
+        adminPostResponseDto.setPostType(post.getPostType().toString());
+        adminPostResponseDto.setStatus(post.getStatus().toString());
         if (post.getOriginal() != null) {
-            adminPostResponse.setOriginalId(post.getOriginal().getId());
+            adminPostResponseDto.setOriginalId(post.getOriginal().getId());
         }
 
         Set<Tag> tags = post.getTags();
@@ -400,9 +400,9 @@ public class PostServiceImpl implements PostService {
             for (Tag tag : tags) {
                 tagStringList.add(tag.getName());
             }
-            adminPostResponse.setTags(tagStringList);
+//            adminPostResponseDto.setTags(tagStringList);
         }
-        return adminPostResponse;
+        return adminPostResponseDto;
     }
 
     private void copyTagStringListToPost(List<String> tagStringList, Post post) {

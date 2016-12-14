@@ -1,4 +1,6 @@
-package com.indiepost.model.request;
+package dto.request;
+
+import dto.TagDto;
 
 import java.util.Date;
 import java.util.List;
@@ -6,7 +8,7 @@ import java.util.List;
 /**
  * Created by jake on 11/19/16.
  */
-public class AdminPostRequest {
+public class AdminPostRequestDto {
 
     private Long id;
 
@@ -28,7 +30,7 @@ public class AdminPostRequest {
 
     private Date publishedAt;
 
-    private List<String> tags;
+    private List<TagDto> tags;
 
     public Long getId() {
         return id;
@@ -102,11 +104,11 @@ public class AdminPostRequest {
         this.categoryId = categoryId;
     }
 
-    public List<String> getTags() {
+    public List<TagDto> getTags() {
         return tags;
     }
 
-    public void setTags(List<String> tags) {
+    public void setTags(List<TagDto> tags) {
         this.tags = tags;
     }
 

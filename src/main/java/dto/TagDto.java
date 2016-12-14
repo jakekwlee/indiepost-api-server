@@ -1,9 +1,9 @@
-package com.indiepost.model.response;
+package dto;
 
 /**
  * Created by jake on 10/8/16.
  */
-public class SimplifiedTag {
+public class TagDto {
 
     private static final long serialVersionUID = 1L;
 

@@ -1,12 +1,14 @@
-package com.indiepost.model.response;
+package dto.response;
 
-import java.util.Date;
+import dto.TagDto;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * Created by jake on 11/19/16.
  */
-public class AdminPostResponse {
+public class AdminPostResponseDto {
 
     private Long id;
 
@@ -18,11 +20,11 @@ public class AdminPostResponse {
 
     private String displayName;
 
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
-    private Date modifiedAt;
+    private LocalDateTime modifiedAt;
 
-    private Date publishedAt;
+    private LocalDateTime publishedAt;
 
     private String featuredImage;
 
@@ -42,9 +44,7 @@ public class AdminPostResponse {
 
     private Long originalId;
 
-    private List<String> tags;
-
-    private List<AdminPostResponse> revisions;
+//    private List<TagDto> tags;
 
     public Long getId() {
         return id;
@@ -86,27 +86,27 @@ public class AdminPostResponse {
         this.displayName = displayName;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getModifiedAt() {
+    public LocalDateTime getModifiedAt() {
         return modifiedAt;
     }
 
-    public void setModifiedAt(Date modifiedAt) {
+    public void setModifiedAt(LocalDateTime modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
 
-    public Date getPublishedAt() {
+    public LocalDateTime getPublishedAt() {
         return publishedAt;
     }
 
-    public void setPublishedAt(Date publishedAt) {
+    public void setPublishedAt(LocalDateTime publishedAt) {
         this.publishedAt = publishedAt;
     }
 
@@ -158,21 +158,13 @@ public class AdminPostResponse {
         this.categoryId = categoryId;
     }
 
-    public List<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
-
-    public List<AdminPostResponse> getRevisions() {
-        return revisions;
-    }
-
-    public void setRevisions(List<AdminPostResponse> revisions) {
-        this.revisions = revisions;
-    }
+//    public List<TagDto> getTags() {
+//        return tags;
+//    }
+//
+//    public void setTags(List<TagDto> tags) {
+//        this.tags = tags;
+//    }
 
     public Long getOriginalId() {
         return originalId;

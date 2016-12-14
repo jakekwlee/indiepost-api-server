@@ -1,14 +1,15 @@
-package com.indiepost.model.response;
+package dto;
 
 import com.indiepost.enums.UserEnum;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 /**
  * Created by jake on 10/8/16.
  */
-public class AdminUserResponse {
+public class UserDto {
 
     private static final long serialVersionUID = 1L;
 
@@ -20,9 +21,9 @@ public class AdminUserResponse {
 
     private String email;
 
-    private Date joinedAt;
+    private LocalDateTime joinedAt;
 
-    private Date birthday;
+    private LocalDateTime birthday;
 
     private String profile;
 
@@ -64,19 +65,19 @@ public class AdminUserResponse {
         this.email = email;
     }
 
-    public Date getJoinedAt() {
+    public LocalDateTime getJoinedAt() {
         return joinedAt;
     }
 
-    public void setJoinedAt(Date joinedAt) {
+    public void setJoinedAt(LocalDateTime joinedAt) {
         this.joinedAt = joinedAt;
     }
 
-    public Date getBirthday() {
+    public LocalDateTime getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(LocalDateTime birthday) {
         this.birthday = birthday;
     }
 

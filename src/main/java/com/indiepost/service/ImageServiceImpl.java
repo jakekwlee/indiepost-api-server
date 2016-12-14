@@ -21,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -67,7 +68,7 @@ public class ImageServiceImpl implements ImageService {
 
             ImageSet imageSet = new ImageSet();
             imageSet.setContentType(contentType);
-            imageSet.setUploadedAt(new Date());
+            imageSet.setUploadedAt(LocalDateTime.now());
             List<Image> images = new ArrayList<>();
 
             BufferedImage originalBufferedImage = getBufferedImageFromMultipartFile(file);

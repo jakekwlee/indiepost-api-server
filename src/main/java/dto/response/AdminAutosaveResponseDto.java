@@ -1,9 +1,9 @@
-package com.indiepost.model.response;
+package dto.response;
 
 /**
  * Created by jake on 16. 12. 1.
  */
-public class AdminAutosaveResponse {
+public class AdminAutosaveResponseDto {
     private Long id;
     private Long originalId;
 

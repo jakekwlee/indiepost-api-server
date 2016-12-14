@@ -1,6 +1,9 @@
 package com.indiepost.service;
 
-import com.indiepost.model.response.*;
+import dto.CategoryDto;
+import dto.TagDto;
+import dto.UserDto;
+import dto.response.*;
 
 import java.util.Date;
 import java.util.List;
@@ -9,19 +12,19 @@ import java.util.List;
  * Created by jake on 10/8/16.
  */
 public interface AdminService {
-    List<SimplifiedPost> getAllSimplifiedPosts(int page, int maxResults, boolean isDesc);
+    List<AdminPostListItemDto> getAllSimplifiedPosts(int page, int maxResults, boolean isDesc);
 
-    List<SimplifiedPost> getLastUpdated(Date date);
+    List<AdminPostListItemDto> getLastUpdated(Date date);
 
-    List<SimplifiedTag> getAllSimplifiedTags();
+    List<TagDto> getAllSimplifiedTags();
 
-    List<AdminUserResponse> getAllSimplifiedAuthors();
+    List<UserDto> getAllSimplifiedAuthors();
 
-    List<AdminUserResponse> getAllUsersMeta(int page, int maxResults, boolean isDesc);
+    List<UserDto> getAllUsersMeta(int page, int maxResults, boolean isDesc);
 
-    AdminUserResponse getCurrentUser();
+    UserDto getCurrentUser();
 
-    List<SimplifiedCategory> getAllSimplifiedCategories();
+    List<CategoryDto> getAllSimplifiedCategories();
 
-    AdminInitialResponse getInitialResponse();
+    AdminInitResponseDto getInitialResponse();
 }

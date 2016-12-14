@@ -1,13 +1,15 @@
-package com.indiepost.model.response;
+package dto;
 
 /**
  * Created by jake on 10/8/16.
  */
-public class SimplifiedCategory {
+public class CategoryDto {
 
     private static final long serialVersionUID = 1L;
 
     private Long id;
+
+    private Long parentId;
 
     private String name;
 
@@ -19,6 +21,14 @@ public class SimplifiedCategory {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 
     public String getName() {

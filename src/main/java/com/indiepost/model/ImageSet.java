@@ -11,6 +11,7 @@ import org.hibernate.annotations.FetchMode;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -42,8 +43,7 @@ public class ImageSet {
     private String caption;
 
     @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date uploadedAt;
+    private LocalDateTime uploadedAt;
 
     public Long getId() {
         return id;
@@ -82,11 +82,11 @@ public class ImageSet {
         this.caption = caption;
     }
 
-    public Date getUploadedAt() {
+    public LocalDateTime getUploadedAt() {
         return uploadedAt;
     }
 
-    public void setUploadedAt(Date uploadedAt) {
+    public void setUploadedAt(LocalDateTime uploadedAt) {
         this.uploadedAt = uploadedAt;
     }
 

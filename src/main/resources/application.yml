@@ -9,7 +9,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-      naming-strategy: org.hibernate.cfg.DefaultNamingStrategy
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: false
     generate-ddl: true
     properties:
@@ -27,8 +28,6 @@ spring:
         content:
           enabled: true
           paths: /**
-        fixed:
-          enabled:
   thymeleaf:
     cache: true
     mode: LEGACYHTML5

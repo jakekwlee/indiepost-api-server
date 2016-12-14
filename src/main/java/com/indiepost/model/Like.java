@@ -3,6 +3,7 @@ package com.indiepost.model;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -25,8 +26,7 @@ public class Like implements Serializable {
     private Post post;
 
     @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date likedAt;
+    private LocalDateTime likedAt;
 
     public User getUser() {
         return user;
@@ -44,11 +44,11 @@ public class Like implements Serializable {
         this.post = post;
     }
 
-    public Date getLikedAt() {
+    public LocalDateTime getLikedAt() {
         return likedAt;
     }
 
-    public void setLikedAt(Date likedAt) {
+    public void setLikedAt(LocalDateTime likedAt) {
         this.likedAt = likedAt;
     }
 }

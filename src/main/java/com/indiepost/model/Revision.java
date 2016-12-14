@@ -1,6 +1,5 @@
 package com.indiepost.model;
 
-import com.indiepost.enums.PostEnum;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -8,14 +7,14 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * Created by jake on 7/24/16.
  */
-@Entity
-@Table(name = "Revisions")
+//@Entity
+//@Table(name = "Revisions")
 public class Revision implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -46,29 +45,11 @@ public class Revision implements Serializable {
     private String displayName;
 
     @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-
-    @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedAt;
-
-    @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date publishedAt;
+    private LocalDateTime modifiedAt;
 
     @NotNull
     @Size(max = 120)
     private String featuredImage;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private PostEnum.Type postType;
-
-    @ManyToOne(optional = false)
-    @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "authorId", nullable = false)
-    private User author;
 
     @ManyToOne(optional = false)
     @Fetch(FetchMode.JOIN)
@@ -80,14 +61,7 @@ public class Revision implements Serializable {
     @JoinColumn(name = "categoryId", nullable = false)
     private Category category;
 
-    @ManyToMany
-    @Fetch(FetchMode.JOIN)
-    @JoinTable(
-            name = "Revisions_Tags",
-            joinColumns = {@JoinColumn(name = "revisionId")},
-            inverseJoinColumns = {@JoinColumn(name = "tagId")}
-    )
-    private List<Tag> tags;
+    private List<String> tags;
 
     public Long getId() {
         return id;
@@ -121,14 +95,6 @@ public class Revision implements Serializable {
         this.content = content;
     }
 
-    public Date getCreateAt() {
-        return createdAt;
-    }
-
-    public void setCreateAt(Date createAt) {
-        this.createdAt = createAt;
-    }
-
     public String getDisplayName() {
         return displayName;
     }
@@ -137,20 +103,12 @@ public class Revision implements Serializable {
         this.displayName = displayName;
     }
 
-    public Date getModifiedAt() {
+    public LocalDateTime getModifiedAt() {
         return modifiedAt;
     }
 
-    public void setModifiedAt(Date modifiedAt) {
+    public void setModifiedAt(LocalDateTime modifiedAt) {
         this.modifiedAt = modifiedAt;
-    }
-
-    public Date getPublishedAt() {
-        return publishedAt;
-    }
-
-    public void setPublishedAt(Date publishedAt) {
-        this.publishedAt = publishedAt;
     }
 
     public String getFeaturedImage() {
@@ -177,28 +135,12 @@ public class Revision implements Serializable {
         this.category = category;
     }
 
-    public List<Tag> getTags() {
+    public List<String> getTags() {
         return tags;
     }
 
-    public void setTags(List<Tag> tags) {
+    public void setTags(List<String> tags) {
         this.tags = tags;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
     }
 
     public User getEditor() {
@@ -207,13 +149,5 @@ public class Revision implements Serializable {
 
     public void setEditor(User editor) {
         this.editor = editor;
-    }
-
-    public PostEnum.Type getPostType() {
-        return postType;
-    }
-
-    public void setPostType(PostEnum.Type postType) {
-        this.postType = postType;
     }
 }

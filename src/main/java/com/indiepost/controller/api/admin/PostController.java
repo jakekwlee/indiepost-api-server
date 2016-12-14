@@ -1,8 +1,8 @@
 package com.indiepost.controller.api.admin;
 
-import com.indiepost.model.request.AdminPostRequest;
-import com.indiepost.model.response.AdminPostResponse;
-import com.indiepost.model.response.SimplifiedPost;
+import dto.request.AdminPostRequestDto;
+import dto.response.AdminPostResponseDto;
+import dto.response.AdminPostListItemDto;
 import com.indiepost.service.AdminService;
 import com.indiepost.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,18 +26,18 @@ public class PostController {
     private PostService postService;
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public AdminPostResponse getPost(@PathVariable Long id) {
+    public AdminPostResponseDto getPost(@PathVariable Long id) {
         return postService.getPostResponse(id);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public AdminPostResponse savePost(@RequestBody AdminPostRequest adminPostRequest) {
-        return postService.save(adminPostRequest);
+    public AdminPostResponseDto savePost(@RequestBody AdminPostRequestDto adminPostRequestDto) {
+        return postService.save(adminPostRequestDto);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public void updatePost(@RequestBody AdminPostRequest adminPostRequest, @PathVariable Long id) {
-        postService.update(id, adminPostRequest);
+    public void updatePost(@RequestBody AdminPostRequestDto adminPostRequestDto, @PathVariable Long id) {
+        postService.update(id, adminPostRequestDto);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
@@ -47,22 +47,22 @@ public class PostController {
     }
 
     @RequestMapping(value = "/autosave", method = RequestMethod.POST)
-    public AdminPostResponse createAutosave(@RequestBody AdminPostRequest adminPostRequest) {
-        return postService.createAutosave(adminPostRequest);
+    public AdminPostResponseDto createAutosave(@RequestBody AdminPostRequestDto adminPostRequestDto) {
+        return postService.createAutosave(adminPostRequestDto);
     }
 
     @RequestMapping(value = "/autosave/{id}", method = RequestMethod.PUT)
-    public void updateAutosave(@PathVariable Long id, @RequestBody AdminPostRequest adminPostRequest) {
-        postService.updateAutosave(id, adminPostRequest);
+    public void updateAutosave(@PathVariable Long id, @RequestBody AdminPostRequestDto adminPostRequestDto) {
+        postService.updateAutosave(id, adminPostRequestDto);
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<SimplifiedPost> getPostList() {
+    public List<AdminPostListItemDto> getPostList() {
         return adminService.getAllSimplifiedPosts(0, 1000000, true);
     }
 
     @RequestMapping(value = "/lastUpdated", method = RequestMethod.GET)
-    public List<SimplifiedPost> getLastUpdated() {
+    public List<AdminPostListItemDto> getLastUpdated() {
         return adminService.getLastUpdated(getYesterday());
     }
 

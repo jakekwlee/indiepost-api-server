@@ -14,6 +14,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -33,10 +34,6 @@ public class Post implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @LazyCollection(LazyCollectionOption.EXTRA)
-    @OrderBy("modifiedAt DESC")
-    private List<Revision> revisions;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "originalId")
@@ -64,16 +61,13 @@ public class Post implements Serializable {
     private String displayName;
 
     @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedAt;
+    private LocalDateTime modifiedAt;
 
     @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date publishedAt;
+    private LocalDateTime publishedAt;
 
     @NotNull
     @Size(max = 120)
@@ -160,19 +154,19 @@ public class Post implements Serializable {
         this.displayName = displayName;
     }
 
-    public Date getModifiedAt() {
+    public LocalDateTime getModifiedAt() {
         return modifiedAt;
     }
 
-    public void setModifiedAt(Date modifiedAt) {
+    public void setModifiedAt(LocalDateTime modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
 
-    public Date getPublishedAt() {
+    public LocalDateTime getPublishedAt() {
         return publishedAt;
     }
 
-    public void setPublishedAt(Date publishedAt) {
+    public void setPublishedAt(LocalDateTime publishedAt) {
         this.publishedAt = publishedAt;
     }
 
@@ -228,7 +222,7 @@ public class Post implements Serializable {
         return tags;
     }
 
-    private void setTags(Set<Tag> tags) {
+    public void setTags(Set<Tag> tags) {
         this.tags = tags;
     }
 
@@ -257,7 +251,7 @@ public class Post implements Serializable {
     }
 
 
-    private void setComments(List<Comment> comments) {
+    public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
 
@@ -279,11 +273,11 @@ public class Post implements Serializable {
         this.likes = likes;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -309,14 +303,6 @@ public class Post implements Serializable {
 
     public void setPostType(PostEnum.Type postType) {
         this.postType = postType;
-    }
-
-    public List<Revision> getRevisions() {
-        return revisions;
-    }
-
-    public void setRevisions(List<Revision> revisions) {
-        this.revisions = revisions;
     }
 
     public Post getOriginal() {

@@ -62,11 +62,11 @@ public class Tag implements Serializable {
         return postId;
     }
 
-    private Set<Post> getPosts() {
+    public Set<Post> getPosts() {
         return posts;
     }
 
-    private void setPosts(Set<Post> posts) {
+    public void setPosts(Set<Post> posts) {
         this.posts = posts;
     }
 }
