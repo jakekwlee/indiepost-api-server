@@ -3,6 +3,7 @@ package com.indiepost.unit;
 import com.indiepost.NewIndiepostApplication;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.mapper.PostMapper;
+import com.indiepost.mapper.PostMapperImpl;
 import com.indiepost.model.Category;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
@@ -13,7 +14,6 @@ import dto.response.AdminPostResponseDto;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mapstruct.factory.Mappers;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -55,7 +55,7 @@ public class BeanMappingTest {
         post = new Post();
         postRequest = new AdminPostRequestDto();
         postResponse = new AdminPostResponseDto();
-        postMapper = Mappers.getMapper(PostMapper.class);
+        postMapper = new PostMapperImpl();
 
         User editor = new User();
         editor.setId(101L);
