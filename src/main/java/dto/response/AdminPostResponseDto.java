@@ -44,7 +44,7 @@ public class AdminPostResponseDto {
 
     private Long originalId;
 
-//    private List<TagDto> tags;
+    private List<TagDto> tags;
 
     public Long getId() {
         return id;
@@ -158,13 +158,13 @@ public class AdminPostResponseDto {
         this.categoryId = categoryId;
     }
 
-//    public List<TagDto> getTags() {
-//        return tags;
-//    }
-//
-//    public void setTags(List<TagDto> tags) {
-//        this.tags = tags;
-//    }
+    public List<TagDto> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<TagDto> tags) {
+        this.tags = tags;
+    }
 
     public Long getOriginalId() {
         return originalId;

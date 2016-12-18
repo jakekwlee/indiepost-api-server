@@ -51,6 +51,10 @@ public class PostRepositoryHibernate implements PostRepository {
         getSession().update(post);
     }
 
+    @Override
+    public void detach(Post post) {
+        entityManager.detach(post);
+    }
 
     @Override
     public Long count() {

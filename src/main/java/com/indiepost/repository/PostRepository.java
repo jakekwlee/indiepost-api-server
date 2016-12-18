@@ -19,6 +19,8 @@ public interface PostRepository {
 
     Post findById(Long id);
 
+    void detach(Post post);
+
     Long count();
 
     Long count(PostEnum.Status status);
