@@ -7,7 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,7 +45,7 @@ public class Revision implements Serializable {
     private String displayName;
 
     @NotNull
-    private LocalDateTime modifiedAt;
+    private Date modifiedAt;
 
     @NotNull
     @Size(max = 120)
@@ -103,11 +103,11 @@ public class Revision implements Serializable {
         this.displayName = displayName;
     }
 
-    public LocalDateTime getModifiedAt() {
+    public Date getModifiedAt() {
         return modifiedAt;
     }
 
-    public void setModifiedAt(LocalDateTime modifiedAt) {
+    public void setModifiedAt(Date modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
 

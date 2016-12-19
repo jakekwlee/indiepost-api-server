@@ -1,13 +1,11 @@
 package dto.response;
 
-import dto.TagDto;
-
 import java.util.Set;
 
 /**
  * Created by jake on 10/8/16.
  */
-public class AdminPostListItemDto {
+public class AdminDataTableItem {
 
     private static final long serialVersionUID = 1L;
 

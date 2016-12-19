@@ -1,10 +1,10 @@
 package com.indiepost.controller.api.admin;
 
-import dto.request.AdminPostRequestDto;
-import dto.response.AdminPostResponseDto;
-import dto.response.AdminPostListItemDto;
 import com.indiepost.service.AdminService;
 import com.indiepost.service.PostService;
+import dto.request.AdminPostRequestDto;
+import dto.response.AdminDataTableItem;
+import dto.response.AdminPostResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,12 +57,12 @@ public class PostController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<AdminPostListItemDto> getPostList() {
-        return adminService.getAllSimplifiedPosts(0, 1000000, true);
+    public List<AdminDataTableItem> getPostList() {
+        return adminService.getAdminPostListItemDtos(0, 1000000, true);
     }
 
     @RequestMapping(value = "/lastUpdated", method = RequestMethod.GET)
-    public List<AdminPostListItemDto> getLastUpdated() {
+    public List<AdminDataTableItem> getLastUpdated() {
         return adminService.getLastUpdated(getYesterday());
     }
 

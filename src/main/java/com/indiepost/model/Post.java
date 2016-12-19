@@ -14,7 +14,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -46,32 +45,32 @@ public class Post implements Serializable {
 
     @NotNull
     @Size(max = 100)
-    private String title;
+    private String title = "No Title";
 
     @NotNull
     @Column(columnDefinition = "LONGTEXT")
-    private String content;
+    private String content = "";
 
     @NotNull
     @Size(max = 300)
-    private String excerpt;
+    private String excerpt = "";
 
     @NotNull
     @Size(max = 30)
-    private String displayName;
+    private String displayName = "Indiepost";
 
     @NotNull
-    private LocalDateTime createdAt;
+    private Date createdAt;
 
     @NotNull
-    private LocalDateTime modifiedAt;
+    private Date modifiedAt;
 
     @NotNull
-    private LocalDateTime publishedAt;
+    private Date publishedAt;
 
     @NotNull
     @Size(max = 120)
-    private String featuredImage;
+    private String featuredImage = "";
 
     @NotNull
     @Min(0)
@@ -87,7 +86,7 @@ public class Post implements Serializable {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private PostEnum.Type postType;
+    private PostEnum.Type postType = PostEnum.Type.POST;
 
     @ManyToOne(optional = false)
     @Fetch(FetchMode.JOIN)
@@ -154,19 +153,19 @@ public class Post implements Serializable {
         this.displayName = displayName;
     }
 
-    public LocalDateTime getModifiedAt() {
+    public Date getModifiedAt() {
         return modifiedAt;
     }
 
-    public void setModifiedAt(LocalDateTime modifiedAt) {
+    public void setModifiedAt(Date modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
 
-    public LocalDateTime getPublishedAt() {
+    public Date getPublishedAt() {
         return publishedAt;
     }
 
-    public void setPublishedAt(LocalDateTime publishedAt) {
+    public void setPublishedAt(Date publishedAt) {
         this.publishedAt = publishedAt;
     }
 
@@ -273,11 +272,11 @@ public class Post implements Serializable {
         this.likes = likes;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 

@@ -2,7 +2,6 @@ package dto.request;
 
 import dto.TagDto;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -29,7 +28,7 @@ public class AdminPostRequestDto {
 
     private Long categoryId;
 
-    private LocalDateTime publishedAt;
+    private Date publishedAt;
 
     private List<TagDto> tags;
 
@@ -113,11 +112,11 @@ public class AdminPostRequestDto {
         this.tags = tags;
     }
 
-    public LocalDateTime getPublishedAt() {
+    public Date getPublishedAt() {
         return publishedAt;
     }
 
-    public void setPublishedAt(LocalDateTime publishedAt) {
+    public void setPublishedAt(Date publishedAt) {
         this.publishedAt = publishedAt;
     }
 }

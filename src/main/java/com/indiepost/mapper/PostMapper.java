@@ -13,5 +13,7 @@ public interface PostMapper {
 
     Post adminPostRequestDtoToPost(AdminPostRequestDto adminPostRequestDto);
 
+    void adminPostRequestDtoToPost(AdminPostRequestDto adminPostRequestDto, Post post);
+
     AdminPostRequestDto postToAdminPostRequestDto(Post post);
 }

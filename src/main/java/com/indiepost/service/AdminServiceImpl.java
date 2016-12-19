@@ -8,13 +8,13 @@ import com.indiepost.model.User;
 import dto.CategoryDto;
 import dto.TagDto;
 import dto.UserDto;
-import dto.response.*;
+import dto.response.AdminDataTableItem;
+import dto.response.AdminInitResponseDto;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -41,19 +41,19 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<AdminPostListItemDto> getAllSimplifiedPosts(int page, int maxResults, boolean isDesc) {
+    public List<AdminDataTableItem> getAdminPostListItemDtos(int page, int maxResults, boolean isDesc) {
         List<Post> posts = postExcerptService.findAll(page, maxResults, isDesc);
-        return getSimplifiedPostList(posts);
+        return getAdminDataTableDtos(posts);
     }
 
     @Override
-    public List<AdminPostListItemDto> getLastUpdated(Date date) {
+    public List<AdminDataTableItem> getLastUpdated(Date date) {
         List<Post> posts = postExcerptService.findLastUpdated(date);
-        return getSimplifiedPostList(posts);
+        return getAdminDataTableDtos(posts);
     }
 
     @Override
-    public List<TagDto> getAllSimplifiedTags() {
+    public List<TagDto> getAllTagDtos() {
         List<Tag> tags = tagService.findAll();
         List<TagDto> tagDtoList = new ArrayList<>();
         for (Tag tag : tags) {
@@ -66,25 +66,25 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<UserDto> getAllSimplifiedAuthors() {
+    public List<UserDto> getAllAuthorsUserDtos() {
         List<User> authors = userService.findByRolesEnum(UserEnum.Roles.Author, 1, 1000000, true);
-        return getSimplifiedUserList(authors);
+        return getUserDtos(authors);
     }
 
     @Override
-    public List<UserDto> getAllUsersMeta(int page, int maxResults, boolean isDesc) {
+    public List<UserDto> getAllUserDtos(int page, int maxResults, boolean isDesc) {
         List<User> userList = userService.findAllUsers(page, maxResults, isDesc);
-        return getSimplifiedUserList(userList);
+        return getUserDtos(userList);
     }
 
     @Override
-    public UserDto getCurrentUser() {
+    public UserDto getCurrentUserDto() {
         User currentUser = userService.getCurrentUser();
-        return getSimplifiedUserFromUser(currentUser);
+        return getUserDtoFromUser(currentUser);
     }
 
     @Override
-    public List<CategoryDto> getAllSimplifiedCategories() {
+    public List<CategoryDto> getAlllCategoryDtos() {
         List<Category> categories = categoryService.findAll();
         List<CategoryDto> categoryDtoList = new ArrayList<>();
         for (Category category : categories) {
@@ -101,55 +101,55 @@ public class AdminServiceImpl implements AdminService {
     public AdminInitResponseDto getInitialResponse() {
         User currentUser = userService.getCurrentUser();
         AdminInitResponseDto adminInitResponseDto = new AdminInitResponseDto();
-        adminInitResponseDto.setCurrentUser(getSimplifiedUserFromUser(currentUser));
-        adminInitResponseDto.setAuthors(getAllSimplifiedAuthors());
-        adminInitResponseDto.setCategories(getAllSimplifiedCategories());
-        adminInitResponseDto.setTags(getAllSimplifiedTags());
+        adminInitResponseDto.setCurrentUser(getUserDtoFromUser(currentUser));
+        adminInitResponseDto.setAuthors(getAllAuthorsUserDtos());
+        adminInitResponseDto.setCategories(getAlllCategoryDtos());
+        adminInitResponseDto.setTags(getAllTagDtos());
         adminInitResponseDto.setAuthorNames(postExcerptService.findAllAuthorNames());
         return adminInitResponseDto;
     }
 
-    private List<UserDto> getSimplifiedUserList(List<User> userList) {
+    private List<UserDto> getUserDtos(List<User> userList) {
         List<UserDto> simplifiedUserList = new ArrayList<>();
         for (User user : userList) {
-            simplifiedUserList.add(getSimplifiedUserFromUser(user));
+            simplifiedUserList.add(getUserDtoFromUser(user));
         }
         return simplifiedUserList;
     }
 
-    private List<AdminPostListItemDto> getSimplifiedPostList(List<Post> posts) {
-        List<AdminPostListItemDto> postMetaList = new ArrayList<>();
+    private List<AdminDataTableItem> getAdminDataTableDtos(List<Post> posts) {
+        List<AdminDataTableItem> adminDataTableItems = new ArrayList<>();
         for (Post post : posts) {
             User author = post.getAuthor();
-            AdminPostListItemDto adminPostListItemDto = new AdminPostListItemDto();
-            UserDto simplifiedUser = new UserDto();
+            AdminDataTableItem adminDataTableItem = new AdminDataTableItem();
+            UserDto userDto = new UserDto();
 
-            simplifiedUser.setId(author.getId());
-            simplifiedUser.setDisplayName(author.getDisplayName());
-            simplifiedUser.setEmail(author.getEmail());
-            simplifiedUser.setUsername(author.getUsername());
+            userDto.setId(author.getId());
+            userDto.setDisplayName(author.getDisplayName());
+            userDto.setEmail(author.getEmail());
+            userDto.setUsername(author.getUsername());
 
-            adminPostListItemDto.setId(post.getId());
-            adminPostListItemDto.setAuthorDisplayName(post.getAuthor().getDisplayName());
-            adminPostListItemDto.setCategoryName(post.getCategory().getName());
-            adminPostListItemDto.setTags(getTagStringArray(post.getTags()));
-            adminPostListItemDto.setStatus(post.getStatus().toString());
+            adminDataTableItem.setId(post.getId());
+            adminDataTableItem.setAuthorDisplayName(post.getAuthor().getDisplayName());
+            adminDataTableItem.setCategoryName(post.getCategory().getName());
+            adminDataTableItem.setTags(getTagStringArray(post.getTags()));
+            adminDataTableItem.setStatus(post.getStatus().toString());
 
-            adminPostListItemDto.setTitle(post.getTitle());
-            adminPostListItemDto.setDisplayName(post.getDisplayName());
-            adminPostListItemDto.setCreatedAt(getDateString(post.getCreatedAt()));
-            adminPostListItemDto.setPublishedAt(getDateString(post.getPublishedAt()));
-            adminPostListItemDto.setModifiedAt(getDateString(post.getModifiedAt()));
-            adminPostListItemDto.setCreatedAt(getDateString(post.getCreatedAt()));
-            adminPostListItemDto.setDisplayName(post.getDisplayName());
-            adminPostListItemDto.setLikedCount(post.getLikesCount());
+            adminDataTableItem.setTitle(post.getTitle());
+            adminDataTableItem.setDisplayName(post.getDisplayName());
+            adminDataTableItem.setCreatedAt(getDateString(post.getCreatedAt()));
+            adminDataTableItem.setPublishedAt(getDateString(post.getPublishedAt()));
+            adminDataTableItem.setModifiedAt(getDateString(post.getModifiedAt()));
+            adminDataTableItem.setCreatedAt(getDateString(post.getCreatedAt()));
+            adminDataTableItem.setDisplayName(post.getDisplayName());
+            adminDataTableItem.setLikedCount(post.getLikesCount());
 
-            postMetaList.add(adminPostListItemDto);
+            adminDataTableItems.add(adminDataTableItem);
         }
-        return postMetaList;
+        return adminDataTableItems;
     }
 
-    private String getDateString(LocalDateTime date) {
+    private String getDateString(Date date) {
         FastDateFormat fastDateFormat = FastDateFormat.getInstance("yyyy-MM-dd HH:mm a", Locale.KOREA);
         return fastDateFormat.format(date);
     }
@@ -162,17 +162,17 @@ public class AdminServiceImpl implements AdminService {
         return tagStringArray;
     }
 
-    private UserDto getSimplifiedUserFromUser(User user) {
-        UserDto simplifiedUser = new UserDto();
-        simplifiedUser.setId(user.getId());
-        simplifiedUser.setUsername(user.getUsername());
-        simplifiedUser.setDisplayName(user.getDisplayName());
-        simplifiedUser.setEmail(user.getEmail());
-        simplifiedUser.setBirthday(user.getBirthday());
-        simplifiedUser.setGender(user.getGender());
-        simplifiedUser.setJoinedAt(user.getJoinedAt());
-        simplifiedUser.setPicture(user.getPicture());
-        simplifiedUser.setProfile(user.getProfile());
-        return simplifiedUser;
+    private UserDto getUserDtoFromUser(User user) {
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setUsername(user.getUsername());
+        userDto.setDisplayName(user.getDisplayName());
+        userDto.setEmail(user.getEmail());
+        userDto.setBirthday(user.getBirthday());
+        userDto.setGender(user.getGender());
+        userDto.setJoinedAt(user.getJoinedAt());
+        userDto.setPicture(user.getPicture());
+        userDto.setProfile(user.getProfile());
+        return userDto;
     }
 }

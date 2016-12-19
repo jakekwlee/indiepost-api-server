@@ -2,7 +2,7 @@ package dto.response;
 
 import dto.TagDto;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,11 +20,11 @@ public class AdminPostResponseDto {
 
     private String displayName;
 
-    private LocalDateTime createdAt;
+    private Date createdAt;
 
-    private LocalDateTime modifiedAt;
+    private Date modifiedAt;
 
-    private LocalDateTime publishedAt;
+    private Date publishedAt;
 
     private String featuredImage;
 
@@ -86,27 +86,27 @@ public class AdminPostResponseDto {
         this.displayName = displayName;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getModifiedAt() {
+    public Date getModifiedAt() {
         return modifiedAt;
     }
 
-    public void setModifiedAt(LocalDateTime modifiedAt) {
+    public void setModifiedAt(Date modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
 
-    public LocalDateTime getPublishedAt() {
+    public Date getPublishedAt() {
         return publishedAt;
     }
 
-    public void setPublishedAt(LocalDateTime publishedAt) {
+    public void setPublishedAt(Date publishedAt) {
         this.publishedAt = publishedAt;
     }
 
