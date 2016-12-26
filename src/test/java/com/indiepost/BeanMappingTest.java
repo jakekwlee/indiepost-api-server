@@ -3,10 +3,7 @@ package com.indiepost;
 import com.indiepost.mapper.PostMapper;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
-import com.indiepost.model.User;
 import com.indiepost.service.PostService;
-import com.indiepost.service.TagService;
-import com.indiepost.service.UserService;
 import dto.TagDto;
 import dto.request.AdminPostRequestDto;
 import dto.response.AdminPostResponseDto;
@@ -37,13 +34,7 @@ public class BeanMappingTest {
     private PostMapper postMapper;
 
     @Autowired
-    private TagService tagService;
-
-    @Autowired
     private PostService postService;
-
-    @Autowired
-    private UserService userService;
 
     private Post post;
 
@@ -57,7 +48,6 @@ public class BeanMappingTest {
     public void testMapPostToPostResponse() {
         AdminPostResponseDto adminPostResponseDto =
                 this.postMapper.postToAdminPostResponseDto(this.post);
-        assertEquals(this.postResponseDto.getId(), adminPostResponseDto.getId());
         assertEquals(this.postResponseDto.getAuthorId(), adminPostResponseDto.getAuthorId());
         assertEquals(this.postResponseDto.getEditorId(), adminPostResponseDto.getEditorId());
         assertEquals(this.postResponseDto.getTitle(), adminPostResponseDto.getTitle());
@@ -84,7 +74,6 @@ public class BeanMappingTest {
     @Transactional
     public void testMapAdminPostRequestToPost() {
         Post post = this.postMapper.adminPostRequestDtoToPost(this.postRequestDto);
-        assertEquals(this.post.getId(), post.getId());
         assertEquals(this.post.getTitle(), post.getTitle());
         assertEquals(this.post.getExcerpt(), post.getExcerpt());
         assertEquals(this.post.getContent(), post.getContent());
@@ -98,8 +87,6 @@ public class BeanMappingTest {
     @Before
     @Transactional
     public void initPost() {
-        Tag tag1 = tagService.findById(1L);
-        User user = userService.findById(1L);
         post = postService.findById(44L);
         postRequestDto = new AdminPostRequestDto();
         postResponseDto = new AdminPostResponseDto();
@@ -125,7 +112,6 @@ public class BeanMappingTest {
         postRequestDto.setPublishedAt(post.getPublishedAt());
         postRequestDto.setTags(tagDtoList);
         if (post.getOriginal() != null) {
-            postRequestDto.setOriginalId(post.getOriginal().getId());
             postRequestDto.setOriginalId(post.getOriginal().getId());
         }
 

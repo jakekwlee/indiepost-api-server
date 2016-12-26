@@ -21,9 +21,9 @@ public class UserDto {
 
     private String email;
 
-    private LocalDateTime joinedAt;
+    private Date joinedAt;
 
-    private LocalDateTime birthday;
+    private Date birthday;
 
     private String profile;
 
@@ -65,19 +65,19 @@ public class UserDto {
         this.email = email;
     }
 
-    public LocalDateTime getJoinedAt() {
+    public Date getJoinedAt() {
         return joinedAt;
     }
 
-    public void setJoinedAt(LocalDateTime joinedAt) {
+    public void setJoinedAt(Date joinedAt) {
         this.joinedAt = joinedAt;
     }
 
-    public LocalDateTime getBirthday() {
+    public Date getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(LocalDateTime birthday) {
+    public void setBirthday(Date birthday) {
         this.birthday = birthday;
     }
 

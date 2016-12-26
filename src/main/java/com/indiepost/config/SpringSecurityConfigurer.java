@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
  * Created by jake on 7/26/16.
@@ -54,11 +55,7 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
         http
-                .exceptionHandling()
-                .authenticationEntryPoint(restAuthenticationEntryPoint)
-                .and()
                 .authorizeRequests()
                 .antMatchers("/admin/**").access(SPRING_SECURITY_EXPRESSION)
                 .antMatchers("/api/admin/**").access(SPRING_SECURITY_EXPRESSION)
@@ -66,10 +63,23 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                .successHandler(authenticationSuccessHandler)
-                .failureHandler(authenticationFailureHandler)
                 .and()
-                .logout();
+                .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/login");
+//        http
+//                .exceptionHandling()
+//                .authenticationEntryPoint(restAuthenticationEntryPoint)
+//                .and()
+//                .authorizeRequests()
+//                .antMatchers("/admin/**").access(SPRING_SECURITY_EXPRESSION)
+//                .antMatchers("/api/admin/**").access(SPRING_SECURITY_EXPRESSION)
+//                .antMatchers("/**").permitAll()
+//                .anyRequest().authenticated()
+//                .and()
+//                .formLogin()
+//                .successHandler(authenticationSuccessHandler)
+//                .failureHandler(authenticationFailureHandler)
+//                .and()
+//                .logout();
     }
 
     @Autowired

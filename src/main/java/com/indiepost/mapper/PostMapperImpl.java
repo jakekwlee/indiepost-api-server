@@ -26,12 +26,32 @@ public class PostMapperImpl implements PostMapper {
     CategoryService categoryService;
 
     @Override
+    public Post postToPostMapper(Post srcPost) {
+        Post destPost = new Post();
+        destPost.setTitle(srcPost.getTitle());
+        destPost.setExcerpt(srcPost.getExcerpt());
+        destPost.setContent(srcPost.getContent());
+        destPost.setDisplayName(srcPost.getDisplayName());
+        destPost.setStatus(srcPost.getStatus());
+        destPost.setAuthor(srcPost.getAuthor());
+        destPost.setEditor(srcPost.getEditor());
+        destPost.setCreatedAt(srcPost.getCreatedAt());
+        destPost.setPublishedAt(srcPost.getPublishedAt());
+        destPost.setModifiedAt(srcPost.getModifiedAt());
+        destPost.setPostType(srcPost.getPostType());
+        destPost.setCategory(srcPost.getCategory());
+        destPost.setFeaturedImage(srcPost.getFeaturedImage());
+        return destPost;
+    }
+
+    @Override
     public AdminPostResponseDto postToAdminPostResponseDto(Post post) {
         AdminPostResponseDto responseDto = new AdminPostResponseDto();
         responseDto.setId(post.getId());
         responseDto.setTitle(post.getTitle());
         responseDto.setContent(post.getContent());
         responseDto.setExcerpt(post.getExcerpt());
+        responseDto.setDisplayName(post.getDisplayName());
         responseDto.setFeaturedImage(post.getFeaturedImage());
         responseDto.setStatus(post.getStatus().toString());
 
@@ -46,7 +66,7 @@ public class PostMapperImpl implements PostMapper {
         responseDto.setCommentsCount(post.getCommentsCount());
         responseDto.setLikesCount(post.getLikesCount());
 
-        responseDto.setPostType(post.getStatus().toString());
+        responseDto.setPostType(post.getPostType().toString());
 
         if (post.getOriginal() != null) {
             responseDto.setOriginalId(post.getOriginal().getId());
@@ -56,6 +76,7 @@ public class PostMapperImpl implements PostMapper {
             for (Tag tag : post.getTags()) {
                 tagDtoList.add(tagMapper.tagToTagDto(tag));
             }
+            responseDto.setTags(tagDtoList);
         }
         return responseDto;
     }

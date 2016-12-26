@@ -111,7 +111,10 @@ public class PostExcerptRepositoryHibernate implements PostExcerptRepository {
 
         Criterion restrictions = Restrictions.not(
                 Restrictions.and(
-                        Restrictions.ne("author.id", userId),
+                        Restrictions.and(
+                                Restrictions.ne("author.id", userId),
+                                Restrictions.ne("editor.id", userId)
+                        ),
                         Restrictions.or(
                                 Restrictions.eq("status", PostEnum.Status.TRASH),
                                 Restrictions.eq("status", PostEnum.Status.DRAFT),
@@ -137,7 +140,10 @@ public class PostExcerptRepositoryHibernate implements PostExcerptRepository {
 
         Criterion restrictions = Restrictions.and(Restrictions.not(
                 Restrictions.and(
-                        Restrictions.ne("author.id", userId),
+                        Restrictions.and(
+                                Restrictions.ne("author.id", userId),
+                                Restrictions.ne("editor.id", userId)
+                        ),
                         Restrictions.or(
                                 Restrictions.eq("status", PostEnum.Status.TRASH),
                                 Restrictions.eq("status", PostEnum.Status.DRAFT),

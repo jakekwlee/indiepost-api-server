@@ -9,6 +9,8 @@ import dto.response.AdminPostResponseDto;
  */
 public interface PostMapper {
 
+    Post postToPostMapper(Post srcPost);
+
     AdminPostResponseDto postToAdminPostResponseDto(Post post);
 
     Post adminPostRequestDtoToPost(AdminPostRequestDto adminPostRequestDto);

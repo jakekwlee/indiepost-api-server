@@ -63,13 +63,10 @@ public class PostServiceImpl implements PostService {
         Post post;
         User currentUser = userService.getCurrentUser();
         if (adminPostRequestDto.getId() != null) {
-            post = findById(adminPostRequestDto.getId());
             Post originalPost = findById(adminPostRequestDto.getId());
-            postRepository.detach(post);
-            post.setId(null);
-            post.setComments(null);
-            post.setOriginal(originalPost);
+            post = postMapper.postToPostMapper(originalPost);
             postMapper.adminPostRequestDtoToPost(adminPostRequestDto, post);
+            post.setOriginal(originalPost);
         } else {
             post = postMapper.adminPostRequestDtoToPost(adminPostRequestDto);
             post.setAuthor(currentUser);
@@ -79,7 +76,6 @@ public class PostServiceImpl implements PostService {
             Date publishDate = Date.from(LocalDateTime.now().plusDays(7).toInstant(ZoneOffset.UTC));
             post.setPublishedAt(publishDate);
         }
-
         post.setEditor(currentUser);
         post.setModifiedAt(new Date());
         post.setStatus(PostEnum.Status.AUTOSAVE);
@@ -100,7 +96,6 @@ public class PostServiceImpl implements PostService {
         if (adminPostRequestDto.getOriginalId() != null && !adminPostRequestDto.getId().equals(id)) {
             deleteById(adminPostRequestDto.getId());
         }
-        postRepository.detach(originalPost);
         postMapper.adminPostRequestDtoToPost(adminPostRequestDto, originalPost);
 
         PostEnum.Status status = PostEnum.Status.valueOf(adminPostRequestDto.getStatus());
