@@ -96,9 +96,14 @@ public class PostServiceImpl implements PostService {
         if (adminPostRequestDto.getOriginalId() != null && !adminPostRequestDto.getId().equals(id)) {
             deleteById(adminPostRequestDto.getId());
         }
+        if (PostEnum.Status.valueOf(adminPostRequestDto.getStatus()).equals(
+            PostEnum.Status.AUTOSAVE
+        )) {
+            adminPostRequestDto.setStatus(null);
+        }
         postMapper.adminPostRequestDtoToPost(adminPostRequestDto, originalPost);
 
-        PostEnum.Status status = PostEnum.Status.valueOf(adminPostRequestDto.getStatus());
+        PostEnum.Status status = originalPost.getStatus();
         if (status.equals(PostEnum.Status.FUTURE) || status.equals(PostEnum.Status.PUBLISH)) {
             Contentlist contentlist = originalPost.getLegacyPost();
             if (contentlist == null) {

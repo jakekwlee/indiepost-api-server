@@ -111,10 +111,7 @@ public class PostExcerptRepositoryHibernate implements PostExcerptRepository {
 
         Criterion restrictions = Restrictions.not(
                 Restrictions.and(
-                        Restrictions.and(
-                                Restrictions.ne("author.id", userId),
-                                Restrictions.ne("editor.id", userId)
-                        ),
+                        Restrictions.ne("editor.id", userId),
                         Restrictions.or(
                                 Restrictions.eq("status", PostEnum.Status.TRASH),
                                 Restrictions.eq("status", PostEnum.Status.DRAFT),
@@ -138,19 +135,16 @@ public class PostExcerptRepositoryHibernate implements PostExcerptRepository {
                 .add("tags", "t", JoinType.LEFT);
         aliases.addToCriteria(criteria);
 
-        Criterion restrictions = Restrictions.and(Restrictions.not(
+        Criterion restrictions = Restrictions.not(
                 Restrictions.and(
-                        Restrictions.and(
-                                Restrictions.ne("author.id", userId),
-                                Restrictions.ne("editor.id", userId)
-                        ),
+                        Restrictions.ne("editor.id", userId),
                         Restrictions.or(
                                 Restrictions.eq("status", PostEnum.Status.TRASH),
                                 Restrictions.eq("status", PostEnum.Status.DRAFT),
                                 Restrictions.eq("status", PostEnum.Status.AUTOSAVE)
                         )
                 )
-        ));
+        );
 
         criteria.add(restrictions).add(Restrictions.ge("modifiedAt", timeFrom));
         criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
