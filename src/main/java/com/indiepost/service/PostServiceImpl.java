@@ -36,6 +36,9 @@ public class PostServiceImpl implements PostService {
     private UserService userService;
 
     @Autowired
+    private CategoryService categoryService;
+
+    @Autowired
     private PostMapper postMapper;
 
     @Autowired
@@ -72,6 +75,9 @@ public class PostServiceImpl implements PostService {
             post.setAuthor(currentUser);
             post.setCreatedAt(new Date());
         }
+        if (post.getTitle().equals("") || post.getTitle() == null) {
+            post.setTitle("No Title");
+        }
         if (post.getPublishedAt() == null) {
             Date publishDate = Date.from(LocalDateTime.now().plusDays(7).toInstant(ZoneOffset.UTC));
             post.setPublishedAt(publishDate);
@@ -79,6 +85,7 @@ public class PostServiceImpl implements PostService {
         post.setEditor(currentUser);
         post.setModifiedAt(new Date());
         post.setStatus(PostEnum.Status.AUTOSAVE);
+        post.setCategory(categoryService.findById(2L));
         save(post);
         return postMapper.postToAdminPostResponseDto(post);
     }
