@@ -1,4 +1,4 @@
-package dto.request;
+package com.indiepost.dto.request;
 
 import com.indiepost.validation.ContentType;
 import org.springframework.web.multipart.MultipartFile;

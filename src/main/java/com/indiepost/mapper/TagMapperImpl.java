@@ -2,14 +2,12 @@ package com.indiepost.mapper;
 
 import com.indiepost.model.Tag;
 import com.indiepost.service.TagService;
-import dto.TagDto;
+import com.indiepost.dto.TagDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by jake on 16. 12. 15.
@@ -17,8 +15,12 @@ import java.util.Set;
 @Component
 public class TagMapperImpl implements TagMapper {
 
+    private final TagService tagService;
+
     @Autowired
-    private TagService tagService;
+    public TagMapperImpl(TagService tagService) {
+        this.tagService = tagService;
+    }
 
     @Override
     public TagDto tagToTagDto(Tag tag) {
@@ -40,8 +42,8 @@ public class TagMapperImpl implements TagMapper {
     }
 
     @Override
-    public Set<Tag> tagStringListToTagSet(List<String> tagStringList) {
-        Set<Tag> tags = new HashSet<>();
+    public List<Tag> tagStringListToTagList(List<String> tagStringList) {
+        List<Tag> tags = new ArrayList<>();
         for (String tagString : tagStringList) {
             Tag tag = new Tag();
             tag.setName(tagString);
@@ -51,11 +53,29 @@ public class TagMapperImpl implements TagMapper {
     }
 
     @Override
-    public List<String> tagSetToTagStringList(Set<Tag> tags) {
+    public List<String> tagListToTagStringList(List<Tag> tagList) {
         List<String> tagStringList = new ArrayList<>();
-        for (Tag tag : tags) {
+        for (Tag tag : tagList) {
             tagStringList.add(tag.getName());
         }
         return tagStringList;
+    }
+
+    @Override
+    public List<TagDto> tagListToTagDtoList(List<Tag> tagList) {
+        List<TagDto> tagDtoList = new ArrayList<>();
+        for (Tag tag : tagList) {
+            tagDtoList.add(this.tagToTagDto(tag));
+        }
+        return tagDtoList;
+    }
+
+    @Override
+    public List<Tag> tagDtoListToTagList(List<TagDto> tagDtoList) {
+        List<Tag> tagList = new ArrayList<>();
+        for (TagDto tagDto : tagDtoList) {
+            tagList.add(this.tagDtoToTag(tagDto));
+        }
+        return tagList;
     }
 }

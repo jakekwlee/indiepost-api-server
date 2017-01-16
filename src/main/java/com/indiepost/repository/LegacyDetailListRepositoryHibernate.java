@@ -15,6 +15,7 @@ import java.util.List;
  * Created by jake on 11/22/16.
  */
 @Repository
+@SuppressWarnings("unchecked")
 public class LegacyDetailListRepositoryHibernate implements LegacyDetailListRepository {
 
     @PersistenceContext

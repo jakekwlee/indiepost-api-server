@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Indiepost</title>
+    <link rel="stylesheet" th:href="@{/resources/indiepost-react-webapp/node_modules/bootstrap/dist/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/resources/indiepost-react-webapp/node_modules/text-spinners/spinners.css}">
+    <link rel="stylesheet" th:href="@{/resources/indiepost-react-webapp/css/new-indiepost.css}">
+</head>
+<body>
+<div id="root">
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    CFRF_TOKEN = [[${_csrf.token}]];
+    CONTEXT_ROOT = /*[[@{/}]]*/ '';
+    /*]]>*/
+</script>
+<script th:src="@{/resources/indiepost-react-webapp/dist/app.bundle.js}"></script>
+</body>
+</html>

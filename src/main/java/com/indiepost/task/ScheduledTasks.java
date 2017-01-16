@@ -1,6 +1,6 @@
 package com.indiepost.task;
 
-import com.indiepost.service.PostService;
+import com.indiepost.service.AdminPostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +8,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created by jake on 11/22/16.
@@ -21,12 +20,12 @@ public class ScheduledTasks {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     @Autowired
-    private PostService postService;
+    private AdminPostService adminPostService;
 
-//    @Scheduled(cron = "0 0/30 * * * ?")
-    @Scheduled(fixedRate = 60000)
+
+    //    @Scheduled(fixedRate = 60000)
+    @Scheduled(cron = "0 0/30 * * * ?")
     public void publishPosts() {
-        log.info("Publish Posts: ", dateFormat.format(new Date()));
-        postService.publishPosts();
+        adminPostService.publishPosts();
     }
 }

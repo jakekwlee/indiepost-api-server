@@ -4,9 +4,9 @@ import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.service.CategoryService;
-import dto.TagDto;
-import dto.request.AdminPostRequestDto;
-import dto.response.AdminPostResponseDto;
+import com.indiepost.dto.TagDto;
+import com.indiepost.dto.request.AdminPostRequestDto;
+import com.indiepost.dto.response.AdminPostResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,10 +20,10 @@ import java.util.List;
 public class PostMapperImpl implements PostMapper {
 
     @Autowired
-    TagMapper tagMapper;
+    private TagMapper tagMapper;
 
     @Autowired
-    CategoryService categoryService;
+    private CategoryService categoryService;
 
     @Override
     public Post postToPostMapper(Post srcPost) {
@@ -100,19 +100,19 @@ public class PostMapperImpl implements PostMapper {
 
     @Override
     public void adminPostRequestDtoToPost(AdminPostRequestDto adminPostRequestDto, Post post) {
-        if (adminPostRequestDto.getTitle() != null || adminPostRequestDto.getTitle().length() > 0) {
+        if (adminPostRequestDto.getTitle() != null && adminPostRequestDto.getTitle().length() > 0) {
             post.setTitle(adminPostRequestDto.getTitle());
         }
-        if (adminPostRequestDto.getContent() != null || adminPostRequestDto.getContent().length() > 0) {
+        if (adminPostRequestDto.getContent() != null && adminPostRequestDto.getContent().length() > 0) {
             post.setContent(adminPostRequestDto.getContent());
         }
-        if (adminPostRequestDto.getExcerpt() != null || adminPostRequestDto.getExcerpt().length() > 0) {
+        if (adminPostRequestDto.getExcerpt() != null && adminPostRequestDto.getExcerpt().length() > 0) {
             post.setExcerpt(adminPostRequestDto.getExcerpt());
         }
         if (adminPostRequestDto.getPublishedAt() != null) {
             post.setPublishedAt(adminPostRequestDto.getPublishedAt());
         }
-        if (adminPostRequestDto.getDisplayName() != null || adminPostRequestDto.getDisplayName().length() > 0) {
+        if (adminPostRequestDto.getDisplayName() != null && adminPostRequestDto.getDisplayName().length() > 0) {
             post.setDisplayName(adminPostRequestDto.getDisplayName());
         }
         if (adminPostRequestDto.getCategoryId() != null) {

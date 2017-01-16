@@ -1,10 +1,9 @@
 package com.indiepost.mapper;
 
 import com.indiepost.model.Tag;
-import dto.TagDto;
+import com.indiepost.dto.TagDto;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by jake on 16. 12. 14.
@@ -15,8 +14,12 @@ public interface TagMapper {
 
     Tag tagDtoToTag(TagDto tagDto);
 
-    Set<Tag> tagStringListToTagSet(List<String> tagStringList);
+    List<Tag> tagStringListToTagList(List<String> tagStringList);
 
-    List<String> tagSetToTagStringList(Set<Tag> tags);
+    List<String> tagListToTagStringList(List<Tag> tagList);
+
+    List<TagDto> tagListToTagDtoList(List<Tag> tagList);
+
+    List<Tag> tagDtoListToTagList(List<TagDto> tagDtoList);
 
 }

@@ -1,6 +1,6 @@
-package dto.response;
+package com.indiepost.dto.response;
 
-import dto.TagDto;
+import com.indiepost.dto.TagDto;
 
 import java.util.Date;
 import java.util.List;

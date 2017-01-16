@@ -1,10 +1,12 @@
-package dto.response;
+package com.indiepost.dto.response;
 
 /**
  * Created by jake on 16. 12. 1.
  */
 public class AdminAutosaveResponseDto {
+
     private Long id;
+
     private Long originalId;
 
     public Long getId() {

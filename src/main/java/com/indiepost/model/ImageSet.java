@@ -65,9 +65,18 @@ public class ImageSet {
         return findByImageSize(SizeType.ORIGINAL);
     }
 
+    public Image getLarge() {
+        return findByImageSize(SizeType.LARGE);
+    }
+
     public Image getOptimized() {
         return findByImageSize(SizeType.OPTIMIZED);
     }
+
+    public Image getSmall() {
+        return findByImageSize(SizeType.SMALL);
+    }
+
 
     public Image getThumbnail() {
         return findByImageSize(SizeType.THUMBNAIL);

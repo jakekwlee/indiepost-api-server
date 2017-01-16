@@ -2,7 +2,8 @@ package com.indiepost.repository;
 
 import com.indiepost.enums.UserEnum;
 import com.indiepost.model.User;
-import com.indiepost.repository.helper.CriteriaMaker;
+import com.indiepost.repository.helper.CriteriaHelper;
+import com.indiepost.repository.helper.HibernateCriteriaHelper;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
@@ -25,7 +26,12 @@ public class UserRepositoryHibernate implements UserRepository {
     private EntityManager entityManager;
 
     @Autowired
-    private CriteriaMaker criteriaMaker;
+    private final CriteriaHelper criteriaHelper;
+
+    public UserRepositoryHibernate(CriteriaHelper criteriaHelper) {
+        this.criteriaHelper = criteriaHelper;
+    }
+
 
     @Override
     public void save(User user) {
@@ -99,6 +105,6 @@ public class UserRepositoryHibernate implements UserRepository {
     }
 
     private Criteria getCriteria(Pageable pageable) {
-        return criteriaMaker.getPagedCriteria(getCriteria(), pageable);
+        return criteriaHelper.setPageToCriteria(getCriteria(), pageable);
     }
 }

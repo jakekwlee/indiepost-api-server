@@ -26,6 +26,9 @@ public class Role implements Serializable {
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     private List<User> users;
 
+    @NotNull
+    private int level = 1;
+
     public Long getId() {
         return id;
     }
@@ -48,5 +51,13 @@ public class Role implements Serializable {
 
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 }

@@ -116,7 +116,7 @@ public class LegacyPostServiceImpl implements LegacyPostService {
         contentlist.setType1no(1L);
         contentlist.setType2no(1L);
 
-        Set<Tag> tags = post.getTags();
+        List<Tag> tags = post.getTags();
 
         if (tags != null) {
             String[] tagNameArray = new String[tags.size()];

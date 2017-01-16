@@ -4,6 +4,10 @@ spring:
     url: jdbc:mysql://localhost:3306/indiepost?useUnicode=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&characterEncoding=UTF-8
     username: indiepost
     password: indiepost
+  http:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 100MB
   jmx:
     default-domain: newIndiepost
   jpa:
@@ -11,11 +15,11 @@ spring:
       ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    show-sql: false
+    show-sql: true
     generate-ddl: true
     properties:
       hibernate:
-        format_sql: false
+        format_sql: true
         connection:
           charSet: UTF-8
         hbm2ddl:
@@ -38,6 +42,3 @@ logging:
     org:
       springframework:
         web: debug
-multipart:
-  max-file-size: 20MB
-  max-request-size: 100MB

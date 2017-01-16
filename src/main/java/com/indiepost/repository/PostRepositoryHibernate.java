@@ -1,19 +1,21 @@
 package com.indiepost.repository;
 
-import com.indiepost.enums.PostEnum.Status;
+import com.github.fluent.hibernate.request.aliases.Aliases;
+import com.github.fluent.hibernate.transformer.FluentHibernateResultTransformer;
+import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Post;
-import com.indiepost.repository.helper.CriteriaMaker;
+import com.indiepost.dto.request.PostQuery;
+import com.indiepost.repository.helper.CriteriaHelper;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.Date;
+import javax.persistence.criteria.JoinType;
 import java.util.List;
 
 /**
@@ -23,11 +25,27 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class PostRepositoryHibernate implements PostRepository {
 
+    private final String[] HOME_PROJECTION = {
+            "id",
+            "title",
+            "excerpt",
+            "publishedAt",
+            "displayName",
+            "commentsCount",
+            "likesCount",
+            "featuredImage",
+            "category"
+    };
+
+    private final CriteriaHelper criteriaHelper;
+
     @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
-    private CriteriaMaker criteriaMaker;
+    public PostRepositoryHibernate(CriteriaHelper criteriaHelper) {
+        this.criteriaHelper = criteriaHelper;
+    }
 
     @Override
     public Post findById(Long id) {
@@ -37,23 +55,8 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     @Override
-    public Long save(Post post) {
-        return (Long) getSession().save(post);
-    }
-
-    @Override
-    public void delete(Post post) {
-        getSession().delete(post);
-    }
-
-    @Override
     public void update(Post post) {
         getSession().update(post);
-    }
-
-    @Override
-    public void detach(Post post) {
-        entityManager.detach(post);
     }
 
     @Override
@@ -63,107 +66,47 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     @Override
-    public Long count(Status status) {
-        return (Long) getCriteria()
-                .add(Restrictions.eq("status", status))
-                .setProjection(Projections.rowCount())
+    public Long count(PostQuery query) {
+        Conjunction conjunction = Restrictions.conjunction();
+        criteriaHelper.buildConjunction(query, conjunction);
+        return (Long) getCriteria().add(conjunction).setProjection(Projections.rowCount())
                 .uniqueResult();
     }
 
     @Override
-    public Long count(Status status, String authorName) {
-        return (Long) getCriteria()
-                .add(Restrictions.eq("authorName", authorName))
-                .add(Restrictions.eq("status", status))
-                .setProjection(Projections.rowCount())
-                .uniqueResult();
+    public List<Post> find(Pageable pageable) {
+        return find(null, pageable);
     }
 
     @Override
-    public Long count(Status status, Long authorId) {
-        return (Long) getCriteria()
-                .createAlias("author", "a")
-                .add(Restrictions.eq("a.id", authorId))
-                .add(Restrictions.eq("status", status))
-                .setProjection(Projections.rowCount())
-                .uniqueResult();
+    public List<Post> find(PostQuery query, Pageable pageable) {
+        Criteria criteria = getPagedCriteria(pageable);
+        getAliases().addToCriteria(criteria);
+        criteria.setProjection(criteriaHelper.buildProjectionList(HOME_PROJECTION));
+        Conjunction conjunction = Restrictions.conjunction();
+
+        if (query != null) {
+            criteriaHelper.buildConjunction(query, conjunction);
+        }
+
+        if (conjunction.conditions().iterator().hasNext()) {
+            criteria.add(conjunction);
+        }
+
+        criteria.setResultTransformer(new FluentHibernateResultTransformer(Post.class));
+        return criteria.list();
     }
 
     @Override
-    public List<Post> findAll(Status status, Long authorId, Long categoryId, Pageable pageable) {
-        return null;
-    }
+    public List<Post> findByStatus(PostEnum.Status status, Pageable pageable) {
+        Criteria criteria = getPagedCriteria(pageable);
+        getAliases().addToCriteria(criteria);
+        criteria.setProjection(criteriaHelper.buildProjectionList(HOME_PROJECTION));
 
-    @Override
-    public List<Post> findAll(Pageable pageable) {
-        return getCriteria(pageable)
-                .add(Restrictions.eq("status", Status.PUBLISH))
-                .list();
-    }
-
-    @Override
-    public List<Post> findByCategoryId(Long categoryId, Pageable pageable) {
-        return getCriteria(pageable)
-                .add(Restrictions.eq("c.id", categoryId))
-                .add(Restrictions.eq("status", Status.PUBLISH))
-                .list();
-    }
-
-    @Override
-    public List<Post> findByCategorySlug(String slug, Pageable pageable) {
-        return getCriteria(pageable)
-                .add(Restrictions.eq("c.slug", slug))
-                .add(Restrictions.eq("status", Status.PUBLISH))
-                .list();
-    }
-
-    @Override
-    public List<Post> findByAuthorId(Long authorId, Pageable pageable) {
-        return getCriteria(pageable)
-                .add(Restrictions.eq("a.id", authorId))
-                .add(Restrictions.eq("status", Status.PUBLISH))
-                .list();
-    }
-
-    @Override
-    public List<Post> findByAuthorName(String authorName, Pageable pageable) {
-        return getCriteria(pageable)
-                .add(Restrictions.eq("authorName", authorName))
-                .add(Restrictions.eq("status", Status.PUBLISH))
-                .list();
-    }
-
-    @Override
-    public List<Post> findByTagId(Long tagId, Pageable pageable) {
-        return getCriteria(pageable)
-                .createAlias("tags", "t")
-                .add(Restrictions.eq("tags.id", tagId))
-                .add(Restrictions.eq("status", Status.PUBLISH))
-                .list();
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<Post> findByTagName(String tagName, Pageable pageable) {
-        return getCriteria(pageable)
-                .createAlias("tags", "t")
-                .add(Restrictions.eq("t.name", tagName))
-                .add(Restrictions.eq("status", Status.PUBLISH))
-                .list();
-    }
-
-    @Override
-    public List<Post> findByStatus(Status status, Pageable pageable) {
-        return getCriteria(pageable)
-                .add(Restrictions.eq("status", status))
-                .add(Restrictions.eq("status", Status.PUBLISH))
-                .list();
-    }
-
-    public List<Post> findPostToPublish() {
-        return getCriteria()
-                .add(Restrictions.eq("status", Status.FUTURE))
-                .add(Restrictions.le("publishedAt", new Date())).list();
+        Criterion restrictions = Restrictions.eq("status", status);
+        criteria.add(restrictions);
+        criteria.setResultTransformer(new FluentHibernateResultTransformer(Post.class));
+        return criteria.list();
     }
 
     private Session getSession() {
@@ -174,7 +117,12 @@ public class PostRepositoryHibernate implements PostRepository {
         return getSession().createCriteria(Post.class);
     }
 
-    private Criteria getCriteria(Pageable pageable) {
-        return criteriaMaker.getPagedCriteria(getCriteria(), pageable);
+    private Criteria getPagedCriteria(Pageable pageable) {
+        return criteriaHelper.setPageToCriteria(getCriteria(), pageable);
+    }
+
+    private Aliases getAliases() {
+        return Aliases.create()
+                .add("category", "c", JoinType.INNER);
     }
 }

@@ -1,8 +1,8 @@
-package dto.response;
+package com.indiepost.dto.response;
 
-import dto.CategoryDto;
-import dto.TagDto;
-import dto.UserDto;
+import com.indiepost.dto.CategoryDto;
+import com.indiepost.dto.TagDto;
+import com.indiepost.dto.UserDto;
 
 import java.util.List;
 

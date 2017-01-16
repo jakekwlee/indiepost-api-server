@@ -1,6 +1,6 @@
 package com.indiepost.controller.api.admin;
 
-import dto.response.AdminInitResponseDto;
+import com.indiepost.dto.response.AdminInitResponseDto;
 import com.indiepost.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,14 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping(value = "/api/admin/init", produces = {"application/json; charset=UTF-8"})
-public class InitialDataController {
+public class AdminInitialDataController {
+
+    private final AdminService adminService;
 
     @Autowired
-    private AdminService adminService;
+    public AdminInitialDataController(AdminService adminService) {
+        this.adminService = adminService;
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     public AdminInitResponseDto getInitialResponse() {
-        return adminService.getInitialResponse();
+        return adminService.buildInitialResponse();
     }
 }
 

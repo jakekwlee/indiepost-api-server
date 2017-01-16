@@ -16,8 +16,12 @@ import java.util.List;
 @RequestMapping(value = "/api/admin/images", produces = {"application/json; charset=UTF-8"})
 public class ImageController {
 
+    private final ImageService imageService;
+
     @Autowired
-    private ImageService imageService;
+    public ImageController(ImageService imageService) {
+        this.imageService = imageService;
+    }
 
 
     @RequestMapping(method = RequestMethod.GET)

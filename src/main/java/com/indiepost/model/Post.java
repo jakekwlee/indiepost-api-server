@@ -14,10 +14,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by jake on 7/24/16.
@@ -44,16 +41,19 @@ public class Post implements Serializable {
     private Contentlist legacyPost;
 
     @NotNull
+    private boolean isFeatured = false;
+
+    @NotNull
     @Size(max = 100)
     private String title = "No Title";
 
     @NotNull
     @Column(columnDefinition = "LONGTEXT")
-    private String content = "";
+    private String content = "No Content";
 
     @NotNull
     @Size(max = 300)
-    private String excerpt = "";
+    private String excerpt = "No Excerpt";
 
     @NotNull
     @Size(max = 30)
@@ -71,6 +71,10 @@ public class Post implements Serializable {
     @NotNull
     @Size(max = 120)
     private String featuredImage = "";
+
+    @ManyToOne
+    @JoinColumn(name = "imageId")
+    private ImageSet titleImage;
 
     @NotNull
     @Min(0)
@@ -110,7 +114,7 @@ public class Post implements Serializable {
             joinColumns = {@JoinColumn(name = "postId")},
             inverseJoinColumns = {@JoinColumn(name = "tagId")}
     )
-    private Set<Tag> tags = new HashSet<>();
+    private List<Tag> tags = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.EXTRA)
@@ -129,6 +133,14 @@ public class Post implements Serializable {
         this.id = id;
     }
 
+    public boolean getFeatured() {
+        return isFeatured;
+    }
+
+    public void setFeatured(boolean featured) {
+        isFeatured = featured;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -143,6 +155,14 @@ public class Post implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public ImageSet getTitleImage() {
+        return titleImage;
+    }
+
+    public void setTitleImage(ImageSet titleImage) {
+        this.titleImage = titleImage;
     }
 
     public String getDisplayName() {
@@ -217,11 +237,11 @@ public class Post implements Serializable {
         this.category = category;
     }
 
-    public Set<Tag> getTags() {
+    public List<Tag> getTags() {
         return tags;
     }
 
-    public void setTags(Set<Tag> tags) {
+    public void setTags(List<Tag> tags) {
         this.tags = tags;
     }
 

@@ -17,7 +17,7 @@
     <div id="post" class="row">
         <div class="col-md-12">
             <h1 th:text="${post.title}"></h1>
-            <div>Date <span th:text="${#calendars.format(post.publishedAt, 'yyyy/MM/dd')}"></span> | By <span th:text="${post.author.displayName}"></span></div>
+            <div>Date <span th:text="${#calendars.format(post.publishedAt, 'yyyy/MM/dd')}"></span> | By <span th:text="${post.displayName}"></span></div>
             <hr>
             <div th:utext="${post.content}">
             </div>

@@ -1,16 +1,13 @@
 package com.indiepost.service;
 
 import com.indiepost.enums.UserEnum;
-import com.indiepost.model.Category;
-import com.indiepost.model.Post;
-import com.indiepost.model.Tag;
-import com.indiepost.model.User;
-import dto.CategoryDto;
-import dto.TagDto;
-import dto.UserDto;
-import dto.response.AdminDataTableItem;
-import dto.response.AdminInitResponseDto;
-import org.apache.commons.lang3.time.FastDateFormat;
+import com.indiepost.mapper.TagMapper;
+import com.indiepost.mapper.UserMapper;
+import com.indiepost.model.*;
+import com.indiepost.dto.CategoryDto;
+import com.indiepost.dto.TagDto;
+import com.indiepost.dto.UserDto;
+import com.indiepost.dto.response.AdminInitResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +21,7 @@ import java.util.*;
 @Transactional
 public class AdminServiceImpl implements AdminService {
 
-    private PostExcerptService postExcerptService;
+    private AdminPostService adminPostService;
 
     private CategoryService categoryService;
 
@@ -32,59 +29,59 @@ public class AdminServiceImpl implements AdminService {
 
     private TagService tagService;
 
+    private UserMapper userMapper;
+
+    private TagMapper tagMapper;
+
     @Autowired
-    public AdminServiceImpl(PostExcerptService postExcerptService, CategoryService categoryService, TagService tagService, UserService userService) {
-        this.postExcerptService = postExcerptService;
+    public AdminServiceImpl(AdminPostService adminPostService, CategoryService categoryService,
+                            TagService tagService, UserService userService, UserMapper userMapper, TagMapper tagMapper) {
+        this.adminPostService = adminPostService;
         this.categoryService = categoryService;
         this.tagService = tagService;
         this.userService = userService;
+        this.userMapper = userMapper;
+        this.tagMapper = tagMapper;
     }
 
     @Override
-    public List<AdminDataTableItem> getAdminPostListItemDtos(int page, int maxResults, boolean isDesc) {
-        List<Post> posts = postExcerptService.findAll(page, maxResults, isDesc);
-        return getAdminDataTableDtos(posts);
+    public AdminInitResponseDto buildInitialResponse() {
+        User currentUser = userService.getCurrentUser();
+        AdminInitResponseDto adminInitResponseDto = new AdminInitResponseDto();
+        adminInitResponseDto.setCurrentUser(userMapper.userToUserDto(currentUser));
+        adminInitResponseDto.setAuthors(getUserDtoList(UserEnum.Roles.Author));
+        adminInitResponseDto.setCategories(getAllCategoryDtoList());
+        adminInitResponseDto.setTags(getAllTagDtoList());
+        adminInitResponseDto.setAuthorNames(adminPostService.findAllDisplayNames());
+        return adminInitResponseDto;
     }
 
     @Override
-    public List<AdminDataTableItem> getLastUpdated(Date date) {
-        List<Post> posts = postExcerptService.findLastUpdated(date);
-        return getAdminDataTableDtos(posts);
+    public List<TagDto> getAllTagDtoList() {
+        List<Tag> tagList = tagService.findAll();
+        return tagMapper.tagListToTagDtoList(tagList);
     }
 
     @Override
-    public List<TagDto> getAllTagDtos() {
-        List<Tag> tags = tagService.findAll();
-        List<TagDto> tagDtoList = new ArrayList<>();
-        for (Tag tag : tags) {
-            TagDto tagDto = new TagDto();
-            tagDto.setId(tag.getId());
-            tagDto.setName(tag.getName());
-            tagDtoList.add(tagDto);
-        }
-        return tagDtoList;
+    public List<UserDto> getUserDtoList(UserEnum.Roles role) {
+        List<User> authors = userService.findByRolesEnum(role, 1, 1000000, true);
+        return userListToUserDtoList(authors);
     }
 
     @Override
-    public List<UserDto> getAllAuthorsUserDtos() {
-        List<User> authors = userService.findByRolesEnum(UserEnum.Roles.Author, 1, 1000000, true);
-        return getUserDtos(authors);
-    }
-
-    @Override
-    public List<UserDto> getAllUserDtos(int page, int maxResults, boolean isDesc) {
+    public List<UserDto> getUserDtoList(int page, int maxResults, boolean isDesc) {
         List<User> userList = userService.findAllUsers(page, maxResults, isDesc);
-        return getUserDtos(userList);
+        return userListToUserDtoList(userList);
     }
 
     @Override
     public UserDto getCurrentUserDto() {
         User currentUser = userService.getCurrentUser();
-        return getUserDtoFromUser(currentUser);
+        return userMapper.userToUserDto(currentUser);
     }
 
     @Override
-    public List<CategoryDto> getAlllCategoryDtos() {
+    public List<CategoryDto> getAllCategoryDtoList() {
         List<Category> categories = categoryService.findAll();
         List<CategoryDto> categoryDtoList = new ArrayList<>();
         for (Category category : categories) {
@@ -97,82 +94,11 @@ public class AdminServiceImpl implements AdminService {
         return categoryDtoList;
     }
 
-    @Override
-    public AdminInitResponseDto getInitialResponse() {
-        User currentUser = userService.getCurrentUser();
-        AdminInitResponseDto adminInitResponseDto = new AdminInitResponseDto();
-        adminInitResponseDto.setCurrentUser(getUserDtoFromUser(currentUser));
-        adminInitResponseDto.setAuthors(getAllAuthorsUserDtos());
-        adminInitResponseDto.setCategories(getAlllCategoryDtos());
-        adminInitResponseDto.setTags(getAllTagDtos());
-        adminInitResponseDto.setAuthorNames(postExcerptService.findAllAuthorNames());
-        return adminInitResponseDto;
-    }
-
-    private List<UserDto> getUserDtos(List<User> userList) {
-        List<UserDto> simplifiedUserList = new ArrayList<>();
+    private List<UserDto> userListToUserDtoList(List<User> userList) {
+        List<UserDto> userDtoList = new ArrayList<>();
         for (User user : userList) {
-            simplifiedUserList.add(getUserDtoFromUser(user));
+            userDtoList.add(userMapper.userToUserDto(user));
         }
-        return simplifiedUserList;
-    }
-
-    private List<AdminDataTableItem> getAdminDataTableDtos(List<Post> posts) {
-        List<AdminDataTableItem> adminDataTableItems = new ArrayList<>();
-        for (Post post : posts) {
-            User author = post.getAuthor();
-            AdminDataTableItem adminDataTableItem = new AdminDataTableItem();
-            UserDto userDto = new UserDto();
-
-            userDto.setId(author.getId());
-            userDto.setDisplayName(author.getDisplayName());
-            userDto.setEmail(author.getEmail());
-            userDto.setUsername(author.getUsername());
-
-            adminDataTableItem.setId(post.getId());
-            adminDataTableItem.setAuthorDisplayName(post.getAuthor().getDisplayName());
-            adminDataTableItem.setCategoryName(post.getCategory().getName());
-            adminDataTableItem.setTags(getTagStringArray(post.getTags()));
-            adminDataTableItem.setStatus(post.getStatus().toString());
-
-            adminDataTableItem.setTitle(post.getTitle());
-            adminDataTableItem.setDisplayName(post.getDisplayName());
-            adminDataTableItem.setCreatedAt(getDateString(post.getCreatedAt()));
-            adminDataTableItem.setPublishedAt(getDateString(post.getPublishedAt()));
-            adminDataTableItem.setModifiedAt(getDateString(post.getModifiedAt()));
-            adminDataTableItem.setCreatedAt(getDateString(post.getCreatedAt()));
-            adminDataTableItem.setDisplayName(post.getDisplayName());
-            adminDataTableItem.setLikedCount(post.getLikesCount());
-
-            adminDataTableItems.add(adminDataTableItem);
-        }
-        return adminDataTableItems;
-    }
-
-    private String getDateString(Date date) {
-        FastDateFormat fastDateFormat = FastDateFormat.getInstance("yyyy-MM-dd HH:mm a", Locale.KOREA);
-        return fastDateFormat.format(date);
-    }
-
-    private Set<String> getTagStringArray(Set<Tag> tags) {
-        Set<String> tagStringArray = new HashSet<>();
-        for (Tag tag : tags) {
-            tagStringArray.add(tag.getName());
-        }
-        return tagStringArray;
-    }
-
-    private UserDto getUserDtoFromUser(User user) {
-        UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setUsername(user.getUsername());
-        userDto.setDisplayName(user.getDisplayName());
-        userDto.setEmail(user.getEmail());
-        userDto.setBirthday(user.getBirthday());
-        userDto.setGender(user.getGender());
-        userDto.setJoinedAt(user.getJoinedAt());
-        userDto.setPicture(user.getPicture());
-        userDto.setProfile(user.getProfile());
-        return userDto;
+        return userDtoList;
     }
 }

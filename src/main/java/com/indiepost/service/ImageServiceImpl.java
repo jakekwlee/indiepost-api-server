@@ -74,11 +74,20 @@ public class ImageServiceImpl implements ImageService {
             Image originalImage = saveUploadedImage(originalBufferedImage, ImageEnum.SizeType.ORIGINAL, alphanumeric, fileExtension, baseUrl);
             images.add(originalImage);
 
+            BufferedImage largeBufferedImage = resizeImage(originalBufferedImage, 1200);
+            Image largeImage = saveUploadedImage(largeBufferedImage, ImageEnum.SizeType.LARGE, alphanumeric, fileExtension, baseUrl);
+            images.add(largeImage);
+
             BufferedImage optimizedBufferedImage = resizeImage(originalBufferedImage, 700);
             Image optimizedImage = saveUploadedImage(optimizedBufferedImage, ImageEnum.SizeType.OPTIMIZED, alphanumeric, fileExtension, baseUrl);
             images.add(optimizedImage);
+            //TODO
 
-            BufferedImage thumbnailBufferedImage = generateThumbnail(optimizedBufferedImage, 120, 80);
+            BufferedImage smallBufferedImage = resizeImage(optimizedBufferedImage, 400);
+            Image smallImage = saveUploadedImage(smallBufferedImage, ImageEnum.SizeType.SMALL, alphanumeric, fileExtension, baseUrl);
+            images.add(smallImage);
+
+            BufferedImage thumbnailBufferedImage = generateThumbnail(smallBufferedImage, 120, 80);
             Image thumbnailImage = saveUploadedImage(thumbnailBufferedImage, ImageEnum.SizeType.THUMBNAIL, alphanumeric, fileExtension, baseUrl);
             images.add(thumbnailImage);
 

@@ -1,12 +1,10 @@
 package com.indiepost.controller.api;
 
+import com.indiepost.dto.request.PostQuery;
 import com.indiepost.model.Post;
-import com.indiepost.service.PostExcerptService;
-import com.indiepost.service.PostService;
+import com.indiepost.service.AdminPostService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,18 +15,25 @@ import java.util.List;
 @RequestMapping("/api/posts")
 public class PostListController {
 
-    private PostExcerptService postExcerptService;
-
-    private PostService postService;
+    private AdminPostService adminPostService;
 
     @Autowired
-    public PostListController(PostService postService, PostExcerptService postExcerptService) {
-        this.postService = postService;
-        this.postExcerptService = postExcerptService;
+    public PostListController(AdminPostService adminPostService) {
+        this.adminPostService = adminPostService;
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Post> getPosts() {
-        return postExcerptService.findAll(0, 10, true);
+    public List<Post> getPosts(@RequestParam(required = false, defaultValue = "0") int page,
+                               @RequestParam(required = false, defaultValue = "30") int maxResults,
+                               @RequestParam(required = false, defaultValue = "true") boolean isDesc) {
+        return adminPostService.find(page, maxResults, isDesc);
+    }
+
+    @RequestMapping(method = RequestMethod.POST)
+    public List<Post> getPosts(@RequestBody PostQuery query,
+                               @RequestParam(required = false, defaultValue = "0") int page,
+                               @RequestParam(required = false, defaultValue = "30") int maxResults,
+                               @RequestParam(required = false, defaultValue = "true") boolean isDesc) {
+        return adminPostService.find(query, page, maxResults, isDesc);
     }
 }

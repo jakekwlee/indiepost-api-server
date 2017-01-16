@@ -2,7 +2,8 @@ package com.indiepost.repository;
 
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
-import com.indiepost.repository.helper.CriteriaMaker;
+import com.indiepost.repository.helper.CriteriaHelper;
+import com.indiepost.repository.helper.HibernateCriteriaHelper;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
@@ -25,8 +26,12 @@ public class ImageRepositoryHibernate implements ImageRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
+    private final CriteriaHelper criteriaHelper;
+
     @Autowired
-    private CriteriaMaker criteriaMaker;
+    public ImageRepositoryHibernate(CriteriaHelper criteriaHelper) {
+        this.criteriaHelper = criteriaHelper;
+    }
 
     @Override
     public void save(ImageSet imageSet) {
@@ -82,6 +87,6 @@ public class ImageRepositoryHibernate implements ImageRepository {
     }
 
     private Criteria getCriteria(Pageable pageable) {
-        return criteriaMaker.getPagedCriteria(getCriteria(), pageable);
+        return criteriaHelper.setPageToCriteria(getCriteria(), pageable);
     }
 }

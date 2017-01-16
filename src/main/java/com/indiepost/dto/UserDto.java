@@ -1,8 +1,7 @@
-package dto;
+package com.indiepost.dto;
 
 import com.indiepost.enums.UserEnum;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 

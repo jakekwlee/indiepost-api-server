@@ -1,8 +1,8 @@
 package com.indiepost.mapper;
 
 import com.indiepost.model.Post;
-import dto.request.AdminPostRequestDto;
-import dto.response.AdminPostResponseDto;
+import com.indiepost.dto.request.AdminPostRequestDto;
+import com.indiepost.dto.response.AdminPostResponseDto;
 
 /**
  * Created by jake on 16. 12. 14.

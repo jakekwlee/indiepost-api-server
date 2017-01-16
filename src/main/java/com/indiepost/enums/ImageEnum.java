@@ -5,6 +5,6 @@ package com.indiepost.enums;
  */
 public interface ImageEnum {
     enum SizeType {
-        THUMBNAIL, OPTIMIZED, ORIGINAL
+        THUMBNAIL, SMALL, OPTIMIZED, LARGE, ORIGINAL
     }
 }

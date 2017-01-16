@@ -1,7 +1,8 @@
 package com.indiepost.repository;
 
 import com.indiepost.model.Tag;
-import com.indiepost.repository.helper.CriteriaMaker;
+import com.indiepost.repository.helper.CriteriaHelper;
+import com.indiepost.repository.helper.HibernateCriteriaHelper;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
@@ -24,8 +25,12 @@ public class TagRepositoryHibernate implements TagRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
+    private final CriteriaHelper criteriaHelper;
+
     @Autowired
-    private CriteriaMaker criteriaMaker;
+    public TagRepositoryHibernate(CriteriaHelper criteriaHelper) {
+        this.criteriaHelper = criteriaHelper;
+    }
 
     @Override
     public void save(Tag tag) {
@@ -55,7 +60,7 @@ public class TagRepositoryHibernate implements TagRepository {
 
     @Override
     public List<Tag> findAll(Pageable pageable) {
-        return criteriaMaker.getPagedCriteria(getCriteria(), pageable)
+        return criteriaHelper.setPageToCriteria(getCriteria(), pageable)
                 .list();
     }
 

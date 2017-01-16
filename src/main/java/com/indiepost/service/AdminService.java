@@ -1,31 +1,27 @@
 package com.indiepost.service;
 
-import dto.CategoryDto;
-import dto.TagDto;
-import dto.UserDto;
-import dto.response.AdminDataTableItem;
-import dto.response.AdminInitResponseDto;
+import com.indiepost.enums.UserEnum;
+import com.indiepost.dto.CategoryDto;
+import com.indiepost.dto.TagDto;
+import com.indiepost.dto.UserDto;
+import com.indiepost.dto.response.AdminInitResponseDto;
 
-import java.util.Date;
 import java.util.List;
 
 /**
  * Created by jake on 10/8/16.
  */
 public interface AdminService {
-    List<AdminDataTableItem> getAdminPostListItemDtos(int page, int maxResults, boolean isDesc);
 
-    List<AdminDataTableItem> getLastUpdated(Date date);
+    List<TagDto> getAllTagDtoList();
 
-    List<TagDto> getAllTagDtos();
+    List<UserDto> getUserDtoList(UserEnum.Roles role);
 
-    List<UserDto> getAllAuthorsUserDtos();
-
-    List<UserDto> getAllUserDtos(int page, int maxResults, boolean isDesc);
+    List<UserDto> getUserDtoList(int page, int maxResults, boolean isDesc);
 
     UserDto getCurrentUserDto();
 
-    List<CategoryDto> getAlllCategoryDtos();
+    List<CategoryDto> getAllCategoryDtoList();
 
-    AdminInitResponseDto getInitialResponse();
+    AdminInitResponseDto buildInitialResponse();
 }
