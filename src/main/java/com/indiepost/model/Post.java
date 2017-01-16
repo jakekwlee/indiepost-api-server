@@ -79,7 +79,7 @@ public class Post implements Serializable {
     @JoinColumn(name = "titleImageId")
     private ImageSet titleImage;
 
-    @Column(name = "titleImageId", nullable = false, insertable = false, updatable = false)
+    @Column(name = "titleImageId", insertable = false, updatable = false)
     private Long titleImageId;
 
     @NotNull
