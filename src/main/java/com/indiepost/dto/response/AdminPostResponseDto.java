@@ -1,6 +1,7 @@
 package com.indiepost.dto.response;
 
 import com.indiepost.dto.TagDto;
+import com.indiepost.model.ImageSet;
 
 import java.util.Date;
 import java.util.List;
@@ -26,7 +27,7 @@ public class AdminPostResponseDto {
 
     private Date publishedAt;
 
-    private String featuredImage;
+    private ImageSet titleImage;
 
     private String status;
 
@@ -110,12 +111,12 @@ public class AdminPostResponseDto {
         this.publishedAt = publishedAt;
     }
 
-    public String getFeaturedImage() {
-        return featuredImage;
+    public ImageSet getTitleImage() {
+        return titleImage;
     }
 
-    public void setFeaturedImage(String featuredImage) {
-        this.featuredImage = featuredImage;
+    public void setTitleImage(ImageSet titleImage) {
+        this.titleImage = titleImage;
     }
 
     public String getStatus() {

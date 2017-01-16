@@ -6,8 +6,6 @@ import com.indiepost.dto.response.AdminPostResponseDto;
 import com.indiepost.dto.response.AdminPostTableDto;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.mapper.PostMapper;
-import com.indiepost.mapper.TagMapper;
-import com.indiepost.mapper.UserMapper;
 import com.indiepost.model.Post;
 import com.indiepost.model.User;
 import com.indiepost.model.legacy.Contentlist;
@@ -18,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -25,8 +24,6 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static org.codehaus.groovy.runtime.DateGroovyMethods.getDateString;
 
 /**
  * Created by jake on 17. 1. 14.
@@ -43,17 +40,15 @@ public class AdminPostServiceImpl implements AdminPostService {
 
     private final PostMapper postMapper;
 
-    private final TagMapper tagMapper;
-
     private final LegacyPostService legacyPostService;
 
     @Autowired
-    public AdminPostServiceImpl(AdminPostRepository adminPostRepository, UserService userService, CategoryRepository categoryRepository, PostMapper postMapper, UserMapper userMapper, TagMapper tagMapper, LegacyPostService legacyPostService) {
+    public AdminPostServiceImpl(AdminPostRepository adminPostRepository, UserService userService,
+                                CategoryRepository categoryRepository, PostMapper postMapper, LegacyPostService legacyPostService) {
         this.adminPostRepository = adminPostRepository;
         this.categoryRepository = categoryRepository;
         this.userService = userService;
         this.postMapper = postMapper;
-        this.tagMapper = tagMapper;
         this.legacyPostService = legacyPostService;
     }
 
@@ -131,7 +126,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         User currentUser = userService.getCurrentUser();
         if (adminPostRequestDto.getId() != null) {
             Post originalPost = findById(adminPostRequestDto.getId());
-            post = postMapper.postToPostMapper(originalPost);
+            post = postMapper.postToPost(originalPost);
             postMapper.adminPostRequestDtoToPost(adminPostRequestDto, post);
             post.setOriginal(originalPost);
         } else {
@@ -139,8 +134,17 @@ public class AdminPostServiceImpl implements AdminPostService {
             post.setAuthor(currentUser);
             post.setCreatedAt(new Date());
         }
-        if (post.getTitle().equals("") || post.getTitle() == null) {
+        if (StringUtils.isEmpty(post.getTitle())) {
             post.setTitle("No Title");
+        }
+        if (StringUtils.isEmpty(post.getContent())) {
+            post.setContent("");
+        }
+        if (StringUtils.isEmpty(post.getExcerpt())) {
+            post.setExcerpt("");
+        }
+        if (StringUtils.isEmpty(post.getDisplayName())) {
+            post.setDisplayName("Indiepost");
         }
         if (post.getPublishedAt() == null) {
             Date publishDate = Date.from(LocalDateTime.now().plusDays(7).toInstant(ZoneOffset.UTC));

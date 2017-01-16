@@ -17,6 +17,8 @@ public interface ImageService {
 
     ImageSet findById(Long id);
 
+    ImageSet getReference(Long id);
+
     List<ImageSet> findAll(int page, int maxResults);
 
     void update(ImageSet imageSet);

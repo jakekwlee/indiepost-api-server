@@ -6,8 +6,6 @@ import com.indiepost.enums.PostEnum;
 import com.indiepost.model.legacy.Contentlist;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -57,7 +55,7 @@ public class Post implements Serializable {
 
     @NotNull
     @Column(columnDefinition = "LONGTEXT")
-    private String content = "No Content";
+    private String content = "";
 
     @NotNull
     @Size(max = 300)
@@ -76,13 +74,13 @@ public class Post implements Serializable {
     @NotNull
     private Date publishedAt;
 
-    @NotNull
-    @Size(max = 120)
-    private String featuredImage = "";
-
     @ManyToOne
+    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "titleImageId")
     private ImageSet titleImage;
+
+    @Column(name = "titleImageId", nullable = false, insertable = false, updatable = false)
+    private Long titleImageId;
 
     @NotNull
     @Min(0)
@@ -170,6 +168,14 @@ public class Post implements Serializable {
         this.titleImage = titleImage;
     }
 
+    public Long getTitleImageId() {
+        return titleImageId;
+    }
+
+    public void setTitleImageId(Long titleImageId) {
+        this.titleImageId = titleImageId;
+    }
+
     public String getDisplayName() {
         return displayName;
     }
@@ -192,14 +198,6 @@ public class Post implements Serializable {
 
     public void setPublishedAt(Date publishedAt) {
         this.publishedAt = publishedAt;
-    }
-
-    public String getFeaturedImage() {
-        return featuredImage;
-    }
-
-    public void setFeaturedImage(String featuredImage) {
-        this.featuredImage = featuredImage;
     }
 
     public String getExcerpt() {

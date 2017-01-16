@@ -10,7 +10,7 @@ import com.indiepost.dto.response.AdminPostResponseDto;
  */
 public interface PostMapper {
 
-    Post postToPostMapper(Post srcPost);
+    Post postToPost(Post srcPost);
 
     AdminPostResponseDto postToAdminPostResponseDto(Post post);
 

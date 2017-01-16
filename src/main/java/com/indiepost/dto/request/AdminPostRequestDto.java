@@ -22,7 +22,7 @@ public class AdminPostRequestDto {
 
     private String displayName;
 
-    private String featuredImage;
+    private Long titleImageId;
 
     private String status;
 
@@ -80,12 +80,12 @@ public class AdminPostRequestDto {
         this.displayName = displayName;
     }
 
-    public String getFeaturedImage() {
-        return featuredImage;
+    public Long getTitleImageId() {
+        return titleImageId;
     }
 
-    public void setFeaturedImage(String featuredImage) {
-        this.featuredImage = featuredImage;
+    public void setTitleImageId(Long titleImageId) {
+        this.titleImageId = titleImageId;
     }
 
     public String getStatus() {

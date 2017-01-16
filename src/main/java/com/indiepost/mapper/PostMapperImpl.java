@@ -8,6 +8,7 @@ import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.service.CategoryService;
+import com.indiepost.service.ImageService;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,14 +28,17 @@ public class PostMapperImpl implements PostMapper {
 
     private final CategoryService categoryService;
 
+    private final ImageService imageService;
+
     @Autowired
-    public PostMapperImpl(TagMapper tagMapper, CategoryService categoryService) {
+    public PostMapperImpl(TagMapper tagMapper, CategoryService categoryService, ImageService imageService) {
         this.tagMapper = tagMapper;
         this.categoryService = categoryService;
+        this.imageService = imageService;
     }
 
     @Override
-    public Post postToPostMapper(Post srcPost) {
+    public Post postToPost(Post srcPost) {
         Post destPost = new Post();
         destPost.setTitle(srcPost.getTitle());
         destPost.setExcerpt(srcPost.getExcerpt());
@@ -48,7 +52,7 @@ public class PostMapperImpl implements PostMapper {
         destPost.setModifiedAt(srcPost.getModifiedAt());
         destPost.setPostType(srcPost.getPostType());
         destPost.setCategory(srcPost.getCategory());
-        destPost.setFeaturedImage(srcPost.getFeaturedImage());
+        destPost.setTitleImage(srcPost.getTitleImage());
         return destPost;
     }
 
@@ -60,7 +64,7 @@ public class PostMapperImpl implements PostMapper {
         responseDto.setContent(post.getContent());
         responseDto.setExcerpt(post.getExcerpt());
         responseDto.setDisplayName(post.getDisplayName());
-        responseDto.setFeaturedImage(post.getFeaturedImage());
+        responseDto.setTitleImage(post.getTitleImage());
         responseDto.setStatus(post.getStatus().toString());
 
         responseDto.setCreatedAt(post.getCreatedAt());
@@ -97,12 +101,17 @@ public class PostMapperImpl implements PostMapper {
         post.setContent(adminPostRequestDto.getContent());
         post.setExcerpt(adminPostRequestDto.getExcerpt());
         post.setDisplayName(adminPostRequestDto.getDisplayName());
-        post.setFeaturedImage(adminPostRequestDto.getFeaturedImage());
-        post.setCategory(categoryService.getReference(
-                adminPostRequestDto.getCategoryId()
-        ));
+        if (adminPostRequestDto.getTitleImageId() != null) {
+            post.setTitleImage(
+                    imageService.findById(adminPostRequestDto.getTitleImageId())
+            );
+        }
+        if (adminPostRequestDto.getCategoryId() != null) {
+            post.setCategory(categoryService.getReference(
+                    adminPostRequestDto.getCategoryId()
+            ));
+        }
         postRequestTagDtoListToPostTagSet(adminPostRequestDto.getTags(), post);
-
         return post;
     }
 
@@ -124,12 +133,14 @@ public class PostMapperImpl implements PostMapper {
             post.setDisplayName(adminPostRequestDto.getDisplayName());
         }
         if (adminPostRequestDto.getCategoryId() != null) {
-            post.setCategory(categoryService.getReference(
-                    adminPostRequestDto.getCategoryId()
+            post.setCategory(
+                    categoryService.getReference(adminPostRequestDto.getCategoryId()
             ));
         }
-        if (adminPostRequestDto.getFeaturedImage() != null) {
-            post.setFeaturedImage(adminPostRequestDto.getFeaturedImage());
+        if (adminPostRequestDto.getTitleImageId() != null) {
+            post.setTitleImage(
+                    imageService.findById(adminPostRequestDto.getTitleImageId())
+            );
         }
         if (adminPostRequestDto.getTags() != null) {
             postRequestTagDtoListToPostTagSet(adminPostRequestDto.getTags(), post);
@@ -149,7 +160,7 @@ public class PostMapperImpl implements PostMapper {
         requestDto.setStatus(post.getStatus().toString());
         requestDto.setCategoryId(post.getCategoryId());
         requestDto.setDisplayName(post.getDisplayName());
-        requestDto.setFeaturedImage(post.getFeaturedImage());
+        requestDto.setTitleImageId(post.getTitleImageId());
         if (post.getOriginal() != null) {
             requestDto.setOriginalId(post.getOriginalId());
         }

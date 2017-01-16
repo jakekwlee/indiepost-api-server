@@ -6,6 +6,7 @@ import com.indiepost.exception.FileSaveException;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.repository.ImageRepository;
+import com.indiepost.repository.PostRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.imgscalr.Scalr;
@@ -70,25 +71,31 @@ public class ImageServiceImpl implements ImageService {
             imageSet.setUploadedAt(new Date());
             List<Image> images = new ArrayList<>();
 
-            BufferedImage originalBufferedImage = getBufferedImageFromMultipartFile(file);
-            Image originalImage = saveUploadedImage(originalBufferedImage, ImageEnum.SizeType.ORIGINAL, alphanumeric, fileExtension, baseUrl);
+            BufferedImage bufferedImage = getBufferedImageFromMultipartFile(file);
+            Image originalImage = saveUploadedImage(bufferedImage, ImageEnum.SizeType.ORIGINAL, alphanumeric, fileExtension, baseUrl);
             images.add(originalImage);
 
-            BufferedImage largeBufferedImage = resizeImage(originalBufferedImage, 1200);
-            Image largeImage = saveUploadedImage(largeBufferedImage, ImageEnum.SizeType.LARGE, alphanumeric, fileExtension, baseUrl);
-            images.add(largeImage);
+            if (bufferedImage.getWidth() > 1200) {
+                bufferedImage  = resizeImage(bufferedImage, 1200);
+                Image largeImage = saveUploadedImage(bufferedImage, ImageEnum.SizeType.LARGE, alphanumeric, fileExtension, baseUrl);
+                images.add(largeImage);
+            }
 
-            BufferedImage optimizedBufferedImage = resizeImage(originalBufferedImage, 700);
-            Image optimizedImage = saveUploadedImage(optimizedBufferedImage, ImageEnum.SizeType.OPTIMIZED, alphanumeric, fileExtension, baseUrl);
-            images.add(optimizedImage);
-            //TODO
+            if (700 < bufferedImage.getWidth() && bufferedImage.getWidth() <= 1200) {
+                bufferedImage = resizeImage(bufferedImage, 700);
+                Image optimizedImage = saveUploadedImage(bufferedImage, ImageEnum.SizeType.OPTIMIZED, alphanumeric, fileExtension, baseUrl);
+                images.add(optimizedImage);
+            }
 
-            BufferedImage smallBufferedImage = resizeImage(optimizedBufferedImage, 400);
-            Image smallImage = saveUploadedImage(smallBufferedImage, ImageEnum.SizeType.SMALL, alphanumeric, fileExtension, baseUrl);
-            images.add(smallImage);
+            if (400 < bufferedImage.getWidth() && bufferedImage.getWidth() <= 700) {
+                bufferedImage = resizeImage(bufferedImage, 400);
+                Image smallImage = saveUploadedImage(bufferedImage, ImageEnum.SizeType.SMALL, alphanumeric, fileExtension, baseUrl);
+                images.add(smallImage);
+            }
 
-            BufferedImage thumbnailBufferedImage = generateThumbnail(smallBufferedImage, 120, 80);
-            Image thumbnailImage = saveUploadedImage(thumbnailBufferedImage, ImageEnum.SizeType.THUMBNAIL, alphanumeric, fileExtension, baseUrl);
+
+            bufferedImage = generateThumbnail(bufferedImage, 120, 80);
+            Image thumbnailImage = saveUploadedImage(bufferedImage, ImageEnum.SizeType.THUMBNAIL, alphanumeric, fileExtension, baseUrl);
             images.add(thumbnailImage);
 
             imageSet.setImages(images);
@@ -120,6 +127,11 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public ImageSet findById(Long id) {
         return imageRepository.findById(id);
+    }
+
+    @Override
+    public ImageSet getReference(Long id) {
+        return imageRepository.getReference(id);
     }
 
     @Override

@@ -74,6 +74,11 @@ public class ImageRepositoryHibernate implements ImageRepository {
         delete(findById(id));
     }
 
+    @Override
+    public ImageSet getReference(Long id) {
+        return entityManager.getReference(ImageSet.class, id);
+    }
+
     private Session getSession() {
         return entityManager.unwrap(Session.class);
     }

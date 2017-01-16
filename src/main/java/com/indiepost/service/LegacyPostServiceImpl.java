@@ -1,6 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.enums.PostEnum;
+import com.indiepost.model.ImageSet;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.model.legacy.Contentlist;
@@ -14,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by jake on 11/22/16.
@@ -91,7 +91,16 @@ public class LegacyPostServiceImpl implements LegacyPostService {
         contentlist.setContenttext(post.getExcerpt());
         contentlist.setWriterid(post.getAuthor().getUsername());
         contentlist.setWritername(post.getDisplayName());
-        contentlist.setImageurl(post.getFeaturedImage());
+        String imageUrl = "";
+        if (post.getTitleImage() != null) {
+            ImageSet titleImageSet = post.getTitleImage();
+            if (titleImageSet.getOptimized() != null) {
+                imageUrl = titleImageSet.getOptimized().getFileUrl();
+            } else {
+                imageUrl = titleImageSet.getOriginal().getFileUrl();
+            }
+        }
+        contentlist.setImageurl(imageUrl);
         contentlist.setImageurl2("");
         contentlist.setDataurl("");
         contentlist.setSubs(0L);

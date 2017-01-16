@@ -2,13 +2,16 @@ package com.indiepost.repository;
 
 import com.github.fluent.hibernate.request.aliases.Aliases;
 import com.github.fluent.hibernate.transformer.FluentHibernateResultTransformer;
+import com.indiepost.dto.request.PostQuery;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Post;
-import com.indiepost.dto.request.PostQuery;
 import com.indiepost.repository.helper.CriteriaHelper;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.*;
+import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
