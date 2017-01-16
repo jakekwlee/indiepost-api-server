@@ -1,5 +1,6 @@
 package com.indiepost.mapper;
 
+import com.indiepost.dto.response.AdminPostTableDto;
 import com.indiepost.model.Post;
 import com.indiepost.dto.request.AdminPostRequestDto;
 import com.indiepost.dto.response.AdminPostResponseDto;
@@ -18,4 +19,6 @@ public interface PostMapper {
     void adminPostRequestDtoToPost(AdminPostRequestDto adminPostRequestDto, Post post);
 
     AdminPostRequestDto postToAdminPostRequestDto(Post post);
+
+    AdminPostTableDto postToAdminPostTableDto(Post post);
 }

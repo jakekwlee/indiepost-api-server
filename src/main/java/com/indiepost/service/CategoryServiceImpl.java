@@ -34,6 +34,11 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public Category getReference(Long id) {
+        return categoryRepository.getReference(id);
+    }
+
+    @Override
     public Category findById(Long id) {
         return categoryRepository.findById(id);
     }

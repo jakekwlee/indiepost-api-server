@@ -65,9 +65,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
     @Override
     public Post findById(Long id) {
-        return (Post) getCriteria()
-                .add(Restrictions.eq("id", id))
-                .uniqueResult();
+        return entityManager.find(Post.class, id);
     }
 
     @Override
@@ -171,9 +169,6 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
     private Aliases getAliases() {
         return Aliases.create()
-                .add("author", "author", JoinType.INNER)
-                .add("editor", "editor", JoinType.INNER)
-                .add("category", "category", JoinType.INNER)
                 .add("tags", "tags", JoinType.LEFT);
     }
 

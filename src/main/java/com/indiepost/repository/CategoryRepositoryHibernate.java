@@ -37,6 +37,11 @@ public class CategoryRepositoryHibernate implements CategoryRepository {
     }
 
     @Override
+    public Category getReference(Long id) {
+        return entityManager.getReference(Category.class, id);
+    }
+
+    @Override
     public Category findById(Long id) {
         return (Category) getCriteria()
                 .add(Restrictions.eq("id", id))

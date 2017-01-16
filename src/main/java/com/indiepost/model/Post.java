@@ -14,7 +14,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by jake on 7/24/16.
@@ -35,13 +37,19 @@ public class Post implements Serializable {
     @JoinColumn(name = "originalId")
     private Post original;
 
+    @Column(name = "originalId", nullable = false, insertable = false, updatable = false)
+    private Long originalId;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "legacyPostId")
     @JsonIgnore
     private Contentlist legacyPost;
 
+    @Column(name = "legacyPostId", nullable = false, insertable = false, updatable = false)
+    private Long legacyPostId;
+
     @NotNull
-    private boolean isFeatured = false;
+    private boolean featured = false;
 
     @NotNull
     @Size(max = 100)
@@ -73,7 +81,7 @@ public class Post implements Serializable {
     private String featuredImage = "";
 
     @ManyToOne
-    @JoinColumn(name = "imageId")
+    @JoinColumn(name = "titleImageId")
     private ImageSet titleImage;
 
     @NotNull
@@ -92,20 +100,26 @@ public class Post implements Serializable {
     @Enumerated(EnumType.STRING)
     private PostEnum.Type postType = PostEnum.Type.POST;
 
-    @ManyToOne(optional = false)
-    @Fetch(FetchMode.JOIN)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "authorId", nullable = false)
     private User author;
 
-    @ManyToOne(optional = false)
-    @LazyCollection(LazyCollectionOption.EXTRA)
+    @Column(name = "authorId", nullable = false, insertable = false, updatable = false)
+    private Long authorId;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "editorId", nullable = false)
     private User editor;
 
+    @Column(name = "editorId", nullable = false, insertable = false, updatable = false)
+    private Long editorId;
+
     @ManyToOne(optional = false)
-    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "categoryId", nullable = false)
     private Category category;
+
+    @Column(name = "categoryId", nullable = false, insertable = false, updatable = false)
+    private Long categoryId;
 
     @ManyToMany
     @OrderBy("id desc")
@@ -117,7 +131,6 @@ public class Post implements Serializable {
     private List<Tag> tags = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @LazyCollection(LazyCollectionOption.EXTRA)
     @OrderBy("createdAt")
     private List<Comment> comments;
 
@@ -131,14 +144,6 @@ public class Post implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public boolean getFeatured() {
-        return isFeatured;
-    }
-
-    public void setFeatured(boolean featured) {
-        isFeatured = featured;
     }
 
     public String getTitle() {
@@ -338,5 +343,53 @@ public class Post implements Serializable {
 
     public void setLegacyPost(Contentlist legacyPost) {
         this.legacyPost = legacyPost;
+    }
+
+    public Long getOriginalId() {
+        return originalId;
+    }
+
+    public void setOriginalId(Long originalId) {
+        this.originalId = originalId;
+    }
+
+    public Long getLegacyPostId() {
+        return legacyPostId;
+    }
+
+    public void setLegacyPostId(Long legacyPostId) {
+        this.legacyPostId = legacyPostId;
+    }
+
+    public Long getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
+    }
+
+    public Long getEditorId() {
+        return editorId;
+    }
+
+    public void setEditorId(Long editorId) {
+        this.editorId = editorId;
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public boolean isFeatured() {
+        return featured;
+    }
+
+    public void setFeatured(boolean featured) {
+        this.featured = featured;
     }
 }

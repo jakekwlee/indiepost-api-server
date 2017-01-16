@@ -15,6 +15,8 @@ public interface CategoryRepository {
 
     void delete(Category category);
 
+    Category getReference(Long id);
+
     Category findById(Long id);
 
     Category findBySlug(String slug);

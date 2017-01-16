@@ -1,17 +1,21 @@
 package com.indiepost.mapper;
 
+import com.indiepost.dto.TagDto;
+import com.indiepost.dto.request.AdminPostRequestDto;
+import com.indiepost.dto.response.AdminPostResponseDto;
+import com.indiepost.dto.response.AdminPostTableDto;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.service.CategoryService;
-import com.indiepost.dto.TagDto;
-import com.indiepost.dto.request.AdminPostRequestDto;
-import com.indiepost.dto.response.AdminPostResponseDto;
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by jake on 16. 12. 15.
@@ -19,11 +23,15 @@ import java.util.List;
 @Component
 public class PostMapperImpl implements PostMapper {
 
-    @Autowired
-    private TagMapper tagMapper;
+    private final TagMapper tagMapper;
+
+    private final CategoryService categoryService;
 
     @Autowired
-    private CategoryService categoryService;
+    public PostMapperImpl(TagMapper tagMapper, CategoryService categoryService) {
+        this.tagMapper = tagMapper;
+        this.categoryService = categoryService;
+    }
 
     @Override
     public Post postToPostMapper(Post srcPost) {
@@ -59,17 +67,17 @@ public class PostMapperImpl implements PostMapper {
         responseDto.setModifiedAt(post.getModifiedAt());
         responseDto.setPublishedAt(post.getPublishedAt());
 
-        responseDto.setCategoryId(post.getCategory().getId());
-        responseDto.setAuthorId(post.getAuthor().getId());
-        responseDto.setEditorId(post.getEditor().getId());
+        responseDto.setCategoryId(post.getCategoryId());
+        responseDto.setAuthorId(post.getAuthorId());
+        responseDto.setEditorId(post.getEditorId());
 
         responseDto.setCommentsCount(post.getCommentsCount());
         responseDto.setLikesCount(post.getLikesCount());
 
         responseDto.setPostType(post.getPostType().toString());
 
-        if (post.getOriginal() != null) {
-            responseDto.setOriginalId(post.getOriginal().getId());
+        if (post.getOriginalId() != null) {
+            responseDto.setOriginalId(post.getOriginalId());
         }
         if (post.getTags() != null) {
             List<TagDto> tagDtoList = new ArrayList<>();
@@ -90,7 +98,7 @@ public class PostMapperImpl implements PostMapper {
         post.setExcerpt(adminPostRequestDto.getExcerpt());
         post.setDisplayName(adminPostRequestDto.getDisplayName());
         post.setFeaturedImage(adminPostRequestDto.getFeaturedImage());
-        post.setCategory(categoryService.findById(
+        post.setCategory(categoryService.getReference(
                 adminPostRequestDto.getCategoryId()
         ));
         postRequestTagDtoListToPostTagSet(adminPostRequestDto.getTags(), post);
@@ -116,7 +124,7 @@ public class PostMapperImpl implements PostMapper {
             post.setDisplayName(adminPostRequestDto.getDisplayName());
         }
         if (adminPostRequestDto.getCategoryId() != null) {
-            post.setCategory(categoryService.findById(
+            post.setCategory(categoryService.getReference(
                     adminPostRequestDto.getCategoryId()
             ));
         }
@@ -139,13 +147,48 @@ public class PostMapperImpl implements PostMapper {
         requestDto.setContent(post.getContent());
         requestDto.setExcerpt(post.getExcerpt());
         requestDto.setStatus(post.getStatus().toString());
-        requestDto.setCategoryId(post.getCategory().getId());
+        requestDto.setCategoryId(post.getCategoryId());
         requestDto.setDisplayName(post.getDisplayName());
         requestDto.setFeaturedImage(post.getFeaturedImage());
         if (post.getOriginal() != null) {
-            requestDto.setOriginalId(post.getOriginal().getId());
+            requestDto.setOriginalId(post.getOriginalId());
         }
         return requestDto;
+    }
+
+    @Override
+    public AdminPostTableDto postToAdminPostTableDto(Post post) {
+        // Todo
+        AdminPostTableDto adminPostTableDto = new AdminPostTableDto();
+//        adminPostTableDto.setId(post.getId());
+//        adminPostTableDto.setAuthorId(post.getAuthorId());
+//        adminPostTableDto.setCategoryId(post.getCategoryId());
+//        adminPostTableDto.setTags(this.tagMapper.tagListToTagStringList(post.getTags()));
+//        adminPostTableDto.setStatus(post.getStatus().toString());
+//
+//        adminPostTableDto.setTitle(post.getTitle());
+//        adminPostTableDto.setDisplayName(post.getDisplayName());
+//        adminPostTableDto.setCreatedAt(post.getCreatedAt());
+//        adminPostTableDto.setPublishedAt(post.getPublishedAt());
+//        adminPostTableDto.setModifiedAt(post.getModifiedAt());
+//        adminPostTableDto.setCreatedAt(post.getCreatedAt());
+//        adminPostTableDto.setDisplayName(post.getDisplayName());
+//        adminPostTableDto.setLikedCount(post.getLikesCount());
+        adminPostTableDto.setId(post.getId());
+        adminPostTableDto.setAuthorDisplayName(post.getAuthor().getDisplayName());
+        adminPostTableDto.setCategoryName(post.getCategory().getName());
+        adminPostTableDto.setTags(this.tagMapper.tagListToTagStringList(post.getTags()));
+        adminPostTableDto.setStatus(post.getStatus().toString());
+
+        adminPostTableDto.setTitle(post.getTitle());
+        adminPostTableDto.setDisplayName(post.getDisplayName());
+        adminPostTableDto.setCreatedAt(getDateString(post.getCreatedAt()));
+        adminPostTableDto.setPublishedAt(getDateString(post.getPublishedAt()));
+        adminPostTableDto.setModifiedAt(getDateString(post.getModifiedAt()));
+        adminPostTableDto.setCreatedAt(getDateString(post.getCreatedAt()));
+        adminPostTableDto.setDisplayName(post.getDisplayName());
+        adminPostTableDto.setLikedCount(post.getLikesCount());
+        return adminPostTableDto;
     }
 
     private void postRequestTagDtoListToPostTagSet(List<TagDto> tagDtos, Post post) {
@@ -156,5 +199,10 @@ public class PostMapperImpl implements PostMapper {
                 post.addTag(tag);
             }
         }
+    }
+
+    private String getDateString(Date date) {
+        FastDateFormat fastDateFormat = FastDateFormat.getInstance("yy/MM/dd HH:mm ", Locale.KOREA);
+        return fastDateFormat.format(date);
     }
 }

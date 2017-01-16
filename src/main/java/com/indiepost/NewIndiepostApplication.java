@@ -37,6 +37,11 @@ public class NewIndiepostApplication extends SpringBootServletInitializer {
         return new Java8TimeDialect();
     }
 
+//    @Bean
+//    public ObjectMapper objectMapper() {
+//        return new HibernateAwareObjectMapper();
+//    }
+
     @Bean
     public ImageConfig imageConfig() {
         return new ImageConfig();

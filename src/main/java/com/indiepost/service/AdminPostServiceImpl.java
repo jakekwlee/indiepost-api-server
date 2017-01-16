@@ -1,18 +1,18 @@
 package com.indiepost.service;
 
+import com.indiepost.dto.request.AdminPostRequestDto;
+import com.indiepost.dto.request.PostQuery;
+import com.indiepost.dto.response.AdminPostResponseDto;
+import com.indiepost.dto.response.AdminPostTableDto;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.mapper.PostMapper;
 import com.indiepost.mapper.TagMapper;
 import com.indiepost.mapper.UserMapper;
 import com.indiepost.model.Post;
-import com.indiepost.dto.request.PostQuery;
 import com.indiepost.model.User;
 import com.indiepost.model.legacy.Contentlist;
 import com.indiepost.repository.AdminPostRepository;
-import com.indiepost.dto.UserDto;
-import com.indiepost.dto.request.AdminPostRequestDto;
-import com.indiepost.dto.response.AdminPostResponseDto;
-import com.indiepost.dto.response.AdminPostTableDto;
+import com.indiepost.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,23 +39,20 @@ public class AdminPostServiceImpl implements AdminPostService {
 
     private final UserService userService;
 
-    private final CategoryService categoryService;
+    private final CategoryRepository categoryRepository;
 
     private final PostMapper postMapper;
-
-    private final UserMapper userMapper;
 
     private final TagMapper tagMapper;
 
     private final LegacyPostService legacyPostService;
 
     @Autowired
-    public AdminPostServiceImpl(AdminPostRepository adminPostRepository, UserService userService, CategoryService categoryService, PostMapper postMapper, UserMapper userMapper, TagMapper tagMapper, LegacyPostService legacyPostService) {
+    public AdminPostServiceImpl(AdminPostRepository adminPostRepository, UserService userService, CategoryRepository categoryRepository, PostMapper postMapper, UserMapper userMapper, TagMapper tagMapper, LegacyPostService legacyPostService) {
         this.adminPostRepository = adminPostRepository;
+        this.categoryRepository = categoryRepository;
         this.userService = userService;
-        this.categoryService = categoryService;
         this.postMapper = postMapper;
-        this.userMapper = userMapper;
         this.tagMapper = tagMapper;
         this.legacyPostService = legacyPostService;
     }
@@ -152,7 +149,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         post.setEditor(currentUser);
         post.setModifiedAt(new Date());
         post.setStatus(PostEnum.Status.AUTOSAVE);
-        post.setCategory(categoryService.findById(2L));
+        post.setCategory(categoryRepository.getReference(2L));
         save(post);
         return postMapper.postToAdminPostResponseDto(post);
     }
@@ -201,30 +198,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         List<Post> posts = find(page, maxResults, isDesc);
         List<AdminPostTableDto> adminPostTableDtos = new ArrayList<>();
         for (Post post : posts) {
-            User author = post.getAuthor();
-            AdminPostTableDto adminPostTableDto = new AdminPostTableDto();
-            UserDto userDto = new UserDto();
-
-            userDto.setId(author.getId());
-            userDto.setDisplayName(author.getDisplayName());
-            userDto.setEmail(author.getEmail());
-            userDto.setUsername(author.getUsername());
-
-            adminPostTableDto.setId(post.getId());
-            adminPostTableDto.setAuthorDisplayName(post.getAuthor().getDisplayName());
-            adminPostTableDto.setCategoryName(post.getCategory().getName());
-            adminPostTableDto.setTags(this.tagMapper.tagListToTagStringList(post.getTags()));
-            adminPostTableDto.setStatus(post.getStatus().toString());
-
-            adminPostTableDto.setTitle(post.getTitle());
-            adminPostTableDto.setDisplayName(post.getDisplayName());
-            adminPostTableDto.setCreatedAt(getDateString(post.getCreatedAt()));
-            adminPostTableDto.setPublishedAt(getDateString(post.getPublishedAt()));
-            adminPostTableDto.setModifiedAt(getDateString(post.getModifiedAt()));
-            adminPostTableDto.setCreatedAt(getDateString(post.getCreatedAt()));
-            adminPostTableDto.setDisplayName(post.getDisplayName());
-            adminPostTableDto.setLikedCount(post.getLikesCount());
-
+            AdminPostTableDto adminPostTableDto = postMapper.postToAdminPostTableDto(post);
             adminPostTableDtos.add(adminPostTableDto);
         }
         return adminPostTableDtos;
