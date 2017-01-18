@@ -1,7 +1,6 @@
 package com.indiepost.model;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -24,7 +23,7 @@ public class Like implements Serializable {
     @JoinColumn(name = "postId")
     private Post post;
 
-    @NotNull
+    @Column(nullable = false)
     private Date likedAt;
 
     public User getUser() {

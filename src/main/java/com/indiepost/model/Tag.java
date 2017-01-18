@@ -1,13 +1,13 @@
 package com.indiepost.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.indiepost.JsonView.Views;
+
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by jake on 7/25/16.
@@ -21,11 +21,12 @@ public class Tag implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView({Views.Public.class, Views.AdminList.class, Views.AdminInit.class})
     private Long id;
 
-    @NotNull
     @Size(min = 1, max = 50)
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
+    @JsonView({Views.Public.class, Views.AdminList.class, Views.AdminInit.class})
     private String name;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")

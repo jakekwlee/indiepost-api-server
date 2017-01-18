@@ -6,7 +6,6 @@ import com.indiepost.exception.FileSaveException;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.repository.ImageRepository;
-import com.indiepost.repository.PostRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.imgscalr.Scalr;
@@ -76,7 +75,7 @@ public class ImageServiceImpl implements ImageService {
             images.add(originalImage);
 
             if (bufferedImage.getWidth() > 1200) {
-                bufferedImage  = resizeImage(bufferedImage, 1200);
+                bufferedImage = resizeImage(bufferedImage, 1200);
                 Image largeImage = saveUploadedImage(bufferedImage, ImageEnum.SizeType.LARGE, alphanumeric, fileExtension, baseUrl);
                 images.add(largeImage);
             }

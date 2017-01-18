@@ -7,6 +7,7 @@ import com.indiepost.dto.response.AdminPostResponseDto;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.service.AdminPostService;
+import com.indiepost.service.PostService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +35,9 @@ public class PostMapperServiceTest {
 
     @Autowired
     private AdminPostService adminPostService;
+
+    @Autowired
+    private PostService postService;
 
     private Post post;
 
@@ -132,5 +136,11 @@ public class PostMapperServiceTest {
         assertEquals(this.post.getPublishedAt(), post.getPublishedAt());
         assertEquals(this.post.getCategory().getId(), post.getCategory().getId());
         assertEquals(this.post.getTags().size(), post.getTags().size());
+    }
+
+    @Test
+    @Transactional
+    public void testGetPostRespoonse() {
+        postService.find(0, 10, true);
     }
 }

@@ -53,6 +53,7 @@ dependencies {
         exclude group: 'org.hibernate'
     }
     compile('com.zaxxer:HikariCP:2.5.1')
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate5', version: '2.8.6'
 }
 
 compileJava.dependsOn(processResources)

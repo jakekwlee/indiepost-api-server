@@ -72,7 +72,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getCurrentUser() {
-        String username = getCurrentUsername();
+        // String username = getCurrentUsername();
+        // For test
+        String username = "indiepost";
+
         return findByUsername(username);
     }
 

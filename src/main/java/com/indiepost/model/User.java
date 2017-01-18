@@ -1,11 +1,11 @@
 package com.indiepost.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.indiepost.JsonView.Views;
 import com.indiepost.enums.UserEnum;
 import org.hibernate.validator.constraints.Email;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -17,40 +17,43 @@ import java.util.List;
  */
 @Entity
 @Table(name = "Users")
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView({Views.AdminInit.class})
     private Long id;
 
-    @NotNull
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     @Size(min = 4, max = 30)
+    @JsonView({Views.AdminInit.class})
     private String username;
 
-    @NotNull
+    @Column(nullable = false)
     @Size(min = 3, max = 50)
     private String password;
 
     @Size(max = 300)
     private String profile;
 
+    @JsonView({Views.AdminInit.class})
     private String picture;
 
-    @NotNull
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     @Size(min = 7, max = 50)
     @Email
+    @JsonView({Views.AdminInit.class})
     private String email;
 
     @Pattern(regexp = "[_0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]{2,10}")
     @Size(min = 2, max = 20)
+    @JsonView({Views.AdminInit.class})
     private String displayName;
 
-    @NotNull
+    @Column(nullable = false)
+    @JsonView({Views.AdminInit.class})
     private Date joinedAt;
 
     @Pattern(regexp = "^01[\\d]{8,9}")
@@ -62,11 +65,12 @@ public class User implements Serializable {
 
     private Date birthday;
 
-    @NotNull
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @JsonView({Views.AdminInit.class})
     private UserEnum.State state;
 
-    @NotNull
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UserEnum.Gender gender;
 
@@ -83,7 +87,7 @@ public class User implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    @NotNull
+    @Column(nullable = false)
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "Users_Roles",

@@ -7,11 +7,9 @@ import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Post;
 import com.indiepost.repository.helper.CriteriaHelper;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.Session;
-import org.hibernate.criterion.Conjunction;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -36,8 +34,10 @@ public class PostRepositoryHibernate implements PostRepository {
             "displayName",
             "commentsCount",
             "likesCount",
-            "featuredImage",
-            "category"
+            "titleImage.id",
+            "titleImage.images",
+            "categoryId",
+            "status"
     };
 
     private final CriteriaHelper criteriaHelper;
@@ -53,6 +53,7 @@ public class PostRepositoryHibernate implements PostRepository {
     @Override
     public Post findById(Long id) {
         return (Post) getCriteria()
+                .setFetchMode("tags", FetchMode.JOIN)
                 .add(Restrictions.eq("id", id))
                 .uniqueResult();
     }
@@ -85,7 +86,19 @@ public class PostRepositoryHibernate implements PostRepository {
     public List<Post> find(PostQuery query, Pageable pageable) {
         Criteria criteria = getPagedCriteria(pageable);
         getAliases().addToCriteria(criteria);
-        criteria.setProjection(criteriaHelper.buildProjectionList(HOME_PROJECTION));
+        criteria.setProjection(Projections.projectionList()
+                .add(Property.forName("id"), "id")
+                .add(Property.forName("title"), "title")
+                .add(Property.forName("excerpt"), "excerpt")
+                .add(Property.forName("publishedAt"), "publishedAt")
+                .add(Property.forName("displayName"), "displayName")
+                .add(Property.forName("commentsCount"), "commentsCount")
+                .add(Property.forName("likesCount"), "likesCount")
+                .add(Property.forName("categoryId"), "categoryId")
+                .add(Property.forName("status"), "status")
+                .add(Property.forName("titleImage"), "titleImage"));
+
+
         Conjunction conjunction = Restrictions.conjunction();
 
         if (query != null) {
@@ -95,7 +108,6 @@ public class PostRepositoryHibernate implements PostRepository {
         if (conjunction.conditions().iterator().hasNext()) {
             criteria.add(conjunction);
         }
-
         criteria.setResultTransformer(new FluentHibernateResultTransformer(Post.class));
         return criteria.list();
     }
@@ -126,6 +138,7 @@ public class PostRepositoryHibernate implements PostRepository {
 
     private Aliases getAliases() {
         return Aliases.create()
-                .add("category", "c", JoinType.INNER);
+                .add("titleImage", "titleImage", JoinType.LEFT);
     }
+
 }

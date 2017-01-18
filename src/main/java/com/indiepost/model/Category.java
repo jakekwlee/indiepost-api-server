@@ -1,7 +1,9 @@
 package com.indiepost.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.indiepost.JsonView.Views;
+
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
@@ -17,24 +19,32 @@ public class Category implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView({Views.AdminInit.class})
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parentId")
     private Category parent;
 
+    @Column(name = "parentId", insertable = false, updatable = false)
+    @JsonView({Views.AdminInit.class})
+    private Long parentId;
+
     @OneToMany(mappedBy = "parent", orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Category> categories;
 
-    @NotNull
+    @Column(nullable = false)
     @Size(min = 3, max = 20)
+    @JsonView({Views.AdminInit.class})
     private String name;
 
-    @NotNull
+    @Column(nullable = false)
     @Size(min = 3, max = 20)
+    @JsonView({Views.AdminInit.class})
     private String slug;
 
-    @NotNull
+    @Column(nullable = false)
+    @JsonView({Views.AdminInit.class})
     private int displayOrder;
 
     @OneToMany(mappedBy = "category")
@@ -94,5 +104,13 @@ public class Category implements Serializable {
 
     public void setPosts(List<Post> posts) {
         this.posts = posts;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 }

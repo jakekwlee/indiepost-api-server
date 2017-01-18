@@ -1,9 +1,10 @@
 package com.indiepost.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.indiepost.JsonView.Views;
 import com.indiepost.enums.ImageEnum.SizeType;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
@@ -18,27 +19,34 @@ public class Image implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView({Views.PublicList.class, Views.Admin.class})
     private Long id;
 
-    @NotNull
+    @Column(nullable = false)
     @Size(min = 2, max = 120)
+    @JsonView({Views.PublicList.class, Views.Admin.class})
     private String fileUrl;
 
-    @NotNull
+    @Column(nullable = false)
     @Size(min = 2, max = 120)
+    @JsonView({Views.Admin.class})
     private String fileName;
 
-    @NotNull
+    @Column(nullable = false)
+    @JsonView({Views.Admin.class})
     private long fileSize;
 
-    @NotNull
+    @Column(nullable = false)
+    @JsonView({Views.PublicList.class, Views.Admin.class})
     private int width;
 
-    @NotNull
+    @Column(nullable = false)
+    @JsonView({Views.PublicList.class, Views.Admin.class})
     private int height;
 
-    @NotNull
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @JsonView({Views.Admin.class})
     private SizeType sizeType;
 
     public Long getId() {

@@ -1,11 +1,9 @@
 package com.indiepost.model;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * Created by jake on 7/24/16.
@@ -20,27 +18,27 @@ public class Comment implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "postId", nullable = false)
     private Post post;
 
-    @NotNull
+    @Column(nullable = false)
     @Size(min = 2, max = 20)
     private String displayName;
 
-    @NotNull
+    @Column(nullable = false)
     @Size(min = 2, max = 300)
     private String content;
 
-    @NotNull
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
     private String ip;
+
     private String agent;
 
     public Long getId() {
