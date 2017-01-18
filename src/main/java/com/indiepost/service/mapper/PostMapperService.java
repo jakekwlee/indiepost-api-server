@@ -1,14 +1,14 @@
-package com.indiepost.mapper;
+package com.indiepost.service.mapper;
 
-import com.indiepost.dto.response.AdminPostTableDto;
-import com.indiepost.model.Post;
 import com.indiepost.dto.request.AdminPostRequestDto;
 import com.indiepost.dto.response.AdminPostResponseDto;
+import com.indiepost.dto.response.AdminPostTableDto;
+import com.indiepost.model.Post;
 
 /**
  * Created by jake on 16. 12. 14.
  */
-public interface PostMapper {
+public interface PostMapperService {
 
     Post postToPost(Post srcPost);
 

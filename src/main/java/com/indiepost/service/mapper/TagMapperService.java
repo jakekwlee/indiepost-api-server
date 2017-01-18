@@ -1,14 +1,14 @@
-package com.indiepost.mapper;
+package com.indiepost.service.mapper;
 
-import com.indiepost.model.Tag;
 import com.indiepost.dto.TagDto;
+import com.indiepost.model.Tag;
 
 import java.util.List;
 
 /**
  * Created by jake on 16. 12. 14.
  */
-public interface TagMapper {
+public interface TagMapperService {
 
     TagDto tagToTagDto(Tag tag);
 

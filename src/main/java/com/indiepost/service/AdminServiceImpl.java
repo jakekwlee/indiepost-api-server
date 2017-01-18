@@ -1,18 +1,21 @@
 package com.indiepost.service;
 
-import com.indiepost.enums.UserEnum;
-import com.indiepost.mapper.TagMapper;
-import com.indiepost.mapper.UserMapper;
-import com.indiepost.model.*;
 import com.indiepost.dto.CategoryDto;
 import com.indiepost.dto.TagDto;
 import com.indiepost.dto.UserDto;
 import com.indiepost.dto.response.AdminInitResponseDto;
+import com.indiepost.enums.UserEnum;
+import com.indiepost.model.Category;
+import com.indiepost.model.Tag;
+import com.indiepost.model.User;
+import com.indiepost.service.mapper.TagMapperService;
+import com.indiepost.service.mapper.UserMapperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by jake on 10/8/16.
@@ -27,28 +30,28 @@ public class AdminServiceImpl implements AdminService {
 
     private UserService userService;
 
+    private UserMapperService userMapperService;
+
     private TagService tagService;
 
-    private UserMapper userMapper;
-
-    private TagMapper tagMapper;
+    private TagMapperService tagMapperService;
 
     @Autowired
     public AdminServiceImpl(AdminPostService adminPostService, CategoryService categoryService,
-                            TagService tagService, UserService userService, UserMapper userMapper, TagMapper tagMapper) {
+                            TagService tagService, UserService userService, UserMapperService userMapperService, TagMapperService tagMapperService) {
         this.adminPostService = adminPostService;
         this.categoryService = categoryService;
         this.tagService = tagService;
         this.userService = userService;
-        this.userMapper = userMapper;
-        this.tagMapper = tagMapper;
+        this.userMapperService = userMapperService;
+        this.tagMapperService = tagMapperService;
     }
 
     @Override
     public AdminInitResponseDto buildInitialResponse() {
         User currentUser = userService.getCurrentUser();
         AdminInitResponseDto adminInitResponseDto = new AdminInitResponseDto();
-        adminInitResponseDto.setCurrentUser(userMapper.userToUserDto(currentUser));
+        adminInitResponseDto.setCurrentUser(userMapperService.userToUserDto(currentUser));
         adminInitResponseDto.setAuthors(getUserDtoList(UserEnum.Roles.Author));
         adminInitResponseDto.setCategories(getAllCategoryDtoList());
         adminInitResponseDto.setTags(getAllTagDtoList());
@@ -59,7 +62,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public List<TagDto> getAllTagDtoList() {
         List<Tag> tagList = tagService.findAll();
-        return tagMapper.tagListToTagDtoList(tagList);
+        return tagMapperService.tagListToTagDtoList(tagList);
     }
 
     @Override
@@ -77,7 +80,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public UserDto getCurrentUserDto() {
         User currentUser = userService.getCurrentUser();
-        return userMapper.userToUserDto(currentUser);
+        return userMapperService.userToUserDto(currentUser);
     }
 
     @Override
@@ -97,7 +100,7 @@ public class AdminServiceImpl implements AdminService {
     private List<UserDto> userListToUserDtoList(List<User> userList) {
         List<UserDto> userDtoList = new ArrayList<>();
         for (User user : userList) {
-            userDtoList.add(userMapper.userToUserDto(user));
+            userDtoList.add(userMapperService.userToUserDto(user));
         }
         return userDtoList;
     }

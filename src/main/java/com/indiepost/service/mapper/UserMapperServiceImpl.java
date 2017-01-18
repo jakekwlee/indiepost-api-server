@@ -1,14 +1,14 @@
-package com.indiepost.mapper;
+package com.indiepost.service.mapper;
 
-import com.indiepost.model.User;
 import com.indiepost.dto.UserDto;
-import org.springframework.stereotype.Component;
+import com.indiepost.model.User;
+import org.springframework.stereotype.Service;
 
 /**
  * Created by jake on 17. 1. 14.
  */
-@Component
-public class UserMapperImpl implements UserMapper {
+@Service
+public class UserMapperServiceImpl implements UserMapperService {
     @Override
     public User userDtoToUser(UserDto userDto) {
         return null;

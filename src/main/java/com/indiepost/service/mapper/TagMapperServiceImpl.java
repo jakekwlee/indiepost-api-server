@@ -1,10 +1,11 @@
-package com.indiepost.mapper;
+package com.indiepost.service.mapper;
 
+import com.indiepost.dto.TagDto;
 import com.indiepost.model.Tag;
 import com.indiepost.service.TagService;
-import com.indiepost.dto.TagDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,13 +13,13 @@ import java.util.List;
 /**
  * Created by jake on 16. 12. 15.
  */
-@Component
-public class TagMapperImpl implements TagMapper {
+@Service
+public class TagMapperServiceImpl implements TagMapperService {
 
     private final TagService tagService;
 
     @Autowired
-    public TagMapperImpl(TagService tagService) {
+    public TagMapperServiceImpl(TagService tagService) {
         this.tagService = tagService;
     }
 
@@ -31,6 +32,7 @@ public class TagMapperImpl implements TagMapper {
     }
 
     @Override
+    @Transactional
     public Tag tagDtoToTag(TagDto tagDto) {
         Tag tag = tagService.findByName(tagDto.getName());
         if (tag == null) {

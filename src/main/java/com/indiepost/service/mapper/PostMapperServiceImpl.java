@@ -1,4 +1,4 @@
-package com.indiepost.mapper;
+package com.indiepost.service.mapper;
 
 import com.indiepost.dto.TagDto;
 import com.indiepost.dto.request.AdminPostRequestDto;
@@ -11,7 +11,8 @@ import com.indiepost.service.CategoryService;
 import com.indiepost.service.ImageService;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,18 +22,18 @@ import java.util.Locale;
 /**
  * Created by jake on 16. 12. 15.
  */
-@Component
-public class PostMapperImpl implements PostMapper {
+@Service
+public class PostMapperServiceImpl implements PostMapperService {
 
-    private final TagMapper tagMapper;
+    private final TagMapperService tagMapperService;
 
     private final CategoryService categoryService;
 
     private final ImageService imageService;
 
     @Autowired
-    public PostMapperImpl(TagMapper tagMapper, CategoryService categoryService, ImageService imageService) {
-        this.tagMapper = tagMapper;
+    public PostMapperServiceImpl(TagMapperService tagMapperService, CategoryService categoryService, ImageService imageService) {
+        this.tagMapperService = tagMapperService;
         this.categoryService = categoryService;
         this.imageService = imageService;
     }
@@ -57,6 +58,7 @@ public class PostMapperImpl implements PostMapper {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AdminPostResponseDto postToAdminPostResponseDto(Post post) {
         AdminPostResponseDto responseDto = new AdminPostResponseDto();
         responseDto.setId(post.getId());
@@ -86,7 +88,7 @@ public class PostMapperImpl implements PostMapper {
         if (post.getTags() != null) {
             List<TagDto> tagDtoList = new ArrayList<>();
             for (Tag tag : post.getTags()) {
-                tagDtoList.add(tagMapper.tagToTagDto(tag));
+                tagDtoList.add(tagMapperService.tagToTagDto(tag));
             }
             responseDto.setTags(tagDtoList);
         }
@@ -94,6 +96,7 @@ public class PostMapperImpl implements PostMapper {
     }
 
     @Override
+    @Transactional
     public Post adminPostRequestDtoToPost(AdminPostRequestDto adminPostRequestDto) {
         Post post = new Post();
         post.setTitle(adminPostRequestDto.getTitle());
@@ -116,6 +119,7 @@ public class PostMapperImpl implements PostMapper {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void adminPostRequestDtoToPost(AdminPostRequestDto adminPostRequestDto, Post post) {
         if (adminPostRequestDto.getTitle() != null && adminPostRequestDto.getTitle().length() > 0) {
             post.setTitle(adminPostRequestDto.getTitle());
@@ -135,7 +139,7 @@ public class PostMapperImpl implements PostMapper {
         if (adminPostRequestDto.getCategoryId() != null) {
             post.setCategory(
                     categoryService.findById(adminPostRequestDto.getCategoryId()
-            ));
+                    ));
         }
         if (adminPostRequestDto.getTitleImageId() != null) {
             post.setTitleImage(
@@ -169,26 +173,13 @@ public class PostMapperImpl implements PostMapper {
 
     @Override
     public AdminPostTableDto postToAdminPostTableDto(Post post) {
-        // Todo
+        // TODO
         AdminPostTableDto adminPostTableDto = new AdminPostTableDto();
-//        adminPostTableDto.setId(post.getId());
-//        adminPostTableDto.setAuthorId(post.getAuthorId());
-//        adminPostTableDto.setCategoryId(post.getCategoryId());
-//        adminPostTableDto.setTags(this.tagMapper.tagListToTagStringList(post.getTags()));
-//        adminPostTableDto.setStatus(post.getStatus().toString());
-//
-//        adminPostTableDto.setTitle(post.getTitle());
-//        adminPostTableDto.setDisplayName(post.getDisplayName());
-//        adminPostTableDto.setCreatedAt(post.getCreatedAt());
-//        adminPostTableDto.setPublishedAt(post.getPublishedAt());
-//        adminPostTableDto.setModifiedAt(post.getModifiedAt());
-//        adminPostTableDto.setCreatedAt(post.getCreatedAt());
-//        adminPostTableDto.setDisplayName(post.getDisplayName());
-//        adminPostTableDto.setLikedCount(post.getLikesCount());
+
         adminPostTableDto.setId(post.getId());
         adminPostTableDto.setAuthorDisplayName(post.getAuthor().getDisplayName());
         adminPostTableDto.setCategoryName(post.getCategory().getName());
-        adminPostTableDto.setTags(this.tagMapper.tagListToTagStringList(post.getTags()));
+        adminPostTableDto.setTags(this.tagMapperService.tagListToTagStringList(post.getTags()));
         adminPostTableDto.setStatus(post.getStatus().toString());
 
         adminPostTableDto.setTitle(post.getTitle());
@@ -202,11 +193,12 @@ public class PostMapperImpl implements PostMapper {
         return adminPostTableDto;
     }
 
+    @Transactional
     private void postRequestTagDtoListToPostTagSet(List<TagDto> tagDtos, Post post) {
         post.clearTags();
         if (tagDtos != null) {
             for (TagDto tagDto : tagDtos) {
-                Tag tag = tagMapper.tagDtoToTag(tagDto);
+                Tag tag = tagMapperService.tagDtoToTag(tagDto);
                 post.addTag(tag);
             }
         }

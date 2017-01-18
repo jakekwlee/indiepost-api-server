@@ -5,12 +5,12 @@ import com.indiepost.dto.request.PostQuery;
 import com.indiepost.dto.response.AdminPostResponseDto;
 import com.indiepost.dto.response.AdminPostTableDto;
 import com.indiepost.enums.PostEnum;
-import com.indiepost.mapper.PostMapper;
 import com.indiepost.model.Post;
 import com.indiepost.model.User;
 import com.indiepost.model.legacy.Contentlist;
 import com.indiepost.repository.AdminPostRepository;
 import com.indiepost.repository.CategoryRepository;
+import com.indiepost.service.mapper.PostMapperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,21 +34,21 @@ public class AdminPostServiceImpl implements AdminPostService {
 
     private final AdminPostRepository adminPostRepository;
 
-    private final UserService userService;
-
     private final CategoryRepository categoryRepository;
 
-    private final PostMapper postMapper;
+    private final UserService userService;
+
+    private final PostMapperService postMapperService;
 
     private final LegacyPostService legacyPostService;
 
     @Autowired
     public AdminPostServiceImpl(AdminPostRepository adminPostRepository, UserService userService,
-                                CategoryRepository categoryRepository, PostMapper postMapper, LegacyPostService legacyPostService) {
+                                CategoryRepository categoryRepository, PostMapperService postMapperService, LegacyPostService legacyPostService) {
         this.adminPostRepository = adminPostRepository;
         this.categoryRepository = categoryRepository;
         this.userService = userService;
-        this.postMapper = postMapper;
+        this.postMapperService = postMapperService;
         this.legacyPostService = legacyPostService;
     }
 
@@ -111,13 +111,13 @@ public class AdminPostServiceImpl implements AdminPostService {
     @Override
     public AdminPostResponseDto save(AdminPostRequestDto adminPostRequestDto) {
         User currentUser = userService.getCurrentUser();
-        Post post = postMapper.adminPostRequestDtoToPost(adminPostRequestDto);
+        Post post = postMapperService.adminPostRequestDtoToPost(adminPostRequestDto);
         post.setCreatedAt(new Date());
         post.setModifiedAt(new Date());
         post.setAuthor(currentUser);
         post.setEditor(currentUser);
         save(post);
-        return postMapper.postToAdminPostResponseDto(post);
+        return postMapperService.postToAdminPostResponseDto(post);
     }
 
     @Override
@@ -126,11 +126,11 @@ public class AdminPostServiceImpl implements AdminPostService {
         User currentUser = userService.getCurrentUser();
         if (adminPostRequestDto.getId() != null) {
             Post originalPost = findById(adminPostRequestDto.getId());
-            post = postMapper.postToPost(originalPost);
-            postMapper.adminPostRequestDtoToPost(adminPostRequestDto, post);
+            post = postMapperService.postToPost(originalPost);
+            postMapperService.adminPostRequestDtoToPost(adminPostRequestDto, post);
             post.setOriginal(originalPost);
         } else {
-            post = postMapper.adminPostRequestDtoToPost(adminPostRequestDto);
+            post = postMapperService.adminPostRequestDtoToPost(adminPostRequestDto);
             post.setAuthor(currentUser);
             post.setCreatedAt(new Date());
         }
@@ -155,13 +155,13 @@ public class AdminPostServiceImpl implements AdminPostService {
         post.setStatus(PostEnum.Status.AUTOSAVE);
         post.setCategory(categoryRepository.getReference(2L));
         save(post);
-        return postMapper.postToAdminPostResponseDto(post);
+        return postMapperService.postToAdminPostResponseDto(post);
     }
 
     @Override
     public void updateAutosave(Long id, AdminPostRequestDto adminPostRequestDto) {
         Post post = findById(id);
-        postMapper.adminPostRequestDtoToPost(adminPostRequestDto, post);
+        postMapperService.adminPostRequestDtoToPost(adminPostRequestDto, post);
         update(post);
     }
 
@@ -176,7 +176,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         )) {
             adminPostRequestDto.setStatus(null);
         }
-        postMapper.adminPostRequestDtoToPost(adminPostRequestDto, originalPost);
+        postMapperService.adminPostRequestDtoToPost(adminPostRequestDto, originalPost);
 
         PostEnum.Status status = originalPost.getStatus();
         if (status.equals(PostEnum.Status.FUTURE) || status.equals(PostEnum.Status.PUBLISH)) {
@@ -189,12 +189,12 @@ public class AdminPostServiceImpl implements AdminPostService {
             }
         }
         update(originalPost);
-        return postMapper.postToAdminPostResponseDto(originalPost);
+        return postMapperService.postToAdminPostResponseDto(originalPost);
     }
 
     @Override
     public AdminPostResponseDto getPostResponse(Long id) {
-        return postMapper.postToAdminPostResponseDto(findById(id));
+        return postMapperService.postToAdminPostResponseDto(findById(id));
     }
 
     @Override
@@ -202,7 +202,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         List<Post> posts = find(page, maxResults, isDesc);
         List<AdminPostTableDto> adminPostTableDtos = new ArrayList<>();
         for (Post post : posts) {
-            AdminPostTableDto adminPostTableDto = postMapper.postToAdminPostTableDto(post);
+            AdminPostTableDto adminPostTableDto = postMapperService.postToAdminPostTableDto(post);
             adminPostTableDtos.add(adminPostTableDto);
         }
         return adminPostTableDtos;
