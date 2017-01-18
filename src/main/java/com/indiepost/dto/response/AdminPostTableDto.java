@@ -21,6 +21,8 @@ public class AdminPostTableDto {
 
     private String authorDisplayName;
 
+    private String editorDisplayName;
+
     private String createdAt;
 
     private String publishedAt;
@@ -61,6 +63,14 @@ public class AdminPostTableDto {
 
     public void setAuthorDisplayName(String authorDisplayName) {
         this.authorDisplayName = authorDisplayName;
+    }
+
+    public String getEditorDisplayName() {
+        return editorDisplayName;
+    }
+
+    public void setEditorDisplayName(String editorDisplayName) {
+        this.editorDisplayName = editorDisplayName;
     }
 
     public String getStatus() {

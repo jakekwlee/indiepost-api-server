@@ -15,11 +15,11 @@ spring:
       ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    show-sql: true
+    show-sql: false
     generate-ddl: true
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
         connection:
           charSet: UTF-8
         hbm2ddl:
@@ -41,4 +41,4 @@ logging:
   level:
     org:
       springframework:
-        web: debug
+        web: info

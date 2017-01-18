@@ -19,12 +19,16 @@ public class ScheduledTasks {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
+    private final AdminPostService adminPostService;
+
     @Autowired
-    private AdminPostService adminPostService;
+    public ScheduledTasks(AdminPostService adminPostService) {
+        this.adminPostService = adminPostService;
+    }
 
 
-    //    @Scheduled(fixedRate = 60000)
-    @Scheduled(cron = "0 0/30 * * * ?")
+    //    @Scheduled(cron = "0 0/30 * * * ?")
+    @Scheduled(fixedRate = 60000)
     public void publishPosts() {
         adminPostService.publishPosts();
     }

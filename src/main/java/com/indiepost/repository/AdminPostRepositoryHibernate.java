@@ -1,14 +1,13 @@
 package com.indiepost.repository;
 
 import com.github.fluent.hibernate.request.aliases.Aliases;
-import com.github.fluent.hibernate.transformer.FluentHibernateResultTransformer;
+import com.indiepost.dto.request.PostQuery;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.enums.UserEnum.Roles;
 import com.indiepost.model.Post;
 import com.indiepost.model.Role;
 import com.indiepost.model.User;
 import com.indiepost.repository.helper.CriteriaHelper;
-import com.indiepost.dto.request.PostQuery;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
@@ -169,6 +168,9 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
     private Aliases getAliases() {
         return Aliases.create()
+                .add("author", "author", JoinType.INNER)
+                .add("editor", "editor", JoinType.INNER)
+                .add("category", "category", JoinType.INNER)
                 .add("tags", "tags", JoinType.LEFT);
     }
 

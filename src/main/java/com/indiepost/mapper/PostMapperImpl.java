@@ -71,17 +71,17 @@ public class PostMapperImpl implements PostMapper {
         responseDto.setModifiedAt(post.getModifiedAt());
         responseDto.setPublishedAt(post.getPublishedAt());
 
-        responseDto.setCategoryId(post.getCategoryId());
-        responseDto.setAuthorId(post.getAuthorId());
-        responseDto.setEditorId(post.getEditorId());
+        responseDto.setCategoryId(post.getCategory().getId());
+        responseDto.setAuthorId(post.getAuthor().getId());
+        responseDto.setEditorId(post.getEditor().getId());
 
         responseDto.setCommentsCount(post.getCommentsCount());
         responseDto.setLikesCount(post.getLikesCount());
 
         responseDto.setPostType(post.getPostType().toString());
 
-        if (post.getOriginalId() != null) {
-            responseDto.setOriginalId(post.getOriginalId());
+        if (post.getOriginal() != null) {
+            responseDto.setOriginalId(post.getOriginal().getId());
         }
         if (post.getTags() != null) {
             List<TagDto> tagDtoList = new ArrayList<>();
@@ -107,7 +107,7 @@ public class PostMapperImpl implements PostMapper {
             );
         }
         if (adminPostRequestDto.getCategoryId() != null) {
-            post.setCategory(categoryService.getReference(
+            post.setCategory(categoryService.findById(
                     adminPostRequestDto.getCategoryId()
             ));
         }
@@ -134,7 +134,7 @@ public class PostMapperImpl implements PostMapper {
         }
         if (adminPostRequestDto.getCategoryId() != null) {
             post.setCategory(
-                    categoryService.getReference(adminPostRequestDto.getCategoryId()
+                    categoryService.findById(adminPostRequestDto.getCategoryId()
             ));
         }
         if (adminPostRequestDto.getTitleImageId() != null) {
