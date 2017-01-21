@@ -1,15 +1,13 @@
 package com.indiepost.service.mapper;
 
-import com.indiepost.dto.TagDto;
-import com.indiepost.dto.request.AdminPostRequestDto;
-import com.indiepost.dto.response.AdminPostResponseDto;
-import com.indiepost.dto.response.AdminPostTableDto;
+import com.indiepost.dto.*;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.service.CategoryService;
 import com.indiepost.service.ImageService;
 import org.apache.commons.lang3.time.FastDateFormat;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,6 +53,13 @@ public class PostMapperServiceImpl implements PostMapperService {
         destPost.setCategory(srcPost.getCategory());
         destPost.setTitleImage(srcPost.getTitleImage());
         return destPost;
+    }
+
+    @Override
+    public PostDto postToPostDto(Post post) {
+        PostDto postDto = new PostDto();
+        BeanUtils.copyProperties(post, postDto);
+        return postDto;
     }
 
     @Override
@@ -155,42 +160,24 @@ public class PostMapperServiceImpl implements PostMapperService {
     }
 
     @Override
-    public AdminPostRequestDto postToAdminPostRequestDto(Post post) {
-        AdminPostRequestDto requestDto = new AdminPostRequestDto();
-        requestDto.setId(post.getId());
-        requestDto.setTitle(post.getTitle());
-        requestDto.setContent(post.getContent());
-        requestDto.setExcerpt(post.getExcerpt());
-        requestDto.setStatus(post.getStatus().toString());
-        requestDto.setCategoryId(post.getCategoryId());
-        requestDto.setDisplayName(post.getDisplayName());
-        requestDto.setTitleImageId(post.getTitleImageId());
-        if (post.getOriginal() != null) {
-            requestDto.setOriginalId(post.getOriginalId());
-        }
-        return requestDto;
-    }
+    public AdminPostSummaryDto postToAdminPostSummaryDto(Post post) {
+        AdminPostSummaryDto adminPostSummaryDto = new AdminPostSummaryDto();
 
-    @Override
-    public AdminPostTableDto postToAdminPostTableDto(Post post) {
-        // TODO
-        AdminPostTableDto adminPostTableDto = new AdminPostTableDto();
+        adminPostSummaryDto.setId(post.getId());
+        adminPostSummaryDto.setAuthorDisplayName(post.getAuthor().getDisplayName());
+        adminPostSummaryDto.setEditorDisplayName(post.getEditor().getDisplayName());
+        adminPostSummaryDto.setCategoryName(post.getCategory().getName());
+        adminPostSummaryDto.setTags(this.tagMapperService.tagListToTagStringList(post.getTags()));
+        adminPostSummaryDto.setStatus(post.getStatus().toString());
 
-        adminPostTableDto.setId(post.getId());
-        adminPostTableDto.setAuthorDisplayName(post.getAuthor().getDisplayName());
-        adminPostTableDto.setCategoryName(post.getCategory().getName());
-        adminPostTableDto.setTags(this.tagMapperService.tagListToTagStringList(post.getTags()));
-        adminPostTableDto.setStatus(post.getStatus().toString());
-
-        adminPostTableDto.setTitle(post.getTitle());
-        adminPostTableDto.setDisplayName(post.getDisplayName());
-        adminPostTableDto.setCreatedAt(getDateString(post.getCreatedAt()));
-        adminPostTableDto.setPublishedAt(getDateString(post.getPublishedAt()));
-        adminPostTableDto.setModifiedAt(getDateString(post.getModifiedAt()));
-        adminPostTableDto.setCreatedAt(getDateString(post.getCreatedAt()));
-        adminPostTableDto.setDisplayName(post.getDisplayName());
-        adminPostTableDto.setLikedCount(post.getLikesCount());
-        return adminPostTableDto;
+        adminPostSummaryDto.setTitle(post.getTitle());
+        adminPostSummaryDto.setDisplayName(post.getDisplayName());
+        adminPostSummaryDto.setCreatedAt(getDateString(post.getCreatedAt()));
+        adminPostSummaryDto.setPublishedAt(getDateString(post.getPublishedAt()));
+        adminPostSummaryDto.setModifiedAt(getDateString(post.getModifiedAt()));
+        adminPostSummaryDto.setCreatedAt(getDateString(post.getCreatedAt()));
+        adminPostSummaryDto.setLikedCount(post.getLikesCount());
+        return adminPostSummaryDto;
     }
 
     @Transactional

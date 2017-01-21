@@ -23,7 +23,7 @@ import java.util.Set;
 @Transactional(readOnly = true)
 public class IndiepostUserDetailService implements UserDetailsService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public IndiepostUserDetailService(UserRepository userRepository) {

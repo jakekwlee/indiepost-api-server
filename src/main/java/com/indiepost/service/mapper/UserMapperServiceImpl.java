@@ -2,6 +2,7 @@ package com.indiepost.service.mapper;
 
 import com.indiepost.dto.UserDto;
 import com.indiepost.model.User;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,15 +18,7 @@ public class UserMapperServiceImpl implements UserMapperService {
     @Override
     public UserDto userToUserDto(User user) {
         UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setUsername(user.getUsername());
-        userDto.setDisplayName(user.getDisplayName());
-        userDto.setEmail(user.getEmail());
-        userDto.setBirthday(user.getBirthday());
-        userDto.setGender(user.getGender());
-        userDto.setJoinedAt(user.getJoinedAt());
-        userDto.setPicture(user.getPicture());
-        userDto.setProfile(user.getProfile());
+        BeanUtils.copyProperties(user, userDto);
         return userDto;
     }
 }

@@ -3,6 +3,7 @@ package com.indiepost.service.mapper;
 import com.indiepost.dto.TagDto;
 import com.indiepost.model.Tag;
 import com.indiepost.service.TagService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,8 +27,7 @@ public class TagMapperServiceImpl implements TagMapperService {
     @Override
     public TagDto tagToTagDto(Tag tag) {
         TagDto tagDto = new TagDto();
-        tagDto.setId(tag.getId());
-        tagDto.setName(tag.getName());
+        BeanUtils.copyProperties(tag, tagDto);
         return tagDto;
     }
 

@@ -3,7 +3,6 @@ package com.indiepost.repository;
 import com.indiepost.enums.UserEnum;
 import com.indiepost.model.User;
 import com.indiepost.repository.helper.CriteriaHelper;
-import com.indiepost.repository.helper.HibernateCriteriaHelper;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
@@ -22,11 +21,10 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class UserRepositoryHibernate implements UserRepository {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     @Autowired
     private final CriteriaHelper criteriaHelper;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public UserRepositoryHibernate(CriteriaHelper criteriaHelper) {
         this.criteriaHelper = criteriaHelper;

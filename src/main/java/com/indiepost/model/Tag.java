@@ -1,7 +1,6 @@
 package com.indiepost.model;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.indiepost.JsonView.Views;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -21,16 +20,15 @@ public class Tag implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView({Views.Public.class, Views.AdminList.class, Views.AdminInit.class})
     private Long id;
 
     @Size(min = 1, max = 50)
     @Column(nullable = false, unique = true)
-    @JsonView({Views.Public.class, Views.AdminList.class, Views.AdminInit.class})
     private String name;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
     @OrderBy(value = "publishedAt")
+    @JsonIgnore
     private List<Post> posts = new ArrayList<>();
 
     public Long getId() {

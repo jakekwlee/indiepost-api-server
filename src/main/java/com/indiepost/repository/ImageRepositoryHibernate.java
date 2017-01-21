@@ -3,11 +3,11 @@ package com.indiepost.repository;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.repository.helper.CriteriaHelper;
-import com.indiepost.repository.helper.HibernateCriteriaHelper;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -23,10 +23,9 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class ImageRepositoryHibernate implements ImageRepository {
 
+    private final CriteriaHelper criteriaHelper;
     @PersistenceContext
     private EntityManager entityManager;
-
-    private final CriteriaHelper criteriaHelper;
 
     @Autowired
     public ImageRepositoryHibernate(CriteriaHelper criteriaHelper) {
@@ -47,16 +46,18 @@ public class ImageRepositoryHibernate implements ImageRepository {
     }
 
     @Override
-    public List<ImageSet> findByPostId(Long postId, Pageable pageable) {
-        Criteria criteria = getCriteria(pageable)
-                .add(Restrictions.eq("postId", postId));
-
-        return criteria.list();
+    public List<ImageSet> findByIds(List<Long> ids) {
+        return getCriteria()
+                .createAlias("images", "images", JoinType.LEFT_OUTER_JOIN)
+                .add(Restrictions.in("id", ids))
+                .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
+                .list();
     }
 
     @Override
     public List<ImageSet> findAll(Pageable pageable) {
-        return getCriteria(pageable).setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY).list();
+        return getCriteria(pageable)
+                .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY).list();
     }
 
     @Override

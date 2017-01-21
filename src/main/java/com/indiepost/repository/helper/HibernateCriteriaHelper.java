@@ -1,6 +1,6 @@
 package com.indiepost.repository.helper;
 
-import com.indiepost.dto.request.PostQuery;
+import com.indiepost.dto.PostQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.*;
@@ -60,7 +60,7 @@ public class HibernateCriteriaHelper implements CriteriaHelper {
             conjunction.add(Restrictions.ilike("displayName", query.getContentContains()));
         }
         if (StringUtils.isNotEmpty(query.getTagNameContains())) {
-            // TODO
+            // TODO tag search
         }
         if (query.getStatus() != null) {
             conjunction.add(Restrictions.eq("status", query.getStatus()));

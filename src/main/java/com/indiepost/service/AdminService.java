@@ -1,10 +1,10 @@
 package com.indiepost.service;
 
-import com.indiepost.enums.UserEnum;
+import com.indiepost.dto.AdminInitResponseDto;
 import com.indiepost.dto.CategoryDto;
 import com.indiepost.dto.TagDto;
 import com.indiepost.dto.UserDto;
-import com.indiepost.dto.response.AdminInitResponseDto;
+import com.indiepost.enums.UserEnum;
 
 import java.util.List;
 

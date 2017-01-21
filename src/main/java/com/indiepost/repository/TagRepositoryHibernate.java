@@ -2,7 +2,6 @@ package com.indiepost.repository;
 
 import com.indiepost.model.Tag;
 import com.indiepost.repository.helper.CriteriaHelper;
-import com.indiepost.repository.helper.HibernateCriteriaHelper;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
@@ -22,10 +21,9 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class TagRepositoryHibernate implements TagRepository {
 
+    private final CriteriaHelper criteriaHelper;
     @PersistenceContext
     private EntityManager entityManager;
-
-    private final CriteriaHelper criteriaHelper;
 
     @Autowired
     public TagRepositoryHibernate(CriteriaHelper criteriaHelper) {

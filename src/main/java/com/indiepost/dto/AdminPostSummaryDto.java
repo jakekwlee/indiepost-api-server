@@ -1,11 +1,11 @@
-package com.indiepost.dto.response;
+package com.indiepost.dto;
 
 import java.util.List;
 
 /**
  * Created by jake on 10/8/16.
  */
-public class AdminPostTableDto {
+public class AdminPostSummaryDto {
 
     private static final long serialVersionUID = 1L;
 

@@ -1,7 +1,5 @@
 package com.indiepost.model;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.indiepost.JsonView.Views;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.model.legacy.Contentlist;
 import org.hibernate.annotations.Fetch;
@@ -26,7 +24,6 @@ public class Post implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView({Views.PublicList.class, Views.AdminList.class})
     private Long id;
 
 
@@ -45,44 +42,38 @@ public class Post implements Serializable {
     private Long legacyPostId;
 
     @Column(nullable = false)
-    @JsonView({Views.PublicList.class, Views.AdminList.class})
     private boolean featured = false;
 
     @Column(nullable = false)
+    private boolean picked = false;
+
+    @Column(nullable = false)
     @Size(max = 100)
-    @JsonView({Views.PublicList.class, Views.AdminList.class})
     private String title = "No Title";
 
     @Column(nullable = false, columnDefinition = "LONGTEXT")
-    @JsonView({Views.Public.class, Views.Admin.class})
     private String content = "";
 
     @Column(nullable = false)
     @Size(max = 300)
-    @JsonView({Views.PublicList.class, Views.Admin.class})
     private String excerpt = "No Excerpt";
 
     @Column(nullable = false)
     @Size(max = 30)
-    @JsonView({Views.PublicList.class, Views.AdminList.class})
     private String displayName = "Indiepost";
 
     @Column(nullable = false)
-    @JsonView({Views.AdminList.class})
     private Date createdAt;
 
     @Column(nullable = false)
-    @JsonView({Views.AdminList.class})
     private Date modifiedAt;
 
     @Column(nullable = false)
-    @JsonView({Views.PublicList.class, Views.AdminList.class})
     private Date publishedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "titleImageId")
-    @JsonView({Views.PublicList.class, Views.Admin.class})
     private ImageSet titleImage;
 
     @Column(name = "titleImageId", insertable = false, updatable = false)
@@ -90,12 +81,10 @@ public class Post implements Serializable {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @JsonView({Views.PublicList.class, Views.AdminList.class})
     private PostEnum.Status status;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @JsonView({Views.AdminList.class})
     private PostEnum.Type postType = PostEnum.Type.POST;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -112,7 +101,7 @@ public class Post implements Serializable {
     @Column(name = "editorId", nullable = false, insertable = false, updatable = false)
     private Long editorId;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "categoryId", nullable = false)
     private Category category;
 
@@ -126,27 +115,22 @@ public class Post implements Serializable {
             joinColumns = {@JoinColumn(name = "postId")},
             inverseJoinColumns = {@JoinColumn(name = "tagId")}
     )
-    @JsonView({Views.Public.class, Views.AdminList.class})
     private List<Tag> tags = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("createdAt")
-    @JsonView({Views.Public.class})
     private List<Comment> comments;
 
     @Column(nullable = false)
     @Min(0)
-    @JsonView({Views.PublicList.class, Views.AdminList.class})
     private int commentsCount = 0;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("likedAt DESC")
-    @JsonView({Views.Public.class})
     private List<Like> likes;
 
     @Column(nullable = false)
     @Min(0)
-    @JsonView({Views.PublicList.class, Views.AdminList.class})
     private int likesCount = 0;
 
     public Long getId() {
@@ -356,7 +340,6 @@ public class Post implements Serializable {
         this.legacyPost = legacyPost;
     }
 
-    @JsonView({Views.Admin.class})
     public Long getOriginalId() {
         return originalId;
     }
@@ -365,7 +348,6 @@ public class Post implements Serializable {
         this.originalId = originalId;
     }
 
-    @JsonView({Views.AdminList.class})
     public Long getLegacyPostId() {
         return legacyPostId;
     }
@@ -374,7 +356,6 @@ public class Post implements Serializable {
         this.legacyPostId = legacyPostId;
     }
 
-    @JsonView({Views.AdminList.class})
     public Long getAuthorId() {
         return authorId;
     }
@@ -383,7 +364,6 @@ public class Post implements Serializable {
         this.authorId = authorId;
     }
 
-    @JsonView({Views.AdminList.class})
     public Long getEditorId() {
         return editorId;
     }
@@ -392,7 +372,6 @@ public class Post implements Serializable {
         this.editorId = editorId;
     }
 
-    @JsonView({Views.PublicList.class, Views.AdminList.class})
     public Long getCategoryId() {
         return categoryId;
     }
@@ -407,5 +386,13 @@ public class Post implements Serializable {
 
     public void setFeatured(boolean featured) {
         this.featured = featured;
+    }
+
+    public boolean isPicked() {
+        return picked;
+    }
+
+    public void setPicked(boolean picked) {
+        this.picked = picked;
     }
 }

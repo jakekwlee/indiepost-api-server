@@ -1,7 +1,6 @@
 package com.indiepost.model;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.indiepost.JsonView.Views;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.indiepost.enums.UserEnum;
 import org.hibernate.validator.constraints.Email;
 
@@ -23,37 +22,32 @@ public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView({Views.AdminInit.class})
     private Long id;
 
     @Column(nullable = false, unique = true)
     @Size(min = 4, max = 30)
-    @JsonView({Views.AdminInit.class})
     private String username;
 
     @Column(nullable = false)
     @Size(min = 3, max = 50)
+    @JsonIgnore
     private String password;
 
     @Size(max = 300)
     private String profile;
 
-    @JsonView({Views.AdminInit.class})
     private String picture;
 
     @Column(unique = true, nullable = false)
     @Size(min = 7, max = 50)
     @Email
-    @JsonView({Views.AdminInit.class})
     private String email;
 
     @Pattern(regexp = "[_0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]{2,10}")
     @Size(min = 2, max = 20)
-    @JsonView({Views.AdminInit.class})
     private String displayName;
 
     @Column(nullable = false)
-    @JsonView({Views.AdminInit.class})
     private Date joinedAt;
 
     @Pattern(regexp = "^01[\\d]{8,9}")
@@ -67,7 +61,6 @@ public class User implements Serializable {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    @JsonView({Views.AdminInit.class})
     private UserEnum.State state;
 
     @Column(nullable = false)

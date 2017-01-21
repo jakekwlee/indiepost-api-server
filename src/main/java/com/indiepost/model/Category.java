@@ -1,8 +1,5 @@
 package com.indiepost.model;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.indiepost.JsonView.Views;
-
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -19,7 +16,6 @@ public class Category implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView({Views.AdminInit.class})
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -27,7 +23,6 @@ public class Category implements Serializable {
     private Category parent;
 
     @Column(name = "parentId", insertable = false, updatable = false)
-    @JsonView({Views.AdminInit.class})
     private Long parentId;
 
     @OneToMany(mappedBy = "parent", orphanRemoval = true, fetch = FetchType.LAZY)
@@ -35,16 +30,13 @@ public class Category implements Serializable {
 
     @Column(nullable = false)
     @Size(min = 3, max = 20)
-    @JsonView({Views.AdminInit.class})
     private String name;
 
     @Column(nullable = false)
     @Size(min = 3, max = 20)
-    @JsonView({Views.AdminInit.class})
     private String slug;
 
     @Column(nullable = false)
-    @JsonView({Views.AdminInit.class})
     private int displayOrder;
 
     @OneToMany(mappedBy = "category")

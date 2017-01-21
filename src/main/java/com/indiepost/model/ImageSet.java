@@ -1,7 +1,6 @@
 package com.indiepost.model;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.indiepost.JsonView.Views;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.indiepost.enums.ImageEnum.SizeType;
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
@@ -11,7 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by jake on 9/7/16.
@@ -24,26 +23,24 @@ public class ImageSet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView({Views.PublicList.class, Views.Admin.class})
     private Long id;
 
     @Fetch(FetchMode.SUBSELECT)
     @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
     @Cascade({CascadeType.ALL, CascadeType.SAVE_UPDATE})
     @JoinColumn(name = "imageSetId")
-    @BatchSize(size = 50)
-    private List<Image> images;
+    @BatchSize(size = 20)
+    @JsonIgnore
+    private Set<Image> images;
 
     @Column(nullable = false)
     @Size(min = 9, max = 10)
-    @JsonView({Views.Admin.class})
     private String contentType;
 
     @Size(max = 300)
     private String caption;
 
     @Column(nullable = false)
-    @JsonView({Views.Admin.class})
     private Date uploadedAt;
 
     public Long getId() {
@@ -54,35 +51,30 @@ public class ImageSet {
         this.id = id;
     }
 
-    public List<Image> getImages() {
+    public Set<Image> getImages() {
         return images;
     }
 
-    public void setImages(List<Image> images) {
+    public void setImages(Set<Image> images) {
         this.images = images;
     }
 
-    @JsonView({Views.PublicList.class, Views.Admin.class})
     public Image getOriginal() {
         return findByImageSize(SizeType.ORIGINAL);
     }
 
-    @JsonView({Views.PublicList.class, Views.Admin.class})
     public Image getLarge() {
         return findByImageSize(SizeType.LARGE);
     }
 
-    @JsonView({Views.PublicList.class, Views.Admin.class})
     public Image getOptimized() {
         return findByImageSize(SizeType.OPTIMIZED);
     }
 
-    @JsonView({Views.PublicList.class, Views.Admin.class})
     public Image getSmall() {
         return findByImageSize(SizeType.SMALL);
     }
 
-    @JsonView({Views.PublicList.class, Views.Admin.class})
     public Image getThumbnail() {
         return findByImageSize(SizeType.THUMBNAIL);
     }

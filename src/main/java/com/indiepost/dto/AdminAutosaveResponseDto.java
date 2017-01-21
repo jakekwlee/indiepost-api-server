@@ -1,4 +1,4 @@
-package com.indiepost.dto.response;
+package com.indiepost.dto;
 
 /**
  * Created by jake on 16. 12. 1.

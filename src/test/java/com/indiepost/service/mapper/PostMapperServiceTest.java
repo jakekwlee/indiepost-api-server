@@ -1,9 +1,9 @@
 package com.indiepost.service.mapper;
 
 import com.indiepost.NewIndiepostApplication;
+import com.indiepost.dto.AdminPostRequestDto;
+import com.indiepost.dto.AdminPostResponseDto;
 import com.indiepost.dto.TagDto;
-import com.indiepost.dto.request.AdminPostRequestDto;
-import com.indiepost.dto.response.AdminPostResponseDto;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.service.AdminPostService;

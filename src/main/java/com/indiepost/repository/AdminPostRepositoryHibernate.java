@@ -1,7 +1,7 @@
 package com.indiepost.repository;
 
 import com.github.fluent.hibernate.request.aliases.Aliases;
-import com.indiepost.dto.request.PostQuery;
+import com.indiepost.dto.PostQuery;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.enums.UserEnum.Roles;
 import com.indiepost.model.Post;
@@ -9,6 +9,7 @@ import com.indiepost.model.Role;
 import com.indiepost.model.User;
 import com.indiepost.repository.helper.CriteriaHelper;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,25 +29,6 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
-    private final String[] ADMIN_PROJECTION = {
-            "id",
-            "title",
-            "excerpt",
-            "createdAt",
-            "modifiedAt",
-            "publishedAt",
-            "displayName",
-            "commentsCount",
-            "likesCount",
-            "postType",
-            "status",
-            "featuredImage",
-            "author",
-            "editor",
-            "category",
-            "tags"
-    };
-
     private final CriteriaHelper criteriaHelper;
 
     @PersistenceContext
@@ -64,6 +46,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
     @Override
     public Post findById(Long id) {
+        // TODO reduce query
         return entityManager.find(Post.class, id);
     }
 
@@ -87,7 +70,10 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     public List<Post> find(User user, PostQuery query, Pageable pageable) {
         Criteria criteria = getPagedCriteria(pageable);
         getAliases().addToCriteria(criteria);
-//        criteria.setProjection(criteriaHelper.buildProjectionList(ADMIN_PROJECTION));
+        // TODO Projection List<AdminPostSummaryDto>
+        // TODO fetch n + 1 problem
+//        criteria.setProjection(getProjectionList());
+        criteria.setFetchMode("tags", FetchMode.JOIN);
         Roles role = getRole(user);
         Conjunction conjunction = Restrictions.conjunction();
 
@@ -170,8 +156,23 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
         return Aliases.create()
                 .add("author", "author", JoinType.INNER)
                 .add("editor", "editor", JoinType.INNER)
-                .add("category", "category", JoinType.INNER)
-                .add("tags", "tags", JoinType.LEFT);
+                .add("category", "category", JoinType.INNER);
+    }
+
+    private ProjectionList getProjectionList() {
+        return Projections.projectionList()
+                .add(Property.forName("id"), "id")
+                .add(Property.forName("title"), "title")
+                .add(Property.forName("status"), "status")
+                .add(Property.forName("displayName"), "displayName")
+                .add(Property.forName("category.name"), "category.name")
+                .add(Property.forName("author.displayName"), "author.displayName")
+                .add(Property.forName("editor.displayName"), "editor.displayName")
+                .add(Property.forName("createdAt"), "createdAt")
+                .add(Property.forName("publishedAt"), "publishedAt")
+                .add(Property.forName("modifiedAt"), "modifiedAt")
+                .add(Property.forName("likesCount"), "likesCount")
+                .add(Property.forName("tags"), "tags");
     }
 
     private Criterion getPrivacyCriterion(Long userId) {

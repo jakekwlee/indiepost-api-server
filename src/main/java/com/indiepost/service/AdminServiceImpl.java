@@ -1,9 +1,9 @@
 package com.indiepost.service;
 
+import com.indiepost.dto.AdminInitResponseDto;
 import com.indiepost.dto.CategoryDto;
 import com.indiepost.dto.TagDto;
 import com.indiepost.dto.UserDto;
-import com.indiepost.dto.response.AdminInitResponseDto;
 import com.indiepost.enums.UserEnum;
 import com.indiepost.model.Category;
 import com.indiepost.model.Tag;
@@ -24,17 +24,17 @@ import java.util.List;
 @Transactional
 public class AdminServiceImpl implements AdminService {
 
-    private AdminPostService adminPostService;
+    private final AdminPostService adminPostService;
 
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
-    private UserService userService;
+    private final UserService userService;
 
-    private UserMapperService userMapperService;
+    private final UserMapperService userMapperService;
 
-    private TagService tagService;
+    private final TagService tagService;
 
-    private TagMapperService tagMapperService;
+    private final TagMapperService tagMapperService;
 
     @Autowired
     public AdminServiceImpl(AdminPostService adminPostService, CategoryService categoryService,

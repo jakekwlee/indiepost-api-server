@@ -1,4 +1,4 @@
-package com.indiepost.dto.request;
+package com.indiepost.dto;
 
 import com.indiepost.enums.PostEnum;
 

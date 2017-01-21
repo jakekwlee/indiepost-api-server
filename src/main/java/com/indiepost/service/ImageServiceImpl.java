@@ -21,9 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by jake on 8/17/16.
@@ -32,9 +30,9 @@ import java.util.List;
 @Transactional
 public class ImageServiceImpl implements ImageService {
 
-    private ImageRepository imageRepository;
+    private final ImageRepository imageRepository;
 
-    private ImageConfig imageConfig;
+    private final ImageConfig imageConfig;
 
     @Autowired
     public ImageServiceImpl(ImageRepository imageRepository, ImageConfig imageConfig) {
@@ -68,7 +66,7 @@ public class ImageServiceImpl implements ImageService {
             ImageSet imageSet = new ImageSet();
             imageSet.setContentType(contentType);
             imageSet.setUploadedAt(new Date());
-            List<Image> images = new ArrayList<>();
+            Set<Image> images = new HashSet<>();
 
             BufferedImage bufferedImage = getBufferedImageFromMultipartFile(file);
             Image originalImage = saveUploadedImage(bufferedImage, ImageEnum.SizeType.ORIGINAL, alphanumeric, fileExtension, baseUrl);
@@ -145,7 +143,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public void delete(ImageSet imageSet) throws IOException {
-        List<Image> images = imageSet.getImages();
+        Set<Image> images = imageSet.getImages();
         for (Image image : images) {
             deleteFileFromFileSystem(image);
         }
@@ -206,7 +204,7 @@ public class ImageServiceImpl implements ImageService {
         return Scalr.crop(resizedImage, x0, y0, width, height);
     }
 
-    private boolean deleteFileFromFileSystem(Image image) throws IOException {
+    private boolean deleteFileFromFileSystem(Image image) {
         File fileToDelete = FileUtils.getFile(new File(imageConfig.getFsRoot() + image.getFileUrl()));
         return FileUtils.deleteQuietly(fileToDelete);
     }

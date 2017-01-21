@@ -1,9 +1,14 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.request.PostQuery;
+import com.indiepost.dto.PostDto;
+import com.indiepost.dto.PostQuery;
+import com.indiepost.dto.PostSummaryDto;
 import com.indiepost.enums.PostEnum;
+import com.indiepost.model.ImageSet;
 import com.indiepost.model.Post;
+import com.indiepost.repository.ImageRepository;
 import com.indiepost.repository.PostRepository;
+import com.indiepost.service.mapper.PostMapperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,29 +17,34 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by jake on 7/30/16.
  */
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
 
-    private PostRepository postRepository;
+    private final PostRepository postRepository;
+
+    private final PostMapperService postMapperService;
+
+    private final ImageRepository imageRepository;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository) {
+    public PostServiceImpl(PostRepository postRepository, ImageRepository imageRepository, PostMapperService postMapperService) {
         this.postRepository = postRepository;
+        this.imageRepository = imageRepository;
+        this.postMapperService = postMapperService;
     }
 
     @Override
-    public Post findById(Long id) {
-        return postRepository.findById(id);
-    }
-
-    @Override
-    public void update(Post post) {
-        postRepository.update(post);
+    public PostDto findById(Long id) {
+        Post post = postRepository.findById(id);
+        post.getTags().get(0);
+        post.getTitleImage().getOptimized();
+        return postMapperService.postToPostDto(post);
     }
 
     @Override
@@ -48,18 +58,45 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> find(int page, int maxResults, boolean isDesc) {
-        return postRepository.find(getPageable(page, maxResults, isDesc));
+    public List<PostSummaryDto> find(int page, int maxResults, boolean isDesc) {
+        return findByQuery(null, page, maxResults, isDesc);
     }
 
     @Override
-    public List<Post> find(PostQuery query, int page, int maxResults, boolean isDesc) {
-        return postRepository.find(query, getPageable(page, maxResults, isDesc));
+    public List<PostSummaryDto> findByQuery(PostQuery query, int page, int maxResults, boolean isDesc) {
+        List<PostSummaryDto> result = postRepository.findByQuery(query, getPageable(page, maxResults, isDesc));
+        return setTitleImages(result);
     }
 
     @Override
-    public List<Post> find(PostEnum.Status status, int page, int maxResults, boolean isDesc) {
-        return postRepository.findByStatus(status, getPageable(page, maxResults, isDesc));
+    public List<PostSummaryDto> findByStatus(PostEnum.Status status, int page, int maxResults, boolean isDesc) {
+        List<PostSummaryDto> result = postRepository.findByStatus(status, getPageable(page, maxResults, isDesc));
+        return setTitleImages(result);
+    }
+
+    private List<PostSummaryDto> setTitleImages(List<PostSummaryDto> postSummaryDtoList) {
+        List<Long> ids = postSummaryDtoList.stream()
+                .filter(postExcerpt -> postExcerpt.getTitleImageId() != null)
+                .map(PostSummaryDto::getTitleImageId)
+                .collect(Collectors.toList());
+
+        if (ids.size() == 0) {
+            return postSummaryDtoList;
+        }
+
+        List<ImageSet> imageSetList = imageRepository.findByIds(ids);
+
+        for (PostSummaryDto postSummaryDto : postSummaryDtoList) {
+            Long titleImageId = postSummaryDto.getTitleImageId();
+            for (ImageSet imageSet : imageSetList) {
+                if (imageSet.getId().equals(titleImageId)) {
+                    postSummaryDto.setTitleImage(imageSet);
+                    break;
+                }
+            }
+        }
+
+        return postSummaryDtoList;
     }
 
     private Pageable getPageable(int page, int maxResults, boolean isDesc) {

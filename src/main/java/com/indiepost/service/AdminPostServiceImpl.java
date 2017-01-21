@@ -1,11 +1,12 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.request.AdminPostRequestDto;
-import com.indiepost.dto.request.PostQuery;
-import com.indiepost.dto.response.AdminPostResponseDto;
-import com.indiepost.dto.response.AdminPostTableDto;
+import com.indiepost.dto.AdminPostRequestDto;
+import com.indiepost.dto.AdminPostResponseDto;
+import com.indiepost.dto.AdminPostSummaryDto;
+import com.indiepost.dto.PostQuery;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Post;
+import com.indiepost.model.Tag;
 import com.indiepost.model.User;
 import com.indiepost.model.legacy.Contentlist;
 import com.indiepost.repository.AdminPostRepository;
@@ -21,9 +22,9 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by jake on 17. 1. 14.
@@ -63,6 +64,22 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
+    public AdminPostResponseDto getDtoById(Long id) {
+        Post post = findById(id);
+        if (post == null) {
+            return null;
+        }
+        List<Tag> tagList = post.getTags();
+        if (tagList != null) {
+            tagList.get(0);
+        }
+        if (post.getTitleImage() != null) {
+            post.getTitleImage().getImages();
+        }
+        return postMapperService.postToAdminPostResponseDto(post);
+    }
+
+    @Override
     public void update(Post post) {
         adminPostRepository.update(post);
     }
@@ -80,22 +97,21 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
-    public List<Post> find(int page, int maxResults, boolean isDesc) {
+    public List<AdminPostSummaryDto> find(int page, int maxResults, boolean isDesc) {
         User currentUser = userService.getCurrentUser();
-        return adminPostRepository.find(
-                currentUser,
-                getPageable(page, maxResults, isDesc)
-        );
+        List<Post> postList = adminPostRepository.find(currentUser, getPageable(page, maxResults, isDesc));
+        return postList.stream()
+                .map(postMapperService::postToAdminPostSummaryDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Post> find(PostQuery query, int page, int maxResults, boolean isDesc) {
+    public List<AdminPostSummaryDto> findByQuery(PostQuery query, int page, int maxResults, boolean isDesc) {
         User currentUser = userService.getCurrentUser();
-        return adminPostRepository.find(
-                currentUser,
-                query,
-                getPageable(page, maxResults, isDesc)
-        );
+        List<Post> postList = adminPostRepository.find(currentUser, query, getPageable(page, maxResults, isDesc));
+        return postList.stream()
+                .map(postMapperService::postToAdminPostSummaryDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -198,18 +214,17 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
-    public List<AdminPostTableDto> getAdminPostTableDtoList(int page, int maxResults, boolean isDesc) {
-        List<Post> posts = find(page, maxResults, isDesc);
-        List<AdminPostTableDto> adminPostTableDtos = new ArrayList<>();
-        for (Post post : posts) {
-            AdminPostTableDto adminPostTableDto = postMapperService.postToAdminPostTableDto(post);
-            adminPostTableDtos.add(adminPostTableDto);
-        }
-        return adminPostTableDtos;
+    public List<AdminPostSummaryDto> getAdminPostTableDtoList(int page, int maxResults, boolean isDesc) {
+        User currentUser = userService.getCurrentUser();
+        List<Post> postList = adminPostRepository.find(currentUser, getPageable(page, maxResults, isDesc));
+
+        return postList.stream()
+                .map(postMapperService::postToAdminPostSummaryDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<AdminPostTableDto> getLastUpdated(Date dateFrom) {
+    public List<AdminPostSummaryDto> getLastUpdated(Date dateFrom) {
         return null;
     }
 
