@@ -57,7 +57,7 @@ public class PostRepositoryHibernate implements PostRepository {
 
     @Override
     public List<PostSummaryDto> find(Pageable pageable) {
-        return findByQuery(null, pageable);
+        return findByQuery(new PostQuery(), pageable);
     }
 
 
@@ -80,12 +80,19 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     @Override
+    public List<PostSummaryDto> findByCategoryId(Long categoryId, Pageable pageable) {
+        PostQuery query = new PostQuery();
+        if (categoryId != 0L) {
+            query.setCategoryId(categoryId);
+        }
+        return this.findByQuery(query, pageable);
+    }
+
+    @Override
     public List<PostSummaryDto> findByStatus(PostEnum.Status status, Pageable pageable) {
-        Criteria criteria = getPagedCriteria(pageable);
-        criteria.setProjection(getProjectionList());
-        criteria.add(Restrictions.eq("status", status));
-        criteria.setResultTransformer(new FluentHibernateResultTransformer(PostSummaryDto.class));
-        return criteria.list();
+        PostQuery query = new PostQuery();
+        query.setStatus(status);
+        return this.findByQuery(query, pageable);
     }
 
     private ProjectionList getProjectionList() {

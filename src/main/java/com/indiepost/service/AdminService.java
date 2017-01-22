@@ -1,7 +1,6 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.AdminInitResponseDto;
-import com.indiepost.dto.CategoryDto;
 import com.indiepost.dto.TagDto;
 import com.indiepost.dto.UserDto;
 import com.indiepost.enums.UserEnum;
@@ -20,8 +19,6 @@ public interface AdminService {
     List<UserDto> getUserDtoList(int page, int maxResults, boolean isDesc);
 
     UserDto getCurrentUserDto();
-
-    List<CategoryDto> getAllCategoryDtoList();
 
     AdminInitResponseDto buildInitialResponse();
 }

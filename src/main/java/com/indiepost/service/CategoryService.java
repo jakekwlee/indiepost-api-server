@@ -1,5 +1,6 @@
 package com.indiepost.service;
 
+import com.indiepost.dto.CategoryDto;
 import com.indiepost.model.Category;
 
 import java.util.List;
@@ -23,4 +24,6 @@ public interface CategoryService {
     List<Category> findAll();
 
     List<Category> findByParent(Category parent);
+
+    List<CategoryDto> getDtoList();
 }

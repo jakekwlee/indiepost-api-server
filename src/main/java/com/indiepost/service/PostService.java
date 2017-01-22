@@ -22,5 +22,7 @@ public interface PostService {
 
     List<PostSummaryDto> findByQuery(PostQuery query, int page, int maxResults, boolean isDesc);
 
+    List<PostSummaryDto> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc);
+
     List<PostSummaryDto> findByStatus(PostEnum.Status status, int page, int maxResults, boolean isDesc);
 }

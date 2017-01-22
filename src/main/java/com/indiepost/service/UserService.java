@@ -1,5 +1,6 @@
 package com.indiepost.service;
 
+import com.indiepost.dto.UserDto;
 import com.indiepost.enums.UserEnum;
 import com.indiepost.model.User;
 
@@ -38,4 +39,18 @@ public interface UserService {
     List<User> findByRolesEnum(UserEnum.Roles role, int page, int maxResults, boolean isDesc);
 
     List<User> findAllUsers(int page, int maxResults, boolean isDesc);
+
+    UserDto getCurrentUserDto();
+
+    UserDto getUserDto(User user);
+
+    UserDto getUserDto(Long id);
+
+    UserDto getUserDto(String username);
+
+    List<UserDto> getDtoList(List<User> users);
+
+    List<UserDto> getDtoList(int page, int maxResults, boolean isDesc);
+
+    List<UserDto> getDtoList(UserEnum.Roles role, int page, int maxResults, boolean isDesc);
 }

@@ -1,12 +1,15 @@
 package com.indiepost.service;
 
+import com.indiepost.dto.CategoryDto;
 import com.indiepost.model.Category;
 import com.indiepost.repository.CategoryRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by jake on 8/4/16.
@@ -56,5 +59,17 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<Category> findByParent(Category parent) {
         return categoryRepository.findByParentId(parent.getId());
+    }
+
+    @Override
+    public List<CategoryDto> getDtoList() {
+        return this.findAll()
+                .stream()
+                .map(category -> {
+                    CategoryDto categoryDto = new CategoryDto();
+                    BeanUtils.copyProperties(category, categoryDto);
+                    return categoryDto;
+                })
+                .collect(Collectors.toList());
     }
 }

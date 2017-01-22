@@ -23,17 +23,29 @@ public class PostQuery {
 
     private String tagNameContains;
 
-    private String categoryId;
+    private Long categoryId;
 
     private String categorySlug;
-
-    private PostEnum.Status status;
-
-    private PostEnum.Type type;
 
     private Date dateFrom;
 
     private Date dateTo;
+
+    private int page = 0;
+
+    private int maxResults = 30;
+
+    private PostEnum.Status status = PostEnum.Status.PUBLISH;
+
+    private PostEnum.Type type = PostEnum.Type.POST;
+
+    private boolean featured = false;
+
+    private boolean picked = false;
+
+    private int viewportWidth;
+
+    private int viewportHeight;
 
     public Long getAuthorId() {
         return authorId;
@@ -91,11 +103,11 @@ public class PostQuery {
         this.tagNameContains = tagNameContains;
     }
 
-    public String getCategoryId() {
+    public Long getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(String categoryId) {
+    public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
 
@@ -137,5 +149,53 @@ public class PostQuery {
 
     public void setDateTo(Date dateTo) {
         this.dateTo = dateTo;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    public int getMaxResults() {
+        return maxResults;
+    }
+
+    public void setMaxResults(int maxResults) {
+        this.maxResults = maxResults;
+    }
+
+    public int getViewportWidth() {
+        return viewportWidth;
+    }
+
+    public void setViewportWidth(int viewportWidth) {
+        this.viewportWidth = viewportWidth;
+    }
+
+    public int getViewportHeight() {
+        return viewportHeight;
+    }
+
+    public void setViewportHeight(int viewportHeight) {
+        this.viewportHeight = viewportHeight;
+    }
+
+    public boolean isFeatured() {
+        return featured;
+    }
+
+    public void setFeatured(boolean featured) {
+        this.featured = featured;
+    }
+
+    public boolean isPicked() {
+        return picked;
+    }
+
+    public void setPicked(boolean picked) {
+        this.picked = picked;
     }
 }

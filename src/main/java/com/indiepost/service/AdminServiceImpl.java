@@ -1,11 +1,9 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.AdminInitResponseDto;
-import com.indiepost.dto.CategoryDto;
 import com.indiepost.dto.TagDto;
 import com.indiepost.dto.UserDto;
 import com.indiepost.enums.UserEnum;
-import com.indiepost.model.Category;
 import com.indiepost.model.Tag;
 import com.indiepost.model.User;
 import com.indiepost.service.mapper.TagMapperService;
@@ -53,7 +51,7 @@ public class AdminServiceImpl implements AdminService {
         AdminInitResponseDto adminInitResponseDto = new AdminInitResponseDto();
         adminInitResponseDto.setCurrentUser(userMapperService.userToUserDto(currentUser));
         adminInitResponseDto.setAuthors(getUserDtoList(UserEnum.Roles.Author));
-        adminInitResponseDto.setCategories(getAllCategoryDtoList());
+        adminInitResponseDto.setCategories(categoryService.getDtoList());
         adminInitResponseDto.setTags(getAllTagDtoList());
         adminInitResponseDto.setAuthorNames(adminPostService.findAllDisplayNames());
         return adminInitResponseDto;
@@ -81,20 +79,6 @@ public class AdminServiceImpl implements AdminService {
     public UserDto getCurrentUserDto() {
         User currentUser = userService.getCurrentUser();
         return userMapperService.userToUserDto(currentUser);
-    }
-
-    @Override
-    public List<CategoryDto> getAllCategoryDtoList() {
-        List<Category> categories = categoryService.findAll();
-        List<CategoryDto> categoryDtoList = new ArrayList<>();
-        for (Category category : categories) {
-            CategoryDto categoryDto = new CategoryDto();
-            categoryDto.setId(category.getId());
-            categoryDto.setSlug(category.getSlug());
-            categoryDto.setName(category.getName());
-            categoryDtoList.add(categoryDto);
-        }
-        return categoryDtoList;
     }
 
     private List<UserDto> userListToUserDtoList(List<User> userList) {
