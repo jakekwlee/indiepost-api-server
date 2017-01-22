@@ -3,7 +3,9 @@ package com.indiepost.repository.helper;
 import com.indiepost.dto.PostQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.criterion.*;
+import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -29,23 +31,15 @@ public class HibernateCriteriaHelper implements CriteriaHelper {
         return criteria;
     }
 
-    public ProjectionList buildProjectionList(String[] projectionStringArray) {
-        ProjectionList projectionList = Projections.projectionList();
-        for (String propertyName : projectionStringArray) {
-            projectionList.add(Property.forName(propertyName), propertyName);
-        }
-        return projectionList;
-    }
-
     public void buildConjunction(PostQuery query, Conjunction conjunction) {
         if (query.getAuthorId() != null) {
-            conjunction.add(Restrictions.eq("author.id", query.getAuthorId()));
+            conjunction.add(Restrictions.eq("authorId", query.getAuthorId()));
         }
         if (query.getEditorId() != null) {
-            conjunction.add(Restrictions.eq("editor.id", query.getEditorId()));
+            conjunction.add(Restrictions.eq("editorId", query.getEditorId()));
         }
         if (query.getCategoryId() != null) {
-            conjunction.add(Restrictions.eq("category.id", query.getCategoryId()));
+            conjunction.add(Restrictions.eq("categoryId", query.getCategoryId()));
         }
         if (StringUtils.isNotEmpty(query.getCategorySlug())) {
             conjunction.add(Restrictions.ilike("category.slug", query.getCategorySlug()));
@@ -60,7 +54,7 @@ public class HibernateCriteriaHelper implements CriteriaHelper {
             conjunction.add(Restrictions.ilike("displayName", query.getContentContains()));
         }
         if (StringUtils.isNotEmpty(query.getTagNameContains())) {
-            // TODO tag search
+            // TODO: tag search
         }
         if (query.getStatus() != null) {
             conjunction.add(Restrictions.eq("status", query.getStatus()));
@@ -74,5 +68,7 @@ public class HibernateCriteriaHelper implements CriteriaHelper {
         if (query.getDateTo() != null) {
             conjunction.add(Restrictions.le("publishedAt", query.getDateTo()));
         }
+        conjunction.add(Restrictions.eq("featured", query.isFeatured()));
+        conjunction.add(Restrictions.eq("picked", query.isPicked()));
     }
 }
