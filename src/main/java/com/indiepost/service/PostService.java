@@ -3,6 +3,7 @@ package com.indiepost.service;
 import com.indiepost.dto.PostDto;
 import com.indiepost.dto.PostQuery;
 import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.RelatedPostResponseDto;
 import com.indiepost.enums.PostEnum;
 
 import java.util.List;
@@ -25,4 +26,6 @@ public interface PostService {
     List<PostSummaryDto> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc);
 
     List<PostSummaryDto> findByStatus(PostEnum.Status status, int page, int maxResults, boolean isDesc);
+
+    List<RelatedPostResponseDto> getRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobile);
 }

@@ -23,7 +23,11 @@ public interface PostRepository {
 
     List<PostSummaryDto> findByQuery(PostQuery query, Pageable pageable);
 
+    List<PostSummaryDto> findByIds(List<Long> ids);
+
     List<PostSummaryDto> findByStatus(PostEnum.Status status, Pageable pageable);
 
     List<PostSummaryDto> findByCategoryId(Long categoryId, Pageable pageable);
+
+    List<PostSummaryDto> findByLegacyPostIds(List<Long> legacyPostIds);
 }

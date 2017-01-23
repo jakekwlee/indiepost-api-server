@@ -15,6 +15,8 @@ public class PostSummaryDto implements Serializable {
 
     private Long id;
 
+    private Long legacyPostId;
+
     private boolean featured;
 
     private boolean picked;
@@ -141,5 +143,13 @@ public class PostSummaryDto implements Serializable {
 
     public void setPicked(boolean picked) {
         this.picked = picked;
+    }
+
+    public Long getLegacyPostId() {
+        return legacyPostId;
+    }
+
+    public void setLegacyPostId(Long legacyPostId) {
+        this.legacyPostId = legacyPostId;
     }
 }

@@ -1,8 +1,6 @@
 package com.indiepost.controller.api;
 
-import com.indiepost.dto.PostDto;
-import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.*;
 import com.indiepost.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -50,4 +48,8 @@ public class PostController {
         return postService.findById(id);
     }
 
+    @RequestMapping(value = "/relatedPosts", method = RequestMethod.POST)
+    public List<RelatedPostResponseDto> getRelatedPosts(@RequestBody RelatedPostsRequestDto dto) {
+        return postService.getRelatedPosts(dto.getPostIds(), dto.isLegacy(), dto.isMobile());
+    }
 }

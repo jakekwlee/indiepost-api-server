@@ -3,7 +3,9 @@ package com.indiepost.service;
 import com.indiepost.dto.PostDto;
 import com.indiepost.dto.PostQuery;
 import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.RelatedPostResponseDto;
 import com.indiepost.enums.PostEnum;
+import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.model.Post;
 import com.indiepost.repository.ImageRepository;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,6 +80,48 @@ public class PostServiceImpl implements PostService {
     public List<PostSummaryDto> findByStatus(PostEnum.Status status, int page, int maxResults, boolean isDesc) {
         List<PostSummaryDto> result = postRepository.findByStatus(status, getPageable(page, maxResults, isDesc));
         return setTitleImages(result);
+    }
+
+    @Override
+    public List<RelatedPostResponseDto> getRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobile) {
+        List<PostSummaryDto> postSummaryDtoList;
+        if (isLegacy) {
+            postSummaryDtoList = this.postRepository.findByLegacyPostIds(ids);
+        } else {
+            postSummaryDtoList = this.postRepository.findByIds(ids);
+        }
+        if (postSummaryDtoList == null) {
+            return null;
+        }
+
+        this.setTitleImages(postSummaryDtoList);
+        String legacyPostMobileUrl = "http://www.indiepost.co.kr/indiepost/ContentView.do?no=";
+        String legacyPostWebUrl = "http://www.indiepost.co.kr/ContentView.do?no=";
+
+        List<RelatedPostResponseDto> relatedPostResponseDtoList = new ArrayList<>();
+        for (PostSummaryDto postSummaryDto : postSummaryDtoList) {
+            RelatedPostResponseDto relatedPostResponseDto = new RelatedPostResponseDto();
+            relatedPostResponseDto.setId(postSummaryDto.getId());
+            relatedPostResponseDto.setTitle(postSummaryDto.getTitle());
+            relatedPostResponseDto.setExcerpt(postSummaryDto.getExcerpt());
+            if (postSummaryDto.getTitleImageId() != null) {
+                Image image = postSummaryDto.getTitleImage().getThumbnail();
+                relatedPostResponseDto.setImageUrl(image.getFileUrl());
+                relatedPostResponseDto.setImageWidth(image.getWidth());
+                relatedPostResponseDto.setImageHeight(image.getHeight());
+            }
+            if (isLegacy) {
+                if (isMobile) {
+                    relatedPostResponseDto.setUrl(legacyPostMobileUrl + postSummaryDto.getLegacyPostId());
+                } else {
+                    relatedPostResponseDto.setUrl(legacyPostWebUrl + postSummaryDto.getLegacyPostId());
+                }
+            } else {
+                relatedPostResponseDto.setUrl("/posts/" + postSummaryDto.getId());
+            }
+            relatedPostResponseDtoList.add(relatedPostResponseDto);
+        }
+        return relatedPostResponseDtoList;
     }
 
     private List<PostSummaryDto> setTitleImages(List<PostSummaryDto> postSummaryDtoList) {

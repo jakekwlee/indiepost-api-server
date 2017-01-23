@@ -7,6 +7,7 @@ import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.PostDto;
 import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.RelatedPostResponseDto;
 import com.indiepost.service.PostService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,6 +57,26 @@ public class PostDtoSerializationTest {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Hibernate5Module());
         System.out.println("\n\n*** Start serialize List<PostSummaryDto> ***\n\n");
+        System.out.println("Result Length: " + postList.size());
+        String result = objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true)
+                .writeValueAsString(postList);
+        System.out.println(result);
+    }
+
+    /**
+     * Usage: RelatedPosts API
+     *
+     * @throws JsonProcessingException
+     */
+    @Test
+    public void getRelatedPostsWorksCorrectly() throws JsonProcessingException {
+        List<Long> ids = new ArrayList<>();
+        ids.add(516L);
+        ids.add(218L);
+        List<RelatedPostResponseDto> postList = this.postService.getRelatedPosts(ids, true, true);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new Hibernate5Module());
+        System.out.println("\n\n*** Start serialize List<RelatedPostResponseDto> ***\n\n");
         System.out.println("Result Length: " + postList.size());
         String result = objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true)
                 .writeValueAsString(postList);
