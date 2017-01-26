@@ -7,11 +7,17 @@ import java.util.List;
  */
 public class InitialResponse {
 
+    private static final long serialVersionUID = 1L;
+
     private List<CategoryDto> categories;
 
     private UserDto currentUser;
 
-    // TODO: InitialData should contains posts.
+    private List<PostSummaryDto> posts;
+
+    private List<PostSummaryDto> featuredPosts;
+
+    private List<PostSummaryDto> editorsPicks;
 
     public List<CategoryDto> getCategories() {
         return categories;
@@ -27,5 +33,29 @@ public class InitialResponse {
 
     public void setCurrentUser(UserDto currentUser) {
         this.currentUser = currentUser;
+    }
+
+    public List<PostSummaryDto> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<PostSummaryDto> posts) {
+        this.posts = posts;
+    }
+
+    public List<PostSummaryDto> getFeaturedPosts() {
+        return featuredPosts;
+    }
+
+    public void setFeaturedPosts(List<PostSummaryDto> featuredPosts) {
+        this.featuredPosts = featuredPosts;
+    }
+
+    public List<PostSummaryDto> getEditorsPicks() {
+        return editorsPicks;
+    }
+
+    public void setEditorsPicks(List<PostSummaryDto> editorsPicks) {
+        this.editorsPicks = editorsPicks;
     }
 }

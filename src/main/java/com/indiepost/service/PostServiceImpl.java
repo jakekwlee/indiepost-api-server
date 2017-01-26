@@ -84,12 +84,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<RelatedPostResponseDto> getRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobile) {
-        List<PostSummaryDto> postSummaryDtoList;
-        if (isLegacy) {
-            postSummaryDtoList = this.postRepository.findByLegacyPostIds(ids);
-        } else {
-            postSummaryDtoList = this.postRepository.findByIds(ids);
-        }
+        List<PostSummaryDto> postSummaryDtoList = this.postRepository.findByIds(ids);
         if (postSummaryDtoList == null) {
             return null;
         }

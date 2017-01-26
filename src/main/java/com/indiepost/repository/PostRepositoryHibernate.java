@@ -5,7 +5,6 @@ import com.indiepost.dto.PostQuery;
 import com.indiepost.dto.PostSummaryDto;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Post;
-import com.indiepost.repository.helper.AliasToBeanNestedResultTransformer;
 import com.indiepost.repository.helper.CriteriaHelper;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -90,20 +89,9 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     @Override
-    public List<PostSummaryDto> findByLegacyPostIds(List<Long> ids) {
-        ProjectionList projectionList = getProjectionList()
-                .add(Property.forName("legacyPostId"), "legacyPostId");
-        Criteria criteria = getCriteria();
-        criteria.setProjection(projectionList);
-        criteria.add(Restrictions.in("legacyPostId", ids));
-        criteria.setResultTransformer(new AliasToBeanNestedResultTransformer(PostSummaryDto.class));
-        return criteria.list();
-    }
-
-    @Override
     public List<PostSummaryDto> findByIds(List<Long> ids) {
         ProjectionList projectionList = getProjectionList()
-                .add(Property.forName("id"), "id");
+                .add(Property.forName("legacyPostId"), "legacyPostId");
         Criteria criteria = getCriteria();
         criteria.setProjection(projectionList);
         criteria.add(Restrictions.in("id", ids));

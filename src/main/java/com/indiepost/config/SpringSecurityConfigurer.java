@@ -56,6 +56,8 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .csrf().ignoringAntMatchers("/api/posts/**")
+                .and()
                 .authorizeRequests()
                 .antMatchers("/admin/**").access(SPRING_SECURITY_EXPRESSION)
                 .antMatchers("/api/admin/**").access(SPRING_SECURITY_EXPRESSION)

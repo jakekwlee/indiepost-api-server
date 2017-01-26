@@ -4,6 +4,7 @@ import com.indiepost.service.AdminPostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -27,7 +28,7 @@ public class ScheduledTasks {
 
 
     //    @Scheduled(cron = "0 0/30 * * * ?")
-//    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 60000)
     public void publishPosts() {
         adminPostService.publishPosts();
     }

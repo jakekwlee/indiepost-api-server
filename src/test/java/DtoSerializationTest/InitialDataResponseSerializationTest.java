@@ -33,6 +33,7 @@ public class InitialDataResponseSerializationTest {
         System.out.println("\n\n*** Start serialize InitialResponse ***\n\n");
         String result = objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true)
                 .writeValueAsString(initialResponse);
+        System.out.println("Size of results: " + (result.getBytes().length / 1024.0) + " kb");
         System.out.println(result);
     }
 }
