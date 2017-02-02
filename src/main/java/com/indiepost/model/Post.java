@@ -48,6 +48,9 @@ public class Post implements Serializable {
     private boolean picked = false;
 
     @Column(nullable = false)
+    private boolean splash = false;
+
+    @Column(nullable = false)
     @Size(max = 100)
     private String title = "No Title";
 
@@ -394,5 +397,13 @@ public class Post implements Serializable {
 
     public void setPicked(boolean picked) {
         this.picked = picked;
+    }
+
+    public boolean isSplash() {
+        return splash;
+    }
+
+    public void setSplash(boolean splash) {
+        this.splash = splash;
     }
 }

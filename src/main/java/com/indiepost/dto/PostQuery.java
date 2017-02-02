@@ -43,6 +43,8 @@ public class PostQuery {
 
     private boolean picked = false;
 
+    private boolean splash = false;
+
     private int viewportWidth;
 
     private int viewportHeight;
@@ -197,5 +199,13 @@ public class PostQuery {
 
     public void setPicked(boolean picked) {
         this.picked = picked;
+    }
+
+    public boolean isSplash() {
+        return splash;
+    }
+
+    public void setSplash(boolean splash) {
+        this.splash = splash;
     }
 }

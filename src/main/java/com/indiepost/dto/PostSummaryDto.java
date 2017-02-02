@@ -21,6 +21,8 @@ public class PostSummaryDto implements Serializable {
 
     private boolean picked;
 
+    private boolean splash;
+
     private String title;
 
     private String excerpt;
@@ -151,5 +153,13 @@ public class PostSummaryDto implements Serializable {
 
     public void setLegacyPostId(Long legacyPostId) {
         this.legacyPostId = legacyPostId;
+    }
+
+    public boolean isSplash() {
+        return splash;
+    }
+
+    public void setSplash(boolean splash) {
+        this.splash = splash;
     }
 }

@@ -113,6 +113,7 @@ public class PostRepositoryHibernate implements PostRepository {
                 .add(Property.forName("featured"), "featured")
                 .add(Property.forName("picked"), "picked")
                 .add(Property.forName("excerpt"), "excerpt")
+                .add(Property.forName("splash"), "splash")
                 .add(Property.forName("publishedAt"), "publishedAt")
                 .add(Property.forName("displayName"), "displayName")
                 .add(Property.forName("commentsCount"), "commentsCount")

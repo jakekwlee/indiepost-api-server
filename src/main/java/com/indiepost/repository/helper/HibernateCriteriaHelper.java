@@ -70,5 +70,6 @@ public class HibernateCriteriaHelper implements CriteriaHelper {
         }
         conjunction.add(Restrictions.eq("featured", query.isFeatured()));
         conjunction.add(Restrictions.eq("picked", query.isPicked()));
+        conjunction.add(Restrictions.eq("splash", query.isSplash()));
     }
 }

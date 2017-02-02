@@ -52,6 +52,9 @@ public class PostMapperServiceImpl implements PostMapperService {
         destPost.setPostType(srcPost.getPostType());
         destPost.setCategory(srcPost.getCategory());
         destPost.setTitleImage(srcPost.getTitleImage());
+        destPost.setSplash(srcPost.isSplash());
+        destPost.setFeatured(srcPost.isFeatured());
+        destPost.setPicked(srcPost.isPicked());
         return destPost;
     }
 
@@ -80,7 +83,10 @@ public class PostMapperServiceImpl implements PostMapperService {
 
         responseDto.setCategoryId(post.getCategory().getId());
         responseDto.setAuthorId(post.getAuthor().getId());
-        responseDto.setEditorId(post.getEditor().getId());
+
+        responseDto.setPicked(post.isPicked());
+        responseDto.setFeatured(post.isFeatured());
+        responseDto.setSplash(post.isSplash());
 
         responseDto.setCommentsCount(post.getCommentsCount());
         responseDto.setLikesCount(post.getLikesCount());
@@ -109,6 +115,11 @@ public class PostMapperServiceImpl implements PostMapperService {
         post.setContent(adminPostRequestDto.getContent());
         post.setExcerpt(adminPostRequestDto.getExcerpt());
         post.setDisplayName(adminPostRequestDto.getDisplayName());
+
+        post.setSplash(adminPostRequestDto.isSplash());
+        post.setFeatured(adminPostRequestDto.isFeatured());
+        post.setPicked(adminPostRequestDto.isPicked());
+
         if (adminPostRequestDto.getTitleImageId() != null) {
             post.setTitleImage(
                     imageService.findById(adminPostRequestDto.getTitleImageId())
@@ -157,6 +168,10 @@ public class PostMapperServiceImpl implements PostMapperService {
         if (adminPostRequestDto.getStatus() != null) {
             post.setStatus(PostEnum.Status.valueOf(adminPostRequestDto.getStatus()));
         }
+
+        post.setSplash(adminPostRequestDto.isSplash());
+        post.setFeatured(adminPostRequestDto.isFeatured());
+        post.setPicked(adminPostRequestDto.isPicked());
     }
 
     @Override
@@ -177,6 +192,10 @@ public class PostMapperServiceImpl implements PostMapperService {
         adminPostSummaryDto.setModifiedAt(getDateString(post.getModifiedAt()));
         adminPostSummaryDto.setCreatedAt(getDateString(post.getCreatedAt()));
         adminPostSummaryDto.setLikedCount(post.getLikesCount());
+
+        adminPostSummaryDto.setSplash(post.isSplash());
+        adminPostSummaryDto.setFeatured(post.isFeatured());
+        adminPostSummaryDto.setPicked(post.isPicked());
         return adminPostSummaryDto;
     }
 

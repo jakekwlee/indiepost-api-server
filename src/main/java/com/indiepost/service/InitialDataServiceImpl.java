@@ -2,10 +2,13 @@ package com.indiepost.service;
 
 import com.indiepost.dto.InitialResponse;
 import com.indiepost.dto.PostQuery;
+import com.indiepost.dto.PostSummaryDto;
 import com.indiepost.enums.PostEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * Created by jake on 17. 1. 22.
@@ -33,19 +36,23 @@ public class InitialDataServiceImpl implements InitialDataService {
         InitialResponse initialResponse = new InitialResponse();
         initialResponse.setCategories(categoryService.getDtoList());
         initialResponse.setCurrentUser(userService.getCurrentUserDto());
-        PostQuery featuredPostsQuery = new PostQuery();
-        PostQuery editorsPicksQuery = new PostQuery();
-        featuredPostsQuery.setFeatured(true);
-        editorsPicksQuery.setPicked(true);
-        initialResponse.setPosts(
-                postService.findByStatus(PostEnum.Status.PUBLISH, 0, 30, true)
+        PostQuery query = new PostQuery();
+        List<PostSummaryDto> posts = postService.findByStatus(PostEnum.Status.PUBLISH, 0, 36, true);
+        query.setSplash(true);
+        posts.addAll(
+                postService.findByQuery(query, 0, 1, true)
         );
-        initialResponse.setEditorsPicks(
-                postService.findByQuery(editorsPicksQuery, 0, 10, true)
+        query.setSplash(false);
+        query.setFeatured(true);
+        posts.addAll(
+                postService.findByQuery(query, 0, 4, true)
         );
-        initialResponse.setFeaturedPosts(
-                postService.findByQuery((featuredPostsQuery), 0, 10, true)
+        query.setFeatured(false);
+        query.setPicked(true);
+        posts.addAll(
+                postService.findByQuery(query, 0, 12, true)
         );
+        initialResponse.setPosts(posts);
         return initialResponse;
     }
 }

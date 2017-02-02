@@ -1,6 +1,7 @@
 package com.indiepost.controller.api;
 
 import com.indiepost.dto.*;
+import com.indiepost.enums.PostEnum;
 import com.indiepost.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class PostController {
             @RequestParam(value = "p", defaultValue = "0") int page,
             @RequestParam(value = "m", defaultValue = "30") int maxResults) {
 
-        return postService.find(page, maxResults, true);
+        return postService.findByStatus(PostEnum.Status.PUBLISH, page, maxResults, true);
     }
 
     @RequestMapping(value = "/category/{id}", method = RequestMethod.GET)

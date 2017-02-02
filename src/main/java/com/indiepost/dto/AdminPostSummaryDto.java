@@ -29,6 +29,12 @@ public class AdminPostSummaryDto {
 
     private String modifiedAt;
 
+    private boolean featured;
+
+    private boolean picked;
+
+    private boolean splash;
+
     private int likedCount;
 
     private List<String> tags;
@@ -127,5 +133,29 @@ public class AdminPostSummaryDto {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    public boolean isFeatured() {
+        return featured;
+    }
+
+    public void setFeatured(boolean featured) {
+        this.featured = featured;
+    }
+
+    public boolean isPicked() {
+        return picked;
+    }
+
+    public void setPicked(boolean picked) {
+        this.picked = picked;
+    }
+
+    public boolean isSplash() {
+        return splash;
+    }
+
+    public void setSplash(boolean splash) {
+        this.splash = splash;
     }
 }

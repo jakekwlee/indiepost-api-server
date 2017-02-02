@@ -15,10 +15,6 @@ public class InitialResponse {
 
     private List<PostSummaryDto> posts;
 
-    private List<PostSummaryDto> featuredPosts;
-
-    private List<PostSummaryDto> editorsPicks;
-
     public List<CategoryDto> getCategories() {
         return categories;
     }
@@ -43,19 +39,4 @@ public class InitialResponse {
         this.posts = posts;
     }
 
-    public List<PostSummaryDto> getFeaturedPosts() {
-        return featuredPosts;
-    }
-
-    public void setFeaturedPosts(List<PostSummaryDto> featuredPosts) {
-        this.featuredPosts = featuredPosts;
-    }
-
-    public List<PostSummaryDto> getEditorsPicks() {
-        return editorsPicks;
-    }
-
-    public void setEditorsPicks(List<PostSummaryDto> editorsPicks) {
-        this.editorsPicks = editorsPicks;
-    }
 }
