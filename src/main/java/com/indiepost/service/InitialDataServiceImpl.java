@@ -37,22 +37,42 @@ public class InitialDataServiceImpl implements InitialDataService {
         initialResponse.setCategories(categoryService.getDtoList());
         initialResponse.setCurrentUser(userService.getCurrentUserDto());
         PostQuery query = new PostQuery();
-        List<PostSummaryDto> posts = postService.findByStatus(PostEnum.Status.PUBLISH, 0, 36, true);
+        List<PostSummaryDto> posts = postService.findByStatus(PostEnum.Status.PUBLISH, 0, 20, true);
+
         query.setSplash(true);
-        posts.addAll(
-                postService.findByQuery(query, 0, 1, true)
-        );
+        List<PostSummaryDto> specialPosts = postService.findByQuery(query, 0, 1, true);
+
         query.setSplash(false);
         query.setFeatured(true);
-        posts.addAll(
+        this.mergePostSummaryDtoListBtoA(specialPosts,
                 postService.findByQuery(query, 0, 4, true)
         );
+
         query.setFeatured(false);
         query.setPicked(true);
-        posts.addAll(
-                postService.findByQuery(query, 0, 12, true)
+        this.mergePostSummaryDtoListBtoA(specialPosts,
+                postService.findByQuery(query, 0, 10, true)
         );
+
+        this.mergePostSummaryDtoListBtoA(posts, specialPosts);
         initialResponse.setPosts(posts);
         return initialResponse;
+    }
+
+    private void mergePostSummaryDtoListBtoA(List<PostSummaryDto> dtoListA, List<PostSummaryDto> dtoListB) {
+        if (dtoListB.size() > 0) {
+            for (PostSummaryDto postB : dtoListB) {
+                boolean isDuplicate = false;
+                for (PostSummaryDto postA : dtoListA) {
+                    isDuplicate = postB.getId().equals(postA.getId());
+                    if (isDuplicate) {
+                        break;
+                    }
+                }
+                if (!isDuplicate) {
+                    dtoListA.add(postB);
+                }
+            }
+        }
     }
 }

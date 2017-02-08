@@ -68,8 +68,14 @@ public class HibernateCriteriaHelper implements CriteriaHelper {
         if (query.getDateTo() != null) {
             conjunction.add(Restrictions.le("publishedAt", query.getDateTo()));
         }
-        conjunction.add(Restrictions.eq("featured", query.isFeatured()));
-        conjunction.add(Restrictions.eq("picked", query.isPicked()));
-        conjunction.add(Restrictions.eq("splash", query.isSplash()));
+        if (query.isSplash()) {
+            conjunction.add(Restrictions.eq("splash", query.isSplash()));
+        }
+        if (query.isFeatured()) {
+            conjunction.add(Restrictions.eq("featured", query.isFeatured()));
+        }
+        if (query.isPicked()) {
+            conjunction.add(Restrictions.eq("picked", query.isPicked()));
+        }
     }
 }

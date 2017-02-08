@@ -73,7 +73,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostSummaryDto> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc) {
-        return postRepository.findByCategoryId(categoryId, getPageable(page, maxResults, isDesc));
+        List<PostSummaryDto> result = postRepository.findByCategoryId(categoryId, getPageable(page, maxResults, isDesc));
+        return setTitleImages(result);
     }
 
     @Override

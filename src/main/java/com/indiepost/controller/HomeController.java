@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class HomeController {
 
     @RequestMapping(
-            value = {"/", "/archive/**", "/category/**", "/page/**"},
+            value = {"/", "/archive/**", "/category/**", "/page/**", "/posts/**"},
             method = RequestMethod.GET)
     public String Home() {
         return "index";
