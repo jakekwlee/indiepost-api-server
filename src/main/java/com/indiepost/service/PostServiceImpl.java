@@ -8,6 +8,7 @@ import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.model.Post;
+import com.indiepost.model.Tag;
 import com.indiepost.repository.ImageRepository;
 import com.indiepost.repository.PostRepository;
 import com.indiepost.service.mapper.PostMapperService;
@@ -45,7 +46,10 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDto findById(Long id) {
         Post post = postRepository.findById(id);
-        post.getTags().get(0);
+        List<Tag> tagList = post.getTags();
+        if (tagList.size() > 0) {
+            tagList.get(0);
+        }
         post.getTitleImage().getOptimized();
         return postMapperService.postToPostDto(post);
     }
