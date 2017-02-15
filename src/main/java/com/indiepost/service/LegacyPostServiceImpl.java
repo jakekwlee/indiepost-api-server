@@ -8,6 +8,7 @@ import com.indiepost.model.legacy.Contentlist;
 import com.indiepost.model.legacy.Detaillist;
 import com.indiepost.repository.LegacyContentListRepository;
 import com.indiepost.repository.LegacyDetailListRepository;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,7 +77,8 @@ public class LegacyPostServiceImpl implements LegacyPostService {
     private void copyNewToLegacy(Post post, Contentlist contentlist, Detaillist detaillist) {
         Long status;
 
-        if (post.getStatus() == PostEnum.Status.PENDING) {
+        // TODO
+        if (post.getStatus() == PostEnum.Status.PENDING || post.getStatus() == PostEnum.Status.TRASH) {
             status = 0L;
         } else {
             status = 1L;
@@ -87,7 +89,7 @@ public class LegacyPostServiceImpl implements LegacyPostService {
         contentlist.setRegdate(regDateFormat.format(post.getCreatedAt()));
         contentlist.setModifydate(modifyDateFormat.format(post.getPublishedAt()));
         contentlist.setMenuno(post.getCategory().getId());
-        contentlist.setContentname(post.getTitle());
+        contentlist.setContentname(StringEscapeUtils.escapeHtml4(post.getTitle()));
         contentlist.setContenttext(post.getExcerpt());
         contentlist.setWriterid(post.getAuthor().getUsername());
         contentlist.setWritername(post.getDisplayName());
