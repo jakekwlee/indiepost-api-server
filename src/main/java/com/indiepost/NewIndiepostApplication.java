@@ -10,6 +10,9 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.view.script.ScriptTemplateConfigurer;
+import org.springframework.web.servlet.view.script.ScriptTemplateViewResolver;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 
 
@@ -45,5 +48,23 @@ public class NewIndiepostApplication extends SpringBootServletInitializer {
     @Bean
     public ImageConfig imageConfig() {
         return new ImageConfig();
+    }
+
+    @Bean
+    public ViewResolver viewResolver() {
+        return new ScriptTemplateViewResolver("/public/", ".html");
+    }
+
+    @Bean
+    public ScriptTemplateConfigurer scriptTemplateConfigurer() {
+        ScriptTemplateConfigurer configurer = new ScriptTemplateConfigurer();
+        configurer.setEngineName("nashorn");
+        configurer.setScripts(
+                "static/polyfill.js",
+                "/data/resources/indiepost-react-webapp/dist/server.bundle.js"
+        );
+        configurer.setRenderFunction("render");
+        configurer.setSharedEngine(false);
+        return configurer;
     }
 }

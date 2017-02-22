@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <title>Indiepost</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/resources/indiepost-react-webapp/node_modules/bootstrap/dist/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/resources/indiepost-react-webapp/node_modules/text-spinners/spinners.css}">
     <link rel="stylesheet" th:href="@{/resources/indiepost-react-webapp/css/style.css}">
@@ -14,10 +13,9 @@
 </div>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    CFRF_TOKEN = [[${_csrf.token}]];
     CONTEXT_ROOT = /*[[@{/}]]*/ '';
     /*]]>*/
 </script>
-<script th:src="@{/resources/indiepost-react-webapp/dist/app.bundle.js}"></script>
+<script th:src="@{/resources/indiepost-react-webapp/dist/client.bundle.js}"></script>
 </body>
 </html>
