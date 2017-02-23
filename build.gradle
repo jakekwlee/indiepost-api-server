@@ -54,6 +54,7 @@ dependencies {
     }
     compile('com.zaxxer:HikariCP:2.5.1')
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate5', version: '2.8.6'
+    compile group: 'com.eclipsesource.j2v8', name: 'j2v8_linux_x86_64', version: '4.6.0'
 }
 
 compileJava.dependsOn(processResources)

@@ -49,22 +49,4 @@ public class NewIndiepostApplication extends SpringBootServletInitializer {
     public ImageConfig imageConfig() {
         return new ImageConfig();
     }
-
-    @Bean
-    public ViewResolver viewResolver() {
-        return new ScriptTemplateViewResolver("/public/", ".html");
-    }
-
-    @Bean
-    public ScriptTemplateConfigurer scriptTemplateConfigurer() {
-        ScriptTemplateConfigurer configurer = new ScriptTemplateConfigurer();
-        configurer.setEngineName("nashorn");
-        configurer.setScripts(
-                "static/polyfill.js",
-                "/data/resources/indiepost-react-webapp/dist/server.bundle.js"
-        );
-        configurer.setRenderFunction("render");
-        configurer.setSharedEngine(false);
-        return configurer;
-    }
 }
