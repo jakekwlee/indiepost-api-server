@@ -1,4 +1,4 @@
-package com.indiepost.view;
+package com.indiepost.v8view;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 

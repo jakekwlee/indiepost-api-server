@@ -1,4 +1,9 @@
 indiepost:
+  rest:
+    connection:
+      connection-request-timeout: 3000
+      connect-timeout: 3000
+      read-timeout: 3000
   images:
     fsRoot: /data
     fsLocation: /data/uploads/images

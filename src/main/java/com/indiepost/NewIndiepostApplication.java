@@ -10,9 +10,6 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.view.script.ScriptTemplateConfigurer;
-import org.springframework.web.servlet.view.script.ScriptTemplateViewResolver;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 
 

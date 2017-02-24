@@ -1,4 +1,4 @@
-package com.indiepost.view;
+package com.indiepost.v8view;
 
 /**
  * Created by jake on 17. 2. 23.

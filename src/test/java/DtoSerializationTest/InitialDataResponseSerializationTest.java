@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.dto.InitialResponse;
+import com.indiepost.dto.InitialData;
 import com.indiepost.service.InitialDataService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,12 +27,12 @@ public class InitialDataResponseSerializationTest {
 
     @Test
     public void initialDataShouldSerializeCorrectly() throws JsonProcessingException {
-        InitialResponse initialResponse = initialDataService.getInitialData();
+        InitialData initialData = initialDataService.getInitialData();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Hibernate5Module());
-        System.out.println("\n\n*** Start serialize InitialResponse ***\n\n");
+        System.out.println("\n\n*** Start serialize InitialData ***\n\n");
         String result = objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true)
-                .writeValueAsString(initialResponse);
+                .writeValueAsString(initialData);
         System.out.println("Size of results: " + (result.getBytes().length / 1024.0) + " kb");
         System.out.println(result);
     }

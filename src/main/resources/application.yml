@@ -33,6 +33,11 @@ spring:
         content:
           enabled: true
           paths: /**
+  thymeleaf:
+    cache: false
+    mode: LEGACYHTML5
+    encoding: UTF-8
+
 logging:
   level:
     org:

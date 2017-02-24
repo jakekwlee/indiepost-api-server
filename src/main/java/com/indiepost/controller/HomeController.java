@@ -1,17 +1,16 @@
 package com.indiepost.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.indiepost.dto.InitialData;
+import com.indiepost.dto.RenderingServerResponse;
 import com.indiepost.service.InitialDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Created by jake on 17. 1. 4.
@@ -19,25 +18,31 @@ import java.util.Map;
 @Controller
 public class HomeController {
 
+    private final InitialDataService initialDataService;
+
+    private final RestTemplate restTemplate;
+
     @Autowired
-    private InitialDataService initialDataService;
+    public HomeController(InitialDataService initialDataService, RestTemplate restTemplate) {
+        this.initialDataService = initialDataService;
+        this.restTemplate = restTemplate;
+    }
 
     @RequestMapping(
             value = {"/", "/archive/**", "/category/**", "/page/**", "/posts/**"},
             method = RequestMethod.GET)
-    public String Home(Model model, HttpServletRequest request) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> req = new HashMap<>();
-
-        String root = request.getServletPath().equals("/index.html") ? "/" : request.getServletPath();
-
-        if (request.getQueryString() != null)
-            req.put("location", String.format("%s?%s", root, request.getQueryString()));
-        else
-            req.put("location", root);
-
-        model.addAttribute("req", mapper.writeValueAsString(req));
-        model.addAttribute("initialData", mapper.writeValueAsString(initialDataService.getInitialData()));
+    public String Home(Model model) throws JsonProcessingException {
+        final String uri = "http://localhost:3000/home";
+        InitialData initialData = initialDataService.getInitialData();
+        try {
+            RenderingServerResponse response = restTemplate.postForObject(uri, initialData, RenderingServerResponse.class);
+            model.addAttribute("markup", response.getMarkup());
+            model.addAttribute("state", response.getState());
+        } catch (ResourceAccessException e) {
+            e.printStackTrace();
+            model.addAttribute("markup", "");
+            model.addAttribute("state", "{}");
+        }
         return "index";
     }
 

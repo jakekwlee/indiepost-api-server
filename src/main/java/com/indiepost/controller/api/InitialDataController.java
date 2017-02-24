@@ -1,6 +1,6 @@
 package com.indiepost.controller.api;
 
-import com.indiepost.dto.InitialResponse;
+import com.indiepost.dto.InitialData;
 import com.indiepost.service.InitialDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +23,7 @@ public class InitialDataController {
 
 
     @RequestMapping(method = RequestMethod.GET)
-    public InitialResponse getInitialData() {
+    public InitialData getInitialData() {
         return initialDataService.getInitialData();
     }
 }

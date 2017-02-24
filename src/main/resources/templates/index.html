@@ -9,11 +9,16 @@
     <link rel="stylesheet" th:href="@{/resources/indiepost-react-webapp/css/style.css}">
 </head>
 <body>
-<div id="root">
+<div id="root" th:utext="${markup}">
 </div>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    CONTEXT_ROOT = /*[[@{/}]]*/ '';
+    window.CFRF_TOKEN = [[${_csrf.token}]];
+    window.CONTEXT_ROOT = /*[[@{/}]]*/ '';
+    window.__PRELOADED_STATE__ = deserialize(/*[[${state}]]*/);
+    function deserialize(serializedJavascript) {
+      return eval('(' + serializedJavascript + ')');
+    }
     /*]]>*/
 </script>
 <script th:src="@{/resources/indiepost-react-webapp/dist/client.bundle.js}"></script>

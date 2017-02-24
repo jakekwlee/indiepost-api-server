@@ -1,4 +1,4 @@
-package com.indiepost.view;
+package com.indiepost.v8view;
 
 import com.eclipsesource.v8.V8;
 import com.eclipsesource.v8.V8Array;

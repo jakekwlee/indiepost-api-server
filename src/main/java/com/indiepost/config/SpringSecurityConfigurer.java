@@ -56,7 +56,6 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/admin/**").access(SPRING_SECURITY_EXPRESSION)
                 .antMatchers("/api/admin/**").access(SPRING_SECURITY_EXPRESSION)

@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by jake on 17. 1. 22.
  */
-public class InitialResponse {
+public class InitialData {
 
     private static final long serialVersionUID = 1L;
 

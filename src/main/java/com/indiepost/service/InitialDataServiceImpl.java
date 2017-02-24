@@ -1,9 +1,8 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.InitialResponse;
+import com.indiepost.dto.InitialData;
 import com.indiepost.dto.PostQuery;
 import com.indiepost.dto.PostSummaryDto;
-import com.indiepost.enums.PostEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,12 +31,11 @@ public class InitialDataServiceImpl implements InitialDataService {
 
 
     @Override
-    public InitialResponse getInitialData() {
-        InitialResponse initialResponse = new InitialResponse();
-        initialResponse.setCategories(categoryService.getDtoList());
-        initialResponse.setCurrentUser(userService.getCurrentUserDto());
+    public InitialData getInitialData() {
+        InitialData initialData = new InitialData();
+        initialData.setCategories(categoryService.getDtoList());
+        initialData.setCurrentUser(userService.getCurrentUserDto());
         PostQuery query = new PostQuery();
-        List<PostSummaryDto> posts = postService.findByStatus(PostEnum.Status.PUBLISH, 0, 20, true);
 
         query.setSplash(true);
         List<PostSummaryDto> specialPosts = postService.findByQuery(query, 0, 1, true);
@@ -54,9 +52,8 @@ public class InitialDataServiceImpl implements InitialDataService {
                 postService.findByQuery(query, 0, 10, true)
         );
 
-        this.mergePostSummaryDtoListBtoA(posts, specialPosts);
-        initialResponse.setPosts(posts);
-        return initialResponse;
+        initialData.setPosts(specialPosts);
+        return initialData;
     }
 
     private void mergePostSummaryDtoListBtoA(List<PostSummaryDto> dtoListA, List<PostSummaryDto> dtoListB) {
