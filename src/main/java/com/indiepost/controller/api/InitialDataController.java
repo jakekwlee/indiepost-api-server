@@ -21,9 +21,8 @@ public class InitialDataController {
         this.initialDataService = initialDataService;
     }
 
-
     @RequestMapping(method = RequestMethod.GET)
     public InitialData getInitialData() {
-        return initialDataService.getInitialData();
+        return initialDataService.getInitialData(true);
     }
 }

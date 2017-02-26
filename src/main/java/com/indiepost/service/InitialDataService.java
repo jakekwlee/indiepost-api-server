@@ -7,5 +7,5 @@ import com.indiepost.dto.InitialData;
  */
 public interface InitialDataService {
 
-    InitialData getInitialData();
+    InitialData getInitialData(boolean withLatestPosts);
 }

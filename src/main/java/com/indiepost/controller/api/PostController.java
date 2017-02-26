@@ -24,8 +24,8 @@ public class PostController {
 
     @RequestMapping(method = RequestMethod.GET)
     public List<PostSummaryDto> getPosts(
-            @RequestParam(value = "p", defaultValue = "0") int page,
-            @RequestParam(value = "m", defaultValue = "30") int maxResults) {
+            @RequestParam("p") int page,
+            @RequestParam("m") int maxResults) {
 
         return postService.findByStatus(PostEnum.Status.PUBLISH, page, maxResults, true);
     }
@@ -33,9 +33,8 @@ public class PostController {
     @RequestMapping(value = "/category/{id}", method = RequestMethod.GET)
     public List<PostSummaryDto> getPostsByCategoryId(
             @PathVariable Long id,
-            @RequestParam(value = "p", defaultValue = "0") int page,
-            @RequestParam(value = "m", defaultValue = "30") int maxResults) {
-
+            @RequestParam("p") int page,
+            @RequestParam("m") int maxResults) {
         return postService.findByCategoryId(id, page, maxResults, true);
     }
 

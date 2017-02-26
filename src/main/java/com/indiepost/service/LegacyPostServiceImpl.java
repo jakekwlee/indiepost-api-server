@@ -24,11 +24,15 @@ import java.util.List;
 @Transactional
 public class LegacyPostServiceImpl implements LegacyPostService {
 
-    @Autowired
-    private LegacyContentListRepository legacyContentListRepository;
+    private final LegacyContentListRepository legacyContentListRepository;
+
+    private final LegacyDetailListRepository legacyDetailListRepository;
 
     @Autowired
-    private LegacyDetailListRepository legacyDetailListRepository;
+    public LegacyPostServiceImpl(LegacyContentListRepository legacyContentListRepository, LegacyDetailListRepository legacyDetailListRepository) {
+        this.legacyContentListRepository = legacyContentListRepository;
+        this.legacyDetailListRepository = legacyDetailListRepository;
+    }
 
     @Override
     public Contentlist save(Post post) {

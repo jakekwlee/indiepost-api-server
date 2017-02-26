@@ -6,6 +6,7 @@ import com.indiepost.dto.PostSummaryDto;
 import com.indiepost.enums.PostEnum;
 import com.indiepost.model.Post;
 import com.indiepost.repository.helper.CriteriaHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
@@ -42,6 +43,13 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     @Override
+    public Post findByLegacyId(Long id) {
+        return (Post) getCriteria()
+                .add(Restrictions.eq("legacyPostId", id))
+                .uniqueResult();
+    }
+
+    @Override
     public Long count() {
         return (Long) getCriteria().setProjection(Projections.rowCount())
                 .uniqueResult();
@@ -64,8 +72,12 @@ public class PostRepositoryHibernate implements PostRepository {
     @Override
     public List<PostSummaryDto> findByQuery(PostQuery query, Pageable pageable) {
         Criteria criteria = getPagedCriteria(pageable);
-        criteria.setProjection(getProjectionList());
-
+        ProjectionList projectionList = this.getProjectionList();
+        if (query != null && StringUtils.isNotEmpty(query.getCategorySlug())) {
+            criteria.createAlias("category", "category");
+            projectionList.add(Property.forName("category.slug"), "categoryName");
+        }
+        criteria.setProjection(projectionList);
         Conjunction conjunction = Restrictions.conjunction();
 
         if (query != null) {
@@ -120,7 +132,7 @@ public class PostRepositoryHibernate implements PostRepository {
                 .add(Property.forName("likesCount"), "likesCount")
                 .add(Property.forName("categoryId"), "categoryId")
                 .add(Property.forName("status"), "status")
-                .add(Property.forName("titleImage.id"), "titleImageId");
+                .add(Property.forName("titleImageId"), "titleImageId");
     }
 
     private Session getSession() {

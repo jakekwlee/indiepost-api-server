@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8" />
-    <title>Indiepost</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link rel="stylesheet" th:href="@{/resources/indiepost-react-webapp/node_modules/bootstrap/dist/css/bootstrap.min.css}">
-    <link rel="stylesheet" th:href="@{/resources/indiepost-react-webapp/node_modules/text-spinners/spinners.css}">
-    <link rel="stylesheet" th:href="@{/resources/indiepost-react-webapp/css/style.css}">
+    <meta charset="utf-8"/>
+    <title th:text="${res.title} ? ${res.title} : 'Indiepost 인디포스트'"></title>
+    <th:block th:utext="${res.meta}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <link rel="stylesheet"
+          th:href="@{/resources/indiepost-react-webapp/node_modules/bootstrap/dist/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/resources/indiepost-react-webapp/node_modules/text-spinners/spinners.css}"/>
+    <link rel="stylesheet" th:href="@{/resources/indiepost-react-webapp/css/style.css}"/>
 </head>
 <body>
-<div id="root" th:utext="${markup}">
+<div id="root" th:utext="${res.markup}">
 </div>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    window.CFRF_TOKEN = [[${_csrf.token}]];
-    window.CONTEXT_ROOT = /*[[@{/}]]*/ '';
-    window.__PRELOADED_STATE__ = deserialize(/*[[${state}]]*/);
+    window.__CFRF_TOKEN__ = [[${_csrf.token}]];
+    window.__CONTEXT_ROOT__ = /*[[@{/}]]*/ '';
+    window.__FETCH_COUNT__ = [[${fetchCount}]];
+    window.__PRELOADED_STATE__ = deserialize(/*[[${res.state}]]*/);
     function deserialize(serializedJavascript) {
       return eval('(' + serializedJavascript + ')');
     }

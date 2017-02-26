@@ -28,11 +28,11 @@ public class Category implements Serializable {
     @OneToMany(mappedBy = "parent", orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Category> categories;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     @Size(min = 3, max = 20)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     @Size(min = 3, max = 20)
     private String slug;
 

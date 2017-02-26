@@ -15,6 +15,8 @@ public interface PostService {
 
     PostDto findById(Long id);
 
+    PostDto findByLegacyId(Long id);
+
     Long count();
 
     Long count(PostQuery query);

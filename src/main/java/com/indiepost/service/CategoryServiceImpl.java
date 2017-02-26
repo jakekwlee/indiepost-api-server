@@ -18,8 +18,12 @@ import java.util.stream.Collectors;
 @Transactional
 public class CategoryServiceImpl implements CategoryService {
 
+    private final CategoryRepository categoryRepository;
+
     @Autowired
-    private CategoryRepository categoryRepository;
+    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
 
     @Override
     public void save(Category category) {

@@ -15,6 +15,8 @@ public class InitialData {
 
     private List<PostSummaryDto> posts;
 
+    private boolean withLatestPosts;
+
     public List<CategoryDto> getCategories() {
         return categories;
     }
@@ -39,4 +41,11 @@ public class InitialData {
         this.posts = posts;
     }
 
+    public boolean isWithLatestPosts() {
+        return withLatestPosts;
+    }
+
+    public void setWithLatestPosts(boolean withLatestPosts) {
+        this.withLatestPosts = withLatestPosts;
+    }
 }

@@ -21,11 +21,13 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class UserRepositoryHibernate implements UserRepository {
 
-    @Autowired
+
     private final CriteriaHelper criteriaHelper;
+
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
     public UserRepositoryHibernate(CriteriaHelper criteriaHelper) {
         this.criteriaHelper = criteriaHelper;
     }

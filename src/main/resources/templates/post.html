@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="|Indiepost > ${post.category.name} > ${post.title}|"></title>
+    <title th:text="|Indiepost > ${nowReadingPost.category.name} > ${nowReadingPost.title}|"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" th:href="@{/resources/css/bootstrap.min.css}">
@@ -14,12 +14,13 @@
 <body id="home">
 <header th:replace="fragments :: header"></header>
 <div class="container">
-    <div id="post" class="row">
+    <div id="nowReadingPost" class="row">
         <div class="col-md-12">
-            <h1 th:text="${post.title}"></h1>
-            <div>Date <span th:text="${#calendars.format(post.publishedAt, 'yyyy/MM/dd')}"></span> | By <span th:text="${post.displayName}"></span></div>
+            <h1 th:text="${nowReadingPost.title}"></h1>
+            <div>Date <span th:text="${#calendars.format(nowReadingPost.publishedAt, 'yyyy/MM/dd')}"></span> | By <span
+                    th:text="${nowReadingPost.displayName}"></span></div>
             <hr>
-            <div th:utext="${post.content}">
+            <div th:utext="${nowReadingPost.content}">
             </div>
         </div>
     </div>

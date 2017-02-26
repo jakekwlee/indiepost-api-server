@@ -1,4 +1,7 @@
 indiepost:
+  home:
+    fetchCount: 24
+    renderingServerUri: 'http://localhost:3000'
   rest:
     connection:
       connection-request-timeout: 3000

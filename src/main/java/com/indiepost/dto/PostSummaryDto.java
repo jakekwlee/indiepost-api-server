@@ -39,6 +39,8 @@ public class PostSummaryDto implements Serializable {
 
     private Long categoryId;
 
+    private String categoryName;
+
     private int commentsCount;
 
     private int likesCount;
@@ -161,5 +163,13 @@ public class PostSummaryDto implements Serializable {
 
     public void setSplash(boolean splash) {
         this.splash = splash;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }

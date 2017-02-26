@@ -55,6 +55,17 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public PostDto findByLegacyId(Long id) {
+        Post post = postRepository.findByLegacyId(id);
+        List<Tag> tagList = post.getTags();
+        if (tagList.size() > 0) {
+            tagList.get(0);
+        }
+        post.getTitleImage().getOptimized();
+        return postMapperService.postToPostDto(post);
+    }
+
+    @Override
     public Long count() {
         return postRepository.count();
     }
