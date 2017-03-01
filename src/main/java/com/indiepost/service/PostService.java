@@ -21,6 +21,8 @@ public interface PostService {
 
     Long count(PostQuery query);
 
+    List<PostSummaryDto> findByIds(List<Long> ids);
+
     List<PostSummaryDto> find(int page, int maxResults, boolean isDesc);
 
     List<PostSummaryDto> findByQuery(PostQuery query, int page, int maxResults, boolean isDesc);

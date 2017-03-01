@@ -27,7 +27,7 @@ public class InitialDataResponseSerializationTest {
 
     @Test
     public void initialDataShouldSerializeCorrectly() throws JsonProcessingException {
-        InitialData initialData = initialDataService.getInitialData();
+        InitialData initialData = initialDataService.getInitialData(true);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Hibernate5Module());
         System.out.println("\n\n*** Start serialize InitialData ***\n\n");

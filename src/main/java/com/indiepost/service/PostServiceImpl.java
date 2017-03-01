@@ -76,6 +76,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public List<PostSummaryDto> findByIds(List<Long> ids) {
+        List<PostSummaryDto> result = postRepository.findByIds(ids);
+        return setTitleImages(result);
+    }
+
+    @Override
     public List<PostSummaryDto> find(int page, int maxResults, boolean isDesc) {
         return findByQuery(null, page, maxResults, isDesc);
     }
