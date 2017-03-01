@@ -60,12 +60,9 @@ public class HomeController {
 
     @GetMapping("/ContentView.do")
     public String getPostByLegacyId(@RequestParam Long no, Model model, HttpServletRequest request) {
-        InitialData initialData = initialDataService.getInitialData(false);
         PostDto postDto = postService.findByLegacyId(no);
-        RenderingRequestDto rsRequest
-                = new RenderingRequestDto(initialData, postDto, request.getServletPath());
-        this.render(model, rsRequest);
-        return "index";
+
+        return "redirect:post/" + postDto.getId();
     }
 
     @GetMapping("/category/{categoryName}")

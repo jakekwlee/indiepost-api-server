@@ -13,15 +13,7 @@ public class PostQuery {
 
     private Long editorId;
 
-    private String titleContains;
-
-    private String contentContains;
-
-    private String displayNameContains;
-
     private Long tagId;
-
-    private String tagNameContains;
 
     private Long categoryId;
 
@@ -33,7 +25,7 @@ public class PostQuery {
 
     private int page = 0;
 
-    private int maxResults = 30;
+    private int maxResults = 24;
 
     private PostEnum.Status status = PostEnum.Status.PUBLISH;
 
@@ -44,10 +36,6 @@ public class PostQuery {
     private boolean picked = false;
 
     private boolean splash = false;
-
-    private int viewportWidth;
-
-    private int viewportHeight;
 
     public Long getAuthorId() {
         return authorId;
@@ -65,44 +53,12 @@ public class PostQuery {
         this.editorId = editorId;
     }
 
-    public String getTitleContains() {
-        return titleContains;
-    }
-
-    public void setTitleContains(String titleContains) {
-        this.titleContains = titleContains;
-    }
-
-    public String getContentContains() {
-        return contentContains;
-    }
-
-    public void setContentContains(String contentContains) {
-        this.contentContains = contentContains;
-    }
-
-    public String getDisplayNameContains() {
-        return displayNameContains;
-    }
-
-    public void setDisplayNameContains(String displayNameContains) {
-        this.displayNameContains = displayNameContains;
-    }
-
     public Long getTagId() {
         return tagId;
     }
 
     public void setTagId(Long tagId) {
         this.tagId = tagId;
-    }
-
-    public String getTagNameContains() {
-        return tagNameContains;
-    }
-
-    public void setTagNameContains(String tagNameContains) {
-        this.tagNameContains = tagNameContains;
     }
 
     public Long getCategoryId() {
@@ -167,22 +123,6 @@ public class PostQuery {
 
     public void setMaxResults(int maxResults) {
         this.maxResults = maxResults;
-    }
-
-    public int getViewportWidth() {
-        return viewportWidth;
-    }
-
-    public void setViewportWidth(int viewportWidth) {
-        this.viewportWidth = viewportWidth;
-    }
-
-    public int getViewportHeight() {
-        return viewportHeight;
-    }
-
-    public void setViewportHeight(int viewportHeight) {
-        this.viewportHeight = viewportHeight;
     }
 
     public boolean isFeatured() {

@@ -30,6 +30,11 @@ public class PostController {
         return postService.findByStatus(PostEnum.Status.PUBLISH, page, maxResults, true);
     }
 
+    @RequestMapping(value = "/related", method = RequestMethod.POST)
+    public List<PostSummaryDto> getPostByIds(@RequestBody RelatedPostsRequestDto dto) {
+        return postService.findByIds(dto.getPostIds());
+    }
+
     @RequestMapping(value = "/category/{id}", method = RequestMethod.GET)
     public List<PostSummaryDto> getPostsByCategoryId(
             @PathVariable Long id,

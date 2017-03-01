@@ -44,18 +44,7 @@ public class HibernateCriteriaHelper implements CriteriaHelper {
         if (StringUtils.isNotEmpty(query.getCategorySlug())) {
             conjunction.add(Restrictions.ilike("category.slug", query.getCategorySlug()));
         }
-        if (StringUtils.isNotEmpty(query.getTitleContains())) {
-            conjunction.add(Restrictions.ilike("title", query.getTitleContains()));
-        }
-        if (StringUtils.isNotEmpty(query.getContentContains())) {
-            conjunction.add(Restrictions.ilike("content", query.getContentContains()));
-        }
-        if (StringUtils.isNotEmpty(query.getDisplayNameContains())) {
-            conjunction.add(Restrictions.ilike("displayName", query.getContentContains()));
-        }
-        if (StringUtils.isNotEmpty(query.getTagNameContains())) {
-            // TODO: tag search
-        }
+
         if (query.getStatus() != null) {
             conjunction.add(Restrictions.eq("status", query.getStatus()));
         }
