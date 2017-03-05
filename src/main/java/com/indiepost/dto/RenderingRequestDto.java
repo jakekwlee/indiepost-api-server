@@ -1,14 +1,18 @@
 package com.indiepost.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.List;
 
 /**
  * Created by jake on 17. 2. 26.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RenderingRequestDto {
     private InitialData initialData;
     private List<PostSummaryDto> posts;
     private PostDto post;
+    private PageDto page;
     private String path;
 
     public RenderingRequestDto() {
@@ -27,6 +31,12 @@ public class RenderingRequestDto {
     public RenderingRequestDto(InitialData initialData, PostDto post, String path) {
         this.initialData = initialData;
         this.post = post;
+        this.path = path;
+    }
+
+    public RenderingRequestDto(InitialData initialData, PageDto page, String path) {
+        this.initialData = initialData;
+        this.page = page;
         this.path = path;
     }
 
@@ -66,5 +76,13 @@ public class RenderingRequestDto {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public PageDto getPage() {
+        return page;
+    }
+
+    public void setPage(PageDto page) {
+        this.page = page;
     }
 }

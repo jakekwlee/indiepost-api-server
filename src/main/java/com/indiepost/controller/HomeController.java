@@ -3,6 +3,7 @@ package com.indiepost.controller;
 import com.indiepost.config.HomeConfig;
 import com.indiepost.dto.*;
 import com.indiepost.service.InitialDataService;
+import com.indiepost.service.PageService;
 import com.indiepost.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,14 +27,17 @@ public class HomeController {
 
     private final PostService postService;
 
+    private final PageService pageService;
+
     private final RestTemplate restTemplate;
 
     private final HomeConfig homeConfig;
 
     @Autowired
-    public HomeController(InitialDataService initialDataService, PostService postService, RestTemplate restTemplate, HomeConfig homeConfig) {
+    public HomeController(InitialDataService initialDataService, PostService postService, PageService pageService, HomeConfig homeConfig, RestTemplate restTemplate) {
         this.initialDataService = initialDataService;
         this.postService = postService;
+        this.pageService = pageService;
         this.restTemplate = restTemplate;
         this.homeConfig = homeConfig;
     }
@@ -54,6 +58,16 @@ public class HomeController {
         PostDto postDto = postService.findById(id);
         RenderingRequestDto rsRequest =
                 new RenderingRequestDto(initialData, postDto, request.getServletPath());
+        this.render(model, rsRequest);
+        return "index";
+    }
+
+    @GetMapping("/page/{slug}")
+    public String getPage(@PathVariable String slug, Model model, HttpServletRequest request) {
+        InitialData initialData = initialDataService.getInitialData(false);
+        PageDto pageDto = pageService.findBySlug(slug);
+        RenderingRequestDto rsRequest =
+                new RenderingRequestDto(initialData, pageDto, request.getServletPath());
         this.render(model, rsRequest);
         return "index";
     }

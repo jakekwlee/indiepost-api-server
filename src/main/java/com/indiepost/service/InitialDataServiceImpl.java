@@ -24,13 +24,18 @@ public class InitialDataServiceImpl implements InitialDataService {
 
     private final PostService postService;
 
+    @Autowired
+    private final PageService pageService;
+
     private final HomeConfig homeConfig;
 
     @Autowired
-    public InitialDataServiceImpl(CategoryService categoryService, UserService userService, PostService postService, HomeConfig homeConfig) {
+    public InitialDataServiceImpl(CategoryService categoryService, UserService userService,
+                                  PostService postService, PageService pageService, HomeConfig homeConfig) {
         this.categoryService = categoryService;
         this.userService = userService;
         this.postService = postService;
+        this.pageService = pageService;
         this.homeConfig = homeConfig;
     }
 
@@ -40,6 +45,7 @@ public class InitialDataServiceImpl implements InitialDataService {
         initialData.setCategories(categoryService.getDtoList());
         initialData.setCurrentUser(userService.getCurrentUserDto());
         initialData.setWithLatestPosts(withLatestPosts);
+        initialData.setPages(pageService.find(0, 100, false));
 
         PostQuery query = new PostQuery();
         query.setSplash(true);

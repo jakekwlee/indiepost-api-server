@@ -15,6 +15,8 @@ public class InitialData {
 
     private List<PostSummaryDto> posts;
 
+    private List<PageDto> pages;
+
     private boolean withLatestPosts;
 
     public List<CategoryDto> getCategories() {
@@ -47,5 +49,13 @@ public class InitialData {
 
     public void setWithLatestPosts(boolean withLatestPosts) {
         this.withLatestPosts = withLatestPosts;
+    }
+
+    public List<PageDto> getPages() {
+        return pages;
+    }
+
+    public void setPages(List<PageDto> pages) {
+        this.pages = pages;
     }
 }
