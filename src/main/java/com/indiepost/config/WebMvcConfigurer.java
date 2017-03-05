@@ -1,5 +1,7 @@
 package com.indiepost.config;
 
+import com.indiepost.filter.CORSFilter;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -14,9 +16,7 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
 @Configuration
 @EnableWebMvc
 public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
-    //    private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
-//            "classpath:/META-INF/resources/", "classpath:/resources/",
-//            "classpath:/static/", "file:/data/indiepost-front-end/" };
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
@@ -32,6 +32,16 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver());
     }
+
+    @Bean
+    public FilterRegistrationBean someFilterRegistration() {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        registration.setFilter(new CORSFilter());
+        registration.addUrlPatterns("/api/**");
+        registration.setOrder(1);
+        return registration;
+    }
+
 
     @Bean
     public RestTemplate restTemplate() {

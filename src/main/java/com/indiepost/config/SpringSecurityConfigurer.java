@@ -56,6 +56,8 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .cors()
+                .and()
                 .csrf().ignoringAntMatchers("/api/posts/**")
                 .and()
                 .authorizeRequests()
