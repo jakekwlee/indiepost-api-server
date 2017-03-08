@@ -31,6 +31,12 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
                 .setCachePeriod(3600)
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver());
+        registry
+                .addResourceHandler("/uploadData/**")
+                .addResourceLocations("file:/data/uploadData/")
+                .setCachePeriod(3600)
+                .resourceChain(true)
+                .addResolver(new PathResourceResolver());
     }
 
     @Bean
