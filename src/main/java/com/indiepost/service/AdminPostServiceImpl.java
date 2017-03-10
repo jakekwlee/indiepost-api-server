@@ -230,13 +230,19 @@ public class AdminPostServiceImpl implements AdminPostService {
 
     @Override
     public void publishPosts() {
-        List<Post> posts = adminPostRepository.findPostToPublish();
+        List<Post> posts = adminPostRepository.findScheduledPosts();
         if (posts == null) {
             return;
         }
         for (Post post : posts) {
+            if (post.isSplash()) {
+                adminPostRepository.disableSplashPosts();
+            }
+            if (post.isFeatured()) {
+                adminPostRepository.disableFeaturedPosts();
+            }
             post.setStatus(PostEnum.Status.PUBLISH);
-            adminPostRepository.save(post);
+            adminPostRepository.update(post);
         }
     }
 

@@ -18,7 +18,10 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Root;
 import java.util.Date;
 import java.util.List;
 
@@ -117,12 +120,36 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     }
 
     @Override
-    public List<Post> findPostToPublish() {
+    public List<Post> findScheduledPosts() {
         return getCriteria()
                 .add(Restrictions.eq("status", PostEnum.Status.FUTURE))
                 .add(Restrictions.le("publishedAt", new Date()))
                 .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
                 .list();
+    }
+
+    @Override
+    public void disableSplashPosts() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaUpdate<Post> update = criteriaBuilder.createCriteriaUpdate(Post.class);
+        Root e = update.from(Post.class);
+        update.set("splash", false);
+        update.where(criteriaBuilder.and(
+                criteriaBuilder.equal(e.get("status"), PostEnum.Status.PUBLISH)),
+                criteriaBuilder.equal(e.get("splash"), true));
+        entityManager.createQuery(update).executeUpdate();
+    }
+
+    @Override
+    public void disableFeaturedPosts() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaUpdate<Post> update = criteriaBuilder.createCriteriaUpdate(Post.class);
+        Root e = update.from(Post.class);
+        update.set("featured", false);
+        update.where(criteriaBuilder.and(
+                criteriaBuilder.equal(e.get("status"), PostEnum.Status.PUBLISH)),
+                criteriaBuilder.equal(e.get("featured"), true));
+        entityManager.createQuery(update).executeUpdate();
     }
 
     @Override

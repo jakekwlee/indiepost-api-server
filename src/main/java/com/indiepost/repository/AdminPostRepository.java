@@ -30,5 +30,9 @@ public interface AdminPostRepository {
 
     Long count(PostQuery postQuery);
 
-    List<Post> findPostToPublish();
+    List<Post> findScheduledPosts();
+
+    void disableSplashPosts();
+
+    void disableFeaturedPosts();
 }
