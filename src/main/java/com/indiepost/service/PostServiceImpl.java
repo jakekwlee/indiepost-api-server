@@ -12,6 +12,7 @@ import com.indiepost.model.Tag;
 import com.indiepost.repository.ImageRepository;
 import com.indiepost.repository.PostRepository;
 import com.indiepost.service.mapper.PostMapperService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +38,8 @@ public class PostServiceImpl implements PostService {
     private final ImageRepository imageRepository;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository, ImageRepository imageRepository, PostMapperService postMapperService) {
+    public PostServiceImpl(PostRepository postRepository, ImageRepository imageRepository,
+                           PostMapperService postMapperService) {
         this.postRepository = postRepository;
         this.imageRepository = imageRepository;
         this.postMapperService = postMapperService;
@@ -82,8 +84,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostSummaryDto> find(int page, int maxResults, boolean isDesc) {
-        return findByQuery(null, page, maxResults, isDesc);
+    public List<PostSummaryDto> findAll(int page, int maxResults, boolean isDesc) {
+        List<PostSummaryDto> result = postRepository.findByStatus(PostEnum.Status.PUBLISH, getPageable(page, maxResults, isDesc));
+        return setTitleImages(result);
     }
 
     @Override
@@ -95,12 +98,6 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<PostSummaryDto> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc) {
         List<PostSummaryDto> result = postRepository.findByCategoryId(categoryId, getPageable(page, maxResults, isDesc));
-        return setTitleImages(result);
-    }
-
-    @Override
-    public List<PostSummaryDto> findByStatus(PostEnum.Status status, int page, int maxResults, boolean isDesc) {
-        List<PostSummaryDto> result = postRepository.findByStatus(status, getPageable(page, maxResults, isDesc));
         return setTitleImages(result);
     }
 
@@ -139,6 +136,17 @@ public class PostServiceImpl implements PostService {
             relatedPostResponseDtoList.add(relatedPostResponseDto);
         }
         return relatedPostResponseDtoList;
+    }
+
+    @Override
+    public List<PostSummaryDto> search(String text, int page, int maxResults) {
+        Pageable pageable = getPageable(page, maxResults, true);
+        List<Post> postList = postRepository.search(text, pageable);
+        return postList.stream().map(post -> {
+            PostSummaryDto dto = new PostSummaryDto();
+            BeanUtils.copyProperties(post, dto);
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     private List<PostSummaryDto> setTitleImages(List<PostSummaryDto> postSummaryDtoList) {

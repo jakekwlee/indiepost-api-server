@@ -4,7 +4,6 @@ import com.indiepost.config.HomeConfig;
 import com.indiepost.dto.InitialData;
 import com.indiepost.dto.PostQuery;
 import com.indiepost.dto.PostSummaryDto;
-import com.indiepost.enums.PostEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +23,6 @@ public class InitialDataServiceImpl implements InitialDataService {
 
     private final PostService postService;
 
-    @Autowired
     private final PageService pageService;
 
     private final HomeConfig homeConfig;
@@ -65,7 +63,7 @@ public class InitialDataServiceImpl implements InitialDataService {
 
         if (withLatestPosts) {
             this.mergePostSummaryDtoListBtoA(posts,
-                    postService.findByStatus(PostEnum.Status.PUBLISH, 0, homeConfig.getFetchCount(), true)
+                    postService.findAll(0, homeConfig.getFetchCount(), true)
             );
         }
         initialData.setPosts(posts);

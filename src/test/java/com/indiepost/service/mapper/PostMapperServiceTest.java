@@ -140,7 +140,8 @@ public class PostMapperServiceTest {
 
     @Test
     @Transactional
-    public void testGetPostRespoonse() {
-        postService.find(0, 10, true);
+    public void testGetPostResponse() {
+        postService.findAll(0, 10, true);
     }
+
 }

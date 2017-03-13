@@ -4,6 +4,7 @@ import com.indiepost.enums.PostEnum;
 import com.indiepost.model.legacy.Contentlist;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -18,6 +19,8 @@ import java.util.List;
  */
 @Entity
 @Table(name = "Posts")
+@Indexed
+@Analyzer(impl = org.apache.lucene.analysis.cjk.CJKAnalyzer.class)
 public class Post implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -52,17 +55,21 @@ public class Post implements Serializable {
 
     @Column(nullable = false)
     @Size(max = 100)
+    @Field
     private String title = "No Title";
 
     @Column(nullable = false, columnDefinition = "LONGTEXT")
+    @Field
     private String content = "";
 
     @Column(nullable = false)
     @Size(max = 300)
+    @Field
     private String excerpt = "No Excerpt";
 
     @Column(nullable = false)
     @Size(max = 30)
+    @Field
     private String displayName = "Indiepost";
 
     @Column(nullable = false)
@@ -72,6 +79,9 @@ public class Post implements Serializable {
     private Date modifiedAt;
 
     @Column(nullable = false)
+    @Field
+    @SortableField
+    @DateBridge(resolution = Resolution.DAY)
     private Date publishedAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -118,6 +128,7 @@ public class Post implements Serializable {
             joinColumns = {@JoinColumn(name = "postId")},
             inverseJoinColumns = {@JoinColumn(name = "tagId")}
     )
+    @IndexedEmbedded
     private List<Tag> tags = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)

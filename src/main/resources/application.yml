@@ -15,11 +15,15 @@ spring:
       ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    show-sql: false
+    show-sql: true
     generate-ddl: true
     properties:
       hibernate:
-        format_sql: false
+        search:
+          default:
+            directory_provider: filesystem
+            indexBase: /home/jake/lucene/indexes/
+        format_sql: true
         max_fetch_depth: 3
         connection:
           charSet: UTF-8
@@ -34,12 +38,11 @@ spring:
           enabled: true
           paths: /**
   thymeleaf:
-    cache: false
+    cache: true
     mode: LEGACYHTML5
     encoding: UTF-8
-
 logging:
   level:
     org:
       springframework:
-        web: info
+        web: debug

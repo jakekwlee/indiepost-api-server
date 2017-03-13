@@ -1,6 +1,7 @@
 package com.indiepost.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.search.annotations.Field;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -24,6 +25,7 @@ public class Tag implements Serializable {
 
     @Size(min = 1, max = 50)
     @Column(nullable = false, unique = true)
+    @Field
     private String name;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")

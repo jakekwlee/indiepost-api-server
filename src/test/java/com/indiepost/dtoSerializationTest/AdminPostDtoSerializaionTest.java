@@ -1,4 +1,4 @@
-package DtoSerializationTest;
+package com.indiepost.dtoSerializationTest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

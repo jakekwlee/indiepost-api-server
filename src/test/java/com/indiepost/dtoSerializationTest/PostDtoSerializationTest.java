@@ -1,4 +1,4 @@
-package DtoSerializationTest;
+package com.indiepost.dtoSerializationTest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,7 +53,7 @@ public class PostDtoSerializationTest {
      */
     @Test
     public void postSummaryListShouldSerializeCorrectly() throws JsonProcessingException {
-        List<PostSummaryDto> postList = postService.find(3, 10, true);
+        List<PostSummaryDto> postList = postService.findAll(3, 10, true);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Hibernate5Module());
         System.out.println("\n\n*** Start serialize List<PostSummaryDto> ***\n\n");

@@ -1,7 +1,6 @@
 package com.indiepost.controller.api;
 
 import com.indiepost.dto.*;
-import com.indiepost.enums.PostEnum;
 import com.indiepost.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +21,17 @@ public class PostController {
         this.postService = postService;
     }
 
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public PostDto getPost(@PathVariable Long id) {
+        return postService.findById(id);
+    }
+
     @RequestMapping(method = RequestMethod.GET)
     public List<PostSummaryDto> getPosts(
             @RequestParam("p") int page,
             @RequestParam("m") int maxResults) {
 
-        return postService.findByStatus(PostEnum.Status.PUBLISH, page, maxResults, true);
+        return postService.findAll(page, maxResults, true);
     }
 
     @RequestMapping(value = "/related", method = RequestMethod.POST)
@@ -48,9 +52,12 @@ public class PostController {
         return postService.findByQuery(query, query.getPage(), query.getMaxResults(), true);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public PostDto getPost(@PathVariable Long id) {
-        return postService.findById(id);
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    public List<PostSummaryDto> getPosts(
+            @RequestParam("q") String text,
+            @RequestParam("p") int page,
+            @RequestParam("m") int maxResults) {
+        return postService.search(text, page, maxResults);
     }
 
     @RequestMapping(value = "/relatedPosts", method = RequestMethod.POST)
