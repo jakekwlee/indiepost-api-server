@@ -66,6 +66,24 @@ public class PostMapperServiceImpl implements PostMapperService {
     }
 
     @Override
+    public PostSummaryDto postToPostSummaryDto(Post post) {
+        PostSummaryDto postSummaryDto = new PostSummaryDto();
+        postSummaryDto.setId(post.getId());
+        postSummaryDto.setFeatured(post.isFeatured());
+        postSummaryDto.setSplash(post.isSplash());
+        postSummaryDto.setPicked(post.isPicked());
+        postSummaryDto.setTitle(post.getTitle());
+        postSummaryDto.setExcerpt(post.getExcerpt());
+        postSummaryDto.setCategoryId(post.getCategoryId());
+        postSummaryDto.setCommentsCount(post.getCommentsCount());
+        postSummaryDto.setLikesCount(post.getLikesCount());
+        postSummaryDto.setLegacyPostId(post.getLegacyPostId());
+        postSummaryDto.setDisplayName(post.getDisplayName());
+        postSummaryDto.setTitleImageId(post.getTitleImageId());
+        return postSummaryDto;
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public AdminPostResponseDto postToAdminPostResponseDto(Post post) {
         AdminPostResponseDto responseDto = new AdminPostResponseDto();

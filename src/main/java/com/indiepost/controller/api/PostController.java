@@ -47,6 +47,12 @@ public class PostController {
         return postService.findByCategoryId(id, page, maxResults, true);
     }
 
+    @RequestMapping(value = "/tag/{tagName}", method = RequestMethod.GET)
+    public List<PostSummaryDto> getPostsByTagName(
+            @PathVariable String tagName) {
+        return postService.findByTagName(tagName);
+    }
+
     @RequestMapping(method = RequestMethod.POST)
     public List<PostSummaryDto> getPostsByQuery(@RequestBody PostQuery query) {
         return postService.findByQuery(query, query.getPage(), query.getMaxResults(), true);

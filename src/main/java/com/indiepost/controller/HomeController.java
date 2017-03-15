@@ -27,6 +27,7 @@ public class HomeController {
 
     private final PostService postService;
 
+
     private final PageService pageService;
 
     private final RestTemplate restTemplate;
@@ -34,7 +35,8 @@ public class HomeController {
     private final HomeConfig homeConfig;
 
     @Autowired
-    public HomeController(InitialDataService initialDataService, PostService postService, PageService pageService, HomeConfig homeConfig, RestTemplate restTemplate) {
+    public HomeController(InitialDataService initialDataService, PostService postService,
+                          PageService pageService, HomeConfig homeConfig, RestTemplate restTemplate) {
         this.initialDataService = initialDataService;
         this.postService = postService;
         this.pageService = pageService;
@@ -42,7 +44,7 @@ public class HomeController {
         this.homeConfig = homeConfig;
     }
 
-    @GetMapping(value = {"/", "/page/**", "/archive/**"})
+    @GetMapping(value = {"/", "/archive/**"})
     public String getHome(Model model, HttpServletRequest request) {
         InitialData initialData = initialDataService.getInitialData(true);
         RenderingRequestDto rsRequest =
@@ -85,6 +87,16 @@ public class HomeController {
         PostQuery query = new PostQuery();
         query.setCategorySlug(categoryName.toLowerCase());
         List<PostSummaryDto> posts = postService.findByQuery(query, 0, homeConfig.getFetchCount(), true);
+        RenderingRequestDto rsRequest =
+                new RenderingRequestDto(initialData, posts, request.getServletPath());
+        this.render(model, rsRequest);
+        return "index";
+    }
+
+    @GetMapping("/tag/{tagName}")
+    public String getPostsByTagName(@PathVariable String tagName, Model model, HttpServletRequest request) {
+        InitialData initialData = initialDataService.getInitialData(false);
+        List<PostSummaryDto> posts = postService.findByTagName(tagName);
         RenderingRequestDto rsRequest =
                 new RenderingRequestDto(initialData, posts, request.getServletPath());
         this.render(model, rsRequest);

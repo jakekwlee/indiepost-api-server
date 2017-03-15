@@ -11,6 +11,7 @@ import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.repository.ImageRepository;
 import com.indiepost.repository.PostRepository;
+import com.indiepost.repository.TagRepository;
 import com.indiepost.service.mapper.PostMapperService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,12 +38,15 @@ public class PostServiceImpl implements PostService {
 
     private final ImageRepository imageRepository;
 
+    private final TagRepository tagRepository;
+
     @Autowired
     public PostServiceImpl(PostRepository postRepository, ImageRepository imageRepository,
-                           PostMapperService postMapperService) {
+                           PostMapperService postMapperService, TagRepository tagRepository) {
         this.postRepository = postRepository;
         this.imageRepository = imageRepository;
         this.postMapperService = postMapperService;
+        this.tagRepository = tagRepository;
     }
 
     @Override
@@ -99,6 +103,23 @@ public class PostServiceImpl implements PostService {
     public List<PostSummaryDto> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc) {
         List<PostSummaryDto> result = postRepository.findByCategoryId(categoryId, getPageable(page, maxResults, isDesc));
         return setTitleImages(result);
+    }
+
+    @Override
+    public List<PostSummaryDto> findByTagName(String tagName) {
+        Tag tag = tagRepository.findByTagName(tagName);
+        if (tag == null) {
+            return null;
+        }
+        List<Post> postList = tag.getPosts();
+        if (postList == null || postList.size() == 0) {
+            return null;
+        }
+        List<PostSummaryDto> dtoList = postList.stream()
+                .filter(post -> post.getStatus().equals(PostEnum.Status.PUBLISH))
+                .map(postMapperService::postToPostSummaryDto)
+                .collect(Collectors.toList());
+        return setTitleImages(dtoList);
     }
 
     @Override

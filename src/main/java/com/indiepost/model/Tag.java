@@ -29,7 +29,7 @@ public class Tag implements Serializable {
     private String name;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
-    @OrderBy(value = "publishedAt")
+    @OrderBy(value = "publishedAt desc")
     @JsonIgnore
     private List<Post> posts = new ArrayList<>();
 

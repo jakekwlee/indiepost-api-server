@@ -28,6 +28,8 @@ public interface PostService {
 
     List<PostSummaryDto> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc);
 
+    List<PostSummaryDto> findByTagName(String tagName);
+
     List<RelatedPostResponseDto> getRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobile);
 
     List<PostSummaryDto> search(String text, int page, int maxResults);
