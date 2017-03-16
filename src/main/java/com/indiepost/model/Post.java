@@ -20,7 +20,9 @@ import java.util.List;
 @Entity
 @Table(name = "Posts")
 @Indexed
-@Analyzer(impl = org.apache.lucene.analysis.cjk.CJKAnalyzer.class)
+@Analyzer(impl = org.apache.lucene.analysis.ko.KoreanAnalyzer.class)
+@TokenizerDef(factory = org.apache.lucene.analysis.ko.KoreanTokenizerFactory.class)
+@TokenFilterDef(factory = org.apache.lucene.analysis.ko.KoreanFilterFactory.class)
 public class Post implements Serializable {
 
     private static final long serialVersionUID = 1L;
