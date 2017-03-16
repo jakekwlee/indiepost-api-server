@@ -145,7 +145,7 @@ public class PostRepositoryHibernate implements PostRepository {
         Criteria criteria = getSession().createCriteria(Post.class);
         criteria.add(Restrictions.eq("status", PostEnum.Status.PUBLISH))
                 .setFirstResult(pageable.getOffset())
-                .setMaxResults(pageable.getOffset());
+                .setMaxResults(pageable.getPageSize());
 
         @SuppressWarnings("unchecked")
         List<Post> results = fullTextQuery

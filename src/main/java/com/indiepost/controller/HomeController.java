@@ -103,6 +103,16 @@ public class HomeController {
         return "index";
     }
 
+    @GetMapping("/search/{keyword}")
+    public String search(@PathVariable String keyword, Model model, HttpServletRequest request) {
+        InitialData initialData = initialDataService.getInitialData(false);
+        List<PostSummaryDto> posts = postService.search(keyword, 0, homeConfig.getFetchCount());
+        RenderingRequestDto rsRequest =
+                new RenderingRequestDto(initialData, posts, request.getServletPath());
+        this.render(model, rsRequest);
+        return "index";
+    }
+
     private void render(Model model, RenderingRequestDto requestDto) {
         try {
             RenderingResponseDto response = restTemplate.postForObject(
