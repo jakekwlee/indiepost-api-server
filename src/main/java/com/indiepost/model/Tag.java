@@ -1,6 +1,9 @@
 package com.indiepost.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.Boost;
 import org.hibernate.search.annotations.Field;
 
 import javax.persistence.*;
@@ -25,7 +28,8 @@ public class Tag implements Serializable {
 
     @Size(min = 1, max = 50)
     @Column(nullable = false, unique = true)
-    @Field
+    @Field(boost = @Boost(1.5f))
+    @Analyzer(impl = StandardAnalyzer.class)
     private String name;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")

@@ -2,9 +2,16 @@ package com.indiepost.model;
 
 import com.indiepost.enums.PostEnum;
 import com.indiepost.model.legacy.Contentlist;
+import org.apache.lucene.analysis.charfilter.HTMLStripCharFilterFactory;
+import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
+import org.apache.lucene.analysis.core.StopFilterFactory;
+import org.apache.lucene.analysis.ko.*;
+import org.apache.lucene.analysis.standard.ClassicFilterFactory;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.annotations.*;
+import org.hibernate.search.annotations.Parameter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -20,9 +27,30 @@ import java.util.List;
 @Entity
 @Table(name = "Posts")
 @Indexed
-@Analyzer(impl = org.apache.lucene.analysis.ko.KoreanAnalyzer.class)
-@TokenizerDef(factory = org.apache.lucene.analysis.ko.KoreanTokenizerFactory.class)
-@TokenFilterDef(factory = org.apache.lucene.analysis.ko.KoreanFilterFactory.class)
+@AnalyzerDef(name = "koreanHtmlTextAnalyzer",
+        charFilters = {
+                @CharFilterDef(factory = HTMLStripCharFilterFactory.class),
+        },
+        tokenizer = @TokenizerDef(factory = KoreanTokenizerFactory.class),
+        filters = {
+                @TokenFilterDef(factory = LowerCaseFilterFactory.class),
+                @TokenFilterDef(factory = ClassicFilterFactory.class),
+                @TokenFilterDef(factory = KoreanFilterFactory.class, params = {
+                        @Parameter(name = "hasOrigin", value = "true"),
+                        @Parameter(name = "hasCNoun", value = "false"),
+                        @Parameter(name = "exactMatch", value = "true"),
+                        @Parameter(name = "bigrammable", value = "false")
+                }),
+                @TokenFilterDef(factory = HanjaMappingFilterFactory.class),
+                @TokenFilterDef(factory = PunctuationDelimitFilterFactory.class),
+                @TokenFilterDef(factory = StopFilterFactory.class, params = {
+                        @Parameter(name = "words", value = "org/apache/lucene/analysis/ko/stopwords.txt"),
+                        @Parameter(name = "ignoreCase", value = "true")
+                })
+        }
+
+)
+
 public class Post implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -30,7 +58,6 @@ public class Post implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "originalId")
@@ -57,21 +84,25 @@ public class Post implements Serializable {
 
     @Column(nullable = false)
     @Size(max = 100)
-    @Field
+    @Field(boost = @Boost(value = 1.5f))
+    @Analyzer(impl = KoreanAnalyzer.class)
     private String title = "No Title";
 
     @Column(nullable = false, columnDefinition = "LONGTEXT")
     @Field
+    @Analyzer(definition = "koreanHtmlTextAnalyzer")
     private String content = "";
 
     @Column(nullable = false)
     @Size(max = 300)
-    @Field
+    @Field(boost = @Boost(value = 1.2f))
+    @Analyzer(impl = KoreanAnalyzer.class)
     private String excerpt = "No Excerpt";
 
     @Column(nullable = false)
     @Size(max = 30)
-    @Field
+    @Field(boost = @Boost(value = 2f))
+    @Analyzer(impl = StandardAnalyzer.class)
     private String displayName = "Indiepost";
 
     @Column(nullable = false)
@@ -81,9 +112,6 @@ public class Post implements Serializable {
     private Date modifiedAt;
 
     @Column(nullable = false)
-    @Field
-    @SortableField
-    @DateBridge(resolution = Resolution.DAY)
     private Date publishedAt;
 
     @ManyToOne(fetch = FetchType.EAGER)

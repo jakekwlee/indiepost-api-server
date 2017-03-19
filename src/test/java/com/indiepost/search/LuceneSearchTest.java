@@ -31,7 +31,7 @@ public class LuceneSearchTest {
     @Test
     @Transactional
     public void testLuceneSearch() throws JsonProcessingException {
-        List<PostSummaryDto> dtoList = postService.search("인어", 0, 100);
+        List<PostSummaryDto> dtoList = postService.search("포르노", 0, 100);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Hibernate5Module());
         String result = objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true)

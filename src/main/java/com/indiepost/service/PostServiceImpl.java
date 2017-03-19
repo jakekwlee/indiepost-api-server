@@ -161,6 +161,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostSummaryDto> search(String text, int page, int maxResults) {
+        if (text.length() > 30) {
+            text = text.substring(0, 30);
+        }
         Pageable pageable = getPageable(page, maxResults, true);
         List<Post> postList = postRepository.search(text, pageable);
         return postList.stream().map(post -> {
