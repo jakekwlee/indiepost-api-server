@@ -1,5 +1,7 @@
 package com.indiepost.model.legacy;
 
+import org.springframework.web.util.HtmlUtils;
+
 import javax.persistence.*;
 
 @Entity
@@ -215,7 +217,7 @@ public class Contentlist {
     }
 
     public void setContenttext(String contenttext) {
-        this.contenttext = contenttext;
+        this.contenttext = HtmlUtils.htmlEscape(contenttext);
     }
 
     public Long getIsdisplay() {

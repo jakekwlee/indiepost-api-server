@@ -56,6 +56,8 @@ public class Post implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @Field(name = "id_sortable", analyze = Analyze.NO)
+    @SortableField(forField = "id_sortable")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
@@ -84,7 +86,7 @@ public class Post implements Serializable {
 
     @Column(nullable = false)
     @Size(max = 100)
-    @Field(boost = @Boost(value = 1.5f))
+    @Field(boost = @Boost(value = 2f))
     @Analyzer(impl = KoreanAnalyzer.class)
     private String title = "No Title";
 
@@ -95,7 +97,7 @@ public class Post implements Serializable {
 
     @Column(nullable = false)
     @Size(max = 300)
-    @Field(boost = @Boost(value = 1.2f))
+    @Field(boost = @Boost(value = 1.5f))
     @Analyzer(impl = KoreanAnalyzer.class)
     private String excerpt = "No Excerpt";
 

@@ -134,7 +134,7 @@ public class PostRepositoryHibernate implements PostRepository {
 
         Sort sort = new Sort(
                 SortField.FIELD_SCORE,
-                new SortField("id", SortField.Type.STRING, true));
+                new SortField("id_sortable", SortField.Type.LONG, true));
 
         FullTextQuery fullTextQuery = makeKeywordQuery(text);
 
