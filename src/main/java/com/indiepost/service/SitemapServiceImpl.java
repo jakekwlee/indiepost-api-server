@@ -49,7 +49,7 @@ public class SitemapServiceImpl implements SitemapService {
         File targetDirectory = new File(SITEMAP_DIR_PATH);
         WebSitemapGenerator webSitemapGenerator = WebSitemapGenerator.builder(BASE_URL, targetDirectory)
                 .allowMultipleSitemaps(false)
-                .gzip(true)
+                .gzip(false)
                 .build();
 
         List<PostSummaryDto> posts = postRepository.findByStatus(

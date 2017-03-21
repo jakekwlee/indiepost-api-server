@@ -39,9 +39,9 @@ public class ScheduledTasks {
         adminPostService.publishPosts();
     }
 
-    @Scheduled(cron = "1 1 * * * ?")
+    @Scheduled(fixedRate = 3600000)
     public void createSitemap() throws MalformedURLException {
-        log.info(dateFormat.format(new Date()) + ": Create Sitemap: /sitemap.xml.gz");
+        log.info(dateFormat.format(new Date()) + ": Create Sitemap: /sitemap.xml");
         sitemapService.createSitemap();
     }
 }

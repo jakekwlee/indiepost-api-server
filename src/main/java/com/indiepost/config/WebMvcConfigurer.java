@@ -20,15 +20,27 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
-                .addResourceHandler("/sitemap.xml.gz")
-                .addResourceLocations("file:/data/resources/sitemap.xml.gz")
+                .addResourceHandler("/naver08e868adc7d6dcdd0ee15d4f4692dbbc.html")
+                .addResourceLocations("file:/data/resources/naver08e868adc7d6dcdd0ee15d4f4692dbbc.html")
+                .setCachePeriod(3600)
+                .resourceChain(true)
+                .addResolver(new PathResourceResolver());
+        registry
+                .addResourceHandler("/sitemap.xml")
+                .addResourceLocations("file:/data/resources/sitemap.xml")
                 .setCachePeriod(1800)
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver());
         registry
-                .addResourceHandler("/robot.txt")
-                .addResourceLocations("file:/data/resources/robot.txt")
-                .setCachePeriod(1800)
+                .addResourceHandler("/google9e42b214f3b4a31f.html")
+                .addResourceLocations("file:/data/resources/google9e42b214f3b4a31f.html")
+                .setCachePeriod(3600)
+                .resourceChain(true)
+                .addResolver(new PathResourceResolver());
+        registry
+                .addResourceHandler("/robots.txt")
+                .addResourceLocations("file:/data/resources/robots.txt")
+                .setCachePeriod(3600)
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver());
         registry
