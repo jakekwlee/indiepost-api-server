@@ -20,6 +20,18 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
+                .addResourceHandler("/sitemap.xml.gz")
+                .addResourceLocations("file:/data/resources/sitemap.xml.gz")
+                .setCachePeriod(1800)
+                .resourceChain(true)
+                .addResolver(new PathResourceResolver());
+        registry
+                .addResourceHandler("/robot.txt")
+                .addResourceLocations("file:/data/resources/robot.txt")
+                .setCachePeriod(1800)
+                .resourceChain(true)
+                .addResolver(new PathResourceResolver());
+        registry
                 .addResourceHandler("/resources/**")
                 .addResourceLocations("file:/data/resources/")
                 .setCachePeriod(3600)

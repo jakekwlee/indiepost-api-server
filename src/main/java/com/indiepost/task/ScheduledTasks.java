@@ -1,13 +1,16 @@
 package com.indiepost.task;
 
 import com.indiepost.service.AdminPostService;
+import com.indiepost.service.SitemapService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by jake on 11/22/16.
@@ -21,15 +24,24 @@ public class ScheduledTasks {
 
     private final AdminPostService adminPostService;
 
+    private final SitemapService sitemapService;
+
     @Autowired
-    public ScheduledTasks(AdminPostService adminPostService) {
+    public ScheduledTasks(AdminPostService adminPostService, SitemapService sitemapService) {
         this.adminPostService = adminPostService;
+        this.sitemapService = sitemapService;
     }
 
 
-    //    @Scheduled(cron = "0 0/30 * * * ?")
     @Scheduled(fixedRate = 60000)
-    public void publishPosts() {
+    public void publishScheduledPosts() {
+        log.info(dateFormat.format(new Date()) + ": Publish Scheduled Posts");
         adminPostService.publishPosts();
+    }
+
+    @Scheduled(cron = "1 1 * * * ?")
+    public void createSitemap() throws MalformedURLException {
+        log.info(dateFormat.format(new Date()) + ": Create Sitemap: /sitemap.xml.gz");
+        sitemapService.createSitemap();
     }
 }

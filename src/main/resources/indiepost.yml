@@ -2,6 +2,8 @@ indiepost:
   home:
     fetchCount: 24
     renderingServerUri: 'http://localhost:3000'
+    baseUrl: 'http://www.indiepost.co.kr'
+    resourcesPath: '/data/resources'
   rest:
     connection:
       connection-request-timeout: 3000

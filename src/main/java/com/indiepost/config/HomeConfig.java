@@ -13,6 +13,10 @@ public class HomeConfig {
 
     private String renderingServerUri;
 
+    private String baseUrl;
+
+    private String resourcesPath;
+
     public String getRenderingServerUri() {
         return renderingServerUri;
     }
@@ -27,5 +31,21 @@ public class HomeConfig {
 
     public void setFetchCount(int fetchCount) {
         this.fetchCount = fetchCount;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    public String getResourcesPath() {
+        return resourcesPath;
+    }
+
+    public void setResourcesPath(String resourcesPath) {
+        this.resourcesPath = resourcesPath;
     }
 }

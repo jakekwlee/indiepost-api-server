@@ -28,7 +28,7 @@ public class Tag implements Serializable {
 
     @Size(min = 1, max = 50)
     @Column(nullable = false, unique = true)
-    @Field(boost = @Boost(1.5f))
+    @Field(boost = @Boost(3f))
     @Analyzer(impl = StandardAnalyzer.class)
     private String name;
 

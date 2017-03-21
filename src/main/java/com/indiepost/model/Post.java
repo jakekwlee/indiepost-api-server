@@ -86,7 +86,7 @@ public class Post implements Serializable {
 
     @Column(nullable = false)
     @Size(max = 100)
-    @Field(boost = @Boost(value = 2f))
+    @Field(boost = @Boost(value = 10f))
     @Analyzer(impl = KoreanAnalyzer.class)
     private String title = "No Title";
 
@@ -97,13 +97,13 @@ public class Post implements Serializable {
 
     @Column(nullable = false)
     @Size(max = 300)
-    @Field(boost = @Boost(value = 1.5f))
+    @Field(boost = @Boost(value = 5f))
     @Analyzer(impl = KoreanAnalyzer.class)
     private String excerpt = "No Excerpt";
 
     @Column(nullable = false)
     @Size(max = 30)
-    @Field(boost = @Boost(value = 2f))
+    @Field(boost = @Boost(value = 10f))
     @Analyzer(impl = StandardAnalyzer.class)
     private String displayName = "Indiepost";
 
