@@ -245,3 +245,4 @@ venv/
 
 migration/dist/*
 migration/dist/
+/.idea/misc.xml

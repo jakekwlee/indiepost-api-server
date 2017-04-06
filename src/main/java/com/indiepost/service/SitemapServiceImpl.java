@@ -58,7 +58,6 @@ public class SitemapServiceImpl implements SitemapService {
         );
         for (PostSummaryDto postSummaryDto : posts) {
             WebSitemapUrl webSitemapUrl = new WebSitemapUrl.Options(BASE_URL + "/post/" + postSummaryDto.getId())
-                    .lastMod(postSummaryDto.getPublishedAt())
                     .priority(0.9)
                     .changeFreq(ChangeFreq.WEEKLY)
                     .build();
@@ -66,7 +65,6 @@ public class SitemapServiceImpl implements SitemapService {
         }
         for (Category category : categoryRepository.findAll()) {
             WebSitemapUrl webSitemapUrl = new WebSitemapUrl.Options(BASE_URL + "/category/" + category.getSlug())
-                    .lastMod(posts.get(0).getPublishedAt())
                     .priority(0.9)
                     .changeFreq(ChangeFreq.DAILY)
                     .build();
@@ -75,7 +73,6 @@ public class SitemapServiceImpl implements SitemapService {
         List<PageDto> pageDtoList = pageRepository.find(new PageRequest(0, 100, Sort.Direction.ASC, "displayOrder"));
         for (PageDto page : pageDtoList) {
             WebSitemapUrl webSitemapUrl = new WebSitemapUrl.Options(BASE_URL + "/page/" + page.getSlug())
-                    .lastMod(page.getModifiedAt())
                     .priority(0.9)
                     .changeFreq(ChangeFreq.MONTHLY)
                     .build();

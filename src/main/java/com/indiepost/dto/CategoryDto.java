@@ -15,6 +15,8 @@ public class CategoryDto {
 
     private String slug;
 
+    private int displayOrder;
+
     public Long getId() {
         return id;
     }
@@ -45,5 +47,13 @@ public class CategoryDto {
 
     public void setSlug(String slug) {
         this.slug = slug;
+    }
+
+    public int getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(int displayOrder) {
+        this.displayOrder = displayOrder;
     }
 }
