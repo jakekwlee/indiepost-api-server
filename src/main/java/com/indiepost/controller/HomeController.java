@@ -44,7 +44,7 @@ public class HomeController {
         this.homeConfig = homeConfig;
     }
 
-    @GetMapping(value = {"/", "/archive/**"})
+    @GetMapping(value = "/")
     public String getHome(Model model, HttpServletRequest request) {
         InitialData initialData = initialDataService.getInitialData(true);
         RenderingRequestDto rsRequest =
@@ -77,7 +77,6 @@ public class HomeController {
     @GetMapping("/ContentView.do")
     public String getPostByLegacyId(@RequestParam Long no, Model model, HttpServletRequest request) {
         PostDto postDto = postService.findByLegacyId(no);
-
         return "redirect:post/" + postDto.getId();
     }
 

@@ -12,6 +12,8 @@ import com.indiepost.model.legacy.Contentlist;
 import com.indiepost.repository.AdminPostRepository;
 import com.indiepost.repository.CategoryRepository;
 import com.indiepost.service.mapper.PostMapperService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
@@ -32,6 +35,10 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class AdminPostServiceImpl implements AdminPostService {
+
+    private static final Logger log = LoggerFactory.getLogger(AdminPostServiceImpl.class);
+
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     private final AdminPostRepository adminPostRepository;
 
@@ -229,7 +236,7 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
-    public void publishPosts() {
+    public void publishScheduledPosts() {
         List<Post> posts = adminPostRepository.findScheduledPosts();
         if (posts == null) {
             return;
@@ -243,6 +250,7 @@ public class AdminPostServiceImpl implements AdminPostService {
             }
             post.setStatus(PostEnum.Status.PUBLISH);
             adminPostRepository.update(post);
+            log.info(dateFormat.format(new Date()) + ": Publish Scheduled Post - " + post.getId());
         }
     }
 

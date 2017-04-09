@@ -35,8 +35,7 @@ public class ScheduledTasks {
 
     @Scheduled(fixedRate = 60000)
     public void publishScheduledPosts() {
-        log.info(dateFormat.format(new Date()) + ": Publish Scheduled Posts");
-        adminPostService.publishPosts();
+        adminPostService.publishScheduledPosts();
     }
 
     @Scheduled(fixedRate = 3600000)
