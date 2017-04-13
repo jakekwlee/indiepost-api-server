@@ -93,8 +93,6 @@ public class PostMapperServiceTest {
         postResponseDto.setEditorId(post.getEditor().getId());
         postResponseDto.setCommentsCount(post.getCommentsCount());
         postResponseDto.setLikesCount(post.getLikesCount());
-        postResponseDto.setPostType(post.getPostType().toString());
-
     }
 
     @Test

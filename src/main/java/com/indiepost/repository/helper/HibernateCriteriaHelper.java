@@ -48,9 +48,6 @@ public class HibernateCriteriaHelper implements CriteriaHelper {
         if (query.getStatus() != null) {
             conjunction.add(Restrictions.eq("status", query.getStatus()));
         }
-        if (query.getType() != null) {
-            conjunction.add(Restrictions.eq("postType", query.getType()));
-        }
         if (query.getDateFrom() != null) {
             conjunction.add(Restrictions.ge("publishedAt", query.getDateFrom()));
         }

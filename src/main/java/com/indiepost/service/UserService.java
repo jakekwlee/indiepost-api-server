@@ -1,7 +1,9 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.UserDto;
-import com.indiepost.enums.UserEnum;
+import com.indiepost.enums.Types.UserGender;
+import com.indiepost.enums.Types.UserRole;
+import com.indiepost.enums.Types.UserState;
 import com.indiepost.model.User;
 
 import java.util.List;
@@ -32,11 +34,11 @@ public interface UserService {
 
     boolean isEmailExist(String email);
 
-    List<User> findByState(UserEnum.State state, int page, int maxResults, boolean isDesc);
+    List<User> findByState(UserState state, int page, int maxResults, boolean isDesc);
 
-    List<User> findByGender(UserEnum.Gender gender, int page, int maxResults, boolean isDesc);
+    List<User> findByGender(UserGender gender, int page, int maxResults, boolean isDesc);
 
-    List<User> findByRolesEnum(UserEnum.Roles role, int page, int maxResults, boolean isDesc);
+    List<User> findByRolesEnum(UserRole role, int page, int maxResults, boolean isDesc);
 
     List<User> findAllUsers(int page, int maxResults, boolean isDesc);
 
@@ -52,5 +54,5 @@ public interface UserService {
 
     List<UserDto> getDtoList(int page, int maxResults, boolean isDesc);
 
-    List<UserDto> getDtoList(UserEnum.Roles role, int page, int maxResults, boolean isDesc);
+    List<UserDto> getDtoList(UserRole role, int page, int maxResults, boolean isDesc);
 }

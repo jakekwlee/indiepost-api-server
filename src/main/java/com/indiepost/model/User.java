@@ -1,7 +1,9 @@
 package com.indiepost.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.indiepost.enums.UserEnum;
+import com.indiepost.enums.Types.UserGender;
+import com.indiepost.enums.Types.UserRole;
+import com.indiepost.enums.Types.UserState;
 import org.hibernate.validator.constraints.Email;
 
 import javax.persistence.*;
@@ -61,11 +63,11 @@ public class User implements Serializable {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private UserEnum.State state;
+    private UserState state;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private UserEnum.Gender gender;
+    private UserGender gender;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Like> likes;
@@ -185,11 +187,11 @@ public class User implements Serializable {
         this.birthday = birthday;
     }
 
-    public UserEnum.State getState() {
+    public UserState getState() {
         return state;
     }
 
-    public void setState(UserEnum.State state) {
+    public void setState(UserState state) {
         this.state = state;
     }
 
@@ -209,15 +211,15 @@ public class User implements Serializable {
         this.editedPosts = editedPosts;
     }
 
-    public UserEnum.Gender getGender() {
+    public UserGender getGender() {
         return gender;
     }
 
-    public void setGender(UserEnum.Gender gender) {
+    public void setGender(UserGender gender) {
         this.gender = gender;
     }
 
-    public boolean hasRole(UserEnum.Roles roles) {
+    public boolean hasRole(UserRole roles) {
         return getRoles().contains(roles);
     }
 

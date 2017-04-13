@@ -1,7 +1,7 @@
 package com.indiepost.service.mapper;
 
 import com.indiepost.dto.*;
-import com.indiepost.enums.PostEnum;
+import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.service.CategoryService;
@@ -49,7 +49,6 @@ public class PostMapperServiceImpl implements PostMapperService {
         destPost.setCreatedAt(srcPost.getCreatedAt());
         destPost.setPublishedAt(srcPost.getPublishedAt());
         destPost.setModifiedAt(srcPost.getModifiedAt());
-        destPost.setPostType(srcPost.getPostType());
         destPost.setCategory(srcPost.getCategory());
         destPost.setTitleImage(srcPost.getTitleImage());
         destPost.setSplash(srcPost.isSplash());
@@ -108,8 +107,6 @@ public class PostMapperServiceImpl implements PostMapperService {
 
         responseDto.setCommentsCount(post.getCommentsCount());
         responseDto.setLikesCount(post.getLikesCount());
-
-        responseDto.setPostType(post.getPostType().toString());
 
         if (post.getOriginal() != null) {
             responseDto.setOriginalId(post.getOriginal().getId());
@@ -184,7 +181,7 @@ public class PostMapperServiceImpl implements PostMapperService {
             postRequestTagDtoListToPostTagSet(adminPostRequestDto.getTags(), post);
         }
         if (adminPostRequestDto.getStatus() != null) {
-            post.setStatus(PostEnum.Status.valueOf(adminPostRequestDto.getStatus()));
+            post.setStatus(PostStatus.valueOf(adminPostRequestDto.getStatus()));
         }
 
         post.setSplash(adminPostRequestDto.isSplash());

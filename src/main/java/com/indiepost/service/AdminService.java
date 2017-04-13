@@ -3,7 +3,7 @@ package com.indiepost.service;
 import com.indiepost.dto.AdminInitResponseDto;
 import com.indiepost.dto.TagDto;
 import com.indiepost.dto.UserDto;
-import com.indiepost.enums.UserEnum;
+import com.indiepost.enums.Types.UserRole;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public interface AdminService {
 
     List<TagDto> getAllTagDtoList();
 
-    List<UserDto> getUserDtoList(UserEnum.Roles role);
+    List<UserDto> getUserDtoList(UserRole role);
 
     List<UserDto> getUserDtoList(int page, int maxResults, boolean isDesc);
 

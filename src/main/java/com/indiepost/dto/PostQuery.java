@@ -1,8 +1,8 @@
 package com.indiepost.dto;
 
-import com.indiepost.enums.PostEnum;
-
 import java.util.Date;
+
+import static com.indiepost.enums.Types.PostStatus;
 
 /**
  * Created by jake on 17. 1. 10.
@@ -27,9 +27,7 @@ public class PostQuery {
 
     private int maxResults = 24;
 
-    private PostEnum.Status status = PostEnum.Status.PUBLISH;
-
-    private PostEnum.Type type = PostEnum.Type.POST;
+    private PostStatus status = PostStatus.PUBLISH;
 
     private boolean featured = false;
 
@@ -77,21 +75,14 @@ public class PostQuery {
         this.categorySlug = categorySlug;
     }
 
-    public PostEnum.Status getStatus() {
+    public PostStatus getStatus() {
         return status;
     }
 
-    public void setStatus(PostEnum.Status status) {
+    public void setStatus(PostStatus status) {
         this.status = status;
     }
 
-    public PostEnum.Type getType() {
-        return type;
-    }
-
-    public void setType(PostEnum.Type type) {
-        this.type = type;
-    }
 
     public Date getDateFrom() {
         return dateFrom;

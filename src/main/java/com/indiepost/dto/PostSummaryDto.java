@@ -1,6 +1,6 @@
 package com.indiepost.dto;
 
-import com.indiepost.enums.PostEnum;
+import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.ImageSet;
 
 import java.io.Serializable;
@@ -35,7 +35,7 @@ public class PostSummaryDto implements Serializable {
 
     private Long titleImageId;
 
-    private PostEnum.Status status;
+    private PostStatus status;
 
     private Long categoryId;
 
@@ -101,11 +101,11 @@ public class PostSummaryDto implements Serializable {
         this.publishedAt = publishedAt;
     }
 
-    public PostEnum.Status getStatus() {
+    public PostStatus getStatus() {
         return status;
     }
 
-    public void setStatus(PostEnum.Status status) {
+    public void setStatus(PostStatus status) {
         this.status = status;
     }
 

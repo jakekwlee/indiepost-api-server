@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.resource.PathResourceResolver;
@@ -26,20 +27,20 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
         this.statLoggingInterceptor = statLoggingInterceptor;
     }
 
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//
-//        registry.addInterceptor(statLoggingInterceptor)
-//                .addPathPatterns("/")
-//                .addPathPatterns("/post/**")
-//                .addPathPatterns("/page/**")
-//                .addPathPatterns("/category/**")
-//                .addPathPatterns("/search/**")
-//                .addPathPatterns("/api/**")
-//                .addPathPatterns("/error")
-//                .excludePathPatterns("/admin/**")
-//                .excludePathPatterns("/api/admin/**");
-//    }
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+
+        registry.addInterceptor(statLoggingInterceptor)
+                .addPathPatterns("/")
+                .addPathPatterns("/post/**")
+                .addPathPatterns("/page/**")
+                .addPathPatterns("/category/**")
+                .addPathPatterns("/search/**")
+                .addPathPatterns("/api/**")
+                .addPathPatterns("/error")
+                .excludePathPatterns("/admin/**")
+                .excludePathPatterns("/api/admin/**");
+    }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

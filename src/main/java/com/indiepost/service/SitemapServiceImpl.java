@@ -3,7 +3,7 @@ package com.indiepost.service;
 import com.indiepost.config.HomeConfig;
 import com.indiepost.dto.PageDto;
 import com.indiepost.dto.PostSummaryDto;
-import com.indiepost.enums.PostEnum;
+import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Category;
 import com.indiepost.repository.CategoryRepository;
 import com.indiepost.repository.PageRepository;
@@ -53,7 +53,7 @@ public class SitemapServiceImpl implements SitemapService {
                 .build();
 
         List<PostSummaryDto> posts = postRepository.findByStatus(
-                PostEnum.Status.PUBLISH,
+                PostStatus.PUBLISH,
                 new PageRequest(0, 50000, Sort.Direction.DESC, "publishedAt")
         );
         for (PostSummaryDto postSummaryDto : posts) {

@@ -1,6 +1,6 @@
 package com.indiepost.dto;
 
-import com.indiepost.enums.UserEnum;
+import com.indiepost.enums.Types.UserGender;
 
 import java.util.Date;
 import java.util.List;
@@ -28,7 +28,7 @@ public class UserDto {
 
     private String picture;
 
-    private UserEnum.Gender gender;
+    private UserGender gender;
 
     private List<Long> roleList;
 
@@ -96,11 +96,11 @@ public class UserDto {
         this.picture = picture;
     }
 
-    public UserEnum.Gender getGender() {
+    public UserGender getGender() {
         return gender;
     }
 
-    public void setGender(UserEnum.Gender gender) {
+    public void setGender(UserGender gender) {
         this.gender = gender;
     }
 

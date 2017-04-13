@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.enums.UserEnum;
+import com.indiepost.enums.Types.UserRole;
 import com.indiepost.model.Role;
 
 import java.util.List;
@@ -9,11 +9,11 @@ import java.util.List;
  * Created by jake on 8/4/16.
  */
 public interface RoleService {
-    void save(UserEnum.Roles role);
+    void save(UserRole role);
 
-    void update(UserEnum.Roles role);
+    void update(UserRole role);
 
-    void delete(UserEnum.Roles role);
+    void delete(UserRole role);
 
     Role findById(Long id);
 

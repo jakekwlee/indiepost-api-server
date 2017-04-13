@@ -1,7 +1,9 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.UserDto;
-import com.indiepost.enums.UserEnum;
+import com.indiepost.enums.Types.UserGender;
+import com.indiepost.enums.Types.UserRole;
+import com.indiepost.enums.Types.UserState;
 import com.indiepost.model.User;
 import com.indiepost.repository.RoleRepository;
 import com.indiepost.repository.UserRepository;
@@ -117,20 +119,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findByState(UserEnum.State state, int page, int maxResults, boolean isDesc) {
+    public List<User> findByState(UserState state, int page, int maxResults, boolean isDesc) {
         Pageable pageable = getPageable(page, maxResults, isDesc);
         return userRepository.findByState(state, pageable);
     }
 
     @Override
-    public List<User> findByGender(UserEnum.Gender gender, int page, int maxResults, boolean isDesc) {
+    public List<User> findByGender(UserGender gender, int page, int maxResults, boolean isDesc) {
         Pageable pageable = getPageable(page, maxResults, isDesc);
         return userRepository.findByGender(gender, pageable);
     }
 
     @Override
-    public List<User> findByRolesEnum(UserEnum.Roles role, int page, int maxResults, boolean isDesc) {
-        return new ArrayList<>(roleRepository.findByRolesEnum(role).getUsers());
+    public List<User> findByRolesEnum(UserRole role, int page, int maxResults, boolean isDesc) {
+        return new ArrayList<>(roleRepository.findByUserRole(role).getUsers());
     }
 
     @Override
@@ -163,7 +165,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getDtoList(UserEnum.Roles role, int page, int maxResults, boolean isDesc) {
+    public List<UserDto> getDtoList(UserRole role, int page, int maxResults, boolean isDesc) {
         return getDtoList(this.findByRolesEnum(role, page, maxResults, isDesc));
     }
 

@@ -4,7 +4,7 @@ import com.indiepost.dto.AdminPostRequestDto;
 import com.indiepost.dto.AdminPostResponseDto;
 import com.indiepost.dto.AdminPostSummaryDto;
 import com.indiepost.dto.PostQuery;
-import com.indiepost.enums.PostEnum;
+import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.model.User;
@@ -175,7 +175,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         }
         post.setEditor(currentUser);
         post.setModifiedAt(new Date());
-        post.setStatus(PostEnum.Status.AUTOSAVE);
+        post.setStatus(PostStatus.AUTOSAVE);
         post.setCategory(categoryRepository.getReference(2L));
         save(post);
         return postMapperService.postToAdminPostResponseDto(post);
@@ -194,15 +194,15 @@ public class AdminPostServiceImpl implements AdminPostService {
         if (adminPostRequestDto.getOriginalId() != null && !adminPostRequestDto.getId().equals(id)) {
             deleteById(adminPostRequestDto.getId());
         }
-        if (PostEnum.Status.valueOf(adminPostRequestDto.getStatus()).equals(
-                PostEnum.Status.AUTOSAVE
+        if (PostStatus.valueOf(adminPostRequestDto.getStatus()).equals(
+                PostStatus.AUTOSAVE
         )) {
             adminPostRequestDto.setStatus(null);
         }
         postMapperService.adminPostRequestDtoToPost(adminPostRequestDto, originalPost);
 
-        PostEnum.Status status = originalPost.getStatus();
-        if (status.equals(PostEnum.Status.FUTURE) || status.equals(PostEnum.Status.PUBLISH)) {
+        PostStatus status = originalPost.getStatus();
+        if (status.equals(PostStatus.FUTURE) || status.equals(PostStatus.PUBLISH)) {
             Contentlist contentlist = originalPost.getLegacyPost();
             if (contentlist == null) {
                 contentlist = legacyPostService.save(originalPost);
@@ -248,7 +248,7 @@ public class AdminPostServiceImpl implements AdminPostService {
             if (post.isFeatured()) {
                 adminPostRepository.disableFeaturedPosts();
             }
-            post.setStatus(PostEnum.Status.PUBLISH);
+            post.setStatus(PostStatus.PUBLISH);
             adminPostRepository.update(post);
             log.info(dateFormat.format(new Date()) + ": Publish Scheduled Post - " + post.getId());
         }

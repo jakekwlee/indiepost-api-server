@@ -1,15 +1,16 @@
 package com.indiepost.model;
 
+import com.indiepost.enums.Types;
+
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
  * Created by jake on 17. 4. 9.
  */
 //@Entity
-//@Table(name = "StatLogs")
-public class StatLog {
+//@Table(name = "VisitorSessions")
+public class Visitor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,23 +26,10 @@ public class StatLog {
 
     private String device;
 
-    @Size(max = 100)
-    private String path;
-
-    @Size(max = 2048)
-    private String referrer;
-
-    private boolean isApi = false;
+    private Types.Client client;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "postId", insertable = false, updatable = false)
-    private Post post;
-
-    @Column(name = "postId")
-    private Long postId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", insertable = false, updatable = false)
@@ -53,6 +41,27 @@ public class StatLog {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userAgentId")
     private UserAgent userAgent;
+
+    public Visitor() {
+    }
+
+    public Visitor(String browser, String browserVersion, String os, String osVersion, String device, Types.Client client, Date timestamp) {
+        this.browser = browser;
+        this.browserVersion = browserVersion;
+        this.os = os;
+        this.osVersion = osVersion;
+        this.device = device;
+        this.client = client;
+        this.timestamp = timestamp;
+    }
+
+    public Types.Client getClient() {
+        return client;
+    }
+
+    public void setClient(Types.Client client) {
+        this.client = client;
+    }
 
     public Long getId() {
         return id;
@@ -102,52 +111,12 @@ public class StatLog {
         this.device = device;
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getReferrer() {
-        return referrer;
-    }
-
-    public void setReferrer(String referrer) {
-        this.referrer = referrer;
-    }
-
-    public boolean isApi() {
-        return isApi;
-    }
-
-    public void setApi(boolean api) {
-        isApi = api;
-    }
-
     public Date getTimestamp() {
         return timestamp;
     }
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public Post getPost() {
-        return post;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
-    }
-
-    public Long getPostId() {
-        return postId;
-    }
-
-    public void setPostId(Long postId) {
-        this.postId = postId;
     }
 
     public User getUser() {

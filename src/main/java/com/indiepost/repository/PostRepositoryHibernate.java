@@ -3,7 +3,7 @@ package com.indiepost.repository;
 import com.github.fluent.hibernate.transformer.FluentHibernateResultTransformer;
 import com.indiepost.dto.PostQuery;
 import com.indiepost.dto.PostSummaryDto;
-import com.indiepost.enums.PostEnum;
+import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Post;
 import com.indiepost.repository.helper.CriteriaHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -119,7 +119,7 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     @Override
-    public List<PostSummaryDto> findByStatus(PostEnum.Status status, Pageable pageable) {
+    public List<PostSummaryDto> findByStatus(PostStatus status, Pageable pageable) {
         PostQuery query = new PostQuery();
         query.setStatus(status);
         return this.findByQuery(query, pageable);
@@ -128,7 +128,7 @@ public class PostRepositoryHibernate implements PostRepository {
     @Override
     public List<Post> search(String text, Pageable pageable) {
         Criteria criteria = getSession().createCriteria(Post.class);
-        criteria.add(Restrictions.eq("status", PostEnum.Status.PUBLISH))
+        criteria.add(Restrictions.eq("status", PostStatus.PUBLISH))
                 .setFirstResult(pageable.getOffset())
                 .setMaxResults(pageable.getPageSize());
 

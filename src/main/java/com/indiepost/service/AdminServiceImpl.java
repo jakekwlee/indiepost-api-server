@@ -3,7 +3,7 @@ package com.indiepost.service;
 import com.indiepost.dto.AdminInitResponseDto;
 import com.indiepost.dto.TagDto;
 import com.indiepost.dto.UserDto;
-import com.indiepost.enums.UserEnum;
+import com.indiepost.enums.Types.UserRole;
 import com.indiepost.model.Tag;
 import com.indiepost.model.User;
 import com.indiepost.service.mapper.TagMapperService;
@@ -50,7 +50,7 @@ public class AdminServiceImpl implements AdminService {
         User currentUser = userService.getCurrentUser();
         AdminInitResponseDto adminInitResponseDto = new AdminInitResponseDto();
         adminInitResponseDto.setCurrentUser(userMapperService.userToUserDto(currentUser));
-        adminInitResponseDto.setAuthors(getUserDtoList(UserEnum.Roles.Author));
+        adminInitResponseDto.setAuthors(getUserDtoList(UserRole.Author));
         adminInitResponseDto.setCategories(categoryService.getDtoList());
         adminInitResponseDto.setTags(getAllTagDtoList());
         adminInitResponseDto.setAuthorNames(adminPostService.findAllDisplayNames());
@@ -64,7 +64,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<UserDto> getUserDtoList(UserEnum.Roles role) {
+    public List<UserDto> getUserDtoList(UserRole role) {
         List<User> authors = userService.findByRolesEnum(role, 1, 1000000, true);
         return userListToUserDtoList(authors);
     }

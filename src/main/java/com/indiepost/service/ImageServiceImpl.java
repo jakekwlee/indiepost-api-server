@@ -1,7 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.config.ImageConfig;
-import com.indiepost.enums.ImageEnum;
+import com.indiepost.enums.Types.ImageSize;
 import com.indiepost.exception.FileSaveException;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
@@ -69,30 +69,30 @@ public class ImageServiceImpl implements ImageService {
             Set<Image> images = new HashSet<>();
 
             BufferedImage bufferedImage = getBufferedImageFromMultipartFile(file);
-            Image originalImage = saveUploadedImage(bufferedImage, ImageEnum.SizeType.ORIGINAL, alphanumeric, fileExtension, baseUrl);
+            Image originalImage = saveUploadedImage(bufferedImage, ImageSize.ORIGINAL, alphanumeric, fileExtension, baseUrl);
             images.add(originalImage);
 
             if (bufferedImage.getWidth() > 1200) {
                 bufferedImage = resizeImage(bufferedImage, 1200);
-                Image largeImage = saveUploadedImage(bufferedImage, ImageEnum.SizeType.LARGE, alphanumeric, fileExtension, baseUrl);
+                Image largeImage = saveUploadedImage(bufferedImage, ImageSize.LARGE, alphanumeric, fileExtension, baseUrl);
                 images.add(largeImage);
             }
 
             if (700 < bufferedImage.getWidth() && bufferedImage.getWidth() <= 1200) {
                 bufferedImage = resizeImage(bufferedImage, 700);
-                Image optimizedImage = saveUploadedImage(bufferedImage, ImageEnum.SizeType.OPTIMIZED, alphanumeric, fileExtension, baseUrl);
+                Image optimizedImage = saveUploadedImage(bufferedImage, ImageSize.OPTIMIZED, alphanumeric, fileExtension, baseUrl);
                 images.add(optimizedImage);
             }
 
             if (400 < bufferedImage.getWidth() && bufferedImage.getWidth() <= 700) {
                 bufferedImage = resizeImage(bufferedImage, 400);
-                Image smallImage = saveUploadedImage(bufferedImage, ImageEnum.SizeType.SMALL, alphanumeric, fileExtension, baseUrl);
+                Image smallImage = saveUploadedImage(bufferedImage, ImageSize.SMALL, alphanumeric, fileExtension, baseUrl);
                 images.add(smallImage);
             }
 
 
             bufferedImage = generateThumbnail(bufferedImage, 120, 80);
-            Image thumbnailImage = saveUploadedImage(bufferedImage, ImageEnum.SizeType.THUMBNAIL, alphanumeric, fileExtension, baseUrl);
+            Image thumbnailImage = saveUploadedImage(bufferedImage, ImageSize.THUMBNAIL, alphanumeric, fileExtension, baseUrl);
             images.add(thumbnailImage);
 
             imageSet.setImages(images);
@@ -102,7 +102,7 @@ public class ImageServiceImpl implements ImageService {
         return imageSetList;
     }
 
-    private Image saveUploadedImage(BufferedImage bufferedImage, ImageEnum.SizeType sizeType,
+    private Image saveUploadedImage(BufferedImage bufferedImage, ImageSize sizeType,
                                     String alphanumeric, String fileExtension, String baseUrl) throws IOException {
         int width = bufferedImage.getWidth();
         int height = bufferedImage.getHeight();

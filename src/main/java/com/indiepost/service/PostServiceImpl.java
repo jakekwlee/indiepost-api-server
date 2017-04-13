@@ -4,7 +4,7 @@ import com.indiepost.dto.PostDto;
 import com.indiepost.dto.PostQuery;
 import com.indiepost.dto.PostSummaryDto;
 import com.indiepost.dto.RelatedPostResponseDto;
-import com.indiepost.enums.PostEnum;
+import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.model.Post;
@@ -89,7 +89,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostSummaryDto> findAll(int page, int maxResults, boolean isDesc) {
-        List<PostSummaryDto> result = postRepository.findByStatus(PostEnum.Status.PUBLISH, getPageable(page, maxResults, isDesc));
+        List<PostSummaryDto> result = postRepository.findByStatus(PostStatus.PUBLISH, getPageable(page, maxResults, isDesc));
         return setTitleImages(result);
     }
 
@@ -116,7 +116,7 @@ public class PostServiceImpl implements PostService {
             return null;
         }
         List<PostSummaryDto> dtoList = postList.stream()
-                .filter(post -> post.getStatus().equals(PostEnum.Status.PUBLISH))
+                .filter(post -> post.getStatus().equals(PostStatus.PUBLISH))
                 .map(postMapperService::postToPostSummaryDto)
                 .collect(Collectors.toList());
         return setTitleImages(dtoList);

@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.enums.PostEnum;
+import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.ImageSet;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
@@ -82,7 +82,7 @@ public class LegacyPostServiceImpl implements LegacyPostService {
         Long status;
 
         // TODO
-        if (post.getStatus() == PostEnum.Status.PENDING || post.getStatus() == PostEnum.Status.TRASH) {
+        if (post.getStatus() == PostStatus.PENDING || post.getStatus() == PostStatus.TRASH) {
             status = 0L;
         } else {
             status = 1L;

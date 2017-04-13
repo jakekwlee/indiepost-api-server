@@ -1,6 +1,7 @@
 package com.indiepost.repository;
 
-import com.indiepost.enums.UserEnum;
+import com.indiepost.enums.Types.UserGender;
+import com.indiepost.enums.Types.UserState;
 import com.indiepost.model.User;
 import com.indiepost.repository.helper.CriteriaHelper;
 import org.hibernate.Criteria;
@@ -83,14 +84,14 @@ public class UserRepositoryHibernate implements UserRepository {
     }
 
     @Override
-    public List<User> findByState(UserEnum.State state, Pageable pageable) {
+    public List<User> findByState(UserState state, Pageable pageable) {
         return getCriteria(pageable)
                 .add(Restrictions.eq("state", state))
                 .list();
     }
 
     @Override
-    public List<User> findByGender(UserEnum.Gender gender, Pageable pageable) {
+    public List<User> findByGender(UserGender gender, Pageable pageable) {
         return getCriteria(pageable)
                 .add(Restrictions.eq("gender", gender))
                 .list();

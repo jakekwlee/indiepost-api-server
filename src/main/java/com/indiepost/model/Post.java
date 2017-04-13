@@ -1,6 +1,6 @@
 package com.indiepost.model;
 
-import com.indiepost.enums.PostEnum;
+import com.indiepost.enums.Types;
 import com.indiepost.model.legacy.Contentlist;
 import org.apache.lucene.analysis.charfilter.HTMLStripCharFilterFactory;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
@@ -126,11 +126,7 @@ public class Post implements Serializable {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private PostEnum.Status status;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private PostEnum.Type postType = PostEnum.Type.POST;
+    private Types.PostStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "authorId", nullable = false)
@@ -267,11 +263,11 @@ public class Post implements Serializable {
         this.commentsCount = commentsCount;
     }
 
-    public PostEnum.Status getStatus() {
+    public Types.PostStatus getStatus() {
         return status;
     }
 
-    public void setStatus(PostEnum.Status status) {
+    public void setStatus(Types.PostStatus status) {
         this.status = status;
     }
 
@@ -360,14 +356,6 @@ public class Post implements Serializable {
 
     public void setEditor(User editor) {
         this.editor = editor;
-    }
-
-    public PostEnum.Type getPostType() {
-        return postType;
-    }
-
-    public void setPostType(PostEnum.Type postType) {
-        this.postType = postType;
     }
 
     public Post getOriginal() {

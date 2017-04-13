@@ -2,7 +2,7 @@ package com.indiepost.repository;
 
 import com.indiepost.dto.PostQuery;
 import com.indiepost.dto.PostSummaryDto;
-import com.indiepost.enums.PostEnum;
+import com.indiepost.enums.Types;
 import com.indiepost.model.Post;
 import org.springframework.data.domain.Pageable;
 
@@ -27,9 +27,9 @@ public interface PostRepository {
 
     List<PostSummaryDto> findByIds(List<Long> ids);
 
-    List<PostSummaryDto> findByStatus(PostEnum.Status status, Pageable pageable);
-
     List<PostSummaryDto> findByCategoryId(Long categoryId, Pageable pageable);
+
+    List<PostSummaryDto> findByStatus(Types.PostStatus status, Pageable pageable);
 
     List<Post> search(String text, Pageable pageable);
 }

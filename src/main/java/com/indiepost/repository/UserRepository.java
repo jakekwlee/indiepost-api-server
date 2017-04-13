@@ -1,6 +1,7 @@
 package com.indiepost.repository;
 
-import com.indiepost.enums.UserEnum;
+import com.indiepost.enums.Types.UserGender;
+import com.indiepost.enums.Types.UserState;
 import com.indiepost.model.User;
 import org.springframework.data.domain.Pageable;
 
@@ -27,7 +28,7 @@ public interface UserRepository {
 
     List<User> findAll(Pageable pageable);
 
-    List<User> findByState(UserEnum.State state, Pageable pageable);
+    List<User> findByState(UserState state, Pageable pageable);
 
-    List<User> findByGender(UserEnum.Gender gender, Pageable pageable);
+    List<User> findByGender(UserGender gender, Pageable pageable);
 }

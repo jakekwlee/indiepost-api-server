@@ -1,6 +1,6 @@
 package com.indiepost.repository;
 
-import com.indiepost.enums.UserEnum;
+import com.indiepost.enums.Types.UserRole;
 import com.indiepost.model.Role;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -20,17 +20,17 @@ public class RoleRepositoryHibernate implements RoleRepository {
     private EntityManager entityManager;
 
     @Override
-    public void save(UserEnum.Roles role) {
+    public void save(UserRole role) {
         getSession().save(role);
     }
 
     @Override
-    public void update(UserEnum.Roles role) {
+    public void update(UserRole role) {
         getSession().update(role);
     }
 
     @Override
-    public void delete(UserEnum.Roles role) {
+    public void delete(UserRole role) {
         getSession().delete(role);
     }
 
@@ -42,7 +42,7 @@ public class RoleRepositoryHibernate implements RoleRepository {
     }
 
     @Override
-    public Role findByRolesEnum(UserEnum.Roles role) {
+    public Role findByUserRole(UserRole role) {
         return (Role) getCriteria()
                 .createAlias("users", "users")
                 .add(Restrictions.eq("name", role.toString()))

@@ -2,8 +2,8 @@ package com.indiepost.repository;
 
 import com.github.fluent.hibernate.request.aliases.Aliases;
 import com.indiepost.dto.PostQuery;
-import com.indiepost.enums.PostEnum;
-import com.indiepost.enums.UserEnum.Roles;
+import com.indiepost.enums.Types.PostStatus;
+import com.indiepost.enums.Types.UserRole;
 import com.indiepost.model.Post;
 import com.indiepost.model.Role;
 import com.indiepost.model.User;
@@ -77,7 +77,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
         // TODO fetch n + 1 problem
 //        criteria.setProjection(getProjectionList());
         criteria.setFetchMode("tags", FetchMode.JOIN);
-        Roles role = getRole(user);
+        UserRole role = getRole(user);
         Conjunction conjunction = Restrictions.conjunction();
 
         if (query != null) {
@@ -122,7 +122,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     @Override
     public List<Post> findScheduledPosts() {
         return getCriteria()
-                .add(Restrictions.eq("status", PostEnum.Status.FUTURE))
+                .add(Restrictions.eq("status", PostStatus.FUTURE))
                 .add(Restrictions.le("publishedAt", new Date()))
                 .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
                 .list();
@@ -135,7 +135,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
         Root e = update.from(Post.class);
         update.set("splash", false);
         update.where(criteriaBuilder.and(
-                criteriaBuilder.equal(e.get("status"), PostEnum.Status.PUBLISH)),
+                criteriaBuilder.equal(e.get("status"), PostStatus.PUBLISH)),
                 criteriaBuilder.equal(e.get("splash"), true));
         entityManager.createQuery(update).executeUpdate();
     }
@@ -147,7 +147,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
         Root e = update.from(Post.class);
         update.set("featured", false);
         update.where(criteriaBuilder.and(
-                criteriaBuilder.equal(e.get("status"), PostEnum.Status.PUBLISH)),
+                criteriaBuilder.equal(e.get("status"), PostStatus.PUBLISH)),
                 criteriaBuilder.equal(e.get("featured"), true));
         entityManager.createQuery(update).executeUpdate();
     }
@@ -207,15 +207,15 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
                 Restrictions.and(
                         Restrictions.ne("editor.id", userId),
                         Restrictions.or(
-                                Restrictions.eq("status", PostEnum.Status.TRASH),
-                                Restrictions.eq("status", PostEnum.Status.DRAFT),
-                                Restrictions.eq("status", PostEnum.Status.AUTOSAVE)
+                                Restrictions.eq("status", PostStatus.TRASH),
+                                Restrictions.eq("status", PostStatus.DRAFT),
+                                Restrictions.eq("status", PostStatus.AUTOSAVE)
                         )
                 )
         );
     }
 
-    private Roles getRole(User user) {
+    private UserRole getRole(User user) {
         List<Role> roleList = user.getRoles();
         int userLevel = 1;
         for (Role role : roleList) {
@@ -226,17 +226,17 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
         switch (userLevel) {
             case 9:
-                return Roles.Administrator;
+                return UserRole.Administrator;
             case 7:
-                return Roles.EditorInChief;
+                return UserRole.EditorInChief;
             case 5:
-                return Roles.Editor;
+                return UserRole.Editor;
             case 3:
-                return Roles.Author;
+                return UserRole.Author;
             case 1:
-                return Roles.User;
+                return UserRole.User;
             default:
-                return Roles.User;
+                return UserRole.User;
         }
     }
 }

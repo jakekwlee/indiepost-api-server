@@ -1,6 +1,6 @@
 package com.indiepost.model;
 
-import com.indiepost.enums.ImageEnum.SizeType;
+import com.indiepost.enums.Types.ImageSize;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -38,7 +38,7 @@ public class Image implements Serializable {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private SizeType sizeType;
+    private ImageSize sizeType;
 
     public Long getId() {
         return id;
@@ -80,11 +80,11 @@ public class Image implements Serializable {
         this.fileUrl = fileUrl;
     }
 
-    public SizeType getSizeType() {
+    public ImageSize getSizeType() {
         return sizeType;
     }
 
-    public void setSizeType(SizeType sizeType) {
+    public void setSizeType(ImageSize sizeType) {
         this.sizeType = sizeType;
     }
 

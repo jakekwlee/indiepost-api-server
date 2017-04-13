@@ -1,7 +1,7 @@
 package com.indiepost.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.indiepost.enums.ImageEnum.SizeType;
+import com.indiepost.enums.Types.ImageSize;
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
 
@@ -60,23 +60,23 @@ public class ImageSet {
     }
 
     public Image getOriginal() {
-        return findByImageSize(SizeType.ORIGINAL);
+        return findByImageSize(ImageSize.ORIGINAL);
     }
 
     public Image getLarge() {
-        return findByImageSize(SizeType.LARGE);
+        return findByImageSize(ImageSize.LARGE);
     }
 
     public Image getOptimized() {
-        return findByImageSize(SizeType.OPTIMIZED);
+        return findByImageSize(ImageSize.OPTIMIZED);
     }
 
     public Image getSmall() {
-        return findByImageSize(SizeType.SMALL);
+        return findByImageSize(ImageSize.SMALL);
     }
 
     public Image getThumbnail() {
-        return findByImageSize(SizeType.THUMBNAIL);
+        return findByImageSize(ImageSize.THUMBNAIL);
     }
 
     public String getCaption() {
@@ -103,7 +103,7 @@ public class ImageSet {
         this.contentType = contentType;
     }
 
-    private Image findByImageSize(SizeType sizeType) {
+    private Image findByImageSize(ImageSize sizeType) {
         if (images == null) {
             return null;
         }
