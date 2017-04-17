@@ -27,11 +27,15 @@ public interface Types {
         User, Author, Editor, EditorInChief, Administrator
     }
 
-    enum Pageview {
-        POST, PAGE, HOME, SEARCH, TAG, CATEGORY, NOTICE
+    enum ContentType {
+        POST, PAGE, HOME, SEARCH, TAG, CATEGORY, NOTICE, ETC
+    }
+
+    enum RequestType {
+        WEBPAGE, API
     }
 
     enum Client {
-        WebApp, MobileApp
+        WebApp, MobileApp, Unknown
     }
 }

@@ -2,17 +2,14 @@ package com.indiepost.model;
 
 import com.sangupta.murmur.Murmur2;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.Size;
 
 /**
  * Created by jake on 17. 4. 9.
  */
-//@Entity
-//@Table(name = "UserAgents")
+@Entity
+@Table(name = "UserAgents")
 public class UserAgent {
 
     @Id

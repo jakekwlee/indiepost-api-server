@@ -10,8 +10,8 @@ import java.util.Date;
 /**
  * Created by jake on 17. 4. 13.
  */
-//@Entity
-//@Table(name = "Pageviews")
+@Entity
+@Table(name = "Pageviews")
 public class Pageview {
 
     @Id
@@ -23,8 +23,12 @@ public class Pageview {
     private String path;
 
     @NotNull
-    @Size(max = 10)
-    private Types.Pageview type;
+    @Enumerated(EnumType.STRING)
+    private Types.ContentType contentType;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Types.RequestType requestType = Types.RequestType.WEBPAGE;
 
     @Size(max = 500)
     private String referrer;
@@ -33,17 +37,17 @@ public class Pageview {
     private Date timestamp;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "sessionId", updatable = false, insertable = false, nullable = false)
+    @JoinColumn(name = "visitorId", updatable = false, insertable = false, nullable = false)
     private Visitor visitor;
 
-    @ManyToOne(optional = false)
-    private Long sessionId;
+    @Column(name = "visitorId")
+    private Long visitorId;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "postId", updatable = false, insertable = false, nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "postId", updatable = false, insertable = false)
     private Post post;
 
-    @ManyToOne(optional = false)
+    @Column(name = "postId")
     private Long postId;
 
     public Long getId() {
@@ -62,12 +66,12 @@ public class Pageview {
         this.path = path;
     }
 
-    public Types.Pageview getType() {
-        return type;
+    public Types.ContentType getContentType() {
+        return contentType;
     }
 
-    public void setType(Types.Pageview type) {
-        this.type = type;
+    public void setContentType(Types.ContentType contentType) {
+        this.contentType = contentType;
     }
 
     public String getReferrer() {
@@ -94,12 +98,12 @@ public class Pageview {
         this.visitor = visitor;
     }
 
-    public Long getSessionId() {
-        return sessionId;
+    public Long getVisitorId() {
+        return visitorId;
     }
 
-    public void setSessionId(Long sessionId) {
-        this.sessionId = sessionId;
+    public void setVisitorId(Long visitorId) {
+        this.visitorId = visitorId;
     }
 
     public Post getPost() {
@@ -116,5 +120,13 @@ public class Pageview {
 
     public void setPostId(Long postId) {
         this.postId = postId;
+    }
+
+    public Types.RequestType getRequestType() {
+        return requestType;
+    }
+
+    public void setRequestType(Types.RequestType requestType) {
+        this.requestType = requestType;
     }
 }

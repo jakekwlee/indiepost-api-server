@@ -72,7 +72,7 @@ public class UserRepositoryHibernate implements UserRepository {
     public User findByUsernameAndPassword(String username, String password) {
         return (User) getCriteria()
                 .add(Restrictions.eq("username", username))
-                .add(Restrictions.eq("pawword", password))
+                .add(Restrictions.eq("password", password))
                 .uniqueResult();
     }
 

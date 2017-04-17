@@ -8,8 +8,8 @@ import java.util.Date;
 /**
  * Created by jake on 17. 4. 9.
  */
-//@Entity
-//@Table(name = "VisitorSessions")
+@Entity
+@Table(name = "Visitors")
 public class Visitor {
 
     @Id
@@ -26,19 +26,22 @@ public class Visitor {
 
     private String device;
 
-    private Types.Client client;
+    private String ipAddress;
+
+    @Enumerated(EnumType.STRING)
+    private Types.Client client = Types.Client.WebApp;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", insertable = false, updatable = false)
+    @JoinColumn(name = "userId")
     private User user;
 
-    @Column(name = "userId")
+    @Column(name = "userId", insertable = false, updatable = false)
     private Long userId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "userAgentId")
     private UserAgent userAgent;
 
@@ -133,6 +136,14 @@ public class Visitor {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 
     public UserAgent getUserAgent() {

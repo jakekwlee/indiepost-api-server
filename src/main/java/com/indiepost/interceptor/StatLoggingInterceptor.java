@@ -4,8 +4,6 @@ import com.indiepost.service.SiteStatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-import ua_parser.Client;
-import ua_parser.Parser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,23 +15,25 @@ import javax.servlet.http.HttpSession;
 @Component
 public class StatLoggingInterceptor extends HandlerInterceptorAdapter {
 
+    private final SiteStatService siteStatService;
+
     @Autowired
-    private SiteStatService siteStatService;
+    public StatLoggingInterceptor(SiteStatService siteStatService) {
+        super();
+        this.siteStatService = siteStatService;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String userAgentString = request.getHeader("User-Agent");
-        Parser uaParser = new Parser();
-        Client client = uaParser.parse(userAgentString);
+        HttpSession session = request.getSession();
+        siteStatService.log(request);
         System.out.println("***************************************************************");
         System.out.println("Requested URI: " + request.getRequestURI());
-        System.out.println(client.toString());
+        System.out.println("User-Agent" + userAgentString);
+        System.out.println("Visitor ID:" + session.getAttribute("visitorId"));
         System.out.println("***************************************************************");
-        HttpSession session = request.getSession();
 
-
-        session.setAttribute("visitorId", 1L);
-        System.out.println(session.getId());
         return true;
     }
 }

@@ -10,9 +10,7 @@ import java.io.IOException;
  */
 public interface SiteStatService {
 
-    Long log(HttpServletRequest request) throws IOException;
-
-    Long saveVisitor(Visitor visitor);
+    void log(HttpServletRequest request) throws IOException;
 
     Visitor findVisitorById(Long id);
 
