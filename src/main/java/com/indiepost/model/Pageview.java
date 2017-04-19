@@ -1,6 +1,6 @@
 package com.indiepost.model;
 
-import com.indiepost.enums.Types;
+import com.indiepost.enums.Types.ContentType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -24,11 +24,7 @@ public class Pageview {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private Types.ContentType contentType;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private Types.RequestType requestType = Types.RequestType.WEBPAGE;
+    private ContentType contentType;
 
     @Size(max = 500)
     private String referrer;
@@ -66,11 +62,11 @@ public class Pageview {
         this.path = path;
     }
 
-    public Types.ContentType getContentType() {
+    public ContentType getContentType() {
         return contentType;
     }
 
-    public void setContentType(Types.ContentType contentType) {
+    public void setContentType(ContentType contentType) {
         this.contentType = contentType;
     }
 
@@ -120,13 +116,5 @@ public class Pageview {
 
     public void setPostId(Long postId) {
         this.postId = postId;
-    }
-
-    public Types.RequestType getRequestType() {
-        return requestType;
-    }
-
-    public void setRequestType(Types.RequestType requestType) {
-        this.requestType = requestType;
     }
 }

@@ -1,7 +1,7 @@
 package com.indiepost.config;
 
 import com.indiepost.filter.CORSFilter;
-import com.indiepost.interceptor.StatLoggingInterceptor;
+import com.indiepost.interceptor.TestRequestLoggingInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -20,17 +20,17 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
 @EnableWebMvc
 public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 
-    private final StatLoggingInterceptor statLoggingInterceptor;
+    private final TestRequestLoggingInterceptor testRequestLoggingInterceptor;
 
     @Autowired
-    public WebMvcConfigurer(StatLoggingInterceptor statLoggingInterceptor) {
-        this.statLoggingInterceptor = statLoggingInterceptor;
+    public WebMvcConfigurer(TestRequestLoggingInterceptor testRequestLoggingInterceptor) {
+        this.testRequestLoggingInterceptor = testRequestLoggingInterceptor;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 
-        registry.addInterceptor(statLoggingInterceptor)
+        registry.addInterceptor(testRequestLoggingInterceptor)
                 .addPathPatterns("/")
                 .addPathPatterns("/post/**")
                 .addPathPatterns("/page/**")

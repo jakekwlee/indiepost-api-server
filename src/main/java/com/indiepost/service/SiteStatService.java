@@ -1,5 +1,6 @@
 package com.indiepost.service;
 
+import com.indiepost.dto.PageviewDto;
 import com.indiepost.model.Visitor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,8 +11,7 @@ import java.io.IOException;
  */
 public interface SiteStatService {
 
-    void log(HttpServletRequest request) throws IOException;
-
     Visitor findVisitorById(Long id);
 
+    void log(HttpServletRequest request, PageviewDto pageviewDto) throws IOException;
 }

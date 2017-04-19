@@ -35,28 +35,15 @@ public class Visitor {
     private Date timestamp;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "userId", insertable = false, updatable = false)
     private User user;
 
-    @Column(name = "userId", insertable = false, updatable = false)
+    @Column(name = "userId")
     private Long userId;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "userAgentId")
     private UserAgent userAgent;
-
-    public Visitor() {
-    }
-
-    public Visitor(String browser, String browserVersion, String os, String osVersion, String device, Types.Client client, Date timestamp) {
-        this.browser = browser;
-        this.browserVersion = browserVersion;
-        this.os = os;
-        this.osVersion = osVersion;
-        this.device = device;
-        this.client = client;
-        this.timestamp = timestamp;
-    }
 
     public Types.Client getClient() {
         return client;
