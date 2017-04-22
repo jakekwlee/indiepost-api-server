@@ -1,7 +1,8 @@
 package com.indiepost.controller.api;
 
-import com.indiepost.dto.PageviewDto;
-import com.indiepost.service.SiteStatService;
+import com.indiepost.dto.Action;
+import com.indiepost.dto.Pageview;
+import com.indiepost.service.StatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,16 +18,20 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/stat")
 public class StatController {
-    private final SiteStatService siteStatService;
+    private final StatService statService;
 
     @Autowired
-    public StatController(SiteStatService siteStatService) {
-        this.siteStatService = siteStatService;
+    public StatController(StatService statService) {
+        this.statService = statService;
     }
 
     @PostMapping("/pageview")
-    public void logPageview(HttpServletRequest request, @RequestBody PageviewDto dto) throws IOException {
-        siteStatService.log(request, dto);
+    public void logPageview(HttpServletRequest request, @RequestBody Pageview pageview) throws IOException {
+        statService.logPageview(request, pageview);
     }
 
+    @PostMapping("/action")
+    public void logAction(HttpServletRequest request, @RequestBody Action action) throws IOException {
+        statService.logAction(request, action);
+    }
 }

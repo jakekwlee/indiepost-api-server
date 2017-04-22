@@ -1,6 +1,6 @@
 package com.indiepost.model;
 
-import com.indiepost.enums.Types.ContentType;
+import com.indiepost.enums.Types.StatType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,8 +11,8 @@ import java.util.Date;
  * Created by jake on 17. 4. 13.
  */
 @Entity
-@Table(name = "Pageviews")
-public class Pageview {
+@Table(name = "Stats")
+public class Stat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,11 +24,17 @@ public class Pageview {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private ContentType contentType;
+    private StatType type;
 
     @Size(max = 500)
     private String referrer;
 
+    @Size(max = 30)
+    private String label;
+
+    private Integer value;
+
+    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 
@@ -36,7 +42,8 @@ public class Pageview {
     @JoinColumn(name = "visitorId", updatable = false, insertable = false, nullable = false)
     private Visitor visitor;
 
-    @Column(name = "visitorId")
+    @NotNull
+    @Column(name = "visitorId", nullable = false)
     private Long visitorId;
 
     @ManyToOne
@@ -62,12 +69,12 @@ public class Pageview {
         this.path = path;
     }
 
-    public ContentType getContentType() {
-        return contentType;
+    public StatType getType() {
+        return type;
     }
 
-    public void setContentType(ContentType contentType) {
-        this.contentType = contentType;
+    public void setType(StatType type) {
+        this.type = type;
     }
 
     public String getReferrer() {
@@ -76,6 +83,22 @@ public class Pageview {
 
     public void setReferrer(String referrer) {
         this.referrer = referrer;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public Integer getValue() {
+        return value;
+    }
+
+    public void setValue(Integer value) {
+        this.value = value;
     }
 
     public Date getTimestamp() {

@@ -1,6 +1,6 @@
 package com.indiepost.repository;
 
-import com.indiepost.model.Pageview;
+import com.indiepost.model.Stat;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
@@ -11,29 +11,29 @@ import javax.persistence.PersistenceContext;
  * Created by jake on 17. 4. 17.
  */
 @Repository
-public class PageviewRepositoryhibernate implements PageviewRepository {
+public class StatRepositoryHibernate implements StatRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
-    public Long save(Pageview pageview) {
-        return (Long) getSession().save(pageview);
+    public Long save(Stat stat) {
+        return (Long) getSession().save(stat);
     }
 
     @Override
-    public void delete(Pageview pageview) {
-        getSession().delete(pageview);
+    public void delete(Stat stat) {
+        getSession().delete(stat);
     }
 
     @Override
-    public Pageview findById(Long id) {
-        return entityManager.find(Pageview.class, id);
+    public Stat findById(Long id) {
+        return entityManager.find(Stat.class, id);
     }
 
     @Override
-    public void update(Pageview pageview) {
-        getSession().update(pageview);
+    public void update(Stat stat) {
+        getSession().update(stat);
     }
 
     private Session getSession() {

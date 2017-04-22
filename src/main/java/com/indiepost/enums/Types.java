@@ -27,15 +27,7 @@ public interface Types {
         User, Author, Editor, EditorInChief, Administrator
     }
 
-    enum ContentType {
-        POST, PAGE, HOME, SEARCH, TAG, CATEGORY, NOTICE, ETC
-    }
-
-    enum RequestType {
-        WEBPAGE, API
-    }
-
-    enum Client {
-        WebApp, MobileApp, Unknown
+    enum StatType {
+        ACTION, POST, PAGE, HOME, SEARCH, TAG, CATEGORY, NOTICE
     }
 }

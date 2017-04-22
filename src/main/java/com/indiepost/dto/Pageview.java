@@ -5,16 +5,19 @@ import javax.validation.constraints.NotNull;
 /**
  * Created by jake on 17. 4. 19.
  */
-public class PageviewDto {
+public class Pageview {
 
     @NotNull
     private String path;
 
     @NotNull
-    private String contentType;
+    private String type;
 
     @NotNull
-    private String client;
+    private String appName;
+
+    @NotNull
+    private String appVersion;
 
     private String referrer;
 
@@ -30,20 +33,28 @@ public class PageviewDto {
         this.path = path;
     }
 
-    public String getContentType() {
-        return contentType;
+    public String getType() {
+        return type;
     }
 
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public String getClient() {
-        return client;
+    public String getAppName() {
+        return appName;
     }
 
-    public void setClient(String client) {
-        this.client = client;
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
+
+    public String getAppVersion() {
+        return appVersion;
+    }
+
+    public void setAppVersion(String appVersion) {
+        this.appVersion = appVersion;
     }
 
     public Long getUserId() {

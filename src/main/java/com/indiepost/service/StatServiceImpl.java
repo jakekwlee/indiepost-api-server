@@ -1,12 +1,12 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.PageviewDto;
-import com.indiepost.enums.Types.Client;
-import com.indiepost.enums.Types.ContentType;
-import com.indiepost.model.Pageview;
+import com.indiepost.dto.Action;
+import com.indiepost.dto.Pageview;
+import com.indiepost.enums.Types.StatType;
+import com.indiepost.model.Stat;
 import com.indiepost.model.UserAgent;
 import com.indiepost.model.Visitor;
-import com.indiepost.repository.PageviewRepository;
+import com.indiepost.repository.StatRepository;
 import com.indiepost.repository.VisitorRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +23,16 @@ import java.util.Date;
  */
 @Service
 @Transactional
-public class SiteStatServiceImpl implements SiteStatService {
+public class StatServiceImpl implements StatService {
 
-    private final PageviewRepository pageviewRepository;
+    private final StatRepository statRepository;
 
     private final VisitorRepository visitorRepository;
 
     @Autowired
-    public SiteStatServiceImpl(VisitorRepository visitorRepository, PageviewRepository pageviewRepository) {
+    public StatServiceImpl(VisitorRepository visitorRepository, StatRepository statRepository) {
         this.visitorRepository = visitorRepository;
-        this.pageviewRepository = pageviewRepository;
+        this.statRepository = statRepository;
     }
 
     @Override
@@ -41,29 +41,60 @@ public class SiteStatServiceImpl implements SiteStatService {
     }
 
     @Override
-    public void log(HttpServletRequest request, PageviewDto dto) throws IOException {
+    public void logPageview(HttpServletRequest request, Pageview pageview) throws IOException {
+        Long visitorId = getVisitorId(request, pageview.getUserId(), pageview.getAppName(), pageview.getAppVersion());
+        Stat stat = new Stat();
+        stat.setVisitorId(visitorId);
+        stat.setPath(pageview.getPath());
+        StatType statType = StatType.valueOf(pageview.getType());
+        stat.setType(statType);
+        if (StringUtils.isNotEmpty(pageview.getReferrer())) {
+            stat.setReferrer(pageview.getReferrer());
+        }
+        if (pageview.getPostId() != null) {
+            stat.setPostId(pageview.getPostId());
+        }
+        stat.setTimestamp(new Date());
+        statRepository.save(stat);
+    }
+
+    @Override
+    public void logAction(HttpServletRequest request, Action action) throws IOException {
+        Long visitorId = getVisitorId(request, action.getUserId(), action.getAppName(), action.getAppVersion());
+        Stat stat = new Stat();
+        stat.setVisitorId(visitorId);
+        stat.setPath(action.getPath());
+        stat.setType(StatType.ACTION);
+        if (StringUtils.isNotEmpty(action.getLabel())) {
+            stat.setLabel(action.getLabel());
+        }
+        if (action.getValue() != null) {
+            stat.setLabel(action.getLabel());
+        }
+        stat.setTimestamp(new Date());
+        statRepository.save(stat);
+    }
+
+    private Long getVisitorId(HttpServletRequest request, Long userId, String appName, String appVersion) throws IOException {
         HttpSession session = request.getSession();
         Long visitorId = (Long) session.getAttribute("visitorId");
         Visitor visitor;
-        if (visitorId == null) {
-            String userAgentString = request.getHeader("User-Agent");
-            String ipAddress = request.getRemoteAddr();
-            visitor = newVisitor(dto, userAgentString, ipAddress);
-            session.setAttribute("visitorId", visitor.getId());
-        } else {
-            if (dto.getUserId() != null) {
+
+        if (visitorId != null) {
+            if (userId != null) {
                 visitor = this.findVisitorById(visitorId);
                 if (visitor.getUserId() == null) {
-                    visitor.setUserId(dto.getUserId());
+                    visitor.setUserId(userId);
                     visitorRepository.save(visitor);
                 }
             }
+            return visitorId;
         }
-        logPageview(dto, visitorId);
-    }
 
-    private Visitor newVisitor(PageviewDto dto, String userAgentString, String ipAddress) throws IOException {
-        Visitor visitor = new Visitor();
+        String userAgentString = request.getHeader("User-Agent");
+        String ipAddress = request.getRemoteAddr();
+
+        visitor = new Visitor();
         ua_parser.Parser parser = new ua_parser.Parser();
         ua_parser.Client ua = parser.parse(userAgentString);
 
@@ -90,33 +121,18 @@ public class SiteStatServiceImpl implements SiteStatService {
             visitor.setDevice(deviceName);
         }
 
-        if (dto.getUserId() != null) {
-            visitor.setUserId(dto.getUserId());
+        if (userId != null) {
+            visitor.setUserId(userId);
         }
 
-        Client client = Client.valueOf(dto.getClient());
-        visitor.setClient(client);
+        visitor.setAppName(appName);
+        visitor.setAppVersion(appVersion);
         visitor.setIpAddress(ipAddress);
         visitor.setTimestamp(new Date());
 
         visitorRepository.save(visitor);
-        return visitor;
-    }
-
-    private void logPageview(PageviewDto dto, Long visitorId) {
-        Pageview pageview = new Pageview();
-        pageview.setVisitorId(visitorId);
-        pageview.setPath(dto.getPath());
-        ContentType contentType = ContentType.valueOf(dto.getContentType());
-        pageview.setContentType(contentType);
-        if (StringUtils.isNotEmpty(dto.getReferrer())) {
-            pageview.setReferrer(dto.getReferrer());
-        }
-        if (dto.getPostId() != null) {
-            pageview.setPostId(dto.getPostId());
-        }
-        pageview.setTimestamp(new Date());
-        pageviewRepository.save(pageview);
+        session.setAttribute("visitorId", visitor.getId());
+        return visitor.getId();
     }
 
     private String getBrowserVersion(ua_parser.UserAgent userAgent) {

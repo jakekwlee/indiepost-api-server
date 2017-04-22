@@ -1,8 +1,8 @@
 package com.indiepost.model;
 
-import com.indiepost.enums.Types;
-
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
@@ -16,6 +16,14 @@ public class Visitor {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotNull
+    @Size(max = 20)
+    private String appName;
+
+    @NotNull
+    @Size(max = 20)
+    private String appVersion;
+
     private String browser;
 
     private String browserVersion;
@@ -27,9 +35,6 @@ public class Visitor {
     private String device;
 
     private String ipAddress;
-
-    @Enumerated(EnumType.STRING)
-    private Types.Client client = Types.Client.WebApp;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
@@ -45,12 +50,20 @@ public class Visitor {
     @JoinColumn(name = "userAgentId")
     private UserAgent userAgent;
 
-    public Types.Client getClient() {
-        return client;
+    public String getAppName() {
+        return appName;
     }
 
-    public void setClient(Types.Client client) {
-        this.client = client;
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
+
+    public String getAppVersion() {
+        return appVersion;
+    }
+
+    public void setAppVersion(String appVersion) {
+        this.appVersion = appVersion;
     }
 
     public Long getId() {
