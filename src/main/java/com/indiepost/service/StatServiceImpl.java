@@ -2,6 +2,7 @@ package com.indiepost.service;
 
 import com.indiepost.dto.Action;
 import com.indiepost.dto.Pageview;
+import com.indiepost.enums.Types.ActionType;
 import com.indiepost.enums.Types.StatType;
 import com.indiepost.model.Stat;
 import com.indiepost.model.UserAgent;
@@ -29,10 +30,13 @@ public class StatServiceImpl implements StatService {
 
     private final VisitorRepository visitorRepository;
 
+    private final PostService postService;
+
     @Autowired
-    public StatServiceImpl(VisitorRepository visitorRepository, StatRepository statRepository) {
+    public StatServiceImpl(VisitorRepository visitorRepository, StatRepository statRepository, PostService postService) {
         this.visitorRepository = visitorRepository;
         this.statRepository = statRepository;
+        this.postService = postService;
     }
 
     @Override
@@ -42,15 +46,21 @@ public class StatServiceImpl implements StatService {
 
     @Override
     public void logPageview(HttpServletRequest request, Pageview pageview) throws IOException {
-        Long visitorId = getVisitorId(request, pageview.getUserId(), pageview.getAppName(), pageview.getAppVersion());
+        if (pageview.getAppName().contains("LEGACY")) {
+            logLegacyPageview(request, pageview);
+            return;
+        }
+        Long visitorId = getVisitorId(request, pageview.getUserId());
         Stat stat = new Stat();
+        if (visitorId == null) {
+            visitorId = newVisitorId(request, pageview.getUserId(), pageview.getAppName(), pageview.getAppVersion());
+            if (StringUtils.isNotEmpty(pageview.getReferrer())) {
+                stat.setReferrer(pageview.getReferrer());
+            }
+        }
         stat.setVisitorId(visitorId);
         stat.setPath(pageview.getPath());
-        StatType statType = StatType.valueOf(pageview.getType());
-        stat.setType(statType);
-        if (StringUtils.isNotEmpty(pageview.getReferrer())) {
-            stat.setReferrer(pageview.getReferrer());
-        }
+        stat.setType(StatType.valueOf(pageview.getType()));
         if (pageview.getPostId() != null) {
             stat.setPostId(pageview.getPostId());
         }
@@ -60,41 +70,51 @@ public class StatServiceImpl implements StatService {
 
     @Override
     public void logAction(HttpServletRequest request, Action action) throws IOException {
-        Long visitorId = getVisitorId(request, action.getUserId(), action.getAppName(), action.getAppVersion());
+        Long visitorId = getVisitorId(request, action.getUserId());
+        if (visitorId == null) {
+            visitorId = newVisitorId(request, action.getUserId(), action.getAppName(), action.getAppVersion());
+        }
         Stat stat = new Stat();
         stat.setVisitorId(visitorId);
         stat.setPath(action.getPath());
         stat.setType(StatType.ACTION);
+        stat.setAction(ActionType.valueOf(action.getAction()));
         if (StringUtils.isNotEmpty(action.getLabel())) {
             stat.setLabel(action.getLabel());
         }
         if (action.getValue() != null) {
-            stat.setLabel(action.getLabel());
+            stat.setValue(action.getValue());
         }
         stat.setTimestamp(new Date());
         statRepository.save(stat);
     }
 
-    private Long getVisitorId(HttpServletRequest request, Long userId, String appName, String appVersion) throws IOException {
-        HttpSession session = request.getSession();
-        Long visitorId = (Long) session.getAttribute("visitorId");
-        Visitor visitor;
 
-        if (visitorId != null) {
-            if (userId != null) {
-                visitor = this.findVisitorById(visitorId);
-                if (visitor.getUserId() == null) {
-                    visitor.setUserId(userId);
-                    visitorRepository.save(visitor);
-                }
+    private void logLegacyPageview(HttpServletRequest request, Pageview pageview) throws IOException {
+        Long visitorId = getVisitorId(request, null);
+        Stat stat = new Stat();
+        if (visitorId == null) {
+            visitorId = newVisitorId(request, null, pageview.getAppName(), pageview.getAppVersion());
+            if (StringUtils.isNotEmpty(pageview.getReferrer())) {
+                stat.setReferrer(pageview.getReferrer());
             }
-            return visitorId;
         }
+        stat.setVisitorId(visitorId);
+        stat.setPath(pageview.getPath());
+        stat.setType(StatType.valueOf(pageview.getType()));
+        if (pageview.getPostId() != null) {
+            Long id = postService.findIdByLegacyId(pageview.getPostId());
+            stat.setPostId(id);
+        }
+        stat.setTimestamp(new Date());
+        statRepository.save(stat);
+    }
 
+    private Long newVisitorId(HttpServletRequest request, Long userId, String appName, String appVersion) throws IOException {
         String userAgentString = request.getHeader("User-Agent");
         String ipAddress = request.getRemoteAddr();
 
-        visitor = new Visitor();
+        Visitor visitor = new Visitor();
         ua_parser.Parser parser = new ua_parser.Parser();
         ua_parser.Client ua = parser.parse(userAgentString);
 
@@ -131,8 +151,27 @@ public class StatServiceImpl implements StatService {
         visitor.setTimestamp(new Date());
 
         visitorRepository.save(visitor);
+        HttpSession session = request.getSession();
         session.setAttribute("visitorId", visitor.getId());
         return visitor.getId();
+    }
+
+    private Long getVisitorId(HttpServletRequest request, Long userId) throws IOException {
+        HttpSession session = request.getSession();
+        Long visitorId = (Long) session.getAttribute("visitorId");
+
+        if (visitorId == null) {
+            return null;
+        }
+
+        if (userId != null) {
+            Visitor visitor = this.findVisitorById(visitorId);
+            if (visitor.getUserId() == null) {
+                visitor.setUserId(userId);
+                visitorRepository.save(visitor);
+            }
+        }
+        return visitorId;
     }
 
     private String getBrowserVersion(ua_parser.UserAgent userAgent) {

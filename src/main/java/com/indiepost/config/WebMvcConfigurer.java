@@ -1,14 +1,11 @@
 package com.indiepost.config;
 
 import com.indiepost.filter.CORSFilter;
-import com.indiepost.interceptor.TestRequestLoggingInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.resource.PathResourceResolver;
@@ -19,28 +16,6 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
 @Configuration
 @EnableWebMvc
 public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
-
-    private final TestRequestLoggingInterceptor testRequestLoggingInterceptor;
-
-    @Autowired
-    public WebMvcConfigurer(TestRequestLoggingInterceptor testRequestLoggingInterceptor) {
-        this.testRequestLoggingInterceptor = testRequestLoggingInterceptor;
-    }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-
-        registry.addInterceptor(testRequestLoggingInterceptor)
-                .addPathPatterns("/")
-                .addPathPatterns("/post/**")
-                .addPathPatterns("/page/**")
-                .addPathPatterns("/category/**")
-                .addPathPatterns("/search/**")
-                .addPathPatterns("/api/**")
-                .addPathPatterns("/error")
-                .excludePathPatterns("/admin/**")
-                .excludePathPatterns("/api/admin/**");
-    }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

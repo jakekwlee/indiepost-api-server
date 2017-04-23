@@ -1,5 +1,6 @@
 package com.indiepost.model;
 
+import com.indiepost.enums.Types.ActionType;
 import com.indiepost.enums.Types.StatType;
 
 import javax.persistence.*;
@@ -25,6 +26,9 @@ public class Stat {
     @NotNull
     @Enumerated(EnumType.STRING)
     private StatType type;
+
+    @Enumerated(EnumType.STRING)
+    private ActionType action;
 
     @Size(max = 500)
     private String referrer;
@@ -83,6 +87,14 @@ public class Stat {
 
     public void setReferrer(String referrer) {
         this.referrer = referrer;
+    }
+
+    public ActionType getAction() {
+        return action;
+    }
+
+    public void setAction(ActionType action) {
+        this.action = action;
     }
 
     public String getLabel() {

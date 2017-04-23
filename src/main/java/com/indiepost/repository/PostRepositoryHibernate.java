@@ -23,7 +23,9 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jake on 7/30/16.
@@ -54,6 +56,19 @@ public class PostRepositoryHibernate implements PostRepository {
         return (Post) getCriteria()
                 .add(Restrictions.eq("legacyPostId", id))
                 .uniqueResult();
+    }
+
+    @Override
+    public Long findIdByLegacyId(Long legacyId) {
+        Criteria criteria = getCriteria().setProjection(
+                Projections.projectionList()
+                        .add(Property.forName("id"), "id")
+                        .add(Property.forName("legacyPostId"), "legacyPostId")
+        );
+        criteria.add(Restrictions.eq("legacyPostId", legacyId));
+        criteria.setResultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP);
+        Map post = (HashMap) criteria.uniqueResult();
+        return (Long) post.get("id");
     }
 
     @Override

@@ -19,7 +19,7 @@ public class Action {
     private String path;
 
     @NotNull
-    private String type;
+    private String action;
 
     private String label;
 
@@ -43,12 +43,12 @@ public class Action {
         this.path = path;
     }
 
-    public String getType() {
-        return type;
+    public String getAction() {
+        return action;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setAction(String type) {
+        this.action = type;
     }
 
     public String getLabel() {

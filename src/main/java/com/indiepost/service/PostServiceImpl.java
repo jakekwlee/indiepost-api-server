@@ -173,6 +173,11 @@ public class PostServiceImpl implements PostService {
         }).collect(Collectors.toList());
     }
 
+    @Override
+    public Long findIdByLegacyId(Long legacyId) {
+        return postRepository.findIdByLegacyId(legacyId);
+    }
+
     private List<PostSummaryDto> setTitleImages(List<PostSummaryDto> postSummaryDtoList) {
         List<Long> ids = postSummaryDtoList.stream()
                 .filter(postExcerpt -> postExcerpt.getTitleImageId() != null)

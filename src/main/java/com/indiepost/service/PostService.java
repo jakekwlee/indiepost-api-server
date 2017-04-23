@@ -33,4 +33,6 @@ public interface PostService {
     List<RelatedPostResponseDto> getRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobile);
 
     List<PostSummaryDto> search(String text, int page, int maxResults);
+
+    Long findIdByLegacyId(Long legacyId);
 }

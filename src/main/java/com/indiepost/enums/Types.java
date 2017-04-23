@@ -30,4 +30,9 @@ public interface Types {
     enum StatType {
         ACTION, POST, PAGE, HOME, SEARCH, TAG, CATEGORY, NOTICE
     }
+
+    enum ActionType {
+        LOAD_MORE_POSTS, CHANGE_THEME, OPEN_MENU,
+        CLICK_APPSTORE, CLICK_SNS, CLICK_AD
+    }
 }

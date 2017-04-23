@@ -17,7 +17,7 @@ public class Visitor {
     private Long id;
 
     @NotNull
-    @Size(max = 20)
+    @Size(max = 30)
     private String appName;
 
     @NotNull

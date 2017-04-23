@@ -2,7 +2,6 @@ package com.indiepost.config;
 
 import com.indiepost.repository.UserRepository;
 import com.indiepost.security.MySavedRequestAwareAuthenticationSuccessHandler;
-import com.indiepost.security.RestAuthenticationEntryPoint;
 import com.indiepost.service.IndiepostUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -32,15 +31,6 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
-
-    @Autowired
-    private MySavedRequestAwareAuthenticationSuccessHandler authenticationSuccessHandler;
-
-    @Autowired
-    private SimpleUrlAuthenticationFailureHandler authenticationFailureHandler;
-
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(this.userDetailsServiceBean())
@@ -59,6 +49,8 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .cors()
                 .and()
                 .csrf().ignoringAntMatchers("/api/posts/**")
+                .and()
+                .csrf().ignoringAntMatchers("/api/stat/**")
                 .and()
                 .authorizeRequests()
                 .antMatchers("/admin/**").access(SPRING_SECURITY_EXPRESSION)
