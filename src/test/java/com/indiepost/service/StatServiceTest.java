@@ -1,12 +1,18 @@
 package com.indiepost.service;
 
 import com.indiepost.NewIndiepostApplication;
+import com.indiepost.dto.StatResult;
+import com.indiepost.enums.Types;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by jake on 17. 4. 23.
@@ -29,5 +35,15 @@ public class StatServiceTest {
         System.out.println("Input:" + legacyId);
         System.out.println("Output:" + id);
         System.out.println("===================================");
+    }
+
+    @Test
+    public void testGetPageviews() {
+        final Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -1);
+        Date yesterday = calendar.getTime();
+        Date now = new Date();
+        List<StatResult> statResultList = statService.getPageviews(yesterday, now, Types.Period.HOUR);
+        System.out.println(statResultList);
     }
 }

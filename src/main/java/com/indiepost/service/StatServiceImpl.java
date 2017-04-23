@@ -2,6 +2,8 @@ package com.indiepost.service;
 
 import com.indiepost.dto.Action;
 import com.indiepost.dto.Pageview;
+import com.indiepost.dto.StatResult;
+import com.indiepost.enums.Types;
 import com.indiepost.enums.Types.ActionType;
 import com.indiepost.enums.Types.StatType;
 import com.indiepost.model.Stat;
@@ -18,6 +20,7 @@ import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by jake on 17. 4. 13.
@@ -87,6 +90,16 @@ public class StatServiceImpl implements StatService {
         }
         stat.setTimestamp(new Date());
         statRepository.save(stat);
+    }
+
+    @Override
+    public List<StatResult> getPageviews(Date since, Date until, Types.Period period) {
+        return statRepository.getPageviews(since, until, period);
+    }
+
+    @Override
+    public List<StatResult> getVisitors(Date since, Date until, Types.Period period) {
+        return statRepository.getVisitors(since, until, period);
     }
 
 
