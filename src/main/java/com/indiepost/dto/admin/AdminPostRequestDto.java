@@ -1,4 +1,6 @@
-package com.indiepost.dto;
+package com.indiepost.dto.admin;
+
+import com.indiepost.dto.TagDto;
 
 import java.util.Date;
 import java.util.List;

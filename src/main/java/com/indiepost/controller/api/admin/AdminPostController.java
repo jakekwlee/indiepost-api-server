@@ -1,8 +1,8 @@
 package com.indiepost.controller.api.admin;
 
-import com.indiepost.dto.AdminPostRequestDto;
-import com.indiepost.dto.AdminPostResponseDto;
-import com.indiepost.dto.AdminPostSummaryDto;
+import com.indiepost.dto.admin.AdminPostRequestDto;
+import com.indiepost.dto.admin.AdminPostResponseDto;
+import com.indiepost.dto.admin.AdminPostSummaryDto;
 import com.indiepost.service.AdminPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

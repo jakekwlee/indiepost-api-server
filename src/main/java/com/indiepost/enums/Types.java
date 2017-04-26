@@ -36,7 +36,11 @@ public interface Types {
         CLICK_APPSTORE, CLICK_SNS, CLICK_AD
     }
 
-    enum Period {
-        YEAR, MONTH, DAY, HOUR, MINUTE
+    enum Channel {
+        GOOGLE, TWITTER, FACEBOOK, INSTAGRAM, YOUTUBE, NAVER, BING, DAUM, NATE, OTHER, NONE
+    }
+
+    enum ClientType {
+        INDIEPOST_WEBAPP, INDIEPOST_LEGACY_MOBILE_APP
     }
 }

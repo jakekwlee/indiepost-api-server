@@ -1,7 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.dto.StatResult;
+import com.indiepost.dto.stat.TimeDomainStatResult;
 import com.indiepost.enums.Types;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +43,7 @@ public class StatServiceTest {
         calendar.add(Calendar.DATE, -1);
         Date yesterday = calendar.getTime();
         Date now = new Date();
-        List<StatResult> statResultList = statService.getPageviews(yesterday, now, Types.Period.HOUR);
-        System.out.println(statResultList);
+        List<TimeDomainStatResult> timeDomainStatResultList = statService.getPageviewTrend(yesterday, now, Types.Period.HOUR);
+        System.out.println(timeDomainStatResultList);
     }
 }

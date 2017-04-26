@@ -2,6 +2,8 @@ package com.indiepost.controller;
 
 import com.indiepost.config.HomeConfig;
 import com.indiepost.dto.*;
+import com.indiepost.dto.ssr.RenderingRequestDto;
+import com.indiepost.dto.ssr.RenderingResponseDto;
 import com.indiepost.service.InitialDataService;
 import com.indiepost.service.PageService;
 import com.indiepost.service.PostService;

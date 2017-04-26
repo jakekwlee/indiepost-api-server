@@ -1,5 +1,7 @@
 package com.indiepost.model;
 
+import com.indiepost.enums.Types.ClientType;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -17,8 +19,8 @@ public class Visitor {
     private Long id;
 
     @NotNull
-    @Size(max = 30)
-    private String appName;
+    @Enumerated(EnumType.STRING)
+    private ClientType appName;
 
     @NotNull
     @Size(max = 20)
@@ -50,11 +52,11 @@ public class Visitor {
     @JoinColumn(name = "userAgentId")
     private UserAgent userAgent;
 
-    public String getAppName() {
+    public ClientType getAppName() {
         return appName;
     }
 
-    public void setAppName(String appName) {
+    public void setAppName(ClientType appName) {
         this.appName = appName;
     }
 

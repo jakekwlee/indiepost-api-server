@@ -1,4 +1,4 @@
-package com.indiepost.dto;
+package com.indiepost.dto.stat;
 
 import java.math.BigInteger;
 import java.util.Date;
@@ -6,17 +6,17 @@ import java.util.Date;
 /**
  * Created by jake on 17. 4. 24.
  */
-public class StatResult {
-    private Date statDatetime;
+public class TimeDomainStatResult {
+    private Date statDate;
 
     private BigInteger statCount;
 
-    public Date getStatDatetime() {
-        return statDatetime;
+    public Date getStatDate() {
+        return statDate;
     }
 
-    public void setStatDatetime(Date statDatetime) {
-        this.statDatetime = statDatetime;
+    public void setStatDate(Date statDate) {
+        this.statDate = statDate;
     }
 
     public BigInteger getStatCount() {

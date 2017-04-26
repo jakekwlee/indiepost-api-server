@@ -1,4 +1,4 @@
-package com.indiepost.dto;
+package com.indiepost.dto.ssr;
 
 /**
  * Created by jake on 17. 2. 25.

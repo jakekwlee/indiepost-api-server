@@ -1,7 +1,7 @@
 package com.indiepost.controller.api;
 
-import com.indiepost.dto.Action;
-import com.indiepost.dto.Pageview;
+import com.indiepost.dto.stat.Action;
+import com.indiepost.dto.stat.Pageview;
 import com.indiepost.service.StatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

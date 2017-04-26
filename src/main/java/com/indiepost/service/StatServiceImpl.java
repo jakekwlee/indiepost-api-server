@@ -1,10 +1,12 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.Action;
-import com.indiepost.dto.Pageview;
-import com.indiepost.dto.StatResult;
+import com.indiepost.dto.stat.Action;
+import com.indiepost.dto.stat.Pageview;
+import com.indiepost.dto.stat.PeriodDto;
+import com.indiepost.dto.stat.SiteStats;
 import com.indiepost.enums.Types;
 import com.indiepost.enums.Types.ActionType;
+import com.indiepost.enums.Types.Channel;
 import com.indiepost.enums.Types.StatType;
 import com.indiepost.model.Stat;
 import com.indiepost.model.UserAgent;
@@ -19,8 +21,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by jake on 17. 4. 13.
@@ -49,23 +53,28 @@ public class StatServiceImpl implements StatService {
 
     @Override
     public void logPageview(HttpServletRequest request, Pageview pageview) throws IOException {
-        if (pageview.getAppName().contains("LEGACY")) {
-            logLegacyPageview(request, pageview);
-            return;
-        }
         Long visitorId = getVisitorId(request, pageview.getUserId());
         Stat stat = new Stat();
         if (visitorId == null) {
-            visitorId = newVisitorId(request, pageview.getUserId(), pageview.getAppName(), pageview.getAppVersion());
+            Visitor visitor = newVisitor(request, pageview.getUserId(), pageview.getAppName(), pageview.getAppVersion());
+            visitorId = visitor.getId();
+            stat.setLandingPage(true);
             if (StringUtils.isNotEmpty(pageview.getReferrer())) {
                 stat.setReferrer(pageview.getReferrer());
             }
+            Channel channel = getChannelType(visitor.getBrowser(), pageview.getReferrer());
+            stat.setChannel(channel);
         }
         stat.setVisitorId(visitorId);
         stat.setPath(pageview.getPath());
         stat.setType(StatType.valueOf(pageview.getType()));
         if (pageview.getPostId() != null) {
-            stat.setPostId(pageview.getPostId());
+            if (!pageview.getAppName().contains("LEGACY")) {
+                stat.setPostId(pageview.getPostId());
+            } else {
+                Long id = postService.findIdByLegacyId(pageview.getPostId());
+                stat.setPostId(id);
+            }
         }
         stat.setTimestamp(new Date());
         statRepository.save(stat);
@@ -75,7 +84,8 @@ public class StatServiceImpl implements StatService {
     public void logAction(HttpServletRequest request, Action action) throws IOException {
         Long visitorId = getVisitorId(request, action.getUserId());
         if (visitorId == null) {
-            visitorId = newVisitorId(request, action.getUserId(), action.getAppName(), action.getAppVersion());
+            Visitor visitor = newVisitor(request, action.getUserId(), action.getAppName(), action.getAppVersion());
+            visitorId = visitor.getId();
         }
         Stat stat = new Stat();
         stat.setVisitorId(visitorId);
@@ -93,37 +103,49 @@ public class StatServiceImpl implements StatService {
     }
 
     @Override
-    public List<StatResult> getPageviews(Date since, Date until, Types.Period period) {
-        return statRepository.getPageviews(since, until, period);
+    public SiteStats getStats(PeriodDto dto) {
+        Date since = dto.getSince();
+        Date until = dto.getUntil();
+        Period period = getPeriod(since, until);
+
+        SiteStats stats = new SiteStats();
+        stats.setPeriod(getPeriodString(period));
+        stats.setTotalPageview(statRepository.getTotalPageviews(since, until));
+        stats.setTotalVisitor(statRepository.getTotalVisitors(since, until));
+        stats.setTotalAppVisitor(statRepository.getTotalVisitors(since, until, Types.ClientType.INDIEPOST_LEGACY_MOBILE_APP));
+        stats.setPageviewTrend(statRepository.getPageviewTrend(since, until, period));
+        stats.setVisitorTrend(statRepository.getVisitorTrend(since, until, period));
+        stats.setMostViewedPages(statRepository.getMostViewedPages(since, until, 10L));
+        stats.setMostViewedPosts(statRepository.getMostViewedPosts(since, until, 10L));
+        stats.setPageviewByAuthor(statRepository.getPageviewByAuthor(since, until));
+        stats.setPageviewByCategory(statRepository.getPageviewByAuthor(since, until));
+        stats.setSecondlyViewedPages(statRepository.getSecondlyViewedPages(since, until, 10L));
+        stats.setSecondlyViewedPosts(statRepository.getSecondlyViewedPosts(since, until, 10L));
+        stats.setTopBrowser(statRepository.getTopWebBrowsers(since, until, 10L));
+        stats.setTopChannel(statRepository.getTopChannel(since, until, 10L));
+        stats.setTopChannel(statRepository.getTopChannel(since, until, 10L));
+        stats.setTopReferrer(statRepository.getTopReferrers(since, until, 10L));
+        stats.setTopOs(statRepository.getTopOs(since, until, 10L));
+        stats.setTopTags(statRepository.getTopTags(since, until, 10L));
+        stats.setPageviewPerVisitor(stats.getTotalPageview() / stats.getTotalVisitor());
+        stats.setPostviewPerVisitor(statRepository.getTotalPageviews(since, until, StatType.POST) / stats.getTotalVisitor());
+
+        return stats;
     }
 
-    @Override
-    public List<StatResult> getVisitors(Date since, Date until, Types.Period period) {
-        return statRepository.getVisitors(since, until, period);
-    }
-
-
-    private void logLegacyPageview(HttpServletRequest request, Pageview pageview) throws IOException {
-        Long visitorId = getVisitorId(request, null);
-        Stat stat = new Stat();
-        if (visitorId == null) {
-            visitorId = newVisitorId(request, null, pageview.getAppName(), pageview.getAppVersion());
-            if (StringUtils.isNotEmpty(pageview.getReferrer())) {
-                stat.setReferrer(pageview.getReferrer());
-            }
+    private String getPeriodString(Period period) {
+        if (period.getYears() > 0) {
+            return "YEAR";
+        } else if (period.getMonths() > 0) {
+            return "MONTH";
+        } else if (period.getDays() > 0) {
+            return "DAY";
+        } else {
+            return "HOUR";
         }
-        stat.setVisitorId(visitorId);
-        stat.setPath(pageview.getPath());
-        stat.setType(StatType.valueOf(pageview.getType()));
-        if (pageview.getPostId() != null) {
-            Long id = postService.findIdByLegacyId(pageview.getPostId());
-            stat.setPostId(id);
-        }
-        stat.setTimestamp(new Date());
-        statRepository.save(stat);
     }
 
-    private Long newVisitorId(HttpServletRequest request, Long userId, String appName, String appVersion) throws IOException {
+    private Visitor newVisitor(HttpServletRequest request, Long userId, String appName, String appVersion) throws IOException {
         String userAgentString = request.getHeader("User-Agent");
         String ipAddress = request.getRemoteAddr();
 
@@ -158,7 +180,7 @@ public class StatServiceImpl implements StatService {
             visitor.setUserId(userId);
         }
 
-        visitor.setAppName(appName);
+        visitor.setAppName(Types.ClientType.valueOf(appName));
         visitor.setAppVersion(appVersion);
         visitor.setIpAddress(ipAddress);
         visitor.setTimestamp(new Date());
@@ -166,7 +188,7 @@ public class StatServiceImpl implements StatService {
         visitorRepository.save(visitor);
         HttpSession session = request.getSession();
         session.setAttribute("visitorId", visitor.getId());
-        return visitor.getId();
+        return visitor;
     }
 
     private Long getVisitorId(HttpServletRequest request, Long userId) throws IOException {
@@ -185,6 +207,40 @@ public class StatServiceImpl implements StatService {
             }
         }
         return visitorId;
+    }
+
+    private Channel getChannelType(String browserName, String referrer) {
+        if (browserName.toLowerCase().contains("facebook")) {
+            return Channel.FACEBOOK;
+        }
+        if (StringUtils.isEmpty(referrer)) {
+            return Channel.NONE;
+        }
+        String domain = referrer.split("//")[1].split("/")[0];
+
+        if (domain.contains("indiepost")) {
+            return Channel.NONE;
+        }
+        if (domain.contains("goo")) {
+            return Channel.GOOGLE;
+        }
+        if (domain.contains("facebook") || domain.contains("fb")) {
+            return Channel.FACEBOOK;
+        }
+        if (domain.contains("t.co")) {
+            return Channel.TWITTER;
+        }
+        if (domain.contains("naver")) {
+            return Channel.NAVER;
+        }
+        if (domain.contains("daum")) {
+            return Channel.DAUM;
+        }
+        if (domain.contains("instagram")) {
+            return Channel.INSTAGRAM;
+        }
+
+        return Channel.OTHER;
     }
 
     private String getBrowserVersion(ua_parser.UserAgent userAgent) {
@@ -223,5 +279,11 @@ public class StatServiceImpl implements StatService {
             return sb.toString();
         }
         return null;
+    }
+
+    private Period getPeriod(Date since, Date until) {
+        LocalDate start = since.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate end = until.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return Period.between(start, end);
     }
 }

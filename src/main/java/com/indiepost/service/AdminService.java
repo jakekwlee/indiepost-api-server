@@ -1,8 +1,8 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.AdminInitResponseDto;
 import com.indiepost.dto.TagDto;
 import com.indiepost.dto.UserDto;
+import com.indiepost.dto.admin.AdminInitResponseDto;
 import com.indiepost.enums.Types.UserRole;
 
 import java.util.List;

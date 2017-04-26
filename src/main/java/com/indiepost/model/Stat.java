@@ -1,6 +1,7 @@
 package com.indiepost.model;
 
 import com.indiepost.enums.Types.ActionType;
+import com.indiepost.enums.Types.Channel;
 import com.indiepost.enums.Types.StatType;
 
 import javax.persistence.*;
@@ -32,6 +33,13 @@ public class Stat {
 
     @Size(max = 500)
     private String referrer;
+
+    @NotNull
+    private Boolean isLandingPage = false;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Channel channel = Channel.NONE;
 
     @Size(max = 30)
     private String label;
@@ -111,6 +119,22 @@ public class Stat {
 
     public void setValue(Integer value) {
         this.value = value;
+    }
+
+    public Boolean getLandingPage() {
+        return isLandingPage;
+    }
+
+    public void setLandingPage(Boolean landingPage) {
+        isLandingPage = landingPage;
+    }
+
+    public Channel getChannel() {
+        return channel;
+    }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
     }
 
     public Date getTimestamp() {

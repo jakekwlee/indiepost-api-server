@@ -1,9 +1,9 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.AdminPostRequestDto;
-import com.indiepost.dto.AdminPostResponseDto;
-import com.indiepost.dto.AdminPostSummaryDto;
 import com.indiepost.dto.PostQuery;
+import com.indiepost.dto.admin.AdminPostRequestDto;
+import com.indiepost.dto.admin.AdminPostResponseDto;
+import com.indiepost.dto.admin.AdminPostSummaryDto;
 import com.indiepost.model.Post;
 
 import java.util.Date;

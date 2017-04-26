@@ -1,4 +1,4 @@
-package com.indiepost.dto;
+package com.indiepost.dto.stat;
 
 import javax.validation.constraints.NotNull;
 

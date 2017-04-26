@@ -1,6 +1,10 @@
 package com.indiepost.service.mapper;
 
-import com.indiepost.dto.*;
+import com.indiepost.dto.PostDto;
+import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.admin.AdminPostRequestDto;
+import com.indiepost.dto.admin.AdminPostResponseDto;
+import com.indiepost.dto.admin.AdminPostSummaryDto;
 import com.indiepost.model.Post;
 
 /**
