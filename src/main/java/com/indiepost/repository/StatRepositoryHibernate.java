@@ -1,6 +1,5 @@
 package com.indiepost.repository;
 
-import com.github.fluent.hibernate.transformer.FluentHibernateResultTransformer;
 import com.indiepost.dto.stat.ShareStatResult;
 import com.indiepost.dto.stat.TimeDomainStatResult;
 import com.indiepost.enums.Types;
@@ -12,6 +11,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.AliasToBeanResultTransformer;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -25,7 +25,6 @@ import java.util.List;
  * Created by jake on 17. 4. 17.
  */
 @Repository
-@SuppressWarnings("unchecked")
 public class StatRepositoryHibernate implements StatRepository {
 
     @PersistenceContext
@@ -59,13 +58,14 @@ public class StatRepositoryHibernate implements StatRepository {
     @Override
     public Long getTotalPageviews(Date since, Date until, StatType type) {
         Criteria criteria = getSession().createCriteria(Stat.class);
-        criteria.add(Restrictions.ne("type", StatType.ACTION));
         setDateCriteria(criteria, since, until);
         if (type != null) {
             criteria.add(Restrictions.eq("type", type));
+        } else {
+            criteria.add(Restrictions.ne("type", StatType.ACTION));
         }
         criteria.setProjection(Projections.rowCount());
-        return ((BigInteger) criteria.uniqueResult()).longValue();
+        return (Long) criteria.uniqueResult();
     }
 
     @Override
@@ -73,7 +73,7 @@ public class StatRepositoryHibernate implements StatRepository {
         Criteria criteria = getSession().createCriteria(Visitor.class);
         setDateCriteria(criteria, since, until);
         criteria.setProjection(Projections.rowCount());
-        return ((BigInteger) criteria.uniqueResult()).longValue();
+        return (Long) criteria.uniqueResult();
     }
 
     @Override
@@ -121,7 +121,7 @@ public class StatRepositoryHibernate implements StatRepository {
         Query query = getSession().createSQLQuery(sqlQuery);
         query.setParameter("s", since);
         query.setParameter("u", until);
-        query.setResultTransformer(new FluentHibernateResultTransformer(TimeDomainStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(TimeDomainStatResult.class));
 
         return query.list();
     }
@@ -158,7 +158,7 @@ public class StatRepositoryHibernate implements StatRepository {
         Query query = getSession().createSQLQuery(sqlQuery);
         query.setParameter("s", since);
         query.setParameter("u", until);
-        query.setResultTransformer(new FluentHibernateResultTransformer(TimeDomainStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(TimeDomainStatResult.class));
 
         return query.list();
     }
@@ -166,7 +166,7 @@ public class StatRepositoryHibernate implements StatRepository {
     @Override
     public List<ShareStatResult> getPageviewsByCategory(Date since, Date until) {
         String sqlQuery =
-                "SELECT c.name AS name, count(*) AS statCount " +
+                "SELECT c.name AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
                         "INNER JOIN Posts p ON s.postId = p.id " +
                         "INNER JOIN Categories c ON p.categoryId = c.id " +
@@ -174,32 +174,32 @@ public class StatRepositoryHibernate implements StatRepository {
                         "GROUP BY c.name " +
                         "ORDER BY statCount DESC";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setDate("s", since);
-        query.setDate("u", until);
-        query.setResultTransformer(new FluentHibernateResultTransformer(ShareStatResult.class));
+        query.setTimestamp("s", since);
+        query.setTimestamp("u", until);
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
 
     @Override
     public List<ShareStatResult> getPageviewByAuthor(Date since, Date until) {
         String sqlQuery =
-                "SELECT p.displayName AS name, count(*) AS statCount " +
+                "SELECT p.displayName AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
                         "INNER JOIN Posts p ON s.postId = p.id " +
-                        "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
+                        "WHERE s.timestamp BETWEEN :s AND :u " +
                         "GROUP BY p.displayName " +
                         "ORDER BY statCount DESC";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setDate("s", since);
-        query.setDate("u", until);
-        query.setResultTransformer(new FluentHibernateResultTransformer(ShareStatResult.class));
+        query.setTimestamp("s", since);
+        query.setTimestamp("u", until);
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
 
     @Override
     public List<ShareStatResult> getMostViewedPages(Date since, Date until, Long limit) {
         String sqlQuery =
-                "SELECT ifnull(p.title, s.type) AS name, count(*) AS statCount " +
+                "SELECT ifnull(p.title, s.type) AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
                         "LEFT JOIN Posts p ON s.postId = p.id " +
                         "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
@@ -208,18 +208,18 @@ public class StatRepositoryHibernate implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setDate("s", since);
-        query.setDate("u", until);
+        query.setTimestamp("s", since);
+        query.setTimestamp("u", until);
         query.setLong("l", limit);
         query.setString("a", StatType.ACTION.toString());
-        query.setResultTransformer(new FluentHibernateResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
 
     @Override
     public List<ShareStatResult> getMostViewedPosts(Date since, Date until, Long limit) {
         String sqlQuery =
-                "SELECT p.title AS name, count(*) AS statCount " +
+                "SELECT p.title AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
                         "INNER JOIN Posts p ON s.postId = p.id " +
                         "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
@@ -228,18 +228,18 @@ public class StatRepositoryHibernate implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setDate("s", since);
-        query.setDate("u", until);
+        query.setTimestamp("s", since);
+        query.setTimestamp("u", until);
         query.setLong("l", limit);
         query.setString("t", StatType.POST.toString());
-        query.setResultTransformer(new FluentHibernateResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
 
     @Override
     public List<ShareStatResult> getTopLandingPages(Date since, Date until, Long limit) {
         String sqlQuery =
-                "SELECT ifnull(p.title, s.type) AS name, count(*) AS statCount " +
+                "SELECT ifnull(p.title, s.type) AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
                         "LEFT JOIN Posts p ON s.postId = p.id " +
                         "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
@@ -248,17 +248,17 @@ public class StatRepositoryHibernate implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setDate("s", since);
-        query.setDate("u", until);
+        query.setTimestamp("s", since);
+        query.setTimestamp("u", until);
         query.setLong("l", limit);
-        query.setResultTransformer(new FluentHibernateResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
 
     @Override
     public List<ShareStatResult> getTopLandingPosts(Date since, Date until, Long limit) {
         String sqlQuery =
-                "SELECT p.title AS name, count(*) AS statCount " +
+                "SELECT p.title AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
                         "INNER JOIN Posts p ON s.postId = p.id " +
                         "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
@@ -268,18 +268,18 @@ public class StatRepositoryHibernate implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setDate("s", since);
-        query.setDate("u", until);
+        query.setTimestamp("s", since);
+        query.setTimestamp("u", until);
         query.setLong("l", limit);
         query.setString("t", StatType.POST.toString());
-        query.setResultTransformer(new FluentHibernateResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
 
     @Override
     public List<ShareStatResult> getSecondlyViewedPages(Date since, Date until, Long limit) {
         String sqlQuery =
-                "SELECT ifnull(p.title, s.type) AS name, count(*) AS statCount " +
+                "SELECT ifnull(p.title, s.type) AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
                         "LEFT JOIN Posts p ON s.postId = p.id " +
                         "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
@@ -288,17 +288,17 @@ public class StatRepositoryHibernate implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setDate("s", since);
-        query.setDate("u", until);
+        query.setTimestamp("s", since);
+        query.setTimestamp("u", until);
         query.setLong("l", limit);
-        query.setResultTransformer(new FluentHibernateResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
 
     @Override
     public List<ShareStatResult> getSecondlyViewedPosts(Date since, Date until, Long limit) {
         String sqlQuery =
-                "SELECT p.title AS name, count(*) AS statCount " +
+                "SELECT p.title AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
                         "INNER JOIN Posts p ON s.postId = p.id " +
                         "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
@@ -308,18 +308,18 @@ public class StatRepositoryHibernate implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setDate("s", since);
-        query.setDate("u", until);
+        query.setTimestamp("s", since);
+        query.setTimestamp("u", until);
         query.setLong("l", limit);
         query.setString("t", StatType.POST.toString());
-        query.setResultTransformer(new FluentHibernateResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
 
     @Override
     public List<ShareStatResult> getTopReferrers(Date since, Date until, Long limit) {
         String sqlQuery =
-                "SELECT s.referrer AS name, count(*) AS statCount " +
+                "SELECT s.referrer AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
                         "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
                         "AND s.isLandingPage IS TRUE " +
@@ -328,49 +328,51 @@ public class StatRepositoryHibernate implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setDate("s", since);
-        query.setDate("u", until);
+        query.setTimestamp("s", since);
+        query.setTimestamp("u", until);
         query.setLong("l", limit);
-        query.setResultTransformer(new FluentHibernateResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
 
     @Override
     public List<ShareStatResult> getTopWebBrowsers(Date since, Date until, Long limit) {
         String sqlQuery =
-                "SELECT v.browser AS name, count(*) AS statCount " +
+                "SELECT v.browser AS statName, count(*) AS statCount " +
                         "FROM Visitors v " +
                         "WHERE v.timestamp >= :s AND v.timestamp <= :u " +
+                        "GROUP BY v.browser " +
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setDate("s", since);
-        query.setDate("u", until);
+        query.setTimestamp("s", since);
+        query.setTimestamp("u", until);
         query.setLong("l", limit);
-        query.setResultTransformer(new FluentHibernateResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
 
     @Override
     public List<ShareStatResult> getTopOs(Date since, Date until, Long limit) {
         String sqlQuery =
-                "SELECT v.os AS name, count(*) AS statCount " +
+                "SELECT v.os AS statName, count(*) AS statCount " +
                         "FROM Visitors v " +
                         "WHERE v.timestamp >= :s AND v.timestamp <= :u " +
+                        "GROUP BY v.os " +
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setDate("s", since);
-        query.setDate("u", until);
+        query.setTimestamp("s", since);
+        query.setTimestamp("u", until);
         query.setLong("l", limit);
-        query.setResultTransformer(new FluentHibernateResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
 
     @Override
     public List<ShareStatResult> getTopTags(Date since, Date until, Long limit) {
         String sqlQuery =
-                "SELECT t.name AS name, count(*) AS statCount FROM Stats s " +
+                "SELECT t.name AS statName, count(*) AS statCount FROM Stats s " +
                         "INNER JOIN Posts p ON s.postId = p.id " +
                         "INNER JOIN Posts_Tags pt ON p.id = pt.postId " +
                         "INNER JOIN Tags t ON pt.tagId = t.id " +
@@ -379,27 +381,28 @@ public class StatRepositoryHibernate implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setDate("s", since);
-        query.setDate("u", until);
+        query.setTimestamp("s", since);
+        query.setTimestamp("u", until);
         query.setLong("l", limit);
-        query.setResultTransformer(new FluentHibernateResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
 
     @Override
     public List<ShareStatResult> getTopChannel(Date since, Date until, Long limit) {
         String sqlQuery =
-                "SELECT s.channel AS name, count(*) AS statCount " +
+                "SELECT s.channel AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
                         "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
                         "AND s.isLandingPage IS TRUE " +
+                        "GROUP BY s.channel " +
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setDate("s", since);
-        query.setDate("u", until);
+        query.setTimestamp("s", since);
+        query.setTimestamp("u", until);
         query.setLong("l", limit);
-        query.setResultTransformer(new FluentHibernateResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
 
@@ -408,7 +411,6 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     private void setDateCriteria(Criteria criteria, Date since, Date until) {
-        criteria.add(Restrictions.ge("timestamp", since));
-        criteria.add(Restrictions.le("timestamp", until));
+        criteria.add(Restrictions.between("timestamp", since, until));
     }
 }

@@ -7,16 +7,16 @@ import java.util.Date;
  * Created by jake on 17. 4. 24.
  */
 public class TimeDomainStatResult {
-    private Date statDate;
+    private Date statDatetime;
 
     private BigInteger statCount;
 
-    public Date getStatDate() {
-        return statDate;
+    public Date getStatDatetime() {
+        return statDatetime;
     }
 
-    public void setStatDate(Date statDate) {
-        this.statDate = statDate;
+    public void setStatDatetime(Date statDatetime) {
+        this.statDatetime = statDatetime;
     }
 
     public BigInteger getStatCount() {

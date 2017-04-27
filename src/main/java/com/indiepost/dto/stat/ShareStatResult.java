@@ -6,16 +6,16 @@ import java.math.BigInteger;
  * Created by jake on 17. 4. 26.
  */
 public class ShareStatResult {
-    private String name;
+    private String statName;
 
     private BigInteger statCount;
 
-    public String getName() {
-        return name;
+    public String getStatName() {
+        return statName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setStatName(String statName) {
+        this.statName = statName;
     }
 
     public BigInteger getStatCount() {

@@ -10,6 +10,15 @@ public class PeriodDto {
 
     private Date until;
 
+    public PeriodDto() {
+
+    }
+
+    public PeriodDto(Date since, Date until) {
+        this.since = since;
+        this.until = until;
+    }
+
     public Date getSince() {
         return since;
     }

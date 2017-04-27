@@ -3,7 +3,7 @@
 <head th:fragment="head">
 </head>
 <body>
-<header id="indiepost-navbar" class="navbar bs-docs-nav" name="navigation" th:fragment="header">
+<header id="indiepost-navbar" class="navbar bs-docs-nav" statName="navigation" th:fragment="header">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse"
@@ -36,7 +36,7 @@
                     <ul class="dropdown-menu">
                         <li><a href="#">Profile</a></li>
                         <li th:if="${hasRoleEditor}"><a href="/cms/posts">CMS</a></li>
-                        <li name="separator" class="divider"></li>
+                        <li statName="separator" class="divider"></li>
                         <li><a th:href="@{/logout}">Logout</a></li>
                     </ul>
                 </li>
@@ -47,7 +47,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a href="#">Sign up</a></li>
-                        <li name="separator" class="divider"></li>
+                        <li statName="separator" class="divider"></li>
                         <li><a th:href="@{/login}">Log in</a></li>
                     </ul>
                 </li>
