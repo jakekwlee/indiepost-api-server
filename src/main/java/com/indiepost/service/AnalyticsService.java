@@ -12,7 +12,7 @@ import java.io.IOException;
 /**
  * Created by jake on 17. 4. 13.
  */
-public interface StatService {
+public interface AnalyticsService {
 
     Visitor findVisitorById(Long id);
 

@@ -7,7 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 /**
  * Created by jake on 17. 1. 10.
  */
-public class MySQLPasswordEncoderTest {
+public class MySQLPasswordEncoderUnitTest {
 
     @Test
     public void passwordEncoderShouldEncodeProperly() throws Exception {

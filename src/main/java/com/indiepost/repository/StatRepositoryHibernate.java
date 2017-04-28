@@ -1,8 +1,8 @@
 package com.indiepost.repository;
 
 import com.indiepost.dto.stat.ShareStatResult;
-import com.indiepost.dto.stat.TimeDomainStatResult;
-import com.indiepost.enums.Types;
+import com.indiepost.dto.stat.TimeDomainStat;
+import com.indiepost.enums.Types.ClientType;
 import com.indiepost.enums.Types.StatType;
 import com.indiepost.model.Stat;
 import com.indiepost.model.Visitor;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.math.BigInteger;
 import java.time.Period;
 import java.util.Date;
 import java.util.List;
@@ -77,43 +76,39 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public Long getTotalVisitors(Date since, Date until, Types.ClientType appName) {
+    public Long getTotalVisitors(Date since, Date until, ClientType appName) {
         Criteria criteria = getSession().createCriteria(Visitor.class);
         setDateCriteria(criteria, since, until);
         criteria.add(Restrictions.eq("appName", appName));
         criteria.setProjection(Projections.rowCount());
-        return ((BigInteger) criteria.uniqueResult()).longValue();
+        return (Long) criteria.uniqueResult();
     }
 
     @Override
-    public List<TimeDomainStatResult> getPageviewTrend(Date since, Date until, Period period) {
+    public List<TimeDomainStat> getPageviewTrend(Date since, Date until, Period period) {
         String sqlQuery;
         if (period.getYears() > 0) {
             sqlQuery = "SELECT makedate(year(s.timestamp), 1) AS statDatetime, count(*) AS statCount " +
                     "FROM Stats AS s " +
-                    "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
-                    "AND s.type <> 'ACTION' " +
+                    "WHERE s.timestamp BETWEEN :s AND :u " +
                     "GROUP BY year(s.timestamp) " +
                     "ORDER BY statDatetime";
         } else if (period.getMonths() > 0) {
             sqlQuery = "SELECT date_sub(date(s.timestamp), INTERVAL day(s.timestamp) - 1 DAY) AS statDatetime, count(*) AS statCount " +
                     "FROM Stats AS s " +
-                    "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
-                    "AND s.type <> 'ACTION' " +
+                    "WHERE s.timestamp BETWEEN :s AND :u " +
                     "GROUP BY year(s.timestamp), month(s.timestamp) " +
                     "ORDER BY statDatetime";
         } else if (period.getDays() > 0) {
             sqlQuery = "SELECT date(s.timestamp) AS statDatetime, count(*) AS statCount " +
                     "FROM Stats AS s " +
-                    "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
-                    "AND s.type <> 'ACTION' " +
+                    "WHERE s.timestamp BETWEEN :s AND :u " +
                     "GROUP BY date(s.timestamp) " +
                     "ORDER BY statDatetime";
         } else {
             sqlQuery = "SELECT date_add(date(s.timestamp), INTERVAL hour(s.timestamp) HOUR) AS statDatetime, count(*) AS statCount " +
                     "FROM Stats AS s " +
-                    "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
-                    "AND s.type <> 'ACTION' " +
+                    "WHERE s.timestamp BETWEEN :s AND :u " +
                     "GROUP BY date(s.timestamp), hour(s.timestamp) " +
                     "ORDER BY statDatetime";
         }
@@ -121,36 +116,35 @@ public class StatRepositoryHibernate implements StatRepository {
         Query query = getSession().createSQLQuery(sqlQuery);
         query.setParameter("s", since);
         query.setParameter("u", until);
-        query.setResultTransformer(new AliasToBeanResultTransformer(TimeDomainStatResult.class));
-
+        query.setResultTransformer(new AliasToBeanResultTransformer(TimeDomainStat.class));
         return query.list();
     }
 
     @Override
-    public List<TimeDomainStatResult> getVisitorTrend(Date since, Date until, Period period) {
+    public List<TimeDomainStat> getVisitorTrend(Date since, Date until, Period period) {
         String sqlQuery;
         if (period.getYears() > 0) {
             sqlQuery = "SELECT makedate(year(v.timestamp), 1) AS statDatetime, count(*) AS statCount " +
                     "FROM Visitors AS v " +
-                    "WHERE v.timestamp >= :s AND v.timestamp <= :u " +
+                    "WHERE v.timestamp BETWEEN :s AND :u " +
                     "GROUP BY year(v.timestamp) " +
                     "ORDER BY statDatetime";
         } else if (period.getMonths() > 0) {
             sqlQuery = "SELECT date_sub(date(v.timestamp), INTERVAL day(v.timestamp) - 1 DAY) AS statDatetime, count(*) AS statCount " +
                     "FROM Visitors AS v " +
-                    "WHERE v.timestamp >= :s AND v.timestamp <= :u " +
+                    "WHERE v.timestamp BETWEEN :s AND :u " +
                     "GROUP BY year(v.timestamp), month(v.timestamp) " +
                     "ORDER BY statDatetime";
         } else if (period.getDays() > 0) {
             sqlQuery = "SELECT date(v.timestamp) AS statDatetime, count(*) AS statCount " +
                     "FROM Visitors AS v " +
-                    "WHERE v.timestamp >= :s AND v.timestamp <= :u " +
+                    "WHERE v.timestamp BETWEEN :s AND :u " +
                     "GROUP BY date(v.timestamp) " +
                     "ORDER BY statDatetime";
         } else {
             sqlQuery = "SELECT date_add(date(v.timestamp), INTERVAL hour(v.timestamp) HOUR) AS statDatetime, count(*) AS statCount " +
                     "FROM Visitors AS v " +
-                    "WHERE v.timestamp >= :s AND v.timestamp <= :u " +
+                    "WHERE v.timestamp BETWEEN :s AND :u " +
                     "GROUP BY date(v.timestamp), hour(v.timestamp) " +
                     "ORDER BY statDatetime";
         }
@@ -158,8 +152,7 @@ public class StatRepositoryHibernate implements StatRepository {
         Query query = getSession().createSQLQuery(sqlQuery);
         query.setParameter("s", since);
         query.setParameter("u", until);
-        query.setResultTransformer(new AliasToBeanResultTransformer(TimeDomainStatResult.class));
-
+        query.setResultTransformer(new AliasToBeanResultTransformer(TimeDomainStat.class));
         return query.list();
     }
 
@@ -170,7 +163,7 @@ public class StatRepositoryHibernate implements StatRepository {
                         "FROM Stats s " +
                         "INNER JOIN Posts p ON s.postId = p.id " +
                         "INNER JOIN Categories c ON p.categoryId = c.id " +
-                        "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
+                        "WHERE s.timestamp BETWEEN :s AND :u " +
                         "GROUP BY c.name " +
                         "ORDER BY statCount DESC";
         Query query = getSession().createSQLQuery(sqlQuery);
@@ -197,92 +190,104 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public List<ShareStatResult> getMostViewedPages(Date since, Date until, Long limit) {
+    public List<ShareStatResult> getTopPages(Date since, Date until, Long limit, ClientType type) {
         String sqlQuery =
-                "SELECT ifnull(p.title, s.type) AS statName, count(*) AS statCount " +
+                "SELECT ifnull(p.title, s.path) AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
+                        "INNER JOIN Visitors v ON s.visitorId = v.id " +
                         "LEFT JOIN Posts p ON s.postId = p.id " +
-                        "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
-                        "AND s.type <> :a " +
+                        "WHERE s.timestamp BETWEEN :s AND :u " +
+                        "AND v.appName = :t " +
                         "GROUP BY s.path " +
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
+        query.setString("t", type.toString());
         query.setLong("l", limit);
-        query.setString("a", StatType.ACTION.toString());
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStatResult> getMostViewedPosts(Date since, Date until, Long limit) {
+    public List<ShareStatResult> getTopPosts(Date since, Date until, Long limit, ClientType type) {
         String sqlQuery =
                 "SELECT p.title AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
+                        "INNER JOIN Visitors v ON s.visitorId = v.id " +
                         "INNER JOIN Posts p ON s.postId = p.id " +
-                        "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
-                        "AND s.type = :t " +
-                        "GROUP BY s.path " +
+                        "WHERE s.timestamp BETWEEN :s AND :u " +
+                        "AND s.type = :st " +
+                        "AND v.appName = :t " +
+                        "GROUP BY p.id " +
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
+        query.setString("st", StatType.POST.toString());
+        query.setString("t", type.toString());
         query.setLong("l", limit);
-        query.setString("t", StatType.POST.toString());
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopLandingPages(Date since, Date until, Long limit) {
+    public List<ShareStatResult> getTopLandingPages(Date since, Date until, Long limit, ClientType type) {
         String sqlQuery =
-                "SELECT ifnull(p.title, s.type) AS statName, count(*) AS statCount " +
+                "SELECT ifnull(p.title, s.path) AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
+                        "INNER JOIN Visitors v ON s.visitorId = v.id " +
                         "LEFT JOIN Posts p ON s.postId = p.id " +
-                        "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
+                        "WHERE s.timestamp BETWEEN :s AND :u " +
                         "AND s.isLandingPage IS TRUE " +
+                        "AND v.appName = :t " +
                         "GROUP BY s.path " +
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
+        query.setString("t", type.toString());
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopLandingPosts(Date since, Date until, Long limit) {
+    public List<ShareStatResult> getTopLandingPosts(Date since, Date until, Long limit, ClientType type) {
         String sqlQuery =
                 "SELECT p.title AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
+                        "INNER JOIN Visitors v ON s.visitorId = v.id " +
                         "INNER JOIN Posts p ON s.postId = p.id " +
-                        "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
-                        "AND s.type = :t " +
+                        "WHERE s.timestamp BETWEEN :s AND :u " +
                         "AND s.isLandingPage IS TRUE " +
-                        "GROUP BY s.path " +
+                        "AND s.type = :st " +
+                        "AND v.appName = :t " +
+                        "GROUP BY p.title " +
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
+        query.setString("st", StatType.POST.toString());
+        query.setString("t", type.toString());
         query.setLong("l", limit);
-        query.setString("t", StatType.POST.toString());
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStatResult> getSecondlyViewedPages(Date since, Date until, Long limit) {
+    public List<ShareStatResult> getSecondaryViewedPages(Date since, Date until, Long limit, ClientType type) {
         String sqlQuery =
-                "SELECT ifnull(p.title, s.type) AS statName, count(*) AS statCount " +
+                "SELECT ifnull(p.title, s.path) AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
+                        "INNER JOIN Visitors v ON s.visitorId = v.id " +
                         "LEFT JOIN Posts p ON s.postId = p.id " +
-                        "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
+                        "WHERE s.timestamp BETWEEN :s AND :u " +
+                        "AND v.appName = :t " +
                         "AND s.isLandingPage IS FALSE " +
                         "GROUP BY s.path " +
                         "ORDER BY statCount DESC " +
@@ -290,28 +295,32 @@ public class StatRepositoryHibernate implements StatRepository {
         Query query = getSession().createSQLQuery(sqlQuery);
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
+        query.setString("t", type.toString());
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStatResult> getSecondlyViewedPosts(Date since, Date until, Long limit) {
+    public List<ShareStatResult> getSecondaryViewedPosts(Date since, Date until, Long limit, ClientType type) {
         String sqlQuery =
                 "SELECT p.title AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
+                        "INNER JOIN Visitors v ON s.visitorId = v.id " +
                         "INNER JOIN Posts p ON s.postId = p.id " +
-                        "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
-                        "AND s.type = :t " +
+                        "WHERE s.timestamp BETWEEN :s AND :u " +
+                        "AND s.type = :st " +
                         "AND s.isLandingPage IS FALSE " +
-                        "GROUP BY s.path " +
+                        "AND v.appName = :t " +
+                        "GROUP BY p.title " +
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
+        query.setString("st", StatType.POST.toString());
+        query.setString("t", type.toString());
         query.setLong("l", limit);
-        query.setString("t", StatType.POST.toString());
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();
     }
@@ -321,10 +330,10 @@ public class StatRepositoryHibernate implements StatRepository {
         String sqlQuery =
                 "SELECT s.referrer AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
-                        "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
+                        "WHERE s.timestamp BETWEEN :s AND :u " +
                         "AND s.isLandingPage IS TRUE " +
                         "AND s.referrer IS NOT NULL " +
-                        "GROUP BY s.path " +
+                        "GROUP BY s.referrer " +
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
@@ -340,7 +349,7 @@ public class StatRepositoryHibernate implements StatRepository {
         String sqlQuery =
                 "SELECT v.browser AS statName, count(*) AS statCount " +
                         "FROM Visitors v " +
-                        "WHERE v.timestamp >= :s AND v.timestamp <= :u " +
+                        "WHERE v.timestamp BETWEEN :s AND :u " +
                         "GROUP BY v.browser " +
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
@@ -357,7 +366,7 @@ public class StatRepositoryHibernate implements StatRepository {
         String sqlQuery =
                 "SELECT v.os AS statName, count(*) AS statCount " +
                         "FROM Visitors v " +
-                        "WHERE v.timestamp >= :s AND v.timestamp <= :u " +
+                        "WHERE v.timestamp BETWEEN :s AND :u " +
                         "GROUP BY v.os " +
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
@@ -376,7 +385,7 @@ public class StatRepositoryHibernate implements StatRepository {
                         "INNER JOIN Posts p ON s.postId = p.id " +
                         "INNER JOIN Posts_Tags pt ON p.id = pt.postId " +
                         "INNER JOIN Tags t ON pt.tagId = t.id " +
-                        "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
+                        "WHERE s.timestamp BETWEEN :s AND :u " +
                         "GROUP BY t.id " +
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
@@ -393,7 +402,7 @@ public class StatRepositoryHibernate implements StatRepository {
         String sqlQuery =
                 "SELECT s.channel AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
-                        "WHERE s.timestamp >= :s AND s.timestamp <= :u " +
+                        "WHERE s.timestamp BETWEEN :s AND :u " +
                         "AND s.isLandingPage IS TRUE " +
                         "GROUP BY s.channel " +
                         "ORDER BY statCount DESC " +

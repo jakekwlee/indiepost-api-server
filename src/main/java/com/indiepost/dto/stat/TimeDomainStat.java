@@ -6,10 +6,18 @@ import java.util.Date;
 /**
  * Created by jake on 17. 4. 24.
  */
-public class TimeDomainStatResult {
+public class TimeDomainStat {
     private Date statDatetime;
 
     private BigInteger statCount;
+
+    public TimeDomainStat() {
+    }
+
+    public TimeDomainStat(Date statDatetime, BigInteger statCount) {
+        this.statDatetime = statDatetime;
+        this.statCount = statCount;
+    }
 
     public Date getStatDatetime() {
         return statDatetime;

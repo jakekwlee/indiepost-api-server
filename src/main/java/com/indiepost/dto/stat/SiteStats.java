@@ -12,19 +12,75 @@ public class SiteStats {
     private float pageviewPerVisitor;
     private float postviewPerVisitor;
     private String period;
-    private List<TimeDomainStatResult> pageviewTrend;
-    private List<TimeDomainStatResult> visitorTrend;
+    private List<TimeDomainStat> pageviewTrend;
+    private List<TimeDomainStat> visitorTrend;
     private List<ShareStatResult> pageviewByCategory;
     private List<ShareStatResult> pageviewByAuthor;
-    private List<ShareStatResult> mostViewedPages;
-    private List<ShareStatResult> mostViewedPosts;
-    private List<ShareStatResult> secondlyViewedPages;
-    private List<ShareStatResult> secondlyViewedPosts;
+    private List<ShareStatResult> topPagesWebapp;
+    private List<ShareStatResult> topPagesMobile;
+    private List<ShareStatResult> topPostsMobile;
+    private List<ShareStatResult> topPostsWebapp;
+    private List<ShareStatResult> secondaryPagesMobile;
+    private List<ShareStatResult> secondaryPagesWebapp;
+    private List<ShareStatResult> secondaryPostsMobile;
+    private List<ShareStatResult> secondaryPostsWebapp;
+    private List<ShareStatResult> topLandingPagesMobile;
+    private List<ShareStatResult> topLandingPagesWebapp;
+    private List<ShareStatResult> topLandingPostsMobile;
+    private List<ShareStatResult> topLandingPostsWebapp;
     private List<ShareStatResult> topReferrer;
     private List<ShareStatResult> topBrowser;
     private List<ShareStatResult> topOs;
     private List<ShareStatResult> topTags;
     private List<ShareStatResult> topChannel;
+
+    public List<ShareStatResult> getTopLandingPagesWebapp() {
+        return topLandingPagesWebapp;
+    }
+
+    public void setTopLandingPagesWebapp(List<ShareStatResult> topLandingPagesWebapp) {
+        this.topLandingPagesWebapp = topLandingPagesWebapp;
+    }
+
+    public List<ShareStatResult> getTopLandingPostsMobile() {
+        return topLandingPostsMobile;
+    }
+
+    public void setTopLandingPostsMobile(List<ShareStatResult> topLandingPostsMobile) {
+        this.topLandingPostsMobile = topLandingPostsMobile;
+    }
+
+    public List<ShareStatResult> getSecondaryPagesWebapp() {
+        return secondaryPagesWebapp;
+    }
+
+    public void setSecondaryPagesWebapp(List<ShareStatResult> secondaryPagesWebapp) {
+        this.secondaryPagesWebapp = secondaryPagesWebapp;
+    }
+
+    public List<ShareStatResult> getSecondaryPostsWebapp() {
+        return secondaryPostsWebapp;
+    }
+
+    public void setSecondaryPostsWebapp(List<ShareStatResult> secondaryPostsWebapp) {
+        this.secondaryPostsWebapp = secondaryPostsWebapp;
+    }
+
+    public List<ShareStatResult> getTopPostsMobile() {
+        return topPostsMobile;
+    }
+
+    public void setTopPostsMobile(List<ShareStatResult> topPostsMobile) {
+        this.topPostsMobile = topPostsMobile;
+    }
+
+    public List<ShareStatResult> getTopPagesMobile() {
+        return topPagesMobile;
+    }
+
+    public void setTopPagesMobile(List<ShareStatResult> topPagesMobile) {
+        this.topPagesMobile = topPagesMobile;
+    }
 
     public float getPageviewPerVisitor() {
         return pageviewPerVisitor;
@@ -74,19 +130,19 @@ public class SiteStats {
         this.period = period;
     }
 
-    public List<TimeDomainStatResult> getPageviewTrend() {
+    public List<TimeDomainStat> getPageviewTrend() {
         return pageviewTrend;
     }
 
-    public void setPageviewTrend(List<TimeDomainStatResult> pageviewTrend) {
+    public void setPageviewTrend(List<TimeDomainStat> pageviewTrend) {
         this.pageviewTrend = pageviewTrend;
     }
 
-    public List<TimeDomainStatResult> getVisitorTrend() {
+    public List<TimeDomainStat> getVisitorTrend() {
         return visitorTrend;
     }
 
-    public void setVisitorTrend(List<TimeDomainStatResult> visitorTrend) {
+    public void setVisitorTrend(List<TimeDomainStat> visitorTrend) {
         this.visitorTrend = visitorTrend;
     }
 
@@ -106,36 +162,36 @@ public class SiteStats {
         this.pageviewByAuthor = pageviewByAuthor;
     }
 
-    public List<ShareStatResult> getMostViewedPages() {
-        return mostViewedPages;
+    public List<ShareStatResult> getTopPagesWebapp() {
+        return topPagesWebapp;
     }
 
-    public void setMostViewedPages(List<ShareStatResult> mostViewedPages) {
-        this.mostViewedPages = mostViewedPages;
+    public void setTopPagesWebapp(List<ShareStatResult> topPagesWebapp) {
+        this.topPagesWebapp = topPagesWebapp;
     }
 
-    public List<ShareStatResult> getMostViewedPosts() {
-        return mostViewedPosts;
+    public List<ShareStatResult> getTopPostsWebapp() {
+        return topPostsWebapp;
     }
 
-    public void setMostViewedPosts(List<ShareStatResult> mostViewedPosts) {
-        this.mostViewedPosts = mostViewedPosts;
+    public void setTopPostsWebapp(List<ShareStatResult> topPostsWebapp) {
+        this.topPostsWebapp = topPostsWebapp;
     }
 
-    public List<ShareStatResult> getSecondlyViewedPages() {
-        return secondlyViewedPages;
+    public List<ShareStatResult> getSecondaryPagesMobile() {
+        return secondaryPagesMobile;
     }
 
-    public void setSecondlyViewedPages(List<ShareStatResult> secondlyViewedPages) {
-        this.secondlyViewedPages = secondlyViewedPages;
+    public void setSecondaryPagesMobile(List<ShareStatResult> secondaryPagesMobile) {
+        this.secondaryPagesMobile = secondaryPagesMobile;
     }
 
-    public List<ShareStatResult> getSecondlyViewedPosts() {
-        return secondlyViewedPosts;
+    public List<ShareStatResult> getSecondaryPostsMobile() {
+        return secondaryPostsMobile;
     }
 
-    public void setSecondlyViewedPosts(List<ShareStatResult> secondlyViewedPosts) {
-        this.secondlyViewedPosts = secondlyViewedPosts;
+    public void setSecondaryPostsMobile(List<ShareStatResult> secondaryPostsMobile) {
+        this.secondaryPostsMobile = secondaryPostsMobile;
     }
 
     public List<ShareStatResult> getTopReferrer() {
@@ -176,5 +232,21 @@ public class SiteStats {
 
     public void setTopChannel(List<ShareStatResult> topChannel) {
         this.topChannel = topChannel;
+    }
+
+    public List<ShareStatResult> getTopLandingPagesMobile() {
+        return topLandingPagesMobile;
+    }
+
+    public void setTopLandingPagesMobile(List<ShareStatResult> topLandingPagesMobile) {
+        this.topLandingPagesMobile = topLandingPagesMobile;
+    }
+
+    public List<ShareStatResult> getTopLandingPostsWebapp() {
+        return topLandingPostsWebapp;
+    }
+
+    public void setTopLandingPostsWebapp(List<ShareStatResult> topLandingPostsWebapp) {
+        this.topLandingPostsWebapp = topLandingPostsWebapp;
     }
 }

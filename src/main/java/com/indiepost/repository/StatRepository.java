@@ -1,7 +1,8 @@
 package com.indiepost.repository;
 
 import com.indiepost.dto.stat.ShareStatResult;
-import com.indiepost.dto.stat.TimeDomainStatResult;
+import com.indiepost.dto.stat.TimeDomainStat;
+import com.indiepost.enums.Types;
 import com.indiepost.enums.Types.ClientType;
 import com.indiepost.enums.Types.StatType;
 import com.indiepost.model.Stat;
@@ -31,25 +32,25 @@ public interface StatRepository {
 
     Long getTotalVisitors(Date since, Date until, ClientType appName);
 
-    List<TimeDomainStatResult> getPageviewTrend(Date since, Date until, Period period);
+    List<TimeDomainStat> getPageviewTrend(Date since, Date until, Period period);
 
-    List<TimeDomainStatResult> getVisitorTrend(Date since, Date until, Period period);
+    List<TimeDomainStat> getVisitorTrend(Date since, Date until, Period period);
 
     List<ShareStatResult> getPageviewsByCategory(Date since, Date until);
 
     List<ShareStatResult> getPageviewByAuthor(Date since, Date until);
 
-    List<ShareStatResult> getMostViewedPages(Date since, Date until, Long limit);
+    List<ShareStatResult> getTopPages(Date since, Date until, Long limit, Types.ClientType type);
 
-    List<ShareStatResult> getMostViewedPosts(Date since, Date until, Long limit);
+    List<ShareStatResult> getTopPosts(Date since, Date until, Long limit, Types.ClientType type);
 
-    List<ShareStatResult> getTopLandingPages(Date since, Date until, Long limit);
+    List<ShareStatResult> getTopLandingPages(Date since, Date until, Long limit, Types.ClientType type);
 
-    List<ShareStatResult> getTopLandingPosts(Date since, Date until, Long limit);
+    List<ShareStatResult> getTopLandingPosts(Date since, Date until, Long limit, Types.ClientType type);
 
-    List<ShareStatResult> getSecondlyViewedPages(Date since, Date until, Long limit);
+    List<ShareStatResult> getSecondaryViewedPages(Date since, Date until, Long limit, Types.ClientType type);
 
-    List<ShareStatResult> getSecondlyViewedPosts(Date since, Date until, Long limit);
+    List<ShareStatResult> getSecondaryViewedPosts(Date since, Date until, Long limit, Types.ClientType type);
 
     List<ShareStatResult> getTopReferrers(Date since, Date until, Long limit);
 

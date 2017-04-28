@@ -1,18 +1,16 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.stat.Action;
-import com.indiepost.dto.stat.Pageview;
-import com.indiepost.dto.stat.PeriodDto;
-import com.indiepost.dto.stat.SiteStats;
-import com.indiepost.enums.Types;
+import com.indiepost.dto.stat.*;
 import com.indiepost.enums.Types.ActionType;
 import com.indiepost.enums.Types.Channel;
+import com.indiepost.enums.Types.ClientType;
 import com.indiepost.enums.Types.StatType;
 import com.indiepost.model.Stat;
 import com.indiepost.model.UserAgent;
 import com.indiepost.model.Visitor;
 import com.indiepost.repository.StatRepository;
 import com.indiepost.repository.VisitorRepository;
+import com.indiepost.utils.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,17 +19,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.Period;
-import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by jake on 17. 4. 13.
  */
 @Service
 @Transactional
-public class StatServiceImpl implements StatService {
+public class AnalyticsServiceImpl implements AnalyticsService {
 
     private final StatRepository statRepository;
 
@@ -40,7 +37,7 @@ public class StatServiceImpl implements StatService {
     private final PostService postService;
 
     @Autowired
-    public StatServiceImpl(VisitorRepository visitorRepository, StatRepository statRepository, PostService postService) {
+    public AnalyticsServiceImpl(VisitorRepository visitorRepository, StatRepository statRepository, PostService postService) {
         this.visitorRepository = visitorRepository;
         this.statRepository = statRepository;
         this.postService = postService;
@@ -106,29 +103,40 @@ public class StatServiceImpl implements StatService {
     public SiteStats getStats(PeriodDto dto) {
         Date since = dto.getSince();
         Date until = dto.getUntil();
-        Period period = getPeriod(since, until);
+        Period period = DateUtils.getPeriod(since, until);
+
+        List<TimeDomainStat> pageviewTrend = statRepository.getPageviewTrend(since, until, period);
+        List<TimeDomainStat> visitorTrend = statRepository.getVisitorTrend(since, until, period);
 
         SiteStats stats = new SiteStats();
         stats.setPeriod(getPeriodString(period));
         stats.setTotalPageview(statRepository.getTotalPageviews(since, until));
         stats.setTotalVisitor(statRepository.getTotalVisitors(since, until));
-        stats.setTotalAppVisitor(statRepository.getTotalVisitors(since, until, Types.ClientType.INDIEPOST_LEGACY_MOBILE_APP));
-        stats.setPageviewTrend(statRepository.getPageviewTrend(since, until, period));
-        stats.setVisitorTrend(statRepository.getVisitorTrend(since, until, period));
-        stats.setMostViewedPages(statRepository.getMostViewedPages(since, until, 10L));
-        stats.setMostViewedPosts(statRepository.getMostViewedPosts(since, until, 10L));
+        stats.setTotalAppVisitor(statRepository.getTotalVisitors(since, until, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
+        stats.setPageviewTrend(DateUtils.normalizeTimeDomainStats(pageviewTrend, period));
+        stats.setVisitorTrend(DateUtils.normalizeTimeDomainStats(visitorTrend, period));
+        stats.setTopPagesWebapp(statRepository.getTopPages(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
+        stats.setTopPagesMobile(statRepository.getTopPages(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
+        stats.setTopPostsWebapp(statRepository.getTopPosts(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
+        stats.setTopPostsMobile(statRepository.getTopPosts(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
+        stats.setSecondaryPagesWebapp(statRepository.getSecondaryViewedPages(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
+        stats.setSecondaryPagesMobile(statRepository.getSecondaryViewedPages(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
+        stats.setSecondaryPostsWebapp(statRepository.getSecondaryViewedPosts(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
+        stats.setSecondaryPostsMobile(statRepository.getSecondaryViewedPosts(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
+        stats.setTopLandingPagesWebapp(statRepository.getTopLandingPages(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
+        stats.setTopLandingPagesMobile(statRepository.getTopLandingPages(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
+        stats.setTopLandingPostsWebapp(statRepository.getTopLandingPosts(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
+        stats.setTopLandingPostsMobile(statRepository.getTopLandingPosts(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
         stats.setPageviewByAuthor(statRepository.getPageviewByAuthor(since, until));
-        stats.setPageviewByCategory(statRepository.getPageviewByAuthor(since, until));
-        stats.setSecondlyViewedPages(statRepository.getSecondlyViewedPages(since, until, 10L));
-        stats.setSecondlyViewedPosts(statRepository.getSecondlyViewedPosts(since, until, 10L));
+        stats.setPageviewByCategory(statRepository.getPageviewsByCategory(since, until));
         stats.setTopBrowser(statRepository.getTopWebBrowsers(since, until, 10L));
         stats.setTopChannel(statRepository.getTopChannel(since, until, 10L));
         stats.setTopChannel(statRepository.getTopChannel(since, until, 10L));
         stats.setTopReferrer(statRepository.getTopReferrers(since, until, 10L));
         stats.setTopOs(statRepository.getTopOs(since, until, 10L));
         stats.setTopTags(statRepository.getTopTags(since, until, 10L));
-        stats.setPageviewPerVisitor(stats.getTotalPageview() / stats.getTotalVisitor());
-        stats.setPostviewPerVisitor(statRepository.getTotalPageviews(since, until, StatType.POST) / stats.getTotalVisitor());
+        stats.setPageviewPerVisitor(stats.getTotalPageview() / stats.getTotalVisitor().floatValue());
+        stats.setPostviewPerVisitor(statRepository.getTotalPageviews(since, until, StatType.POST) / stats.getTotalVisitor().floatValue());
 
         return stats;
     }
@@ -180,7 +188,7 @@ public class StatServiceImpl implements StatService {
             visitor.setUserId(userId);
         }
 
-        visitor.setAppName(Types.ClientType.valueOf(appName));
+        visitor.setAppName(ClientType.valueOf(appName));
         visitor.setAppVersion(appVersion);
         visitor.setIpAddress(ipAddress);
         visitor.setTimestamp(new Date());
@@ -279,11 +287,5 @@ public class StatServiceImpl implements StatService {
             return sb.toString();
         }
         return null;
-    }
-
-    private Period getPeriod(Date since, Date until) {
-        LocalDate start = since.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate end = until.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        return Period.between(start, end);
     }
 }
