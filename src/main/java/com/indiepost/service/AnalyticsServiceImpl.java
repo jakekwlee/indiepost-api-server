@@ -63,7 +63,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
             stat.setChannel(channel);
         }
         stat.setVisitorId(visitorId);
-        stat.setPath(pageview.getPath());
+        String path = pageview.getPath();
+        if (path.length() > 1 && path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
+        }
+        stat.setPath(path);
         stat.setType(StatType.valueOf(pageview.getType()));
         if (pageview.getPostId() != null) {
             if (!pageview.getAppName().contains("LEGACY")) {
@@ -111,22 +115,25 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         SiteStats stats = new SiteStats();
         stats.setPeriod(getPeriodString(period));
         stats.setTotalPageview(statRepository.getTotalPageviews(since, until));
+        stats.setTotalUniquePageview(statRepository.getTotalUniquePageviews(since, until));
+        stats.setTotalPostview(statRepository.getTotalPostviews(since, until));
         stats.setTotalVisitor(statRepository.getTotalVisitors(since, until));
         stats.setTotalAppVisitor(statRepository.getTotalVisitors(since, until, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
         stats.setPageviewTrend(DateUtils.normalizeTimeDomainStats(pageviewTrend, period));
         stats.setVisitorTrend(DateUtils.normalizeTimeDomainStats(visitorTrend, period));
         stats.setTopPagesWebapp(statRepository.getTopPages(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
         stats.setTopPagesMobile(statRepository.getTopPages(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
+        stats.setTopPosts(statRepository.getTopPosts(since, until, 10L));
         stats.setTopPostsWebapp(statRepository.getTopPosts(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
         stats.setTopPostsMobile(statRepository.getTopPosts(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
-        stats.setSecondaryPagesWebapp(statRepository.getSecondaryViewedPages(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
-        stats.setSecondaryPagesMobile(statRepository.getSecondaryViewedPages(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
-        stats.setSecondaryPostsWebapp(statRepository.getSecondaryViewedPosts(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
-        stats.setSecondaryPostsMobile(statRepository.getSecondaryViewedPosts(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
-        stats.setTopLandingPagesWebapp(statRepository.getTopLandingPages(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
-        stats.setTopLandingPagesMobile(statRepository.getTopLandingPages(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
-        stats.setTopLandingPostsWebapp(statRepository.getTopLandingPosts(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
-        stats.setTopLandingPostsMobile(statRepository.getTopLandingPosts(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
+//        stats.setSecondaryPagesWebapp(statRepository.getSecondaryViewedPages(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
+//        stats.setSecondaryPagesMobile(statRepository.getSecondaryViewedPages(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
+//        stats.setSecondaryPostsWebapp(statRepository.getSecondaryViewedPosts(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
+//        stats.setSecondaryPostsMobile(statRepository.getSecondaryViewedPosts(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
+//        stats.setTopLandingPagesWebapp(statRepository.getTopLandingPages(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
+//        stats.setTopLandingPagesMobile(statRepository.getTopLandingPages(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
+//        stats.setTopLandingPostsWebapp(statRepository.getTopLandingPosts(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
+//        stats.setTopLandingPostsMobile(statRepository.getTopLandingPosts(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
         stats.setPageviewByAuthor(statRepository.getPageviewByAuthor(since, until));
         stats.setPageviewByCategory(statRepository.getPageviewsByCategory(since, until));
         stats.setTopBrowser(statRepository.getTopWebBrowsers(since, until, 10L));

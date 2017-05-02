@@ -7,6 +7,8 @@ import java.util.List;
  */
 public class SiteStats {
     private Long totalPageview;
+    private Long totalUniquePageview;
+    private Long totalPostview;
     private Long totalVisitor;
     private Long totalAppVisitor;
     private float pageviewPerVisitor;
@@ -18,6 +20,7 @@ public class SiteStats {
     private List<ShareStatResult> pageviewByAuthor;
     private List<ShareStatResult> topPagesWebapp;
     private List<ShareStatResult> topPagesMobile;
+    private List<ShareStatResult> topPosts;
     private List<ShareStatResult> topPostsMobile;
     private List<ShareStatResult> topPostsWebapp;
     private List<ShareStatResult> secondaryPagesMobile;
@@ -33,6 +36,30 @@ public class SiteStats {
     private List<ShareStatResult> topOs;
     private List<ShareStatResult> topTags;
     private List<ShareStatResult> topChannel;
+
+    public List<ShareStatResult> getTopPosts() {
+        return topPosts;
+    }
+
+    public void setTopPosts(List<ShareStatResult> topPosts) {
+        this.topPosts = topPosts;
+    }
+
+    public Long getTotalPostview() {
+        return totalPostview;
+    }
+
+    public void setTotalPostview(Long totalPostview) {
+        this.totalPostview = totalPostview;
+    }
+
+    public Long getTotalUniquePageview() {
+        return totalUniquePageview;
+    }
+
+    public void setTotalUniquePageview(Long totalUniquePageview) {
+        this.totalUniquePageview = totalUniquePageview;
+    }
 
     public List<ShareStatResult> getTopLandingPagesWebapp() {
         return topLandingPagesWebapp;

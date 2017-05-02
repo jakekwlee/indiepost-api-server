@@ -16,6 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.math.BigInteger;
 import java.time.Period;
 import java.util.Date;
 import java.util.List;
@@ -55,13 +56,29 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
+    public Long getTotalUniquePageviews(Date since, Date until) {
+        String sqlQuery = "SELECT count(*) FROM (" +
+                "SELECT s.id FROM Stats s " +
+                "WHERE s.timestamp BETWEEN :s AND :u " +
+                "GROUP BY s.path, s.visitorId" +
+                ") AS st";
+        Query query = getSession().createSQLQuery(sqlQuery);
+        query.setParameter("s", since);
+        query.setParameter("u", until);
+        return ((BigInteger) query.uniqueResult()).longValue();
+    }
+
+    @Override
+    public Long getTotalPostviews(Date since, Date until) {
+        return getTotalPageviews(since, until, StatType.POST);
+    }
+
+    @Override
     public Long getTotalPageviews(Date since, Date until, StatType type) {
         Criteria criteria = getSession().createCriteria(Stat.class);
         setDateCriteria(criteria, since, until);
         if (type != null) {
             criteria.add(Restrictions.eq("type", type));
-        } else {
-            criteria.add(Restrictions.ne("type", StatType.ACTION));
         }
         criteria.setProjection(Projections.rowCount());
         return (Long) criteria.uniqueResult();
@@ -205,6 +222,24 @@ public class StatRepositoryHibernate implements StatRepository {
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
         query.setString("t", type.toString());
+        query.setLong("l", limit);
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        return query.list();
+    }
+
+    @Override
+    public List<ShareStatResult> getTopPosts(Date since, Date until, Long limit) {
+        String sqlQuery =
+                "SELECT p.title AS statName, count(*) AS statCount " +
+                        "FROM Stats s " +
+                        "INNER JOIN Posts p ON s.postId = p.id " +
+                        "WHERE s.timestamp BETWEEN :s AND :u " +
+                        "GROUP BY p.id " +
+                        "ORDER BY statCount DESC " +
+                        "LIMIT :l";
+        Query query = getSession().createSQLQuery(sqlQuery);
+        query.setTimestamp("s", since);
+        query.setTimestamp("u", until);
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
         return query.list();

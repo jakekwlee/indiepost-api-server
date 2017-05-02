@@ -26,6 +26,10 @@ public interface StatRepository {
 
     Long getTotalPageviews(Date since, Date until);
 
+    Long getTotalUniquePageviews(Date since, Date until);
+
+    Long getTotalPostviews(Date since, Date until);
+
     Long getTotalPageviews(Date since, Date until, StatType type);
 
     Long getTotalVisitors(Date since, Date until);
@@ -41,6 +45,8 @@ public interface StatRepository {
     List<ShareStatResult> getPageviewByAuthor(Date since, Date until);
 
     List<ShareStatResult> getTopPages(Date since, Date until, Long limit, Types.ClientType type);
+
+    List<ShareStatResult> getTopPosts(Date since, Date until, Long limit);
 
     List<ShareStatResult> getTopPosts(Date since, Date until, Long limit, Types.ClientType type);
 
