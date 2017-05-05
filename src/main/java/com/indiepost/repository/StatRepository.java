@@ -28,6 +28,8 @@ public interface StatRepository {
 
     Long getTotalUniquePageviews(Date since, Date until);
 
+    Long getTotalUniquePostviews(Date since, Date until);
+
     Long getTotalPostviews(Date since, Date until);
 
     Long getTotalPageviews(Date since, Date until, StatType type);

@@ -2,29 +2,28 @@ package com.indiepost.repository;
 
 import com.indiepost.dto.stat.ShareStatResult;
 import com.indiepost.dto.stat.TimeDomainStat;
-import com.indiepost.enums.Types.ClientType;
-import com.indiepost.enums.Types.StatType;
+import com.indiepost.enums.Types;
 import com.indiepost.model.Stat;
 import com.indiepost.model.Visitor;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
+import org.hibernate.sql.JoinType;
 import org.hibernate.transform.AliasToBeanResultTransformer;
-import org.springframework.stereotype.Repository;
+import org.hibernate.type.DateType;
+import org.hibernate.type.LongType;
+import org.hibernate.type.StringType;
+import org.hibernate.type.Type;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.math.BigInteger;
 import java.time.Period;
 import java.util.Date;
 import java.util.List;
 
 /**
- * Created by jake on 17. 4. 17.
+ * Created by jake on 17. 5. 5.
  */
-@Repository
 public class StatRepositoryHibernate implements StatRepository {
 
     @PersistenceContext
@@ -50,6 +49,7 @@ public class StatRepositoryHibernate implements StatRepository {
         getSession().update(stat);
     }
 
+
     @Override
     public Long getTotalPageviews(Date since, Date until) {
         return getTotalPageviews(since, until, null);
@@ -57,25 +57,55 @@ public class StatRepositoryHibernate implements StatRepository {
 
     @Override
     public Long getTotalUniquePageviews(Date since, Date until) {
-        String sqlQuery = "SELECT count(*) FROM (" +
-                "SELECT s.id FROM Stats s " +
-                "WHERE s.timestamp BETWEEN :s AND :u " +
-                "GROUP BY s.path, s.visitorId" +
-                ") AS st";
-        Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
-        return ((BigInteger) query.uniqueResult()).longValue();
+        DetachedCriteria subQuery = DetachedCriteria.forClass(Stat.class, "s");
+        subQuery.createAlias("s.visitor", "v");
+        subQuery.add(Restrictions.ne("v.browser", "Googlebot"));
+        subQuery.add(Restrictions.between("s.timestamp", since, until));
+        subQuery.setProjection(
+                Projections.projectionList()
+                        .add(Projections.groupProperty("s.path"))
+                        .add(Projections.groupProperty("s.visitorId"))
+                        .add(Property.forName("s.id"))
+        );
+        Criteria criteria = getSession().createCriteria(Stat.class);
+        criteria.setProjection(
+                Projections.projectionList()
+                        .add(Projections.rowCount())
+        ).add(Subqueries.geAll("s.id", subQuery));
+        return (Long) criteria.uniqueResult();
+    }
+
+    @Override
+    public Long getTotalUniquePostviews(Date since, Date until) {
+        DetachedCriteria subQuery = DetachedCriteria.forClass(Stat.class, "s");
+        subQuery.createAlias("s.visitor", "v");
+        subQuery.add(Restrictions.ne("v.browser", "Googlebot"));
+        subQuery.add(Restrictions.between("s.timestamp", since, until));
+        subQuery.add(Restrictions.isNotNull("s.postId"));
+        subQuery.setProjection(
+                Projections.projectionList()
+                        .add(Projections.groupProperty("s.postId"))
+                        .add(Projections.groupProperty("s.visitorId"))
+                        .add(Property.forName("s.id"))
+        );
+        Criteria criteria = getSession().createCriteria(Stat.class);
+        criteria.setProjection(
+                Projections.projectionList()
+                        .add(Projections.rowCount())
+        ).add(Subqueries.geAll("s.id", subQuery));
+        return (Long) criteria.uniqueResult();
     }
 
     @Override
     public Long getTotalPostviews(Date since, Date until) {
-        return getTotalPageviews(since, until, StatType.POST);
+        return getTotalPageviews(since, until, Types.StatType.POST);
     }
 
     @Override
-    public Long getTotalPageviews(Date since, Date until, StatType type) {
+    public Long getTotalPageviews(Date since, Date until, Types.StatType type) {
         Criteria criteria = getSession().createCriteria(Stat.class);
+        criteria.createAlias("s.visitor", "v");
+        criteria.add(Restrictions.ne("v.browser", "Googlebot"));
         setDateCriteria(criteria, since, until);
         if (type != null) {
             criteria.add(Restrictions.eq("type", type));
@@ -86,368 +116,312 @@ public class StatRepositoryHibernate implements StatRepository {
 
     @Override
     public Long getTotalVisitors(Date since, Date until) {
-        Criteria criteria = getSession().createCriteria(Visitor.class);
-        setDateCriteria(criteria, since, until);
-        criteria.setProjection(Projections.rowCount());
-        return (Long) criteria.uniqueResult();
+        return getTotalVisitors(since, until, null);
     }
 
     @Override
-    public Long getTotalVisitors(Date since, Date until, ClientType appName) {
-        Criteria criteria = getSession().createCriteria(Visitor.class);
-        setDateCriteria(criteria, since, until);
-        criteria.add(Restrictions.eq("appName", appName));
+    public Long getTotalVisitors(Date since, Date until, Types.ClientType appName) {
+        Criteria criteria = getSession().createCriteria(Visitor.class, "v");
+        criteria.add(Restrictions.ne("v.browser", "Googlebot"));
+        criteria.add(Restrictions.between("v.timestamp", since, until));
+        if (appName != null) {
+            criteria.add(Restrictions.eq("v.appName", appName));
+        }
         criteria.setProjection(Projections.rowCount());
         return (Long) criteria.uniqueResult();
     }
 
     @Override
     public List<TimeDomainStat> getPageviewTrend(Date since, Date until, Period period) {
-        String sqlQuery;
+        Criteria criteria = getSession().createCriteria(Stat.class, "s");
+        criteria.createAlias("s.visitor", "v");
+        criteria.add(Restrictions.between("s.timestamp", since, until));
+        criteria.add(Restrictions.ne("v.browser", "Googlebot"));
+        criteria.addOrder(Order.asc("statDatetime"));
+        ProjectionList projectionList = Projections.projectionList();
+        String[] columnAliases = new String[]{"statDatetime", "statCount"};
+        Type[] types = new Type[]{new DateType(), new LongType()};
         if (period.getYears() > 0) {
-            sqlQuery = "SELECT makedate(year(s.timestamp), 1) AS statDatetime, count(*) AS statCount " +
-                    "FROM Stats AS s " +
-                    "WHERE s.timestamp BETWEEN :s AND :u " +
-                    "GROUP BY year(s.timestamp) " +
-                    "ORDER BY statDatetime";
+            projectionList.add(Projections.sqlGroupProjection(
+                    "makedate(year(s.timestamp), 1) as statDatetime, count(*) as statCount",
+                    "year(s.timestamp)", columnAliases, types
+            ));
         } else if (period.getMonths() > 0) {
-            sqlQuery = "SELECT date_sub(date(s.timestamp), INTERVAL day(s.timestamp) - 1 DAY) AS statDatetime, count(*) AS statCount " +
-                    "FROM Stats AS s " +
-                    "WHERE s.timestamp BETWEEN :s AND :u " +
-                    "GROUP BY year(s.timestamp), month(s.timestamp) " +
-                    "ORDER BY statDatetime";
+            projectionList.add(Projections.sqlGroupProjection(
+                    "date_sub(date(s.timestamp), INTERVAL day(s.timestamp) - 1 DAY) AS statDatetime, count(*) AS statCount",
+                    "year(s.timestamp), month(s.timestamp)", columnAliases, types
+            ));
         } else if (period.getDays() > 0) {
-            sqlQuery = "SELECT date(s.timestamp) AS statDatetime, count(*) AS statCount " +
-                    "FROM Stats AS s " +
-                    "WHERE s.timestamp BETWEEN :s AND :u " +
-                    "GROUP BY date(s.timestamp) " +
-                    "ORDER BY statDatetime";
+            projectionList.add(Projections.sqlGroupProjection(
+                    "date(s.timestamp) AS statDatetime, count(*) AS statCount",
+                    "date(s.timestamp)", columnAliases, types
+            ));
         } else {
-            sqlQuery = "SELECT date_add(date(s.timestamp), INTERVAL hour(s.timestamp) HOUR) AS statDatetime, count(*) AS statCount " +
-                    "FROM Stats AS s " +
-                    "WHERE s.timestamp BETWEEN :s AND :u " +
-                    "GROUP BY date(s.timestamp), hour(s.timestamp) " +
-                    "ORDER BY statDatetime";
+            projectionList.add(Projections.sqlGroupProjection(
+                    "date_add(date(s.timestamp), INTERVAL hour(s.timestamp) HOUR) AS statDatetime, count(*) AS statCount",
+                    "date(s.timestamp), hour(s.timestamp)", columnAliases, types
+            ));
         }
-
-        Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
-        query.setResultTransformer(new AliasToBeanResultTransformer(TimeDomainStat.class));
-        return query.list();
+        criteria.setProjection(projectionList);
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(TimeDomainStat.class));
+        return criteria.list();
     }
 
     @Override
     public List<TimeDomainStat> getVisitorTrend(Date since, Date until, Period period) {
-        String sqlQuery;
+        Criteria criteria = getSession().createCriteria(Visitor.class, "v");
+        criteria.add(Restrictions.between("v.timestamp", since, until));
+        criteria.add(Restrictions.ne("v.browser", "Googlebot"));
+        ProjectionList projectionList = Projections.projectionList();
+        String[] columnAliases = new String[]{"statDatetime", "statCount"};
+        Type[] types = new Type[]{new DateType(), new LongType()};
         if (period.getYears() > 0) {
-            sqlQuery = "SELECT makedate(year(v.timestamp), 1) AS statDatetime, count(*) AS statCount " +
-                    "FROM Visitors AS v " +
-                    "WHERE v.timestamp BETWEEN :s AND :u " +
-                    "GROUP BY year(v.timestamp) " +
-                    "ORDER BY statDatetime";
+            projectionList.add(Projections.sqlGroupProjection(
+                    "makedate(year(v.timestamp), 1) AS statDatetime, count(*) AS statCount",
+                    "year(v.timestamp)", columnAliases, types
+            ));
         } else if (period.getMonths() > 0) {
-            sqlQuery = "SELECT date_sub(date(v.timestamp), INTERVAL day(v.timestamp) - 1 DAY) AS statDatetime, count(*) AS statCount " +
-                    "FROM Visitors AS v " +
-                    "WHERE v.timestamp BETWEEN :s AND :u " +
-                    "GROUP BY year(v.timestamp), month(v.timestamp) " +
-                    "ORDER BY statDatetime";
+            projectionList.add(Projections.sqlGroupProjection(
+                    "date_sub(date(v.timestamp), INTERVAL day(v.timestamp) - 1 DAY) AS statDatetime, count(*) AS statCount",
+                    "year(v.timestamp), month(v.timestamp)", columnAliases, types
+            ));
         } else if (period.getDays() > 0) {
-            sqlQuery = "SELECT date(v.timestamp) AS statDatetime, count(*) AS statCount " +
-                    "FROM Visitors AS v " +
-                    "WHERE v.timestamp BETWEEN :s AND :u " +
-                    "GROUP BY date(v.timestamp) " +
-                    "ORDER BY statDatetime";
+            projectionList.add(Projections.sqlGroupProjection(
+                    "SELECT date(v.timestamp) AS statDatetime, count(*) AS statCount",
+                    "date(v.timestamp)", columnAliases, types
+            ));
         } else {
-            sqlQuery = "SELECT date_add(date(v.timestamp), INTERVAL hour(v.timestamp) HOUR) AS statDatetime, count(*) AS statCount " +
-                    "FROM Visitors AS v " +
-                    "WHERE v.timestamp BETWEEN :s AND :u " +
-                    "GROUP BY date(v.timestamp), hour(v.timestamp) " +
-                    "ORDER BY statDatetime";
+            projectionList.add(Projections.sqlGroupProjection(
+                    "date_add(date(v.timestamp), INTERVAL hour(v.timestamp) HOUR) AS statDatetime, count(*) AS statCount",
+                    "date(v.timestamp), hour(v.timestamp)", columnAliases, types
+            ));
         }
-
-        Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
-        query.setResultTransformer(new AliasToBeanResultTransformer(TimeDomainStat.class));
-        return query.list();
+        criteria.setProjection(projectionList);
+//        criteria.addOrder(Order.asc("statDatetime"));
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(TimeDomainStat.class));
+        return criteria.list();
     }
 
     @Override
     public List<ShareStatResult> getPageviewsByCategory(Date since, Date until) {
-        String sqlQuery =
-                "SELECT c.name AS statName, count(*) AS statCount " +
-                        "FROM Stats s " +
-                        "INNER JOIN Posts p ON s.postId = p.id " +
-                        "INNER JOIN Categories c ON p.categoryId = c.id " +
-                        "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "GROUP BY c.name " +
-                        "ORDER BY statCount DESC";
-        Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
-        return query.list();
+        Criteria criteria = getSession().createCriteria(Stat.class, "s");
+        criteria.createAlias("s.post", "p");
+        criteria.createAlias("s.category", "c");
+        String[] columnAliases = new String[]{"statName", "statCount"};
+        Type[] types = new Type[]{new StringType(), new LongType()};
+
+        criteria.add(Restrictions.between("s.timestamp", since, until));
+        ProjectionList projectionList = Projections.projectionList();
+        projectionList.add(Projections.sqlGroupProjection(
+                "c.name AS statName, count(*) AS statCount",
+                "c.name", columnAliases, types
+        ));
+
+        criteria.setProjection(projectionList);
+        criteria.addOrder(Order.desc("statCount"));
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        return criteria.list();
     }
 
     @Override
     public List<ShareStatResult> getPageviewByAuthor(Date since, Date until) {
-        String sqlQuery =
-                "SELECT p.displayName AS statName, count(*) AS statCount " +
-                        "FROM Stats s " +
-                        "INNER JOIN Posts p ON s.postId = p.id " +
-                        "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "GROUP BY p.displayName " +
-                        "ORDER BY statCount DESC";
-        Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
-        return query.list();
+        Criteria criteria = getSession().createCriteria(Stat.class, "s");
+        criteria.createAlias("s.post", "p");
+        String[] columnAliases = new String[]{"statName", "statCount"};
+        Type[] types = new Type[]{new StringType(), new LongType()};
+
+        criteria.add(Restrictions.between("s.timestamp", since, until));
+        ProjectionList projectionList = Projections.projectionList();
+        projectionList.add(Projections.sqlGroupProjection(
+                "p.displayName AS statName, count(*) AS statCount",
+                "p.displayName", columnAliases, types
+        ));
+
+        criteria.setProjection(projectionList);
+        criteria.addOrder(Order.desc("statCount"));
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        return criteria.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopPages(Date since, Date until, Long limit, ClientType type) {
-        String sqlQuery =
-                "SELECT ifnull(p.title, s.path) AS statName, count(*) AS statCount " +
-                        "FROM Stats s " +
-                        "INNER JOIN Visitors v ON s.visitorId = v.id " +
-                        "LEFT JOIN Posts p ON s.postId = p.id " +
-                        "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "AND v.appName = :t " +
-                        "GROUP BY s.path " +
-                        "ORDER BY statCount DESC " +
-                        "LIMIT :l";
-        Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
-        query.setString("t", type.toString());
-        query.setLong("l", limit);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
-        return query.list();
+    public List<ShareStatResult> getTopPages(Date since, Date until, Long limit, Types.ClientType type) {
+        Criteria criteria = getSession().createCriteria(Stat.class, "s");
+        criteria.createAlias("s.visitor", "v");
+        criteria.createAlias("s.post", "p", JoinType.LEFT_OUTER_JOIN);
+        String[] columnAliases = new String[]{"statName", "statCount"};
+        Type[] types = new Type[]{new StringType(), new LongType()};
+
+        criteria.add(Restrictions.between("s.timestamp", since, until));
+        criteria.add(Restrictions.eq("v.appName", type));
+        criteria.add(Restrictions.ne("v.browser", "Googlebot"));
+        ProjectionList projectionList = Projections.projectionList();
+        projectionList.add(Projections.sqlGroupProjection(
+                "ifnull(p.title, s.path) AS statName, count(*) AS statCount",
+                "s.path", columnAliases, types
+        ));
+
+        criteria.setProjection(projectionList);
+        criteria.addOrder(Order.desc("statCount"));
+        criteria.setMaxResults(limit.intValue());
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        return criteria.list();
     }
 
     @Override
     public List<ShareStatResult> getTopPosts(Date since, Date until, Long limit) {
-        String sqlQuery =
-                "SELECT p.title AS statName, count(*) AS statCount " +
-                        "FROM Stats s " +
-                        "INNER JOIN Posts p ON s.postId = p.id " +
-                        "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "GROUP BY p.id " +
-                        "ORDER BY statCount DESC " +
-                        "LIMIT :l";
-        Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
-        query.setLong("l", limit);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
-        return query.list();
+        Criteria criteria = getSession().createCriteria(Stat.class, "s");
+        criteria.createAlias("s.visitor", "v");
+        criteria.createAlias("s.post", "p");
+        String[] columnAliases = new String[]{"statName", "statCount"};
+        Type[] types = new Type[]{new StringType(), new LongType()};
+
+        criteria.add(Restrictions.between("s.timestamp", since, until));
+        criteria.add(Restrictions.ne("v.browser", "Googlebot"));
+        ProjectionList projectionList = Projections.projectionList();
+        projectionList.add(Projections.sqlGroupProjection(
+                "p.title AS statName, count(*) AS statCount",
+                "p.id", columnAliases, types
+        ));
+
+        criteria.setProjection(projectionList);
+        criteria.addOrder(Order.desc("statCount"));
+        criteria.setMaxResults(limit.intValue());
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        return criteria.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopPosts(Date since, Date until, Long limit, ClientType type) {
-        String sqlQuery =
-                "SELECT p.title AS statName, count(*) AS statCount " +
-                        "FROM Stats s " +
-                        "INNER JOIN Visitors v ON s.visitorId = v.id " +
-                        "INNER JOIN Posts p ON s.postId = p.id " +
-                        "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "AND s.type = :st " +
-                        "AND v.appName = :t " +
-                        "GROUP BY p.id " +
-                        "ORDER BY statCount DESC " +
-                        "LIMIT :l";
-        Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
-        query.setString("st", StatType.POST.toString());
-        query.setString("t", type.toString());
-        query.setLong("l", limit);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
-        return query.list();
+    public List<ShareStatResult> getTopPosts(Date since, Date until, Long limit, Types.ClientType type) {
+        return null;
     }
 
     @Override
-    public List<ShareStatResult> getTopLandingPages(Date since, Date until, Long limit, ClientType type) {
-        String sqlQuery =
-                "SELECT ifnull(p.title, s.path) AS statName, count(*) AS statCount " +
-                        "FROM Stats s " +
-                        "INNER JOIN Visitors v ON s.visitorId = v.id " +
-                        "LEFT JOIN Posts p ON s.postId = p.id " +
-                        "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "AND s.isLandingPage IS TRUE " +
-                        "AND v.appName = :t " +
-                        "GROUP BY s.path " +
-                        "ORDER BY statCount DESC " +
-                        "LIMIT :l";
-        Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
-        query.setString("t", type.toString());
-        query.setLong("l", limit);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
-        return query.list();
+    public List<ShareStatResult> getTopLandingPages(Date since, Date until, Long limit, Types.ClientType type) {
+        return null;
     }
 
     @Override
-    public List<ShareStatResult> getTopLandingPosts(Date since, Date until, Long limit, ClientType type) {
-        String sqlQuery =
-                "SELECT p.title AS statName, count(*) AS statCount " +
-                        "FROM Stats s " +
-                        "INNER JOIN Visitors v ON s.visitorId = v.id " +
-                        "INNER JOIN Posts p ON s.postId = p.id " +
-                        "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "AND s.isLandingPage IS TRUE " +
-                        "AND s.type = :st " +
-                        "AND v.appName = :t " +
-                        "GROUP BY p.title " +
-                        "ORDER BY statCount DESC " +
-                        "LIMIT :l";
-        Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
-        query.setString("st", StatType.POST.toString());
-        query.setString("t", type.toString());
-        query.setLong("l", limit);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
-        return query.list();
+    public List<ShareStatResult> getTopLandingPosts(Date since, Date until, Long limit, Types.ClientType type) {
+        return null;
     }
 
     @Override
-    public List<ShareStatResult> getSecondaryViewedPages(Date since, Date until, Long limit, ClientType type) {
-        String sqlQuery =
-                "SELECT ifnull(p.title, s.path) AS statName, count(*) AS statCount " +
-                        "FROM Stats s " +
-                        "INNER JOIN Visitors v ON s.visitorId = v.id " +
-                        "LEFT JOIN Posts p ON s.postId = p.id " +
-                        "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "AND v.appName = :t " +
-                        "AND s.isLandingPage IS FALSE " +
-                        "GROUP BY s.path " +
-                        "ORDER BY statCount DESC " +
-                        "LIMIT :l";
-        Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
-        query.setString("t", type.toString());
-        query.setLong("l", limit);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
-        return query.list();
+    public List<ShareStatResult> getSecondaryViewedPages(Date since, Date until, Long limit, Types.ClientType type) {
+        return null;
     }
 
     @Override
-    public List<ShareStatResult> getSecondaryViewedPosts(Date since, Date until, Long limit, ClientType type) {
-        String sqlQuery =
-                "SELECT p.title AS statName, count(*) AS statCount " +
-                        "FROM Stats s " +
-                        "INNER JOIN Visitors v ON s.visitorId = v.id " +
-                        "INNER JOIN Posts p ON s.postId = p.id " +
-                        "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "AND s.type = :st " +
-                        "AND s.isLandingPage IS FALSE " +
-                        "AND v.appName = :t " +
-                        "GROUP BY p.title " +
-                        "ORDER BY statCount DESC " +
-                        "LIMIT :l";
-        Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
-        query.setString("st", StatType.POST.toString());
-        query.setString("t", type.toString());
-        query.setLong("l", limit);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
-        return query.list();
+    public List<ShareStatResult> getSecondaryViewedPosts(Date since, Date until, Long limit, Types.ClientType type) {
+        return null;
     }
 
     @Override
     public List<ShareStatResult> getTopReferrers(Date since, Date until, Long limit) {
-        String sqlQuery =
-                "SELECT s.referrer AS statName, count(*) AS statCount " +
-                        "FROM Stats s " +
-                        "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "AND s.isLandingPage IS TRUE " +
-                        "AND s.referrer IS NOT NULL " +
-                        "GROUP BY s.referrer " +
-                        "ORDER BY statCount DESC " +
-                        "LIMIT :l";
-        Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
-        query.setLong("l", limit);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
-        return query.list();
+        Criteria criteria = getSession().createCriteria(Stat.class, "s");
+        criteria.createAlias("s.visitor", "v");
+        String[] columnAliases = new String[]{"statName", "statCount"};
+        Type[] types = new Type[]{new StringType(), new LongType()};
+
+        criteria.add(Restrictions.between("s.timestamp", since, until));
+        criteria.add(Restrictions.ne("v.browser", "Googlebot"));
+        ProjectionList projectionList = Projections.projectionList();
+        projectionList.add(Projections.sqlGroupProjection(
+                "s.referrer AS statName, count(*) AS statCount",
+                "s.referrer", columnAliases, types
+        ));
+
+        criteria.setProjection(projectionList);
+        criteria.addOrder(Order.desc("statCount"));
+        criteria.setMaxResults(limit.intValue());
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        return criteria.list();
     }
 
     @Override
     public List<ShareStatResult> getTopWebBrowsers(Date since, Date until, Long limit) {
-        String sqlQuery =
-                "SELECT v.browser AS statName, count(*) AS statCount " +
-                        "FROM Visitors v " +
-                        "WHERE v.timestamp BETWEEN :s AND :u " +
-                        "GROUP BY v.browser " +
-                        "ORDER BY statCount DESC " +
-                        "LIMIT :l";
-        Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
-        query.setLong("l", limit);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
-        return query.list();
+        Criteria criteria = getSession().createCriteria(Visitor.class, "v");
+        String[] columnAliases = new String[]{"statName", "statCount"};
+        Type[] types = new Type[]{new StringType(), new LongType()};
+
+        criteria.add(Restrictions.between("v.timestamp", since, until));
+        criteria.add(Restrictions.ne("v.browser", "Googlebot"));
+        ProjectionList projectionList = Projections.projectionList();
+        projectionList.add(Projections.sqlGroupProjection(
+                "v.browser AS statName, count(*) AS statCount",
+                "v.browser", columnAliases, types
+        ));
+
+        criteria.setProjection(projectionList);
+        criteria.addOrder(Order.desc("statCount"));
+        criteria.setMaxResults(limit.intValue());
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        return criteria.list();
     }
 
     @Override
     public List<ShareStatResult> getTopOs(Date since, Date until, Long limit) {
-        String sqlQuery =
-                "SELECT v.os AS statName, count(*) AS statCount " +
-                        "FROM Visitors v " +
-                        "WHERE v.timestamp BETWEEN :s AND :u " +
-                        "GROUP BY v.os " +
-                        "ORDER BY statCount DESC " +
-                        "LIMIT :l";
-        Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
-        query.setLong("l", limit);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
-        return query.list();
+        Criteria criteria = getSession().createCriteria(Visitor.class, "v");
+        String[] columnAliases = new String[]{"statName", "statCount"};
+        Type[] types = new Type[]{new StringType(), new LongType()};
+
+        criteria.add(Restrictions.between("v.timestamp", since, until));
+        criteria.add(Restrictions.ne("v.browser", "Googlebot"));
+        ProjectionList projectionList = Projections.projectionList();
+        projectionList.add(Projections.sqlGroupProjection(
+                "v.os AS statName, count(*) AS statCount",
+                "v.os", columnAliases, types
+        ));
+
+        criteria.setProjection(projectionList);
+        criteria.addOrder(Order.desc("statCount"));
+        criteria.setMaxResults(limit.intValue());
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        return criteria.list();
     }
 
     @Override
     public List<ShareStatResult> getTopTags(Date since, Date until, Long limit) {
-        String sqlQuery =
-                "SELECT t.name AS statName, count(*) AS statCount FROM Stats s " +
-                        "INNER JOIN Posts p ON s.postId = p.id " +
-                        "INNER JOIN Posts_Tags pt ON p.id = pt.postId " +
-                        "INNER JOIN Tags t ON pt.tagId = t.id " +
-                        "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "GROUP BY t.id " +
-                        "ORDER BY statCount DESC " +
-                        "LIMIT :l";
-        Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
-        query.setLong("l", limit);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
-        return query.list();
+        Criteria criteria = getSession().createCriteria(Stat.class, "s");
+        criteria.createAlias("s.visitor", "v");
+        criteria.createAlias("s.tags", "t");
+        String[] columnAliases = new String[]{"statName", "statCount"};
+        Type[] types = new Type[]{new StringType(), new LongType()};
+
+        criteria.add(Restrictions.between("s.timestamp", since, until));
+        criteria.add(Restrictions.ne("v.browser", "Googlebot"));
+        ProjectionList projectionList = Projections.projectionList();
+        projectionList.add(Projections.sqlGroupProjection(
+                "t.name AS statName, count(*) AS statCount",
+                "t.id", columnAliases, types
+        ));
+
+        criteria.setProjection(projectionList);
+        criteria.addOrder(Order.desc("statCount"));
+        criteria.setMaxResults(limit.intValue());
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        return criteria.list();
     }
 
     @Override
     public List<ShareStatResult> getTopChannel(Date since, Date until, Long limit) {
-        String sqlQuery =
-                "SELECT s.channel AS statName, count(*) AS statCount " +
-                        "FROM Stats s " +
-                        "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "AND s.isLandingPage IS TRUE " +
-                        "GROUP BY s.channel " +
-                        "ORDER BY statCount DESC " +
-                        "LIMIT :l";
-        Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
-        query.setLong("l", limit);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
-        return query.list();
+        Criteria criteria = getSession().createCriteria(Stat.class, "s");
+        criteria.createAlias("s.visitor", "v");
+        String[] columnAliases = new String[]{"statName", "statCount"};
+        Type[] types = new Type[]{new StringType(), new LongType()};
+
+        criteria.add(Restrictions.between("s.timestamp", since, until));
+        criteria.add(Restrictions.ne("v.browser", "Googlebot"));
+        ProjectionList projectionList = Projections.projectionList();
+        projectionList.add(Projections.sqlGroupProjection(
+                "s.channel AS statName, count(*) AS statCount",
+                "s.channel", columnAliases, types
+        ));
+
+        criteria.setProjection(projectionList);
+        criteria.addOrder(Order.desc("statCount"));
+        criteria.setMaxResults(limit.intValue());
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        return criteria.list();
     }
 
     private Session getSession() {

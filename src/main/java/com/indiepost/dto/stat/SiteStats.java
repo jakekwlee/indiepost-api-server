@@ -8,6 +8,7 @@ import java.util.List;
 public class SiteStats {
     private Long totalPageview;
     private Long totalUniquePageview;
+    private Long totalUniquePostview;
     private Long totalPostview;
     private Long totalVisitor;
     private Long totalAppVisitor;
@@ -36,6 +37,14 @@ public class SiteStats {
     private List<ShareStatResult> topOs;
     private List<ShareStatResult> topTags;
     private List<ShareStatResult> topChannel;
+
+    public Long getTotalUniquePostview() {
+        return totalUniquePostview;
+    }
+
+    public void setTotalUniquePostview(Long totalUniquePostview) {
+        this.totalUniquePostview = totalUniquePostview;
+    }
 
     public List<ShareStatResult> getTopPosts() {
         return topPosts;

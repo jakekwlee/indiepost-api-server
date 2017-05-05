@@ -8,7 +8,7 @@ import com.indiepost.enums.Types.StatType;
 import com.indiepost.model.Stat;
 import com.indiepost.model.UserAgent;
 import com.indiepost.model.Visitor;
-import com.indiepost.repository.StatRepository;
+import com.indiepost.repository.StatRepositoryNativeSql;
 import com.indiepost.repository.VisitorRepository;
 import com.indiepost.utils.DateUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,14 +30,14 @@ import java.util.List;
 @Transactional
 public class AnalyticsServiceImpl implements AnalyticsService {
 
-    private final StatRepository statRepository;
+    private final StatRepositoryNativeSql statRepository;
 
     private final VisitorRepository visitorRepository;
 
     private final PostService postService;
 
     @Autowired
-    public AnalyticsServiceImpl(VisitorRepository visitorRepository, StatRepository statRepository, PostService postService) {
+    public AnalyticsServiceImpl(VisitorRepository visitorRepository, StatRepositoryNativeSql statRepository, PostService postService) {
         this.visitorRepository = visitorRepository;
         this.statRepository = statRepository;
         this.postService = postService;
@@ -57,17 +57,17 @@ public class AnalyticsServiceImpl implements AnalyticsService {
             visitorId = visitor.getId();
             stat.setLandingPage(true);
             if (StringUtils.isNotEmpty(pageview.getReferrer())) {
-                stat.setReferrer(pageview.getReferrer());
+                String referrer = pageview.getReferrer();
+                if (referrer.length() > 1 && referrer.endsWith("/")) {
+                    referrer = referrer.substring(0, referrer.length() - 1);
+                }
+                stat.setReferrer(referrer);
             }
             Channel channel = getChannelType(visitor.getBrowser(), pageview.getReferrer());
             stat.setChannel(channel);
         }
         stat.setVisitorId(visitorId);
-        String path = pageview.getPath();
-        if (path.length() > 1 && path.endsWith("/")) {
-            path = path.substring(0, path.length() - 1);
-        }
-        stat.setPath(path);
+        stat.setPath(pageview.getPath());
         stat.setType(StatType.valueOf(pageview.getType()));
         if (pageview.getPostId() != null) {
             if (!pageview.getAppName().contains("LEGACY")) {
@@ -116,6 +116,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         stats.setPeriod(getPeriodString(period));
         stats.setTotalPageview(statRepository.getTotalPageviews(since, until));
         stats.setTotalUniquePageview(statRepository.getTotalUniquePageviews(since, until));
+        stats.setTotalUniquePostview(statRepository.getTotalUniquePostviews(since, until));
         stats.setTotalPostview(statRepository.getTotalPostviews(since, until));
         stats.setTotalVisitor(statRepository.getTotalVisitors(since, until));
         stats.setTotalAppVisitor(statRepository.getTotalVisitors(since, until, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
