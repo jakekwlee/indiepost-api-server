@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -51,40 +52,52 @@ public class DateUtils {
         return localDateTimeToDate(localDateTime);
     }
 
-    public static List<TimeDomainStat> normalizeTimeDomainStats(List<TimeDomainStat> list, Period period) {
-        if (period.getDays() > 0 || list.size() == 24) {
+    public static List<TimeDomainStat> normalizeTimeDomainStats(List<TimeDomainStat> list, Date since, Date until) {
+        Period period = getPeriod(since, until);
+        int days = period.getDays() + 1;
+        int length = list.size();
+        if (days > 2 || length / days == 24) {
             return list;
         }
-        Date date = list.get(0).getStatDatetime();
-        ZoneId zoneId = ZoneId.systemDefault();
-        BigInteger zero = BigInteger.valueOf(0L);
-        LocalDateTime localDateTime = date.toInstant().atZone(zoneId).toLocalDateTime();
 
-        int year = localDateTime.getYear();
-        int month = localDateTime.getMonthValue();
-        int day = localDateTime.getDayOfMonth();
+        BigInteger zero = BigInteger.valueOf(0L);
 
         List<TimeDomainStat> results = new ArrayList<>();
 
-        for (int hour = 0; hour < 24; ++hour) {
-            LocalDateTime ldt = LocalDateTime.of(year, month, day, hour, 0);
-            Date newDate = Date.from(ldt.atZone(zoneId).toInstant());
-            results.add(new TimeDomainStat(newDate, zero));
-        }
+        for (int i = 0; i < days; ++i) {
+            Date date;
+            if (i == 0) {
+                date = since;
+            } else {
+                date = until;
+            }
+            LocalDateTime localDateTime = dateToLocalDateTime(date);
+            int year = localDateTime.getYear();
+            int month = localDateTime.getMonthValue();
+            int day = localDateTime.getDayOfMonth();
 
+            for (int hour = 0; hour < 24; ++hour) {
+                LocalDateTime ldt = LocalDateTime.of(year, month, day, hour, 0);
+                Date newDate = localDateTimeToDate(ldt);
+                results.add(new TimeDomainStat(newDate, zero));
+            }
+        }
+        LocalDateTime sinceLdt = dateToLocalDateTime(since);
         for (TimeDomainStat tdr : list) {
             Date d = tdr.getStatDatetime();
-            int hour = d.toInstant().atZone(zoneId).toLocalDateTime().getHour();
-            TimeDomainStat result = results.get(hour);
+            LocalDateTime ldt = dateToLocalDateTime(d);
+            int n = Math.toIntExact(ChronoUnit.HOURS.between(sinceLdt, ldt)) / 24;
+            int index = ldt.getHour() + n * 24;
+            TimeDomainStat result = results.get(index);
             result.setStatCount(tdr.getStatCount());
-            results.set(hour, result);
+            results.set(index, result);
         }
         return results;
     }
 
     public static Period getPeriod(Date since, Date until) {
-        LocalDate start = since.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate end = until.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate start = dateToLocalDate(since);
+        LocalDate end = dateToLocalDate(until);
         return Period.between(start, end);
     }
 }

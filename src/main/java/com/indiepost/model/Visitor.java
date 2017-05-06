@@ -11,7 +11,9 @@ import java.util.Date;
  * Created by jake on 17. 4. 9.
  */
 @Entity
-@Table(name = "Visitors")
+@Table(name = "Visitors", indexes = {
+        @Index(columnList = "timestamp", name = "v_timestamp_idx")
+})
 public class Visitor {
 
     @Id

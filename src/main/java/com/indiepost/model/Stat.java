@@ -13,7 +13,9 @@ import java.util.Date;
  * Created by jake on 17. 4. 13.
  */
 @Entity
-@Table(name = "Stats")
+@Table(name = "Stats", indexes = {
+        @Index(columnList = "timestamp", name = "s_timestamp_idx")
+})
 public class Stat {
 
     @Id

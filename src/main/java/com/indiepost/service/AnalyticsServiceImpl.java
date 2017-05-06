@@ -113,15 +113,14 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         List<TimeDomainStat> visitorTrend = statRepository.getVisitorTrend(since, until, period);
 
         SiteStats stats = new SiteStats();
-        stats.setPeriod(getPeriodString(period));
         stats.setTotalPageview(statRepository.getTotalPageviews(since, until));
         stats.setTotalUniquePageview(statRepository.getTotalUniquePageviews(since, until));
         stats.setTotalUniquePostview(statRepository.getTotalUniquePostviews(since, until));
         stats.setTotalPostview(statRepository.getTotalPostviews(since, until));
         stats.setTotalVisitor(statRepository.getTotalVisitors(since, until));
         stats.setTotalAppVisitor(statRepository.getTotalVisitors(since, until, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
-        stats.setPageviewTrend(DateUtils.normalizeTimeDomainStats(pageviewTrend, period));
-        stats.setVisitorTrend(DateUtils.normalizeTimeDomainStats(visitorTrend, period));
+        stats.setPageviewTrend(DateUtils.normalizeTimeDomainStats(pageviewTrend, since, until));
+        stats.setVisitorTrend(DateUtils.normalizeTimeDomainStats(visitorTrend, since, until));
         stats.setTopPagesWebapp(statRepository.getTopPages(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
         stats.setTopPagesMobile(statRepository.getTopPages(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
         stats.setTopPosts(statRepository.getTopPosts(since, until, 10L));
@@ -143,23 +142,10 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         stats.setTopReferrer(statRepository.getTopReferrers(since, until, 10L));
         stats.setTopOs(statRepository.getTopOs(since, until, 10L));
         stats.setTopTags(statRepository.getTopTags(since, until, 10L));
-        stats.setPageviewPerVisitor(stats.getTotalPageview() / stats.getTotalVisitor().floatValue());
-        stats.setPostviewPerVisitor(statRepository.getTotalPageviews(since, until, StatType.POST) / stats.getTotalVisitor().floatValue());
 
         return stats;
     }
 
-    private String getPeriodString(Period period) {
-        if (period.getYears() > 0) {
-            return "YEAR";
-        } else if (period.getMonths() > 0) {
-            return "MONTH";
-        } else if (period.getDays() > 0) {
-            return "DAY";
-        } else {
-            return "HOUR";
-        }
-    }
 
     private Visitor newVisitor(HttpServletRequest request, Long userId, String appName, String appVersion) throws IOException {
         String userAgentString = request.getHeader("User-Agent");

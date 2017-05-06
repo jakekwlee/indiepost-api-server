@@ -126,7 +126,7 @@ public class StatRepositoryNativeSql implements StatRepository {
     @Override
     public List<TimeDomainStat> getPageviewTrend(Date since, Date until, Period period) {
         String sqlQuery;
-        if (period.getYears() > 0) {
+        if (period.getYears() > 1) {
             sqlQuery = "SELECT makedate(year(s.timestamp), 1) AS statDatetime, count(*) AS statCount " +
                     "FROM Stats AS s " +
                     "INNER JOIN Visitors v ON s.visitorId = v.id " +
@@ -134,7 +134,7 @@ public class StatRepositoryNativeSql implements StatRepository {
                     "AND v.browser <> :google " +
                     "GROUP BY year(s.timestamp) " +
                     "ORDER BY statDatetime";
-        } else if (period.getMonths() > 0) {
+        } else if (period.getMonths() > 1) {
             sqlQuery = "SELECT date_sub(date(s.timestamp), INTERVAL day(s.timestamp) - 1 DAY) AS statDatetime, count(*) AS statCount " +
                     "FROM Stats AS s " +
                     "INNER JOIN Visitors v ON s.visitorId = v.id " +
@@ -142,7 +142,7 @@ public class StatRepositoryNativeSql implements StatRepository {
                     "AND v.browser <> :google " +
                     "GROUP BY year(s.timestamp), month(s.timestamp) " +
                     "ORDER BY statDatetime";
-        } else if (period.getDays() > 0) {
+        } else if (period.getDays() > 1) {
             sqlQuery = "SELECT date(s.timestamp) AS statDatetime, count(*) AS statCount " +
                     "FROM Stats AS s " +
                     "INNER JOIN Visitors v ON s.visitorId = v.id " +
@@ -171,21 +171,21 @@ public class StatRepositoryNativeSql implements StatRepository {
     @Override
     public List<TimeDomainStat> getVisitorTrend(Date since, Date until, Period period) {
         String sqlQuery;
-        if (period.getYears() > 0) {
+        if (period.getYears() > 1) {
             sqlQuery = "SELECT makedate(year(v.timestamp), 1) AS statDatetime, count(*) AS statCount " +
                     "FROM Visitors AS v " +
                     "WHERE v.timestamp BETWEEN :s AND :u " +
                     "AND v.browser <> :google " +
                     "GROUP BY year(v.timestamp) " +
                     "ORDER BY statDatetime";
-        } else if (period.getMonths() > 0) {
+        } else if (period.getMonths() > 1) {
             sqlQuery = "SELECT date_sub(date(v.timestamp), INTERVAL day(v.timestamp) - 1 DAY) AS statDatetime, count(*) AS statCount " +
                     "FROM Visitors AS v " +
                     "WHERE v.timestamp BETWEEN :s AND :u " +
                     "AND v.browser <> :google " +
                     "GROUP BY year(v.timestamp), month(v.timestamp) " +
                     "ORDER BY statDatetime";
-        } else if (period.getDays() > 0) {
+        } else if (period.getDays() > 1) {
             sqlQuery = "SELECT date(v.timestamp) AS statDatetime, count(*) AS statCount " +
                     "FROM Visitors AS v " +
                     "WHERE v.timestamp BETWEEN :s AND :u " +

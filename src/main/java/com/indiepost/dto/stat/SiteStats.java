@@ -12,9 +12,6 @@ public class SiteStats {
     private Long totalPostview;
     private Long totalVisitor;
     private Long totalAppVisitor;
-    private float pageviewPerVisitor;
-    private float postviewPerVisitor;
-    private String period;
     private List<TimeDomainStat> pageviewTrend;
     private List<TimeDomainStat> visitorTrend;
     private List<ShareStatResult> pageviewByCategory;
@@ -118,22 +115,6 @@ public class SiteStats {
         this.topPagesMobile = topPagesMobile;
     }
 
-    public float getPageviewPerVisitor() {
-        return pageviewPerVisitor;
-    }
-
-    public void setPageviewPerVisitor(float pageviewPerVisitor) {
-        this.pageviewPerVisitor = pageviewPerVisitor;
-    }
-
-    public float getPostviewPerVisitor() {
-        return postviewPerVisitor;
-    }
-
-    public void setPostviewPerVisitor(float postviewPerVisitor) {
-        this.postviewPerVisitor = postviewPerVisitor;
-    }
-
     public Long getTotalPageview() {
         return totalPageview;
     }
@@ -156,14 +137,6 @@ public class SiteStats {
 
     public void setTotalAppVisitor(Long totalAppVisitor) {
         this.totalAppVisitor = totalAppVisitor;
-    }
-
-    public String getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(String period) {
-        this.period = period;
     }
 
     public List<TimeDomainStat> getPageviewTrend() {
