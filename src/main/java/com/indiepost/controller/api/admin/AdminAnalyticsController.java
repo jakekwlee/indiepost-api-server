@@ -27,5 +27,4 @@ public class AdminAnalyticsController {
     public SiteStats getSiteStats(@RequestBody PeriodDto periodDto) {
         return analyticsService.getStats(periodDto);
     }
-
 }

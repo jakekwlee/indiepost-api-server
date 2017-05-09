@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.time.Period;
 import java.util.Date;
 import java.util.List;
@@ -142,8 +143,28 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         stats.setTopReferrer(statRepository.getTopReferrers(since, until, 10L));
         stats.setTopOs(statRepository.getTopOs(since, until, 10L));
         stats.setTopTags(statRepository.getTopTags(since, until, 10L));
+        stats.setPostsByPageview(getPostsOrderByPageviews(dto));
 
         return stats;
+    }
+
+    @Override
+    public List<PostStatResult> getPostsOrderByPageviews(PeriodDto periodDto) {
+        Date since = periodDto.getSince();
+        Date until = periodDto.getUntil();
+        List<PostStatResult> pageviewList = statRepository.getPostsOrderByPageviews(since, until, 3000L);
+        List<PostStatResult> uniquePageviewList = statRepository.getPostsOrderByUniquePageviews(since, until, 3000L);
+
+        for (PostStatResult pageview : pageviewList) {
+            BigInteger postId = pageview.getId();
+            for (PostStatResult uniquePageview : uniquePageviewList) {
+                if (uniquePageview.getId().equals(postId)) {
+                    pageview.setUniquePageview(uniquePageview.getUniquePageview());
+                    break;
+                }
+            }
+        }
+        return pageviewList;
     }
 
 

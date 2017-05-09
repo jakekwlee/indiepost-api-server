@@ -1,5 +1,6 @@
 package com.indiepost.repository;
 
+import com.indiepost.dto.stat.PostStatResult;
 import com.indiepost.dto.stat.ShareStatResult;
 import com.indiepost.dto.stat.TimeDomainStat;
 import com.indiepost.enums.Types.ClientType;
@@ -57,13 +58,10 @@ public class StatRepositoryNativeSql implements StatRepository {
 
     @Override
     public Long getTotalUniquePageviews(Date since, Date until) {
-        String sqlQuery = "SELECT count(*) FROM (" +
-                "SELECT s.id FROM Stats s " +
+        String sqlQuery = "SELECT count(DISTINCT s.path, v.id) FROM Stats s " +
                 "INNER JOIN Visitors v ON s.visitorId = v.id " +
                 "WHERE s.timestamp BETWEEN :s AND :u " +
-                "AND v.browser <> :google " +
-                "GROUP BY s.path, s.visitorId" +
-                ") AS st";
+                "AND v.browser <> :google";
         Query query = getSession().createSQLQuery(sqlQuery);
         query.setParameter("s", since);
         query.setParameter("u", until);
@@ -73,14 +71,11 @@ public class StatRepositoryNativeSql implements StatRepository {
 
     @Override
     public Long getTotalUniquePostviews(Date since, Date until) {
-        String sqlQuery = "SELECT count(*) FROM (" +
-                "SELECT s.id FROM Stats s " +
+        String sqlQuery = "SELECT count(DISTINCT s.postId, v.id) FROM Stats s " +
                 "INNER JOIN Visitors v ON s.visitorId = v.id " +
                 "WHERE s.timestamp BETWEEN :s AND :u " +
                 "AND s.postId IS NOT NULL " +
-                "AND v.browser <> :google " +
-                "GROUP BY s.postId, s.visitorId" +
-                ") AS st";
+                "AND v.browser <> :google";
         Query query = getSession().createSQLQuery(sqlQuery);
         query.setParameter("s", since);
         query.setParameter("u", until);
@@ -314,6 +309,49 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setLong("l", limit);
         query.setString("google", "Googlebot");
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        return query.list();
+    }
+
+    @Override
+    public List<PostStatResult> getPostsOrderByPageviews(Date since, Date until, Long limit) {
+        String sqlQuery =
+                "SELECT p.id AS id, p.title AS title, p.displayName AS author, c.name AS category, count(*) AS pageview " +
+                        "FROM Stats s " +
+                        "INNER JOIN Visitors v ON s.visitorId = v.id " +
+                        "INNER JOIN Posts p ON s.postId = p.id " +
+                        "INNER JOIN Categories c ON p.categoryId = c.id " +
+                        "WHERE s.timestamp BETWEEN :s AND :u " +
+                        "AND v.browser <> :google " +
+                        "GROUP BY p.id " +
+                        "ORDER BY pageview DESC , p.id DESC " +
+                        "LIMIT :l";
+        Query query = getSession().createSQLQuery(sqlQuery);
+        query.setTimestamp("s", since);
+        query.setTimestamp("u", until);
+        query.setLong("l", limit);
+        query.setString("google", "Googlebot");
+        query.setResultTransformer(new AliasToBeanResultTransformer(PostStatResult.class));
+        return query.list();
+    }
+
+    @Override
+    public List<PostStatResult> getPostsOrderByUniquePageviews(Date since, Date until, Long limit) {
+        String sqlQuery =
+                "SELECT s.postId AS id, count(DISTINCT v.id) AS uniquePageview " +
+                        "FROM Stats s " +
+                        "INNER JOIN Visitors v ON s.visitorId = v.id " +
+                        "WHERE s.timestamp BETWEEN :s AND :u " +
+                        "AND s.postId IS NOT NULL " +
+                        "AND v.browser <> :google " +
+                        "GROUP BY s.postId " +
+                        "ORDER BY uniquePageview DESC, s.postId DESC " +
+                        "LIMIT :l";
+        Query query = getSession().createSQLQuery(sqlQuery);
+        query.setTimestamp("s", since);
+        query.setTimestamp("u", until);
+        query.setLong("l", limit);
+        query.setString("google", "Googlebot");
+        query.setResultTransformer(new AliasToBeanResultTransformer(PostStatResult.class));
         return query.list();
     }
 

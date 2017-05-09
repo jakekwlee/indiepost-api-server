@@ -12,6 +12,7 @@ public class SiteStats {
     private Long totalPostview;
     private Long totalVisitor;
     private Long totalAppVisitor;
+    private List<PostStatResult> postsByPageview;
     private List<TimeDomainStat> pageviewTrend;
     private List<TimeDomainStat> visitorTrend;
     private List<ShareStatResult> pageviewByCategory;
@@ -34,6 +35,14 @@ public class SiteStats {
     private List<ShareStatResult> topOs;
     private List<ShareStatResult> topTags;
     private List<ShareStatResult> topChannel;
+
+    public List<PostStatResult> getPostsByPageview() {
+        return postsByPageview;
+    }
+
+    public void setPostsByPageview(List<PostStatResult> postsByPageview) {
+        this.postsByPageview = postsByPageview;
+    }
 
     public Long getTotalUniquePostview() {
         return totalUniquePostview;

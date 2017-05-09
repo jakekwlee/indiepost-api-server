@@ -1,5 +1,6 @@
 package com.indiepost.repository;
 
+import com.indiepost.dto.stat.PostStatResult;
 import com.indiepost.dto.stat.ShareStatResult;
 import com.indiepost.dto.stat.TimeDomainStat;
 import com.indiepost.enums.Types;
@@ -129,6 +130,16 @@ public class StatRepositoryHibernate implements StatRepository {
         }
         criteria.setProjection(Projections.rowCount());
         return (Long) criteria.uniqueResult();
+    }
+
+    @Override
+    public List<PostStatResult> getPostsOrderByPageviews(Date since, Date until, Long limit) {
+        return null;
+    }
+
+    @Override
+    public List<PostStatResult> getPostsOrderByUniquePageviews(Date since, Date until, Long limit) {
+        return null;
     }
 
     @Override

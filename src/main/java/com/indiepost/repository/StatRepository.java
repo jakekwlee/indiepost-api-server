@@ -1,5 +1,6 @@
 package com.indiepost.repository;
 
+import com.indiepost.dto.stat.PostStatResult;
 import com.indiepost.dto.stat.ShareStatResult;
 import com.indiepost.dto.stat.TimeDomainStat;
 import com.indiepost.enums.Types;
@@ -37,6 +38,10 @@ public interface StatRepository {
     Long getTotalVisitors(Date since, Date until);
 
     Long getTotalVisitors(Date since, Date until, ClientType appName);
+
+    List<PostStatResult> getPostsOrderByPageviews(Date since, Date until, Long limit);
+
+    List<PostStatResult> getPostsOrderByUniquePageviews(Date since, Date until, Long limit);
 
     List<TimeDomainStat> getPageviewTrend(Date since, Date until, Period period);
 
