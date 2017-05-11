@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.stat.PeriodDto;
-import com.indiepost.dto.stat.ShareStatResult;
+import com.indiepost.dto.stat.ShareStat;
 import com.indiepost.dto.stat.TimeDomainStat;
 import com.indiepost.enums.Types;
 import org.junit.Assert;
@@ -148,133 +148,133 @@ public class StatRepositoryTest {
     @Test
     public void testGetPageviewsByCategory() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getPageviewsByCategory(dto.getSince(), dto.getUntil());
+        List<ShareStat> share = statRepositoryNativeSql.getPageviewsByCategory(dto.getSince(), dto.getUntil());
         testSerializeAndPrintStats(share, dto, "Pageview By Category");
     }
 
     @Test
     public void testGetPageviewsByAuthor() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getPageviewByAuthor(dto.getSince(), dto.getUntil());
+        List<ShareStat> share = statRepositoryNativeSql.getPageviewByAuthor(dto.getSince(), dto.getUntil());
         testSerializeAndPrintStats(share, dto, "Pageview By Author");
     }
 
     @Test
     public void testGetTopPagesWebapp() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getTopPages(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_WEBAPP);
+        List<ShareStat> share = statRepositoryNativeSql.getTopPages(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_WEBAPP);
         testSerializeAndPrintStats(share, dto, "Top Pages (Webapp)");
     }
 
     @Test
     public void testGetTopPagesMobile() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getTopPages(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_LEGACY_MOBILE_APP);
+        List<ShareStat> share = statRepositoryNativeSql.getTopPages(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_LEGACY_MOBILE_APP);
         testSerializeAndPrintStats(share, dto, "Top pages (Mobile)");
     }
 
     @Test
     public void testGetTopPostWebapp() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getTopPosts(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_WEBAPP);
+        List<ShareStat> share = statRepositoryNativeSql.getTopPosts(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_WEBAPP);
         testSerializeAndPrintStats(share, dto, "Top Posts (Webapp)");
     }
 
     @Test
     public void testGetTopPostMobile() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getTopPosts(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_LEGACY_MOBILE_APP);
+        List<ShareStat> share = statRepositoryNativeSql.getTopPosts(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_LEGACY_MOBILE_APP);
         testSerializeAndPrintStats(share, dto, "Top Posts (Mobile)");
     }
 
     @Test
     public void testGetSecondaryViewedPagesWebapp() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getSecondaryViewedPages(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_WEBAPP);
+        List<ShareStat> share = statRepositoryNativeSql.getSecondaryViewedPages(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_WEBAPP);
         testSerializeAndPrintStats(share, dto, "Secondly Pages (Webapp)");
     }
 
     @Test
     public void testGetSecondaryViewedPagesMobile() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getSecondaryViewedPages(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_LEGACY_MOBILE_APP);
+        List<ShareStat> share = statRepositoryNativeSql.getSecondaryViewedPages(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_LEGACY_MOBILE_APP);
         testSerializeAndPrintStats(share, dto, "Secondly Pages (Mobile)");
     }
 
     @Test
     public void testGetSecondaryViewedPostsWebapp() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getSecondaryViewedPosts(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_WEBAPP);
+        List<ShareStat> share = statRepositoryNativeSql.getSecondaryViewedPosts(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_WEBAPP);
         testSerializeAndPrintStats(share, dto, "Secondly Posts (Webapp)");
     }
 
     @Test
     public void testGetSecondaryViewedPostsMobile() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getSecondaryViewedPosts(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_LEGACY_MOBILE_APP);
+        List<ShareStat> share = statRepositoryNativeSql.getSecondaryViewedPosts(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_LEGACY_MOBILE_APP);
         testSerializeAndPrintStats(share, dto, "Secondly Posts (Mobile)");
     }
 
     @Test
     public void testGetTopLadingPagesWebapp() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getTopLandingPages(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_WEBAPP);
+        List<ShareStat> share = statRepositoryNativeSql.getTopLandingPages(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_WEBAPP);
         testSerializeAndPrintStats(share, dto, "Top Landing Pages (Webapp)");
     }
 
     @Test
     public void testGetTopLadingPagesMobile() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getTopLandingPages(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_LEGACY_MOBILE_APP);
+        List<ShareStat> share = statRepositoryNativeSql.getTopLandingPages(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_LEGACY_MOBILE_APP);
         testSerializeAndPrintStats(share, dto, "Top Landing Pages (Mobile)");
     }
 
     @Test
     public void testGetTopLadingPostsWebapp() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getTopLandingPosts(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_WEBAPP);
+        List<ShareStat> share = statRepositoryNativeSql.getTopLandingPosts(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_WEBAPP);
         testSerializeAndPrintStats(share, dto, "Top Landing Posts (Webapp)");
     }
 
     @Test
     public void testGetTopLadingPostsMobile() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getTopLandingPosts(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_LEGACY_MOBILE_APP);
+        List<ShareStat> share = statRepositoryNativeSql.getTopLandingPosts(dto.getSince(), dto.getUntil(), 10L, Types.ClientType.INDIEPOST_LEGACY_MOBILE_APP);
         testSerializeAndPrintStats(share, dto, "Top Landing Posts (Mobile)");
     }
 
     @Test
     public void testGetTopChannel() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getTopChannel(dto.getSince(), dto.getUntil(), 10L);
+        List<ShareStat> share = statRepositoryNativeSql.getTopChannel(dto.getSince(), dto.getUntil(), 10L);
         testSerializeAndPrintStats(share, dto, "Top Channel");
     }
 
     @Test
     public void testGetTopReferrer() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getTopReferrers(dto.getSince(), dto.getUntil(), 10L);
+        List<ShareStat> share = statRepositoryNativeSql.getTopReferrers(dto.getSince(), dto.getUntil(), 10L);
         testSerializeAndPrintStats(share, dto, "Top Referrer");
     }
 
     @Test
     public void testGetTopOs() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getTopOs(dto.getSince(), dto.getUntil(), 10L);
+        List<ShareStat> share = statRepositoryNativeSql.getTopOs(dto.getSince(), dto.getUntil(), 10L);
         testSerializeAndPrintStats(share, dto, "Top Os");
     }
 
     @Test
     public void testGetTopBrowsers() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getTopWebBrowsers(dto.getSince(), dto.getUntil(), 10L);
+        List<ShareStat> share = statRepositoryNativeSql.getTopWebBrowsers(dto.getSince(), dto.getUntil(), 10L);
         testSerializeAndPrintStats(share, dto, "Top Web Browsers");
     }
 
     @Test
     public void testGetTopTags() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        List<ShareStatResult> share = statRepositoryNativeSql.getTopTags(dto.getSince(), dto.getUntil(), 10L);
+        List<ShareStat> share = statRepositoryNativeSql.getTopTags(dto.getSince(), dto.getUntil(), 10L);
         testSerializeAndPrintStats(share, dto, "Top Tags");
     }
 

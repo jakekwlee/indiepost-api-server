@@ -1,7 +1,7 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.stat.PostStatResult;
-import com.indiepost.dto.stat.ShareStatResult;
+import com.indiepost.dto.stat.PostStat;
+import com.indiepost.dto.stat.ShareStat;
 import com.indiepost.dto.stat.TimeDomainStat;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Stat;
@@ -133,12 +133,12 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public List<PostStatResult> getPostsOrderByPageviews(Date since, Date until, Long limit) {
+    public List<PostStat> getPostsOrderByPageviews(Date since, Date until, Long limit) {
         return null;
     }
 
     @Override
-    public List<PostStatResult> getPostsOrderByUniquePageviews(Date since, Date until, Long limit) {
+    public List<PostStat> getPostsOrderByUniquePageviews(Date since, Date until, Long limit) {
         return null;
     }
 
@@ -214,7 +214,7 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public List<ShareStatResult> getPageviewsByCategory(Date since, Date until) {
+    public List<ShareStat> getPageviewsByCategory(Date since, Date until) {
         Criteria criteria = getSession().createCriteria(Stat.class, "s");
         criteria.createAlias("s.post", "p");
         criteria.createAlias("s.category", "c");
@@ -230,12 +230,12 @@ public class StatRepositoryHibernate implements StatRepository {
 
         criteria.setProjection(projectionList);
         criteria.addOrder(Order.desc("statCount"));
-        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return criteria.list();
     }
 
     @Override
-    public List<ShareStatResult> getPageviewByAuthor(Date since, Date until) {
+    public List<ShareStat> getPageviewByAuthor(Date since, Date until) {
         Criteria criteria = getSession().createCriteria(Stat.class, "s");
         criteria.createAlias("s.post", "p");
         String[] columnAliases = new String[]{"statName", "statCount"};
@@ -250,12 +250,12 @@ public class StatRepositoryHibernate implements StatRepository {
 
         criteria.setProjection(projectionList);
         criteria.addOrder(Order.desc("statCount"));
-        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return criteria.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopPages(Date since, Date until, Long limit, Types.ClientType type) {
+    public List<ShareStat> getTopPages(Date since, Date until, Long limit, Types.ClientType type) {
         Criteria criteria = getSession().createCriteria(Stat.class, "s");
         criteria.createAlias("s.visitor", "v");
         criteria.createAlias("s.post", "p", JoinType.LEFT_OUTER_JOIN);
@@ -274,12 +274,12 @@ public class StatRepositoryHibernate implements StatRepository {
         criteria.setProjection(projectionList);
         criteria.addOrder(Order.desc("statCount"));
         criteria.setMaxResults(limit.intValue());
-        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return criteria.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopPosts(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopPosts(Date since, Date until, Long limit) {
         Criteria criteria = getSession().createCriteria(Stat.class, "s");
         criteria.createAlias("s.visitor", "v");
         criteria.createAlias("s.post", "p");
@@ -297,37 +297,37 @@ public class StatRepositoryHibernate implements StatRepository {
         criteria.setProjection(projectionList);
         criteria.addOrder(Order.desc("statCount"));
         criteria.setMaxResults(limit.intValue());
-        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return criteria.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopPosts(Date since, Date until, Long limit, Types.ClientType type) {
+    public List<ShareStat> getTopPosts(Date since, Date until, Long limit, Types.ClientType type) {
         return null;
     }
 
     @Override
-    public List<ShareStatResult> getTopLandingPages(Date since, Date until, Long limit, Types.ClientType type) {
+    public List<ShareStat> getTopLandingPages(Date since, Date until, Long limit, Types.ClientType type) {
         return null;
     }
 
     @Override
-    public List<ShareStatResult> getTopLandingPosts(Date since, Date until, Long limit, Types.ClientType type) {
+    public List<ShareStat> getTopLandingPosts(Date since, Date until, Long limit, Types.ClientType type) {
         return null;
     }
 
     @Override
-    public List<ShareStatResult> getSecondaryViewedPages(Date since, Date until, Long limit, Types.ClientType type) {
+    public List<ShareStat> getSecondaryViewedPages(Date since, Date until, Long limit, Types.ClientType type) {
         return null;
     }
 
     @Override
-    public List<ShareStatResult> getSecondaryViewedPosts(Date since, Date until, Long limit, Types.ClientType type) {
+    public List<ShareStat> getSecondaryViewedPosts(Date since, Date until, Long limit, Types.ClientType type) {
         return null;
     }
 
     @Override
-    public List<ShareStatResult> getTopReferrers(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopReferrers(Date since, Date until, Long limit) {
         Criteria criteria = getSession().createCriteria(Stat.class, "s");
         criteria.createAlias("s.visitor", "v");
         String[] columnAliases = new String[]{"statName", "statCount"};
@@ -344,12 +344,12 @@ public class StatRepositoryHibernate implements StatRepository {
         criteria.setProjection(projectionList);
         criteria.addOrder(Order.desc("statCount"));
         criteria.setMaxResults(limit.intValue());
-        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return criteria.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopWebBrowsers(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopWebBrowsers(Date since, Date until, Long limit) {
         Criteria criteria = getSession().createCriteria(Visitor.class, "v");
         String[] columnAliases = new String[]{"statName", "statCount"};
         Type[] types = new Type[]{new StringType(), new LongType()};
@@ -365,12 +365,12 @@ public class StatRepositoryHibernate implements StatRepository {
         criteria.setProjection(projectionList);
         criteria.addOrder(Order.desc("statCount"));
         criteria.setMaxResults(limit.intValue());
-        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return criteria.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopOs(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopOs(Date since, Date until, Long limit) {
         Criteria criteria = getSession().createCriteria(Visitor.class, "v");
         String[] columnAliases = new String[]{"statName", "statCount"};
         Type[] types = new Type[]{new StringType(), new LongType()};
@@ -386,12 +386,12 @@ public class StatRepositoryHibernate implements StatRepository {
         criteria.setProjection(projectionList);
         criteria.addOrder(Order.desc("statCount"));
         criteria.setMaxResults(limit.intValue());
-        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return criteria.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopTags(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopTags(Date since, Date until, Long limit) {
         Criteria criteria = getSession().createCriteria(Stat.class, "s");
         criteria.createAlias("s.visitor", "v");
         criteria.createAlias("s.tags", "t");
@@ -409,12 +409,12 @@ public class StatRepositoryHibernate implements StatRepository {
         criteria.setProjection(projectionList);
         criteria.addOrder(Order.desc("statCount"));
         criteria.setMaxResults(limit.intValue());
-        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return criteria.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopChannel(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopChannel(Date since, Date until, Long limit) {
         Criteria criteria = getSession().createCriteria(Stat.class, "s");
         criteria.createAlias("s.visitor", "v");
         String[] columnAliases = new String[]{"statName", "statCount"};
@@ -431,7 +431,7 @@ public class StatRepositoryHibernate implements StatRepository {
         criteria.setProjection(projectionList);
         criteria.addOrder(Order.desc("statCount"));
         criteria.setMaxResults(limit.intValue());
-        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        criteria.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return criteria.list();
     }
 

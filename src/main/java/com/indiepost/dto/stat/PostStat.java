@@ -5,7 +5,7 @@ import java.math.BigInteger;
 /**
  * Created by jake on 17. 5. 10.
  */
-public class PostStatResult {
+public class PostStat {
     private BigInteger id;
 
     private String title;

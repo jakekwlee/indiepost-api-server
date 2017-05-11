@@ -1,7 +1,7 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.stat.PostStatResult;
-import com.indiepost.dto.stat.ShareStatResult;
+import com.indiepost.dto.stat.PostStat;
+import com.indiepost.dto.stat.ShareStat;
 import com.indiepost.dto.stat.TimeDomainStat;
 import com.indiepost.enums.Types;
 import com.indiepost.enums.Types.ClientType;
@@ -39,39 +39,39 @@ public interface StatRepository {
 
     Long getTotalVisitors(Date since, Date until, ClientType appName);
 
-    List<PostStatResult> getPostsOrderByPageviews(Date since, Date until, Long limit);
+    List<PostStat> getPostsOrderByPageviews(Date since, Date until, Long limit);
 
-    List<PostStatResult> getPostsOrderByUniquePageviews(Date since, Date until, Long limit);
+    List<PostStat> getPostsOrderByUniquePageviews(Date since, Date until, Long limit);
 
     List<TimeDomainStat> getPageviewTrend(Date since, Date until, Period period);
 
     List<TimeDomainStat> getVisitorTrend(Date since, Date until, Period period);
 
-    List<ShareStatResult> getPageviewsByCategory(Date since, Date until);
+    List<ShareStat> getPageviewsByCategory(Date since, Date until);
 
-    List<ShareStatResult> getPageviewByAuthor(Date since, Date until);
+    List<ShareStat> getPageviewByAuthor(Date since, Date until);
 
-    List<ShareStatResult> getTopPages(Date since, Date until, Long limit, Types.ClientType type);
+    List<ShareStat> getTopPages(Date since, Date until, Long limit, Types.ClientType type);
 
-    List<ShareStatResult> getTopPosts(Date since, Date until, Long limit);
+    List<ShareStat> getTopPosts(Date since, Date until, Long limit);
 
-    List<ShareStatResult> getTopPosts(Date since, Date until, Long limit, Types.ClientType type);
+    List<ShareStat> getTopPosts(Date since, Date until, Long limit, Types.ClientType type);
 
-    List<ShareStatResult> getTopLandingPages(Date since, Date until, Long limit, Types.ClientType type);
+    List<ShareStat> getTopLandingPages(Date since, Date until, Long limit, Types.ClientType type);
 
-    List<ShareStatResult> getTopLandingPosts(Date since, Date until, Long limit, Types.ClientType type);
+    List<ShareStat> getTopLandingPosts(Date since, Date until, Long limit, Types.ClientType type);
 
-    List<ShareStatResult> getSecondaryViewedPages(Date since, Date until, Long limit, Types.ClientType type);
+    List<ShareStat> getSecondaryViewedPages(Date since, Date until, Long limit, Types.ClientType type);
 
-    List<ShareStatResult> getSecondaryViewedPosts(Date since, Date until, Long limit, Types.ClientType type);
+    List<ShareStat> getSecondaryViewedPosts(Date since, Date until, Long limit, Types.ClientType type);
 
-    List<ShareStatResult> getTopReferrers(Date since, Date until, Long limit);
+    List<ShareStat> getTopReferrers(Date since, Date until, Long limit);
 
-    List<ShareStatResult> getTopWebBrowsers(Date since, Date until, Long limit);
+    List<ShareStat> getTopWebBrowsers(Date since, Date until, Long limit);
 
-    List<ShareStatResult> getTopOs(Date since, Date until, Long limit);
+    List<ShareStat> getTopOs(Date since, Date until, Long limit);
 
-    List<ShareStatResult> getTopTags(Date since, Date until, Long limit);
+    List<ShareStat> getTopTags(Date since, Date until, Long limit);
 
-    List<ShareStatResult> getTopChannel(Date since, Date until, Long limit);
+    List<ShareStat> getTopChannel(Date since, Date until, Long limit);
 }

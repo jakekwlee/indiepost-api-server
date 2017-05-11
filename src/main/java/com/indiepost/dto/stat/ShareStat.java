@@ -5,7 +5,7 @@ import java.math.BigInteger;
 /**
  * Created by jake on 17. 4. 26.
  */
-public class ShareStatResult {
+public class ShareStat {
     private String statName;
 
     private BigInteger statCount;

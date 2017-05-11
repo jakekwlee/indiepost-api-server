@@ -1,7 +1,7 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.stat.PostStatResult;
-import com.indiepost.dto.stat.ShareStatResult;
+import com.indiepost.dto.stat.PostStat;
+import com.indiepost.dto.stat.ShareStat;
 import com.indiepost.dto.stat.TimeDomainStat;
 import com.indiepost.enums.Types.ClientType;
 import com.indiepost.enums.Types.StatType;
@@ -205,7 +205,7 @@ public class StatRepositoryNativeSql implements StatRepository {
     }
 
     @Override
-    public List<ShareStatResult> getPageviewsByCategory(Date since, Date until) {
+    public List<ShareStat> getPageviewsByCategory(Date since, Date until) {
         String sqlQuery =
                 "SELECT c.name AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -220,12 +220,12 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
         query.setString("google", "Googlebot");
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStatResult> getPageviewByAuthor(Date since, Date until) {
+    public List<ShareStat> getPageviewByAuthor(Date since, Date until) {
         String sqlQuery =
                 "SELECT p.displayName AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -239,12 +239,12 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
         query.setString("google", "Googlebot");
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopPages(Date since, Date until, Long limit, ClientType type) {
+    public List<ShareStat> getTopPages(Date since, Date until, Long limit, ClientType type) {
         String sqlQuery =
                 "SELECT ifnull(p.title, s.path) AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -262,12 +262,12 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setString("t", type.toString());
         query.setString("google", "Googlebot");
         query.setLong("l", limit);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopPosts(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopPosts(Date since, Date until, Long limit) {
         String sqlQuery =
                 "SELECT p.title AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -283,12 +283,12 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("u", until);
         query.setLong("l", limit);
         query.setString("google", "Googlebot");
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopPosts(Date since, Date until, Long limit, ClientType type) {
+    public List<ShareStat> getTopPosts(Date since, Date until, Long limit, ClientType type) {
         String sqlQuery =
                 "SELECT p.title AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -308,12 +308,12 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setString("t", type.toString());
         query.setLong("l", limit);
         query.setString("google", "Googlebot");
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<PostStatResult> getPostsOrderByPageviews(Date since, Date until, Long limit) {
+    public List<PostStat> getPostsOrderByPageviews(Date since, Date until, Long limit) {
         String sqlQuery =
                 "SELECT p.id AS id, p.title AS title, p.displayName AS author, c.name AS category, count(*) AS pageview " +
                         "FROM Stats s " +
@@ -330,12 +330,12 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("u", until);
         query.setLong("l", limit);
         query.setString("google", "Googlebot");
-        query.setResultTransformer(new AliasToBeanResultTransformer(PostStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(PostStat.class));
         return query.list();
     }
 
     @Override
-    public List<PostStatResult> getPostsOrderByUniquePageviews(Date since, Date until, Long limit) {
+    public List<PostStat> getPostsOrderByUniquePageviews(Date since, Date until, Long limit) {
         String sqlQuery =
                 "SELECT s.postId AS id, count(DISTINCT v.id) AS uniquePageview " +
                         "FROM Stats s " +
@@ -351,12 +351,12 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("u", until);
         query.setLong("l", limit);
         query.setString("google", "Googlebot");
-        query.setResultTransformer(new AliasToBeanResultTransformer(PostStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(PostStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopLandingPages(Date since, Date until, Long limit, ClientType type) {
+    public List<ShareStat> getTopLandingPages(Date since, Date until, Long limit, ClientType type) {
         String sqlQuery =
                 "SELECT ifnull(p.title, s.path) AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -373,12 +373,12 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("u", until);
         query.setString("t", type.toString());
         query.setLong("l", limit);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopLandingPosts(Date since, Date until, Long limit, ClientType type) {
+    public List<ShareStat> getTopLandingPosts(Date since, Date until, Long limit, ClientType type) {
         String sqlQuery =
                 "SELECT p.title AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -397,12 +397,12 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setString("st", StatType.POST.toString());
         query.setString("t", type.toString());
         query.setLong("l", limit);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStatResult> getSecondaryViewedPages(Date since, Date until, Long limit, ClientType type) {
+    public List<ShareStat> getSecondaryViewedPages(Date since, Date until, Long limit, ClientType type) {
         String sqlQuery =
                 "SELECT ifnull(p.title, s.path) AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -419,12 +419,12 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("u", until);
         query.setString("t", type.toString());
         query.setLong("l", limit);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStatResult> getSecondaryViewedPosts(Date since, Date until, Long limit, ClientType type) {
+    public List<ShareStat> getSecondaryViewedPosts(Date since, Date until, Long limit, ClientType type) {
         String sqlQuery =
                 "SELECT p.title AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -443,12 +443,12 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setString("st", StatType.POST.toString());
         query.setString("t", type.toString());
         query.setLong("l", limit);
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopReferrers(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopReferrers(Date since, Date until, Long limit) {
         String sqlQuery =
                 "SELECT s.referrer AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -465,12 +465,12 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("u", until);
         query.setLong("l", limit);
         query.setString("google", "Googlebot");
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopWebBrowsers(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopWebBrowsers(Date since, Date until, Long limit) {
         String sqlQuery =
                 "SELECT v.browser AS statName, count(*) AS statCount " +
                         "FROM Visitors v " +
@@ -484,12 +484,12 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("u", until);
         query.setLong("l", limit);
         query.setString("google", "Googlebot");
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopOs(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopOs(Date since, Date until, Long limit) {
         String sqlQuery =
                 "SELECT v.os AS statName, count(*) AS statCount " +
                         "FROM Visitors v " +
@@ -503,12 +503,12 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("u", until);
         query.setLong("l", limit);
         query.setString("google", "Googlebot");
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopTags(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopTags(Date since, Date until, Long limit) {
         String sqlQuery =
                 "SELECT t.name AS statName, count(*) AS statCount FROM Stats s " +
                         "INNER JOIN Visitors v ON s.visitorId = v.id " +
@@ -525,12 +525,12 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("u", until);
         query.setLong("l", limit);
         query.setString("google", "Googlebot");
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStatResult> getTopChannel(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopChannel(Date since, Date until, Long limit) {
         String sqlQuery =
                 "SELECT s.channel AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -546,7 +546,7 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("u", until);
         query.setLong("l", limit);
         query.setString("google", "Googlebot");
-        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStatResult.class));
+        query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 

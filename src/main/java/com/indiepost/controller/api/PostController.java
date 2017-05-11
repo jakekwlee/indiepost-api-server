@@ -21,12 +21,12 @@ public class PostController {
         this.postService = postService;
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @GetMapping("/{id}")
     public PostDto getPost(@PathVariable Long id) {
         return postService.findById(id);
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public List<PostSummaryDto> getPosts(
             @RequestParam("p") int page,
             @RequestParam("m") int maxResults) {
@@ -34,12 +34,7 @@ public class PostController {
         return postService.findAll(page, maxResults, true);
     }
 
-    @RequestMapping(value = "/related", method = RequestMethod.POST)
-    public List<PostSummaryDto> getPostByIds(@RequestBody RelatedPostsRequestDto dto) {
-        return postService.findByIds(dto.getPostIds());
-    }
-
-    @RequestMapping(value = "/category/{id}", method = RequestMethod.GET)
+    @GetMapping("/category/{id}")
     public List<PostSummaryDto> getPostsByCategoryId(
             @PathVariable Long id,
             @RequestParam("p") int page,
@@ -47,18 +42,13 @@ public class PostController {
         return postService.findByCategoryId(id, page, maxResults, true);
     }
 
-    @RequestMapping(value = "/tag/{tagName}", method = RequestMethod.GET)
+    @GetMapping("/tag/{tagName}")
     public List<PostSummaryDto> getPostsByTagName(
             @PathVariable String tagName) {
         return postService.findByTagName(tagName);
     }
 
-    @RequestMapping(method = RequestMethod.POST)
-    public List<PostSummaryDto> getPostsByQuery(@RequestBody PostQuery query) {
-        return postService.findByQuery(query, query.getPage(), query.getMaxResults(), true);
-    }
-
-    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    @GetMapping("/search")
     public List<PostSummaryDto> getPosts(
             @RequestParam("q") String text,
             @RequestParam("p") int page,
@@ -66,7 +56,17 @@ public class PostController {
         return postService.search(text, page, maxResults);
     }
 
-    @RequestMapping(value = "/relatedPosts", method = RequestMethod.POST)
+    @PostMapping
+    public List<PostSummaryDto> getPostsByQuery(@RequestBody PostQuery query) {
+        return postService.findByQuery(query, query.getPage(), query.getMaxResults(), true);
+    }
+
+    @PostMapping("/related")
+    public List<PostSummaryDto> getPostByIds(@RequestBody RelatedPostsRequestDto dto) {
+        return postService.findByIds(dto.getPostIds());
+    }
+
+    @PostMapping(value = "/relatedPosts")
     public List<RelatedPostResponseDto> getRelatedPosts(@RequestBody RelatedPostsRequestDto dto) {
         return postService.getRelatedPosts(dto.getPostIds(), dto.isLegacy(), dto.isMobile());
     }

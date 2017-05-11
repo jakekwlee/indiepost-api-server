@@ -149,15 +149,15 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     }
 
     @Override
-    public List<PostStatResult> getPostsOrderByPageviews(PeriodDto periodDto) {
+    public List<PostStat> getPostsOrderByPageviews(PeriodDto periodDto) {
         Date since = periodDto.getSince();
         Date until = periodDto.getUntil();
-        List<PostStatResult> pageviewList = statRepository.getPostsOrderByPageviews(since, until, 3000L);
-        List<PostStatResult> uniquePageviewList = statRepository.getPostsOrderByUniquePageviews(since, until, 3000L);
+        List<PostStat> pageviewList = statRepository.getPostsOrderByPageviews(since, until, 3000L);
+        List<PostStat> uniquePageviewList = statRepository.getPostsOrderByUniquePageviews(since, until, 3000L);
 
-        for (PostStatResult pageview : pageviewList) {
+        for (PostStat pageview : pageviewList) {
             BigInteger postId = pageview.getId();
-            for (PostStatResult uniquePageview : uniquePageviewList) {
+            for (PostStat uniquePageview : uniquePageviewList) {
                 if (uniquePageview.getId().equals(postId)) {
                     pageview.setUniquePageview(uniquePageview.getUniquePageview());
                     break;

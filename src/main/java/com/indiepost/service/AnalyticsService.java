@@ -20,5 +20,5 @@ public interface AnalyticsService {
 
     SiteStats getStats(PeriodDto periodDto);
 
-    List<PostStatResult> getPostsOrderByPageviews(PeriodDto periodDto);
+    List<PostStat> getPostsOrderByPageviews(PeriodDto periodDto);
 }
