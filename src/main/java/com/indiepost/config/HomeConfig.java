@@ -9,13 +9,19 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "indiepost.home", locations = "classpath:indiepost.yml")
 public class HomeConfig {
+    private boolean serverSideRendering;
     private int fetchCount;
-
     private String renderingServerUri;
-
     private String baseUrl;
-
     private String resourcesPath;
+
+    public boolean isServerSideRendering() {
+        return serverSideRendering;
+    }
+
+    public void setServerSideRendering(boolean serverSideRendering) {
+        this.serverSideRendering = serverSideRendering;
+    }
 
     public String getRenderingServerUri() {
         return renderingServerUri;

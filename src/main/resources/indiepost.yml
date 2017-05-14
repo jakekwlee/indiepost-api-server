@@ -1,6 +1,7 @@
 indiepost:
   home:
     fetchCount: 24
+    serverSideRendering: true
     renderingServerUri: 'http://localhost:3000'
     baseUrl: 'http://www.indiepost.co.kr'
     resourcesPath: '/data/resources'
@@ -13,7 +14,7 @@ indiepost:
     fsRoot: /data
     fsLocation: /data/uploads/images
     dbLocation: /uploads/images
-    apiUri: /api/cms/image
+    apiUri: /api/admin/image
     filenameLength: 6
     filenameFormat: '%s-%dx%d.%s'
     acceptedTypes:
