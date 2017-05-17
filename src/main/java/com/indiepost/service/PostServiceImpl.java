@@ -56,7 +56,10 @@ public class PostServiceImpl implements PostService {
         if (tagList.size() > 0) {
             tagList.get(0);
         }
-        post.getTitleImage().getOptimized();
+        ImageSet titleImage = post.getTitleImage();
+        if (titleImage != null) {
+            titleImage.getOptimized();
+        }
         return postMapperService.postToPostDto(post);
     }
 

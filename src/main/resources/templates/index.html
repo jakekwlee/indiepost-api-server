@@ -1,16 +1,27 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:lang="ko">
 <head>
-    <meta charset="utf-8"/>
     <title th:text="${res.title} ? ${res.title} : 'INDIEPOST 인디포스트'"></title>
-    <th:block th:utext="${res.meta}"/>
+    <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="apple-mobile-web-app-title" content="INDIEPOST">
+    <th:block th:utext="${res.meta}"/>
     <link rel="stylesheet"
           th:href="@{/resources/indiepost-react-webapp/node_modules/bootstrap/dist/css/bootstrap.min.css}"/>
     <link rel="stylesheet" th:href="@{/resources/indiepost-react-webapp/node_modules/text-spinners/spinners.css}"/>
     <link rel="stylesheet" th:href="@{/resources/indiepost-react-webapp/css/style.css}"/>
-    <link rel="shortcut icon" type="image/x-icon" th:href="@{/resources/indiepost-react-webapp/css/ico_indie.ico}">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:700" rel="stylesheet">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/resources/indiepost-react-webapp/css/shortcut.ico}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:700">
+    <link rel="apple-touch-icon" th:href="@{/resources/indiepost-react-webapp/css/app-icon-180.png}">
+    <th:block th:utext="${res.link}"/>
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-3970872138525868",
+        enable_page_level_ads: true
+      });
+    </script>
 </head>
 <body>
 <div id="root" th:utext="${res.markup}">

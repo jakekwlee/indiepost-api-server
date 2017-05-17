@@ -28,6 +28,8 @@ import java.util.List;
 @Repository
 public class StatRepositoryNativeSql implements StatRepository {
 
+    private static final String EXCLUDE_GOOGLE_BOT = "AND v.browser <> 'Googlebot' AND v.browser <> 'Mediapartners-Google' ";
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -61,11 +63,10 @@ public class StatRepositoryNativeSql implements StatRepository {
         String sqlQuery = "SELECT count(DISTINCT s.path, v.id) FROM Stats s " +
                 "INNER JOIN Visitors v ON s.visitorId = v.id " +
                 "WHERE s.timestamp BETWEEN :s AND :u " +
-                "AND v.browser <> :google";
+                EXCLUDE_GOOGLE_BOT;
         Query query = getSession().createSQLQuery(sqlQuery);
         query.setParameter("s", since);
         query.setParameter("u", until);
-        query.setString("google", "Googlebot");
         return ((BigInteger) query.uniqueResult()).longValue();
     }
 
@@ -75,11 +76,10 @@ public class StatRepositoryNativeSql implements StatRepository {
                 "INNER JOIN Visitors v ON s.visitorId = v.id " +
                 "WHERE s.timestamp BETWEEN :s AND :u " +
                 "AND s.postId IS NOT NULL " +
-                "AND v.browser <> :google";
+                EXCLUDE_GOOGLE_BOT;
         Query query = getSession().createSQLQuery(sqlQuery);
         query.setParameter("s", since);
         query.setParameter("u", until);
-        query.setString("google", "Googlebot");
         return ((BigInteger) query.uniqueResult()).longValue();
     }
 
@@ -93,6 +93,7 @@ public class StatRepositoryNativeSql implements StatRepository {
         Criteria criteria = getSession().createCriteria(Stat.class);
         criteria.createAlias("visitor", "v");
         criteria.add(Restrictions.ne("v.browser", "Googlebot"));
+        criteria.add(Restrictions.ne("v.browser", "Mediapartners-Google"));
         setDateCriteria(criteria, since, until);
         if (type != null) {
             criteria.add(Restrictions.eq("type", type));
@@ -110,6 +111,7 @@ public class StatRepositoryNativeSql implements StatRepository {
     public Long getTotalVisitors(Date since, Date until, ClientType appName) {
         Criteria criteria = getSession().createCriteria(Visitor.class);
         criteria.add(Restrictions.ne("browser", "Googlebot"));
+        criteria.add(Restrictions.ne("browser", "Mediapartners-Google"));
         criteria.add(Restrictions.between("timestamp", since, until));
         if (appName != null) {
             criteria.add(Restrictions.eq("appName", appName));
@@ -126,7 +128,7 @@ public class StatRepositoryNativeSql implements StatRepository {
                     "FROM Stats AS s " +
                     "INNER JOIN Visitors v ON s.visitorId = v.id " +
                     "WHERE s.timestamp BETWEEN :s AND :u " +
-                    "AND v.browser <> :google " +
+                    EXCLUDE_GOOGLE_BOT +
                     "GROUP BY year(s.timestamp) " +
                     "ORDER BY statDatetime";
         } else if (period.getMonths() > 1) {
@@ -134,7 +136,7 @@ public class StatRepositoryNativeSql implements StatRepository {
                     "FROM Stats AS s " +
                     "INNER JOIN Visitors v ON s.visitorId = v.id " +
                     "WHERE s.timestamp BETWEEN :s AND :u " +
-                    "AND v.browser <> :google " +
+                    EXCLUDE_GOOGLE_BOT +
                     "GROUP BY year(s.timestamp), month(s.timestamp) " +
                     "ORDER BY statDatetime";
         } else if (period.getDays() > 1) {
@@ -142,7 +144,7 @@ public class StatRepositoryNativeSql implements StatRepository {
                     "FROM Stats AS s " +
                     "INNER JOIN Visitors v ON s.visitorId = v.id " +
                     "WHERE s.timestamp BETWEEN :s AND :u " +
-                    "AND v.browser <> :google " +
+                    EXCLUDE_GOOGLE_BOT +
                     "GROUP BY date(s.timestamp) " +
                     "ORDER BY statDatetime";
         } else {
@@ -150,7 +152,7 @@ public class StatRepositoryNativeSql implements StatRepository {
                     "FROM Stats AS s " +
                     "INNER JOIN Visitors v ON s.visitorId = v.id " +
                     "WHERE s.timestamp BETWEEN :s AND :u " +
-                    "AND v.browser <> :google " +
+                    EXCLUDE_GOOGLE_BOT +
                     "GROUP BY date(s.timestamp), hour(s.timestamp) " +
                     "ORDER BY statDatetime";
         }
@@ -158,7 +160,6 @@ public class StatRepositoryNativeSql implements StatRepository {
         Query query = getSession().createSQLQuery(sqlQuery);
         query.setParameter("s", since);
         query.setParameter("u", until);
-        query.setString("google", "Googlebot");
         query.setResultTransformer(new AliasToBeanResultTransformer(TimeDomainStat.class));
         return query.list();
     }
@@ -170,28 +171,28 @@ public class StatRepositoryNativeSql implements StatRepository {
             sqlQuery = "SELECT makedate(year(v.timestamp), 1) AS statDatetime, count(*) AS statCount " +
                     "FROM Visitors AS v " +
                     "WHERE v.timestamp BETWEEN :s AND :u " +
-                    "AND v.browser <> :google " +
+                    EXCLUDE_GOOGLE_BOT +
                     "GROUP BY year(v.timestamp) " +
                     "ORDER BY statDatetime";
         } else if (period.getMonths() > 1) {
             sqlQuery = "SELECT date_sub(date(v.timestamp), INTERVAL day(v.timestamp) - 1 DAY) AS statDatetime, count(*) AS statCount " +
                     "FROM Visitors AS v " +
                     "WHERE v.timestamp BETWEEN :s AND :u " +
-                    "AND v.browser <> :google " +
+                    EXCLUDE_GOOGLE_BOT +
                     "GROUP BY year(v.timestamp), month(v.timestamp) " +
                     "ORDER BY statDatetime";
         } else if (period.getDays() > 1) {
             sqlQuery = "SELECT date(v.timestamp) AS statDatetime, count(*) AS statCount " +
                     "FROM Visitors AS v " +
                     "WHERE v.timestamp BETWEEN :s AND :u " +
-                    "AND v.browser <> :google " +
+                    EXCLUDE_GOOGLE_BOT +
                     "GROUP BY date(v.timestamp) " +
                     "ORDER BY statDatetime";
         } else {
             sqlQuery = "SELECT date_add(date(v.timestamp), INTERVAL hour(v.timestamp) HOUR) AS statDatetime, count(*) AS statCount " +
                     "FROM Visitors AS v " +
                     "WHERE v.timestamp BETWEEN :s AND :u " +
-                    "AND v.browser <> :google " +
+                    EXCLUDE_GOOGLE_BOT +
                     "GROUP BY date(v.timestamp), hour(v.timestamp) " +
                     "ORDER BY statDatetime";
         }
@@ -199,7 +200,6 @@ public class StatRepositoryNativeSql implements StatRepository {
         Query query = getSession().createSQLQuery(sqlQuery);
         query.setParameter("s", since);
         query.setParameter("u", until);
-        query.setString("google", "Googlebot");
         query.setResultTransformer(new AliasToBeanResultTransformer(TimeDomainStat.class));
         return query.list();
     }
@@ -213,13 +213,12 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "INNER JOIN Posts p ON s.postId = p.id " +
                         "INNER JOIN Categories c ON p.categoryId = c.id " +
                         "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "AND v.browser <> :google " +
+                        EXCLUDE_GOOGLE_BOT +
                         "GROUP BY c.name " +
                         "ORDER BY statCount DESC";
         Query query = getSession().createSQLQuery(sqlQuery);
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
-        query.setString("google", "Googlebot");
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
@@ -232,13 +231,12 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "INNER JOIN Visitors v ON s.visitorId = v.id " +
                         "INNER JOIN Posts p ON s.postId = p.id " +
                         "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "AND v.browser <> :google " +
+                        EXCLUDE_GOOGLE_BOT +
                         "GROUP BY p.displayName " +
                         "ORDER BY statCount DESC";
         Query query = getSession().createSQLQuery(sqlQuery);
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
-        query.setString("google", "Googlebot");
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
@@ -251,7 +249,7 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "INNER JOIN Visitors v ON s.visitorId = v.id " +
                         "LEFT JOIN Posts p ON s.postId = p.id " +
                         "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "AND v.browser <> :google " +
+                        EXCLUDE_GOOGLE_BOT +
                         "AND v.appName = :t " +
                         "GROUP BY s.path " +
                         "ORDER BY statCount DESC " +
@@ -260,7 +258,6 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
         query.setString("t", type.toString());
-        query.setString("google", "Googlebot");
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
@@ -274,7 +271,7 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "INNER JOIN Visitors v ON s.visitorId = v.id " +
                         "INNER JOIN Posts p ON s.postId = p.id " +
                         "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "AND v.browser <> :google " +
+                        EXCLUDE_GOOGLE_BOT +
                         "GROUP BY p.id " +
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
@@ -282,7 +279,6 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
         query.setLong("l", limit);
-        query.setString("google", "Googlebot");
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
@@ -295,7 +291,7 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "INNER JOIN Visitors v ON s.visitorId = v.id " +
                         "INNER JOIN Posts p ON s.postId = p.id " +
                         "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "AND v.browser <> :google " +
+                        EXCLUDE_GOOGLE_BOT +
                         "AND s.type = :st " +
                         "AND v.appName = :t " +
                         "GROUP BY p.id " +
@@ -307,7 +303,6 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setString("st", StatType.POST.toString());
         query.setString("t", type.toString());
         query.setLong("l", limit);
-        query.setString("google", "Googlebot");
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
@@ -321,7 +316,7 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "INNER JOIN Posts p ON s.postId = p.id " +
                         "INNER JOIN Categories c ON p.categoryId = c.id " +
                         "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "AND v.browser <> :google " +
+                        EXCLUDE_GOOGLE_BOT +
                         "GROUP BY p.id " +
                         "ORDER BY pageview DESC , p.id DESC " +
                         "LIMIT :l";
@@ -329,7 +324,6 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
         query.setLong("l", limit);
-        query.setString("google", "Googlebot");
         query.setResultTransformer(new AliasToBeanResultTransformer(PostStat.class));
         return query.list();
     }
@@ -342,7 +336,7 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "INNER JOIN Visitors v ON s.visitorId = v.id " +
                         "WHERE s.timestamp BETWEEN :s AND :u " +
                         "AND s.postId IS NOT NULL " +
-                        "AND v.browser <> :google " +
+                        EXCLUDE_GOOGLE_BOT +
                         "GROUP BY s.postId " +
                         "ORDER BY uniquePageview DESC, s.postId DESC " +
                         "LIMIT :l";
@@ -350,7 +344,6 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
         query.setLong("l", limit);
-        query.setString("google", "Googlebot");
         query.setResultTransformer(new AliasToBeanResultTransformer(PostStat.class));
         return query.list();
     }
@@ -456,7 +449,7 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "WHERE s.timestamp BETWEEN :s AND :u " +
                         "AND s.isLandingPage IS TRUE " +
                         "AND s.referrer IS NOT NULL " +
-                        "AND v.browser <> :google " +
+                        EXCLUDE_GOOGLE_BOT +
                         "GROUP BY s.referrer " +
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
@@ -464,7 +457,6 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
         query.setLong("l", limit);
-        query.setString("google", "Googlebot");
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
@@ -475,7 +467,7 @@ public class StatRepositoryNativeSql implements StatRepository {
                 "SELECT v.browser AS statName, count(*) AS statCount " +
                         "FROM Visitors v " +
                         "WHERE v.timestamp BETWEEN :s AND :u " +
-                        "AND v.browser <> :google " +
+                        EXCLUDE_GOOGLE_BOT +
                         "GROUP BY v.browser " +
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
@@ -483,7 +475,6 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
         query.setLong("l", limit);
-        query.setString("google", "Googlebot");
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
@@ -494,7 +485,7 @@ public class StatRepositoryNativeSql implements StatRepository {
                 "SELECT v.os AS statName, count(*) AS statCount " +
                         "FROM Visitors v " +
                         "WHERE v.timestamp BETWEEN :s AND :u " +
-                        "AND v.browser <> :google " +
+                        EXCLUDE_GOOGLE_BOT +
                         "GROUP BY v.os " +
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
@@ -502,7 +493,6 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
         query.setLong("l", limit);
-        query.setString("google", "Googlebot");
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
@@ -516,7 +506,7 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "INNER JOIN Posts_Tags pt ON p.id = pt.postId " +
                         "INNER JOIN Tags t ON pt.tagId = t.id " +
                         "WHERE s.timestamp BETWEEN :s AND :u " +
-                        "AND v.browser <> :google " +
+                        EXCLUDE_GOOGLE_BOT +
                         "GROUP BY t.id " +
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
@@ -524,7 +514,6 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
         query.setLong("l", limit);
-        query.setString("google", "Googlebot");
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
@@ -537,7 +526,7 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "INNER JOIN Visitors v ON s.visitorId = v.id " +
                         "WHERE s.timestamp BETWEEN :s AND :u " +
                         "AND s.isLandingPage IS TRUE " +
-                        "AND v.browser <> :google " +
+                        EXCLUDE_GOOGLE_BOT +
                         "GROUP BY s.channel " +
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
@@ -545,7 +534,6 @@ public class StatRepositoryNativeSql implements StatRepository {
         query.setTimestamp("s", since);
         query.setTimestamp("u", until);
         query.setLong("l", limit);
-        query.setString("google", "Googlebot");
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }

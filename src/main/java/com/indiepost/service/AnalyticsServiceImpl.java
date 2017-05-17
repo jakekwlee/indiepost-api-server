@@ -114,19 +114,20 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         List<TimeDomainStat> visitorTrend = statRepository.getVisitorTrend(since, until, period);
 
         SiteStats stats = new SiteStats();
+        stats.setPageviewTrend(DateUtils.normalizeTimeDomainStats(pageviewTrend, since, until));
+        stats.setVisitorTrend(DateUtils.normalizeTimeDomainStats(visitorTrend, since, until));
+
         stats.setTotalPageview(statRepository.getTotalPageviews(since, until));
         stats.setTotalUniquePageview(statRepository.getTotalUniquePageviews(since, until));
         stats.setTotalUniquePostview(statRepository.getTotalUniquePostviews(since, until));
         stats.setTotalPostview(statRepository.getTotalPostviews(since, until));
         stats.setTotalVisitor(statRepository.getTotalVisitors(since, until));
         stats.setTotalAppVisitor(statRepository.getTotalVisitors(since, until, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
-        stats.setPageviewTrend(DateUtils.normalizeTimeDomainStats(pageviewTrend, since, until));
-        stats.setVisitorTrend(DateUtils.normalizeTimeDomainStats(visitorTrend, since, until));
         stats.setTopPagesWebapp(statRepository.getTopPages(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
-        stats.setTopPagesMobile(statRepository.getTopPages(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
+//        stats.setTopPagesMobile(statRepository.getTopPages(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
         stats.setTopPosts(statRepository.getTopPosts(since, until, 10L));
-        stats.setTopPostsWebapp(statRepository.getTopPosts(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
-        stats.setTopPostsMobile(statRepository.getTopPosts(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
+//        stats.setTopPostsWebapp(statRepository.getTopPosts(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
+//        stats.setTopPostsMobile(statRepository.getTopPosts(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
 //        stats.setSecondaryPagesWebapp(statRepository.getSecondaryViewedPages(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
 //        stats.setSecondaryPagesMobile(statRepository.getSecondaryViewedPages(since, until, 10L, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
 //        stats.setSecondaryPostsWebapp(statRepository.getSecondaryViewedPosts(since, until, 10L, ClientType.INDIEPOST_WEBAPP));
@@ -138,7 +139,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         stats.setPageviewByAuthor(statRepository.getPageviewByAuthor(since, until));
         stats.setPageviewByCategory(statRepository.getPageviewsByCategory(since, until));
         stats.setTopBrowser(statRepository.getTopWebBrowsers(since, until, 10L));
-        stats.setTopChannel(statRepository.getTopChannel(since, until, 10L));
         stats.setTopChannel(statRepository.getTopChannel(since, until, 10L));
         stats.setTopReferrer(statRepository.getTopReferrers(since, until, 10L));
         stats.setTopOs(statRepository.getTopOs(since, until, 10L));
