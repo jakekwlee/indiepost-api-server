@@ -7,7 +7,7 @@ import com.indiepost.enums.Types.StatType;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Created by jake on 17. 4. 13.
@@ -49,8 +49,7 @@ public class Stat {
     private Integer value;
 
     @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date timestamp;
+    private LocalDateTime timestamp;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "visitorId", updatable = false, insertable = false, nullable = false)
@@ -139,11 +138,11 @@ public class Stat {
         this.channel = channel;
     }
 
-    public Date getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 

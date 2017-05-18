@@ -20,8 +20,8 @@ import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.time.Period;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -78,7 +78,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                 stat.setPostId(id);
             }
         }
-        stat.setTimestamp(new Date());
+        stat.setTimestamp(LocalDateTime.now());
         statRepository.save(stat);
     }
 
@@ -100,14 +100,14 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         if (action.getValue() != null) {
             stat.setValue(action.getValue());
         }
-        stat.setTimestamp(new Date());
+        stat.setTimestamp(LocalDateTime.now());
         statRepository.save(stat);
     }
 
     @Override
     public SiteStats getStats(PeriodDto dto) {
-        Date since = dto.getSince();
-        Date until = dto.getUntil();
+        LocalDateTime since = dto.getSince();
+        LocalDateTime until = dto.getUntil();
         Period period = DateUtils.getPeriod(since, until);
 
         List<TimeDomainStat> pageviewTrend = statRepository.getPageviewTrend(since, until, period);
@@ -150,8 +150,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     @Override
     public List<PostStat> getPostsOrderByPageviews(PeriodDto periodDto) {
-        Date since = periodDto.getSince();
-        Date until = periodDto.getUntil();
+        LocalDateTime since = periodDto.getSince();
+        LocalDateTime until = periodDto.getUntil();
         List<PostStat> pageviewList = statRepository.getPostsOrderByPageviews(since, until, 3000L);
         List<PostStat> uniquePageviewList = statRepository.getPostsOrderByUniquePageviews(since, until, 3000L);
 
@@ -206,7 +206,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         visitor.setAppName(ClientType.valueOf(appName));
         visitor.setAppVersion(appVersion);
         visitor.setIpAddress(ipAddress);
-        visitor.setTimestamp(new Date());
+        visitor.setTimestamp(LocalDateTime.now());
 
         visitorRepository.save(visitor);
         HttpSession session = request.getSession();

@@ -9,7 +9,7 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 /**
@@ -41,7 +41,7 @@ public class ImageSet {
     private String caption;
 
     @Column(nullable = false)
-    private Date uploadedAt;
+    private LocalDateTime uploadedAt;
 
     public Long getId() {
         return id;
@@ -87,11 +87,11 @@ public class ImageSet {
         this.caption = caption;
     }
 
-    public Date getUploadedAt() {
+    public LocalDateTime getUploadedAt() {
         return uploadedAt;
     }
 
-    public void setUploadedAt(Date uploadedAt) {
+    public void setUploadedAt(LocalDateTime uploadedAt) {
         this.uploadedAt = uploadedAt;
     }
 

@@ -24,8 +24,6 @@ import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -135,8 +133,8 @@ public class AdminPostServiceImpl implements AdminPostService {
     public AdminPostResponseDto save(AdminPostRequestDto adminPostRequestDto) {
         User currentUser = userService.getCurrentUser();
         Post post = postMapperService.adminPostRequestDtoToPost(adminPostRequestDto);
-        post.setCreatedAt(new Date());
-        post.setModifiedAt(new Date());
+        post.setCreatedAt(LocalDateTime.now());
+        post.setModifiedAt(LocalDateTime.now());
         post.setAuthor(currentUser);
         post.setEditor(currentUser);
         save(post);
@@ -155,7 +153,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         } else {
             post = postMapperService.adminPostRequestDtoToPost(adminPostRequestDto);
             post.setAuthor(currentUser);
-            post.setCreatedAt(new Date());
+            post.setCreatedAt(LocalDateTime.now());
         }
         if (StringUtils.isEmpty(post.getTitle())) {
             post.setTitle("No Title");
@@ -170,11 +168,10 @@ public class AdminPostServiceImpl implements AdminPostService {
             post.setDisplayName("Indiepost");
         }
         if (post.getPublishedAt() == null) {
-            Date publishDate = Date.from(LocalDateTime.now().plusDays(7).toInstant(ZoneOffset.UTC));
-            post.setPublishedAt(publishDate);
+            post.setPublishedAt(LocalDateTime.now().plusDays(7));
         }
         post.setEditor(currentUser);
-        post.setModifiedAt(new Date());
+        post.setModifiedAt(LocalDateTime.now());
         post.setStatus(PostStatus.AUTOSAVE);
         post.setCategory(categoryRepository.getReference(2L));
         save(post);
@@ -231,7 +228,7 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
-    public List<AdminPostSummaryDto> getLastUpdated(Date dateFrom) {
+    public List<AdminPostSummaryDto> getLastUpdated(LocalDateTime dateFrom) {
         return null;
     }
 
@@ -250,7 +247,7 @@ public class AdminPostServiceImpl implements AdminPostService {
             }
             post.setStatus(PostStatus.PUBLISH);
             adminPostRepository.update(post);
-            log.info(dateFormat.format(new Date()) + ": Publish Scheduled Post - " + post.getId());
+            log.info(dateFormat.format(LocalDateTime.now()) + ": Publish Scheduled Post - " + post.getId());
         }
     }
 

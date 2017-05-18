@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import static com.indiepost.utils.DateUtils.newDate;
+import java.time.LocalDateTime;
 
 /**
  * Created by jake on 17. 4. 28.
@@ -27,7 +27,12 @@ public class AnalyticsServiceTest {
 
     @Test
     public void siteStatsShouldSerializeCorrectly() throws JsonProcessingException {
-        SiteStats stats = analyticsService.getStats(new PeriodDto(newDate(2017, 4, 20), newDate(2017, 4, 28, 23, 59, 59)));
+        SiteStats stats = analyticsService.getStats(
+                new PeriodDto(
+                        LocalDateTime.of(2017, 4, 20, 0, 0, 0),
+                        LocalDateTime.of(2017, 4, 28, 23, 59, 59)
+                )
+        );
         serializeAndPrintStats(stats, "Site Stats");
     }
 

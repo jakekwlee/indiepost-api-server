@@ -17,12 +17,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.time.Period;
-import java.util.Date;
 import java.util.List;
 
 import static com.indiepost.utils.DateUtils.getPeriod;
-import static com.indiepost.utils.DateUtils.newDate;
 
 /**
  * Created by jake on 17. 4. 27.
@@ -74,8 +73,8 @@ public class StatRepositoryTest {
     @Test
     public void testRetrieveTotalPostview() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        Date since = dto.getSince();
-        Date until = dto.getUntil();
+        LocalDateTime since = dto.getSince();
+        LocalDateTime until = dto.getUntil();
         Long result = statRepositoryNativeSql.getTotalPageviews(since, until, Types.StatType.POST);
 
         printPeriod(dto);
@@ -85,8 +84,8 @@ public class StatRepositoryTest {
     @Test
     public void testRetrieveTotalVisitors() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        Date since = dto.getSince();
-        Date until = dto.getUntil();
+        LocalDateTime since = dto.getSince();
+        LocalDateTime until = dto.getUntil();
         Long result = statRepositoryNativeSql.getTotalVisitors(since, until);
 
         printPeriod(dto);
@@ -96,8 +95,8 @@ public class StatRepositoryTest {
     @Test
     public void testRetrieveTotalMobileAppVisitors() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        Date since = dto.getSince();
-        Date until = dto.getUntil();
+        LocalDateTime since = dto.getSince();
+        LocalDateTime until = dto.getUntil();
         Long result = statRepositoryNativeSql.getTotalVisitors(since, until, Types.ClientType.INDIEPOST_LEGACY_MOBILE_APP);
 
         printPeriod(dto);
@@ -107,8 +106,8 @@ public class StatRepositoryTest {
     @Test
     public void testRetrieveYearlyPageviewTrend() throws JsonProcessingException {
         PeriodDto dto = getYearlyPeriod();
-        Date since = dto.getSince();
-        Date until = dto.getUntil();
+        LocalDateTime since = dto.getSince();
+        LocalDateTime until = dto.getUntil();
         Period period = getPeriod(since, until);
         List<TimeDomainStat> pageviewTrend = statRepositoryNativeSql.getPageviewTrend(since, until, period);
         testSerializeAndPrintStats(pageviewTrend, dto, "Yearly Pageview Trend");
@@ -117,8 +116,8 @@ public class StatRepositoryTest {
     @Test
     public void testRetrieveMonthlyPageviewTrend() throws JsonProcessingException {
         PeriodDto dto = getMonthlyPeriod();
-        Date since = dto.getSince();
-        Date until = dto.getUntil();
+        LocalDateTime since = dto.getSince();
+        LocalDateTime until = dto.getUntil();
         Period period = getPeriod(since, until);
         List<TimeDomainStat> pageviewTrend = statRepositoryNativeSql.getPageviewTrend(since, until, period);
         testSerializeAndPrintStats(pageviewTrend, dto, "Monthly Pageview Trend");
@@ -127,8 +126,8 @@ public class StatRepositoryTest {
     @Test
     public void testRetrieveDailyPageviewTrend() throws JsonProcessingException {
         PeriodDto dto = getDailyPeriod();
-        Date since = dto.getSince();
-        Date until = dto.getUntil();
+        LocalDateTime since = dto.getSince();
+        LocalDateTime until = dto.getUntil();
         Period period = getPeriod(since, until);
         List<TimeDomainStat> pageviewTrend = statRepositoryNativeSql.getPageviewTrend(since, until, period);
         testSerializeAndPrintStats(pageviewTrend, dto, "Daily Pageview Trend");
@@ -138,8 +137,8 @@ public class StatRepositoryTest {
     @Test
     public void testRetrieveOneDayPageviewTrend() throws JsonProcessingException {
         PeriodDto dto = getOneDayPeriod();
-        Date since = dto.getSince();
-        Date until = dto.getUntil();
+        LocalDateTime since = dto.getSince();
+        LocalDateTime until = dto.getUntil();
         Period period = getPeriod(since, until);
         List<TimeDomainStat> pageviewTrend = statRepositoryNativeSql.getPageviewTrend(since, until, period);
         testSerializeAndPrintStats(pageviewTrend, dto, "One Day Pageview Trend");
@@ -280,32 +279,32 @@ public class StatRepositoryTest {
 
 
     private PeriodDto getYearlyPeriod() {
-        Date since = newDate(2015, 4, 20, 0, 0);
-        Date until = newDate(2017, 4, 26, 23, 59, 59);
+        LocalDateTime since = LocalDateTime.of(2015, 4, 20, 0, 0);
+        LocalDateTime until = LocalDateTime.of(2017, 4, 26, 23, 59, 59);
         return new PeriodDto(since, until);
     }
 
     private PeriodDto getMonthlyPeriod() {
-        Date since = newDate(2017, 2, 20, 0, 0);
-        Date until = newDate(2017, 4, 25, 23, 59, 59);
+        LocalDateTime since = LocalDateTime.of(2017, 2, 20, 0, 0);
+        LocalDateTime until = LocalDateTime.of(2017, 4, 25, 23, 59, 59);
         return new PeriodDto(since, until);
     }
 
     private PeriodDto getDailyPeriod() {
-        Date since = newDate(2017, 4, 24, 0, 0);
-        Date until = newDate(2017, 4, 26, 23, 59, 59);
+        LocalDateTime since = LocalDateTime.of(2017, 4, 24, 0, 0);
+        LocalDateTime until = LocalDateTime.of(2017, 4, 26, 23, 59, 59);
         return new PeriodDto(since, until);
     }
 
     private PeriodDto getOneDayPeriod() {
-        Date since = newDate(2017, 4, 26, 0, 0, 0);
-        Date until = newDate(2017, 4, 26, 23, 59, 59);
+        LocalDateTime since = LocalDateTime.of(2017, 4, 26, 0, 0, 0);
+        LocalDateTime until = LocalDateTime.of(2017, 4, 26, 23, 59, 59);
         return new PeriodDto(since, until);
     }
 
     private Long testRetrieveTotals(PeriodDto dto) {
-        Date since = dto.getSince();
-        Date until = dto.getUntil();
+        LocalDateTime since = dto.getSince();
+        LocalDateTime until = dto.getUntil();
         Long result = statRepositoryNativeSql.getTotalPageviews(since, until);
         System.out.println("Date since: " + since);
         System.out.println("Date until: " + until);
@@ -325,8 +324,8 @@ public class StatRepositoryTest {
     }
 
     private void printPeriod(PeriodDto dto) {
-        Date since = dto.getSince();
-        Date until = dto.getUntil();
+        LocalDateTime since = dto.getSince();
+        LocalDateTime until = dto.getUntil();
         System.out.println("Date since: " + since);
         System.out.println("Date until: " + until);
     }

@@ -10,7 +10,6 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 
 
 @SpringBootApplication
@@ -30,11 +29,6 @@ public class NewIndiepostApplication extends SpringBootServletInitializer {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new MySQLPasswordEncoder();
-    }
-
-    @Bean
-    public Java8TimeDialect java8TimeDialect() {
-        return new Java8TimeDialect();
     }
 
 //    @Bean

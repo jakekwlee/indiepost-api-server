@@ -18,8 +18,8 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.time.Period;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -54,12 +54,12 @@ public class StatRepositoryNativeSql implements StatRepository {
     }
 
     @Override
-    public Long getTotalPageviews(Date since, Date until) {
+    public Long getTotalPageviews(LocalDateTime since, LocalDateTime until) {
         return getTotalPageviews(since, until, null);
     }
 
     @Override
-    public Long getTotalUniquePageviews(Date since, Date until) {
+    public Long getTotalUniquePageviews(LocalDateTime since, LocalDateTime until) {
         String sqlQuery = "SELECT count(DISTINCT s.path, v.id) FROM Stats s " +
                 "INNER JOIN Visitors v ON s.visitorId = v.id " +
                 "WHERE s.timestamp BETWEEN :s AND :u " +
@@ -71,7 +71,7 @@ public class StatRepositoryNativeSql implements StatRepository {
     }
 
     @Override
-    public Long getTotalUniquePostviews(Date since, Date until) {
+    public Long getTotalUniquePostviews(LocalDateTime since, LocalDateTime until) {
         String sqlQuery = "SELECT count(DISTINCT s.postId, v.id) FROM Stats s " +
                 "INNER JOIN Visitors v ON s.visitorId = v.id " +
                 "WHERE s.timestamp BETWEEN :s AND :u " +
@@ -84,12 +84,12 @@ public class StatRepositoryNativeSql implements StatRepository {
     }
 
     @Override
-    public Long getTotalPostviews(Date since, Date until) {
+    public Long getTotalPostviews(LocalDateTime since, LocalDateTime until) {
         return getTotalPageviews(since, until, StatType.POST);
     }
 
     @Override
-    public Long getTotalPageviews(Date since, Date until, StatType type) {
+    public Long getTotalPageviews(LocalDateTime since, LocalDateTime until, StatType type) {
         Criteria criteria = getSession().createCriteria(Stat.class);
         criteria.createAlias("visitor", "v");
         criteria.add(Restrictions.ne("v.browser", "Googlebot"));
@@ -103,12 +103,12 @@ public class StatRepositoryNativeSql implements StatRepository {
     }
 
     @Override
-    public Long getTotalVisitors(Date since, Date until) {
+    public Long getTotalVisitors(LocalDateTime since, LocalDateTime until) {
         return getTotalVisitors(since, until, null);
     }
 
     @Override
-    public Long getTotalVisitors(Date since, Date until, ClientType appName) {
+    public Long getTotalVisitors(LocalDateTime since, LocalDateTime until, ClientType appName) {
         Criteria criteria = getSession().createCriteria(Visitor.class);
         criteria.add(Restrictions.ne("browser", "Googlebot"));
         criteria.add(Restrictions.ne("browser", "Mediapartners-Google"));
@@ -121,7 +121,7 @@ public class StatRepositoryNativeSql implements StatRepository {
     }
 
     @Override
-    public List<TimeDomainStat> getPageviewTrend(Date since, Date until, Period period) {
+    public List<TimeDomainStat> getPageviewTrend(LocalDateTime since, LocalDateTime until, Period period) {
         String sqlQuery;
         if (period.getYears() > 1) {
             sqlQuery = "SELECT makedate(year(s.timestamp), 1) AS statDatetime, count(*) AS statCount " +
@@ -165,7 +165,7 @@ public class StatRepositoryNativeSql implements StatRepository {
     }
 
     @Override
-    public List<TimeDomainStat> getVisitorTrend(Date since, Date until, Period period) {
+    public List<TimeDomainStat> getVisitorTrend(LocalDateTime since, LocalDateTime until, Period period) {
         String sqlQuery;
         if (period.getYears() > 1) {
             sqlQuery = "SELECT makedate(year(v.timestamp), 1) AS statDatetime, count(*) AS statCount " +
@@ -205,7 +205,7 @@ public class StatRepositoryNativeSql implements StatRepository {
     }
 
     @Override
-    public List<ShareStat> getPageviewsByCategory(Date since, Date until) {
+    public List<ShareStat> getPageviewsByCategory(LocalDateTime since, LocalDateTime until) {
         String sqlQuery =
                 "SELECT c.name AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -217,14 +217,14 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "GROUP BY c.name " +
                         "ORDER BY statCount DESC";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
+        query.setParameter("s", since);
+        query.setParameter("u", until);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStat> getPageviewByAuthor(Date since, Date until) {
+    public List<ShareStat> getPageviewByAuthor(LocalDateTime since, LocalDateTime until) {
         String sqlQuery =
                 "SELECT p.displayName AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -235,14 +235,14 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "GROUP BY p.displayName " +
                         "ORDER BY statCount DESC";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
+        query.setParameter("s", since);
+        query.setParameter("u", until);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStat> getTopPages(Date since, Date until, Long limit, ClientType type) {
+    public List<ShareStat> getTopPages(LocalDateTime since, LocalDateTime until, Long limit, ClientType type) {
         String sqlQuery =
                 "SELECT ifnull(p.title, s.path) AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -255,8 +255,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
+        query.setParameter("s", since);
+        query.setParameter("u", until);
         query.setString("t", type.toString());
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
@@ -264,7 +264,7 @@ public class StatRepositoryNativeSql implements StatRepository {
     }
 
     @Override
-    public List<ShareStat> getTopPosts(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopPosts(LocalDateTime since, LocalDateTime until, Long limit) {
         String sqlQuery =
                 "SELECT p.title AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -276,15 +276,15 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
+        query.setParameter("s", since);
+        query.setParameter("u", until);
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStat> getTopPosts(Date since, Date until, Long limit, ClientType type) {
+    public List<ShareStat> getTopPosts(LocalDateTime since, LocalDateTime until, Long limit, ClientType type) {
         String sqlQuery =
                 "SELECT p.title AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -298,8 +298,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
+        query.setParameter("s", since);
+        query.setParameter("u", until);
         query.setString("st", StatType.POST.toString());
         query.setString("t", type.toString());
         query.setLong("l", limit);
@@ -308,7 +308,7 @@ public class StatRepositoryNativeSql implements StatRepository {
     }
 
     @Override
-    public List<PostStat> getPostsOrderByPageviews(Date since, Date until, Long limit) {
+    public List<PostStat> getPostsOrderByPageviews(LocalDateTime since, LocalDateTime until, Long limit) {
         String sqlQuery =
                 "SELECT p.id AS id, p.title AS title, p.displayName AS author, c.name AS category, count(*) AS pageview " +
                         "FROM Stats s " +
@@ -321,15 +321,15 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY pageview DESC , p.id DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
+        query.setParameter("s", since);
+        query.setParameter("u", until);
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(PostStat.class));
         return query.list();
     }
 
     @Override
-    public List<PostStat> getPostsOrderByUniquePageviews(Date since, Date until, Long limit) {
+    public List<PostStat> getPostsOrderByUniquePageviews(LocalDateTime since, LocalDateTime until, Long limit) {
         String sqlQuery =
                 "SELECT s.postId AS id, count(DISTINCT v.id) AS uniquePageview " +
                         "FROM Stats s " +
@@ -341,15 +341,15 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY uniquePageview DESC, s.postId DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
+        query.setParameter("s", since);
+        query.setParameter("u", until);
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(PostStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStat> getTopLandingPages(Date since, Date until, Long limit, ClientType type) {
+    public List<ShareStat> getTopLandingPages(LocalDateTime since, LocalDateTime until, Long limit, ClientType type) {
         String sqlQuery =
                 "SELECT ifnull(p.title, s.path) AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -362,8 +362,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
+        query.setParameter("s", since);
+        query.setParameter("u", until);
         query.setString("t", type.toString());
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
@@ -371,7 +371,7 @@ public class StatRepositoryNativeSql implements StatRepository {
     }
 
     @Override
-    public List<ShareStat> getTopLandingPosts(Date since, Date until, Long limit, ClientType type) {
+    public List<ShareStat> getTopLandingPosts(LocalDateTime since, LocalDateTime until, Long limit, ClientType type) {
         String sqlQuery =
                 "SELECT p.title AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -385,8 +385,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
+        query.setParameter("s", since);
+        query.setParameter("u", until);
         query.setString("st", StatType.POST.toString());
         query.setString("t", type.toString());
         query.setLong("l", limit);
@@ -395,7 +395,7 @@ public class StatRepositoryNativeSql implements StatRepository {
     }
 
     @Override
-    public List<ShareStat> getSecondaryViewedPages(Date since, Date until, Long limit, ClientType type) {
+    public List<ShareStat> getSecondaryViewedPages(LocalDateTime since, LocalDateTime until, Long limit, ClientType type) {
         String sqlQuery =
                 "SELECT ifnull(p.title, s.path) AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -408,8 +408,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
+        query.setParameter("s", since);
+        query.setParameter("u", until);
         query.setString("t", type.toString());
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
@@ -417,7 +417,7 @@ public class StatRepositoryNativeSql implements StatRepository {
     }
 
     @Override
-    public List<ShareStat> getSecondaryViewedPosts(Date since, Date until, Long limit, ClientType type) {
+    public List<ShareStat> getSecondaryViewedPosts(LocalDateTime since, LocalDateTime until, Long limit, ClientType type) {
         String sqlQuery =
                 "SELECT p.title AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -431,8 +431,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
+        query.setParameter("s", since);
+        query.setParameter("u", until);
         query.setString("st", StatType.POST.toString());
         query.setString("t", type.toString());
         query.setLong("l", limit);
@@ -441,7 +441,7 @@ public class StatRepositoryNativeSql implements StatRepository {
     }
 
     @Override
-    public List<ShareStat> getTopReferrers(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopReferrers(LocalDateTime since, LocalDateTime until, Long limit) {
         String sqlQuery =
                 "SELECT s.referrer AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -454,15 +454,15 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
+        query.setParameter("s", since);
+        query.setParameter("u", until);
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStat> getTopWebBrowsers(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopWebBrowsers(LocalDateTime since, LocalDateTime until, Long limit) {
         String sqlQuery =
                 "SELECT v.browser AS statName, count(*) AS statCount " +
                         "FROM Visitors v " +
@@ -472,15 +472,15 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
+        query.setParameter("s", since);
+        query.setParameter("u", until);
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStat> getTopOs(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopOs(LocalDateTime since, LocalDateTime until, Long limit) {
         String sqlQuery =
                 "SELECT v.os AS statName, count(*) AS statCount " +
                         "FROM Visitors v " +
@@ -490,15 +490,15 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
+        query.setParameter("s", since);
+        query.setParameter("u", until);
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStat> getTopTags(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopTags(LocalDateTime since, LocalDateTime until, Long limit) {
         String sqlQuery =
                 "SELECT t.name AS statName, count(*) AS statCount FROM Stats s " +
                         "INNER JOIN Visitors v ON s.visitorId = v.id " +
@@ -511,15 +511,15 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
+        query.setParameter("s", since);
+        query.setParameter("u", until);
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
 
     @Override
-    public List<ShareStat> getTopChannel(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopChannel(LocalDateTime since, LocalDateTime until, Long limit) {
         String sqlQuery =
                 "SELECT s.channel AS statName, count(*) AS statCount " +
                         "FROM Stats s " +
@@ -531,8 +531,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setTimestamp("s", since);
-        query.setTimestamp("u", until);
+        query.setParameter("s", since);
+        query.setParameter("u", until);
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
@@ -542,7 +542,7 @@ public class StatRepositoryNativeSql implements StatRepository {
         return entityManager.unwrap(Session.class);
     }
 
-    private void setDateCriteria(Criteria criteria, Date since, Date until) {
+    private void setDateCriteria(Criteria criteria, LocalDateTime since, LocalDateTime until) {
         criteria.add(Restrictions.between("timestamp", since, until));
     }
 }

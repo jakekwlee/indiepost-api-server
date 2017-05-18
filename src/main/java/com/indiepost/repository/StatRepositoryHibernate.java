@@ -18,8 +18,8 @@ import org.hibernate.type.Type;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.LocalDateTime;
 import java.time.Period;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -52,12 +52,12 @@ public class StatRepositoryHibernate implements StatRepository {
 
 
     @Override
-    public Long getTotalPageviews(Date since, Date until) {
+    public Long getTotalPageviews(LocalDateTime since, LocalDateTime until) {
         return getTotalPageviews(since, until, null);
     }
 
     @Override
-    public Long getTotalUniquePageviews(Date since, Date until) {
+    public Long getTotalUniquePageviews(LocalDateTime since, LocalDateTime until) {
         DetachedCriteria subQuery = DetachedCriteria.forClass(Stat.class, "s");
         subQuery.createAlias("s.visitor", "v");
         subQuery.add(Restrictions.ne("v.browser", "Googlebot"));
@@ -77,7 +77,7 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public Long getTotalUniquePostviews(Date since, Date until) {
+    public Long getTotalUniquePostviews(LocalDateTime since, LocalDateTime until) {
         DetachedCriteria subQuery = DetachedCriteria.forClass(Stat.class, "s");
         subQuery.createAlias("s.visitor", "v");
         subQuery.add(Restrictions.ne("v.browser", "Googlebot"));
@@ -98,12 +98,12 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public Long getTotalPostviews(Date since, Date until) {
+    public Long getTotalPostviews(LocalDateTime since, LocalDateTime until) {
         return getTotalPageviews(since, until, Types.StatType.POST);
     }
 
     @Override
-    public Long getTotalPageviews(Date since, Date until, Types.StatType type) {
+    public Long getTotalPageviews(LocalDateTime since, LocalDateTime until, Types.StatType type) {
         Criteria criteria = getSession().createCriteria(Stat.class);
         criteria.createAlias("s.visitor", "v");
         criteria.add(Restrictions.ne("v.browser", "Googlebot"));
@@ -116,12 +116,12 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public Long getTotalVisitors(Date since, Date until) {
+    public Long getTotalVisitors(LocalDateTime since, LocalDateTime until) {
         return getTotalVisitors(since, until, null);
     }
 
     @Override
-    public Long getTotalVisitors(Date since, Date until, Types.ClientType appName) {
+    public Long getTotalVisitors(LocalDateTime since, LocalDateTime until, Types.ClientType appName) {
         Criteria criteria = getSession().createCriteria(Visitor.class, "v");
         criteria.add(Restrictions.ne("v.browser", "Googlebot"));
         criteria.add(Restrictions.between("v.timestamp", since, until));
@@ -133,17 +133,17 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public List<PostStat> getPostsOrderByPageviews(Date since, Date until, Long limit) {
+    public List<PostStat> getPostsOrderByPageviews(LocalDateTime since, LocalDateTime until, Long limit) {
         return null;
     }
 
     @Override
-    public List<PostStat> getPostsOrderByUniquePageviews(Date since, Date until, Long limit) {
+    public List<PostStat> getPostsOrderByUniquePageviews(LocalDateTime since, LocalDateTime until, Long limit) {
         return null;
     }
 
     @Override
-    public List<TimeDomainStat> getPageviewTrend(Date since, Date until, Period period) {
+    public List<TimeDomainStat> getPageviewTrend(LocalDateTime since, LocalDateTime until, Period period) {
         Criteria criteria = getSession().createCriteria(Stat.class, "s");
         criteria.createAlias("s.visitor", "v");
         criteria.add(Restrictions.between("s.timestamp", since, until));
@@ -179,7 +179,7 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public List<TimeDomainStat> getVisitorTrend(Date since, Date until, Period period) {
+    public List<TimeDomainStat> getVisitorTrend(LocalDateTime since, LocalDateTime until, Period period) {
         Criteria criteria = getSession().createCriteria(Visitor.class, "v");
         criteria.add(Restrictions.between("v.timestamp", since, until));
         criteria.add(Restrictions.ne("v.browser", "Googlebot"));
@@ -214,7 +214,7 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public List<ShareStat> getPageviewsByCategory(Date since, Date until) {
+    public List<ShareStat> getPageviewsByCategory(LocalDateTime since, LocalDateTime until) {
         Criteria criteria = getSession().createCriteria(Stat.class, "s");
         criteria.createAlias("s.post", "p");
         criteria.createAlias("s.category", "c");
@@ -235,7 +235,7 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public List<ShareStat> getPageviewByAuthor(Date since, Date until) {
+    public List<ShareStat> getPageviewByAuthor(LocalDateTime since, LocalDateTime until) {
         Criteria criteria = getSession().createCriteria(Stat.class, "s");
         criteria.createAlias("s.post", "p");
         String[] columnAliases = new String[]{"statName", "statCount"};
@@ -255,7 +255,7 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public List<ShareStat> getTopPages(Date since, Date until, Long limit, Types.ClientType type) {
+    public List<ShareStat> getTopPages(LocalDateTime since, LocalDateTime until, Long limit, Types.ClientType type) {
         Criteria criteria = getSession().createCriteria(Stat.class, "s");
         criteria.createAlias("s.visitor", "v");
         criteria.createAlias("s.post", "p", JoinType.LEFT_OUTER_JOIN);
@@ -279,7 +279,7 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public List<ShareStat> getTopPosts(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopPosts(LocalDateTime since, LocalDateTime until, Long limit) {
         Criteria criteria = getSession().createCriteria(Stat.class, "s");
         criteria.createAlias("s.visitor", "v");
         criteria.createAlias("s.post", "p");
@@ -302,32 +302,32 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public List<ShareStat> getTopPosts(Date since, Date until, Long limit, Types.ClientType type) {
+    public List<ShareStat> getTopPosts(LocalDateTime since, LocalDateTime until, Long limit, Types.ClientType type) {
         return null;
     }
 
     @Override
-    public List<ShareStat> getTopLandingPages(Date since, Date until, Long limit, Types.ClientType type) {
+    public List<ShareStat> getTopLandingPages(LocalDateTime since, LocalDateTime until, Long limit, Types.ClientType type) {
         return null;
     }
 
     @Override
-    public List<ShareStat> getTopLandingPosts(Date since, Date until, Long limit, Types.ClientType type) {
+    public List<ShareStat> getTopLandingPosts(LocalDateTime since, LocalDateTime until, Long limit, Types.ClientType type) {
         return null;
     }
 
     @Override
-    public List<ShareStat> getSecondaryViewedPages(Date since, Date until, Long limit, Types.ClientType type) {
+    public List<ShareStat> getSecondaryViewedPages(LocalDateTime since, LocalDateTime until, Long limit, Types.ClientType type) {
         return null;
     }
 
     @Override
-    public List<ShareStat> getSecondaryViewedPosts(Date since, Date until, Long limit, Types.ClientType type) {
+    public List<ShareStat> getSecondaryViewedPosts(LocalDateTime since, LocalDateTime until, Long limit, Types.ClientType type) {
         return null;
     }
 
     @Override
-    public List<ShareStat> getTopReferrers(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopReferrers(LocalDateTime since, LocalDateTime until, Long limit) {
         Criteria criteria = getSession().createCriteria(Stat.class, "s");
         criteria.createAlias("s.visitor", "v");
         String[] columnAliases = new String[]{"statName", "statCount"};
@@ -349,7 +349,7 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public List<ShareStat> getTopWebBrowsers(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopWebBrowsers(LocalDateTime since, LocalDateTime until, Long limit) {
         Criteria criteria = getSession().createCriteria(Visitor.class, "v");
         String[] columnAliases = new String[]{"statName", "statCount"};
         Type[] types = new Type[]{new StringType(), new LongType()};
@@ -370,7 +370,7 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public List<ShareStat> getTopOs(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopOs(LocalDateTime since, LocalDateTime until, Long limit) {
         Criteria criteria = getSession().createCriteria(Visitor.class, "v");
         String[] columnAliases = new String[]{"statName", "statCount"};
         Type[] types = new Type[]{new StringType(), new LongType()};
@@ -391,7 +391,7 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public List<ShareStat> getTopTags(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopTags(LocalDateTime since, LocalDateTime until, Long limit) {
         Criteria criteria = getSession().createCriteria(Stat.class, "s");
         criteria.createAlias("s.visitor", "v");
         criteria.createAlias("s.tags", "t");
@@ -414,7 +414,7 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public List<ShareStat> getTopChannel(Date since, Date until, Long limit) {
+    public List<ShareStat> getTopChannel(LocalDateTime since, LocalDateTime until, Long limit) {
         Criteria criteria = getSession().createCriteria(Stat.class, "s");
         criteria.createAlias("s.visitor", "v");
         String[] columnAliases = new String[]{"statName", "statCount"};
@@ -439,7 +439,7 @@ public class StatRepositoryHibernate implements StatRepository {
         return entityManager.unwrap(Session.class);
     }
 
-    private void setDateCriteria(Criteria criteria, Date since, Date until) {
+    private void setDateCriteria(Criteria criteria, LocalDateTime since, LocalDateTime until) {
         criteria.add(Restrictions.between("timestamp", since, until));
     }
 }

@@ -1,29 +1,29 @@
 package com.indiepost.dto.stat;
 
 import java.math.BigInteger;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Created by jake on 17. 4. 24.
  */
 public class TimeDomainStat {
-    private Date statDatetime;
+    private LocalDateTime statDatetime;
 
     private BigInteger statCount;
 
     public TimeDomainStat() {
     }
 
-    public TimeDomainStat(Date statDatetime, BigInteger statCount) {
+    public TimeDomainStat(LocalDateTime statDatetime, BigInteger statCount) {
         this.statDatetime = statDatetime;
         this.statCount = statCount;
     }
 
-    public Date getStatDatetime() {
+    public LocalDateTime getStatDatetime() {
         return statDatetime;
     }
 
-    public void setStatDatetime(Date statDatetime) {
+    public void setStatDatetime(LocalDateTime statDatetime) {
         this.statDatetime = statDatetime;
     }
 

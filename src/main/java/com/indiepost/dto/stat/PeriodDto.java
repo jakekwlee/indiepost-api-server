@@ -1,37 +1,37 @@
 package com.indiepost.dto.stat;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Created by jake on 17. 4. 27.
  */
 public class PeriodDto {
-    private Date since;
 
-    private Date until;
+    private LocalDateTime since;
+    private LocalDateTime until;
 
     public PeriodDto() {
 
     }
 
-    public PeriodDto(Date since, Date until) {
+    public PeriodDto(LocalDateTime since, LocalDateTime until) {
         this.since = since;
         this.until = until;
     }
 
-    public Date getSince() {
+    public LocalDateTime getSince() {
         return since;
     }
 
-    public void setSince(Date since) {
+    public void setSince(LocalDateTime since) {
         this.since = since;
     }
 
-    public Date getUntil() {
+    public LocalDateTime getUntil() {
         return until;
     }
 
-    public void setUntil(Date until) {
+    public void setUntil(LocalDateTime until) {
         this.until = until;
     }
 }

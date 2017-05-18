@@ -22,7 +22,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -123,7 +123,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     public List<Post> findScheduledPosts() {
         return getCriteria()
                 .add(Restrictions.eq("status", PostStatus.FUTURE))
-                .add(Restrictions.le("publishedAt", new Date()))
+                .add(Restrictions.le("publishedAt", LocalDateTime.now()))
                 .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
                 .list();
     }

@@ -6,7 +6,7 @@ import com.indiepost.dto.admin.AdminPostResponseDto;
 import com.indiepost.dto.admin.AdminPostSummaryDto;
 import com.indiepost.model.Post;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -45,7 +45,7 @@ public interface AdminPostService {
 
     List<AdminPostSummaryDto> getAdminPostTableDtoList(int page, int maxResults, boolean isDesc);
 
-    List<AdminPostSummaryDto> getLastUpdated(Date dateFrom);
+    List<AdminPostSummaryDto> getLastUpdated(LocalDateTime dateFrom);
 
     List<String> findAllDisplayNames();
 

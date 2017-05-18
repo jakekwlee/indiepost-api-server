@@ -11,14 +11,14 @@ import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.service.CategoryService;
 import com.indiepost.service.ImageService;
-import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -230,8 +230,7 @@ public class PostMapperServiceImpl implements PostMapperService {
         }
     }
 
-    private String getDateString(Date date) {
-        FastDateFormat fastDateFormat = FastDateFormat.getInstance("yy/MM/dd HH:mm ", Locale.KOREA);
-        return fastDateFormat.format(date);
+    private String getDateString(LocalDateTime ldt) {
+        return ldt.format(DateTimeFormatter.ofPattern("yy/MM/dd HH:mm ", Locale.KOREA));
     }
 }

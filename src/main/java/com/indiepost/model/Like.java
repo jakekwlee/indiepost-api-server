@@ -2,7 +2,7 @@ package com.indiepost.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Created by jake on 7/25/16.
@@ -24,7 +24,7 @@ public class Like implements Serializable {
     private Post post;
 
     @Column(nullable = false)
-    private Date likedAt;
+    private LocalDateTime likedAt;
 
     public User getUser() {
         return user;
@@ -42,11 +42,11 @@ public class Like implements Serializable {
         this.post = post;
     }
 
-    public Date getLikedAt() {
+    public LocalDateTime getLikedAt() {
         return likedAt;
     }
 
-    public void setLikedAt(Date likedAt) {
+    public void setLikedAt(LocalDateTime likedAt) {
         this.likedAt = likedAt;
     }
 }

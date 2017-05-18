@@ -10,7 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -50,7 +50,7 @@ public class User implements Serializable {
     private String displayName;
 
     @Column(nullable = false)
-    private Date joinedAt;
+    private LocalDateTime joinedAt;
 
     @Pattern(regexp = "^01[\\d]{8,9}")
     @Size(min = 7, max = 15)
@@ -59,7 +59,7 @@ public class User implements Serializable {
     @Size(max = 100)
     private String uuid;
 
-    private Date birthday;
+    private LocalDateTime birthday;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -155,11 +155,11 @@ public class User implements Serializable {
         this.displayName = displayName;
     }
 
-    public Date getJoinedAt() {
+    public LocalDateTime getJoinedAt() {
         return joinedAt;
     }
 
-    public void setJoinedAt(Date joinedAt) {
+    public void setJoinedAt(LocalDateTime joinedAt) {
         this.joinedAt = joinedAt;
     }
 
@@ -179,11 +179,11 @@ public class User implements Serializable {
         this.uuid = uuid;
     }
 
-    public Date getBirthday() {
+    public LocalDateTime getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(LocalDateTime birthday) {
         this.birthday = birthday;
     }
 

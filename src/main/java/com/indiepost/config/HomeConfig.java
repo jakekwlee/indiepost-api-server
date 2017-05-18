@@ -1,13 +1,15 @@
 package com.indiepost.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 /**
  * Created by jake on 17. 2. 26.
  */
-@Component
-@ConfigurationProperties(prefix = "indiepost.home", locations = "classpath:indiepost.yml")
+@Configuration
+@PropertySource("classpath:webapp.properties")
+@ConfigurationProperties(prefix = "webapp")
 public class HomeConfig {
     private boolean serverSideRendering;
     private int fetchCount;

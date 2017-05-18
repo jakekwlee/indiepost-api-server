@@ -52,7 +52,7 @@ public class DateUtils {
         return localDateTimeToDate(localDateTime);
     }
 
-    public static List<TimeDomainStat> normalizeTimeDomainStats(List<TimeDomainStat> list, Date since, Date until) {
+    public static List<TimeDomainStat> normalizeTimeDomainStats(List<TimeDomainStat> list, LocalDateTime since, LocalDateTime until) {
         Period period = getPeriod(since, until);
         int days = period.getDays() + 1;
         int length = list.size();
@@ -65,28 +65,24 @@ public class DateUtils {
         List<TimeDomainStat> results = new ArrayList<>();
 
         for (int i = 0; i < days; ++i) {
-            Date date;
+            LocalDateTime localDateTime;
             if (i == 0) {
-                date = since;
+                localDateTime = since;
             } else {
-                date = until;
+                localDateTime = until;
             }
-            LocalDateTime localDateTime = dateToLocalDateTime(date);
             int year = localDateTime.getYear();
             int month = localDateTime.getMonthValue();
             int day = localDateTime.getDayOfMonth();
 
             for (int hour = 0; hour < 24; ++hour) {
                 LocalDateTime ldt = LocalDateTime.of(year, month, day, hour, 0);
-                Date newDate = localDateTimeToDate(ldt);
-                results.add(new TimeDomainStat(newDate, zero));
+                results.add(new TimeDomainStat(ldt, zero));
             }
         }
-        LocalDateTime sinceLdt = dateToLocalDateTime(since);
         for (TimeDomainStat tdr : list) {
-            Date d = tdr.getStatDatetime();
-            LocalDateTime ldt = dateToLocalDateTime(d);
-            int n = Math.toIntExact(ChronoUnit.HOURS.between(sinceLdt, ldt)) / 24;
+            LocalDateTime ldt = tdr.getStatDatetime();
+            int n = Math.toIntExact(ChronoUnit.HOURS.between(since, ldt)) / 24;
             int index = ldt.getHour() + n * 24;
             TimeDomainStat result = results.get(index);
             result.setStatCount(tdr.getStatCount());
@@ -95,9 +91,7 @@ public class DateUtils {
         return results;
     }
 
-    public static Period getPeriod(Date since, Date until) {
-        LocalDate start = dateToLocalDate(since);
-        LocalDate end = dateToLocalDate(until);
-        return Period.between(start, end);
+    public static Period getPeriod(LocalDateTime since, LocalDateTime until) {
+        return Period.between(since.toLocalDate(), until.toLocalDate());
     }
 }

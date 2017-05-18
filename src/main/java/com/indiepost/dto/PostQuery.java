@@ -1,6 +1,6 @@
 package com.indiepost.dto;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import static com.indiepost.enums.Types.PostStatus;
 
@@ -19,9 +19,9 @@ public class PostQuery {
 
     private String categorySlug;
 
-    private Date dateFrom;
+    private LocalDateTime dateFrom;
 
-    private Date dateTo;
+    private LocalDateTime dateTo;
 
     private int page = 0;
 
@@ -84,19 +84,19 @@ public class PostQuery {
     }
 
 
-    public Date getDateFrom() {
+    public LocalDateTime getDateFrom() {
         return dateFrom;
     }
 
-    public void setDateFrom(Date dateFrom) {
+    public void setDateFrom(LocalDateTime dateFrom) {
         this.dateFrom = dateFrom;
     }
 
-    public Date getDateTo() {
+    public LocalDateTime getDateTo() {
         return dateTo;
     }
 
-    public void setDateTo(Date dateTo) {
+    public void setDateTo(LocalDateTime dateTo) {
         this.dateTo = dateTo;
     }
 

@@ -1,7 +1,8 @@
 package com.indiepost.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 import java.util.List;
 
@@ -9,8 +10,9 @@ import java.util.List;
  * Created by jake on 11/5/16.
  */
 
-@Component
-@ConfigurationProperties(prefix = "indiepost.images", locations = "classpath:indiepost.yml")
+@Configuration
+@PropertySource("classpath:webapp.properties")
+@ConfigurationProperties(prefix = "images")
 public class ImageConfig {
     private String fsRoot;
 

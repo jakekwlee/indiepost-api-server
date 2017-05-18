@@ -7,8 +7,7 @@ import com.indiepost.service.AdminPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -63,14 +62,7 @@ public class AdminPostController {
 
     @RequestMapping(value = "/lastUpdated", method = RequestMethod.GET)
     public List<AdminPostSummaryDto> getLastUpdated() {
-        return adminPostService.getLastUpdated(getYesterday());
+        return adminPostService.getLastUpdated(LocalDateTime.now().minusDays(1));
     }
 
-
-    private Date getYesterday() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        cal.add(Calendar.DAY_OF_YEAR, -1);
-        return cal.getTime();
-    }
 }

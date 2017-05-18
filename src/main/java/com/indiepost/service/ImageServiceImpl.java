@@ -20,8 +20,12 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by jake on 8/17/16.
@@ -60,12 +64,11 @@ public class ImageServiceImpl implements ImageService {
             String alphanumeric = RandomStringUtils.randomAlphanumeric(imageConfig.getFilenameLength());
             String fileExtension = contentType.split("/")[1];
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("/yyyy/MM");
-            String baseUrl = imageConfig.getDbLocation() + dateFormat.format(new Date());
+            String baseUrl = imageConfig.getDbLocation() + LocalDateTime.now().format(DateTimeFormatter.ofPattern("/yyyy/MM"));
 
             ImageSet imageSet = new ImageSet();
             imageSet.setContentType(contentType);
-            imageSet.setUploadedAt(new Date());
+            imageSet.setUploadedAt(LocalDateTime.now());
             Set<Image> images = new HashSet<>();
 
             BufferedImage bufferedImage = getBufferedImageFromMultipartFile(file);

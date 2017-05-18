@@ -1,6 +1,6 @@
 package com.indiepost.dto;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Created by jake on 17. 3. 5.
@@ -19,9 +19,9 @@ public class PageDto {
 
     private String authorDisplayName;
 
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
-    private Date modifiedAt;
+    private LocalDateTime modifiedAt;
 
     private String type = "";
 
@@ -73,19 +73,19 @@ public class PageDto {
         this.authorDisplayName = authorDisplayName;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getModifiedAt() {
+    public LocalDateTime getModifiedAt() {
         return modifiedAt;
     }
 
-    public void setModifiedAt(Date modifiedAt) {
+    public void setModifiedAt(LocalDateTime modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
 

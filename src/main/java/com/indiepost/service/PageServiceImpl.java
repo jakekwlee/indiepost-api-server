@@ -11,7 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -43,9 +43,8 @@ public class PageServiceImpl implements PageService {
         User currentUser = userService.getCurrentUser();
         page.setAuthor(currentUser);
 
-        Date now = new Date();
-        page.setCreatedAt(now);
-        page.setModifiedAt(now);
+        page.setCreatedAt(LocalDateTime.now());
+        page.setModifiedAt(LocalDateTime.now());
         return pageRepository.save(page);
     }
 
@@ -58,8 +57,7 @@ public class PageServiceImpl implements PageService {
         page.setDisplayOrder(pageDto.getDisplayOrder());
         page.setType(pageDto.getType());
 
-        Date now = new Date();
-        page.setModifiedAt(now);
+        page.setModifiedAt(LocalDateTime.now());
         pageRepository.update(page);
     }
 

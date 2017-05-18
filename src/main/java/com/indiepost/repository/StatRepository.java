@@ -8,8 +8,8 @@ import com.indiepost.enums.Types.ClientType;
 import com.indiepost.enums.Types.StatType;
 import com.indiepost.model.Stat;
 
+import java.time.LocalDateTime;
 import java.time.Period;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,53 +25,53 @@ public interface StatRepository {
 
     void update(Stat stat);
 
-    Long getTotalPageviews(Date since, Date until);
+    Long getTotalPageviews(LocalDateTime since, LocalDateTime LocalDateTime);
 
-    Long getTotalUniquePageviews(Date since, Date until);
+    Long getTotalUniquePageviews(LocalDateTime since, LocalDateTime until);
 
-    Long getTotalUniquePostviews(Date since, Date until);
+    Long getTotalUniquePostviews(LocalDateTime since, LocalDateTime until);
 
-    Long getTotalPostviews(Date since, Date until);
+    Long getTotalPostviews(LocalDateTime since, LocalDateTime until);
 
-    Long getTotalPageviews(Date since, Date until, StatType type);
+    Long getTotalPageviews(LocalDateTime since, LocalDateTime until, StatType type);
 
-    Long getTotalVisitors(Date since, Date until);
+    Long getTotalVisitors(LocalDateTime since, LocalDateTime until);
 
-    Long getTotalVisitors(Date since, Date until, ClientType appName);
+    Long getTotalVisitors(LocalDateTime since, LocalDateTime until, ClientType appName);
 
-    List<PostStat> getPostsOrderByPageviews(Date since, Date until, Long limit);
+    List<PostStat> getPostsOrderByPageviews(LocalDateTime since, LocalDateTime until, Long limit);
 
-    List<PostStat> getPostsOrderByUniquePageviews(Date since, Date until, Long limit);
+    List<PostStat> getPostsOrderByUniquePageviews(LocalDateTime since, LocalDateTime until, Long limit);
 
-    List<TimeDomainStat> getPageviewTrend(Date since, Date until, Period period);
+    List<TimeDomainStat> getPageviewTrend(LocalDateTime since, LocalDateTime until, Period period);
 
-    List<TimeDomainStat> getVisitorTrend(Date since, Date until, Period period);
+    List<TimeDomainStat> getVisitorTrend(LocalDateTime since, LocalDateTime until, Period period);
 
-    List<ShareStat> getPageviewsByCategory(Date since, Date until);
+    List<ShareStat> getPageviewsByCategory(LocalDateTime since, LocalDateTime until);
 
-    List<ShareStat> getPageviewByAuthor(Date since, Date until);
+    List<ShareStat> getPageviewByAuthor(LocalDateTime since, LocalDateTime until);
 
-    List<ShareStat> getTopPages(Date since, Date until, Long limit, Types.ClientType type);
+    List<ShareStat> getTopPages(LocalDateTime since, LocalDateTime until, Long limit, Types.ClientType type);
 
-    List<ShareStat> getTopPosts(Date since, Date until, Long limit);
+    List<ShareStat> getTopPosts(LocalDateTime since, LocalDateTime until, Long limit);
 
-    List<ShareStat> getTopPosts(Date since, Date until, Long limit, Types.ClientType type);
+    List<ShareStat> getTopPosts(LocalDateTime since, LocalDateTime until, Long limit, Types.ClientType type);
 
-    List<ShareStat> getTopLandingPages(Date since, Date until, Long limit, Types.ClientType type);
+    List<ShareStat> getTopLandingPages(LocalDateTime since, LocalDateTime until, Long limit, Types.ClientType type);
 
-    List<ShareStat> getTopLandingPosts(Date since, Date until, Long limit, Types.ClientType type);
+    List<ShareStat> getTopLandingPosts(LocalDateTime since, LocalDateTime until, Long limit, Types.ClientType type);
 
-    List<ShareStat> getSecondaryViewedPages(Date since, Date until, Long limit, Types.ClientType type);
+    List<ShareStat> getSecondaryViewedPages(LocalDateTime since, LocalDateTime until, Long limit, Types.ClientType type);
 
-    List<ShareStat> getSecondaryViewedPosts(Date since, Date until, Long limit, Types.ClientType type);
+    List<ShareStat> getSecondaryViewedPosts(LocalDateTime since, LocalDateTime until, Long limit, Types.ClientType type);
 
-    List<ShareStat> getTopReferrers(Date since, Date until, Long limit);
+    List<ShareStat> getTopReferrers(LocalDateTime since, LocalDateTime until, Long limit);
 
-    List<ShareStat> getTopWebBrowsers(Date since, Date until, Long limit);
+    List<ShareStat> getTopWebBrowsers(LocalDateTime since, LocalDateTime until, Long limit);
 
-    List<ShareStat> getTopOs(Date since, Date until, Long limit);
+    List<ShareStat> getTopOs(LocalDateTime since, LocalDateTime until, Long limit);
 
-    List<ShareStat> getTopTags(Date since, Date until, Long limit);
+    List<ShareStat> getTopTags(LocalDateTime since, LocalDateTime until, Long limit);
 
-    List<ShareStat> getTopChannel(Date since, Date until, Long limit);
+    List<ShareStat> getTopChannel(LocalDateTime since, LocalDateTime until, Long limit);
 }
