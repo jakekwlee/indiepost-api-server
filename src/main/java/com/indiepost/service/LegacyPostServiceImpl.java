@@ -13,8 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -87,11 +86,11 @@ public class LegacyPostServiceImpl implements LegacyPostService {
         } else {
             status = 1L;
         }
-        DateFormat modifyDateFormat = new SimpleDateFormat("yyyyMMddHH");
-        DateFormat regDateFormat = new SimpleDateFormat("yyyyMMdd");
+        String regDatePattern = "yyyyMMdd";
+        String modifyDatePattern = "yyyyMMddHH";
 
-        contentlist.setRegdate(regDateFormat.format(post.getCreatedAt()));
-        contentlist.setModifydate(modifyDateFormat.format(post.getPublishedAt()));
+        contentlist.setRegdate(post.getCreatedAt().format(DateTimeFormatter.ofPattern(regDatePattern)));
+        contentlist.setModifydate(post.getPublishedAt().format(DateTimeFormatter.ofPattern(modifyDatePattern)));
         contentlist.setMenuno(post.getCategory().getId());
         contentlist.setContentname(StringEscapeUtils.escapeHtml4(post.getTitle()));
         contentlist.setContenttext(post.getExcerpt());

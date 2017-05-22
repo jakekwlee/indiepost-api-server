@@ -1,5 +1,8 @@
 package com.indiepost.dto.admin;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
 import java.util.List;
 
 /**
@@ -23,10 +26,13 @@ public class AdminPostSummaryDto {
 
     private String editorDisplayName;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private String createdAt;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private String publishedAt;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private String modifiedAt;
 
     private boolean featured;

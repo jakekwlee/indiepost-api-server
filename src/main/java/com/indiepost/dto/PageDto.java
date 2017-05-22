@@ -1,5 +1,8 @@
 package com.indiepost.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.indiepost.utils.LocalDateTimeSerializerCustom;
+
 import java.time.LocalDateTime;
 
 /**
@@ -19,8 +22,10 @@ public class PageDto {
 
     private String authorDisplayName;
 
+    @JsonSerialize(using = LocalDateTimeSerializerCustom.class)
     private LocalDateTime createdAt;
 
+    @JsonSerialize(using = LocalDateTimeSerializerCustom.class)
     private LocalDateTime modifiedAt;
 
     private String type = "";

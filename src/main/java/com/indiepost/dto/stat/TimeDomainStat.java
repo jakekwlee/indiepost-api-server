@@ -1,5 +1,8 @@
 package com.indiepost.dto.stat;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.indiepost.utils.LocalDateTimeSerializerCustom;
+
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 
@@ -7,6 +10,8 @@ import java.time.LocalDateTime;
  * Created by jake on 17. 4. 24.
  */
 public class TimeDomainStat {
+
+    @JsonSerialize(using = LocalDateTimeSerializerCustom.class)
     private LocalDateTime statDatetime;
 
     private BigInteger statCount;

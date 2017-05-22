@@ -1,8 +1,6 @@
 package com.indiepost.dto.admin;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.indiepost.dto.TagDto;
 
@@ -32,7 +30,6 @@ public class AdminPostRequestDto {
 
     private Long categoryId;
 
-    @JsonSerialize(using = ToStringSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime publishedAt;
 

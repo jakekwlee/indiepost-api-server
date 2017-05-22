@@ -15,15 +15,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:700">
     <link rel="apple-touch-icon" th:href="@{/resources/indiepost-react-webapp/css/app-icon-180.png}">
     <th:block th:utext="${res.link}"/>
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <script>
-      (adsbygoogle = window.adsbygoogle || []).push({
-        google_ad_client: "ca-pub-3970872138525868",
-        enable_page_level_ads: true
-      });
-    </script>
 </head>
-<body>
+<body class="day-theme">
 <div id="root" th:utext="${res.markup}">
 </div>
 <script th:inline="javascript">

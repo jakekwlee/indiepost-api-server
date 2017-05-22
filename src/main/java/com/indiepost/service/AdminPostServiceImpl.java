@@ -22,8 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,8 +35,6 @@ import java.util.stream.Collectors;
 public class AdminPostServiceImpl implements AdminPostService {
 
     private static final Logger log = LoggerFactory.getLogger(AdminPostServiceImpl.class);
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     private final AdminPostRepository adminPostRepository;
 
@@ -247,7 +245,7 @@ public class AdminPostServiceImpl implements AdminPostService {
             }
             post.setStatus(PostStatus.PUBLISH);
             adminPostRepository.update(post);
-            log.info(dateFormat.format(LocalDateTime.now()) + ": Publish Scheduled Post - " + post.getId());
+            log.info(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ": Publish Scheduled Post - " + post.getId());
         }
     }
 

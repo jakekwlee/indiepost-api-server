@@ -9,7 +9,6 @@ import com.indiepost.enums.Types.StatType;
 import com.indiepost.model.Stat;
 
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.List;
 
 /**
@@ -25,7 +24,7 @@ public interface StatRepository {
 
     void update(Stat stat);
 
-    Long getTotalPageviews(LocalDateTime since, LocalDateTime LocalDateTime);
+    Long getTotalPageviews(LocalDateTime since, LocalDateTime until);
 
     Long getTotalUniquePageviews(LocalDateTime since, LocalDateTime until);
 
@@ -43,9 +42,9 @@ public interface StatRepository {
 
     List<PostStat> getPostsOrderByUniquePageviews(LocalDateTime since, LocalDateTime until, Long limit);
 
-    List<TimeDomainStat> getPageviewTrend(LocalDateTime since, LocalDateTime until, Period period);
+    List<TimeDomainStat> getPageviewTrend(LocalDateTime since, LocalDateTime until);
 
-    List<TimeDomainStat> getVisitorTrend(LocalDateTime since, LocalDateTime until, Period period);
+    List<TimeDomainStat> getVisitorTrend(LocalDateTime since, LocalDateTime until);
 
     List<ShareStat> getPageviewsByCategory(LocalDateTime since, LocalDateTime until);
 

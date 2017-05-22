@@ -1,8 +1,10 @@
 package com.indiepost.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.indiepost.enums.Types.UserGender;
+import com.indiepost.utils.LocalDateTimeSerializerCustom;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -20,9 +22,11 @@ public class UserDto {
 
     private String email;
 
-    private Date joinedAt;
+    @JsonSerialize(using = LocalDateTimeSerializerCustom.class)
+    private LocalDateTime joinedAt;
 
-    private Date birthday;
+    @JsonSerialize(using = LocalDateTimeSerializerCustom.class)
+    private LocalDateTime birthday;
 
     private String profile;
 
@@ -64,19 +68,19 @@ public class UserDto {
         this.email = email;
     }
 
-    public Date getJoinedAt() {
+    public LocalDateTime getJoinedAt() {
         return joinedAt;
     }
 
-    public void setJoinedAt(Date joinedAt) {
+    public void setJoinedAt(LocalDateTime joinedAt) {
         this.joinedAt = joinedAt;
     }
 
-    public Date getBirthday() {
+    public LocalDateTime getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(LocalDateTime birthday) {
         this.birthday = birthday;
     }
 

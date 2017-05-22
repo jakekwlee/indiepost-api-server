@@ -72,11 +72,11 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
         return registration;
     }
 
-
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
+
 
 //    @Bean
 //    public ViewResolver viewResolver() {

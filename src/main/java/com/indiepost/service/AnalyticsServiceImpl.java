@@ -21,7 +21,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.time.Period;
+import java.time.ZoneId;
 import java.util.List;
 
 /**
@@ -106,12 +106,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     @Override
     public SiteStats getStats(PeriodDto dto) {
-        LocalDateTime since = dto.getSince();
-        LocalDateTime until = dto.getUntil();
-        Period period = DateUtils.getPeriod(since, until);
+        LocalDateTime since = dto.getSince().toLocalDateTime();
+        LocalDateTime until = dto.getUntil().toLocalDateTime();
+        ZoneId.of("Asia/Seoul");
 
-        List<TimeDomainStat> pageviewTrend = statRepository.getPageviewTrend(since, until, period);
-        List<TimeDomainStat> visitorTrend = statRepository.getVisitorTrend(since, until, period);
+        List<TimeDomainStat> pageviewTrend = statRepository.getPageviewTrend(since, until);
+        List<TimeDomainStat> visitorTrend = statRepository.getVisitorTrend(since, until);
 
         SiteStats stats = new SiteStats();
         stats.setPageviewTrend(DateUtils.normalizeTimeDomainStats(pageviewTrend, since, until));
@@ -150,8 +150,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     @Override
     public List<PostStat> getPostsOrderByPageviews(PeriodDto periodDto) {
-        LocalDateTime since = periodDto.getSince();
-        LocalDateTime until = periodDto.getUntil();
+        LocalDateTime since = periodDto.getSince().toLocalDateTime();
+        LocalDateTime until = periodDto.getUntil().toLocalDateTime();
         List<PostStat> pageviewList = statRepository.getPostsOrderByPageviews(since, until, 3000L);
         List<PostStat> uniquePageviewList = statRepository.getPostsOrderByUniquePageviews(since, until, 3000L);
 

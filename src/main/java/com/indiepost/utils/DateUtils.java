@@ -3,11 +3,7 @@ package com.indiepost.utils;
 import com.indiepost.dto.stat.TimeDomainStat;
 
 import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -53,40 +49,39 @@ public class DateUtils {
     }
 
     public static List<TimeDomainStat> normalizeTimeDomainStats(List<TimeDomainStat> list, LocalDateTime since, LocalDateTime until) {
-        Period period = getPeriod(since, until);
-        int days = period.getDays() + 1;
-        int length = list.size();
-        if (days > 2 || length / days == 24) {
+        Duration duration = Duration.between(since, until);
+        long hours = duration.toHours();
+        if (hours > 48 || hours == list.size()) {
             return list;
         }
 
-        BigInteger zero = BigInteger.valueOf(0L);
+        LocalDate startDate = since.plusHours(9).toLocalDate();
+        LocalDate endDate = until.plusHours(9).toLocalDate();
+        int expectedHours = 23;
+        if (!startDate.isEqual(endDate)) {
+            expectedHours = 47;
+        }
+
+        int year = startDate.getYear();
+        Month month = startDate.getMonth();
+        int day = startDate.getDayOfMonth();
+        LocalDate localDate = LocalDate.of(year, month, day);
 
         List<TimeDomainStat> results = new ArrayList<>();
-
-        for (int i = 0; i < days; ++i) {
-            LocalDateTime localDateTime;
-            if (i == 0) {
-                localDateTime = since;
-            } else {
-                localDateTime = until;
-            }
-            int year = localDateTime.getYear();
-            int month = localDateTime.getMonthValue();
-            int day = localDateTime.getDayOfMonth();
-
-            for (int hour = 0; hour < 24; ++hour) {
-                LocalDateTime ldt = LocalDateTime.of(year, month, day, hour, 0);
-                results.add(new TimeDomainStat(ldt, zero));
-            }
+        for (long h = 0; h <= expectedHours; ++h) {
+            LocalDateTime ldt = localDate.atStartOfDay().plusHours(h);
+            TimeDomainStat timeDomainStat = new TimeDomainStat(ldt, BigInteger.ZERO);
+            results.add(timeDomainStat);
         }
-        for (TimeDomainStat tdr : list) {
-            LocalDateTime ldt = tdr.getStatDatetime();
-            int n = Math.toIntExact(ChronoUnit.HOURS.between(since, ldt)) / 24;
-            int index = ldt.getHour() + n * 24;
-            TimeDomainStat result = results.get(index);
-            result.setStatCount(tdr.getStatCount());
-            results.set(index, result);
+
+        for (TimeDomainStat stat : list) {
+            LocalDateTime statDateTime = stat.getStatDatetime();
+            LocalDate statDate = stat.getStatDatetime().toLocalDate();
+            int h = statDateTime.getHour();
+            if (!statDate.isEqual(localDate)) {
+                h = statDateTime.getHour() + 24;
+            }
+            results.get(h).setStatCount(stat.getStatCount());
         }
         return results;
     }
