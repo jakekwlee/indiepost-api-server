@@ -1,38 +1,38 @@
 package com.indiepost.dto.stat;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 
 /**
  * Created by jake on 17. 4. 27.
  */
 public class PeriodDto {
 
-    private ZonedDateTime since;
+    private LocalDate startDate;
 
-    private ZonedDateTime until;
+    private LocalDate endDate;
 
     public PeriodDto() {
 
     }
 
-    public PeriodDto(ZonedDateTime since, ZonedDateTime until) {
-        this.since = since;
-        this.until = until;
+    public PeriodDto(LocalDate startDate, LocalDate endDate) {
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
-    public ZonedDateTime getSince() {
-        return since;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
-    public void setSince(ZonedDateTime since) {
-        this.since = since;
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
 
-    public ZonedDateTime getUntil() {
-        return until;
+    public LocalDate getEndDate() {
+        return endDate;
     }
 
-    public void setUntil(ZonedDateTime until) {
-        this.until = until;
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 }

@@ -1,8 +1,8 @@
 package com.indiepost.dto.admin;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.indiepost.dto.TagDto;
+import com.indiepost.utils.LocalDateTimeSerializerCustom;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,7 +30,7 @@ public class AdminPostRequestDto {
 
     private Long categoryId;
 
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializerCustom.class)
     private LocalDateTime publishedAt;
 
     private boolean featured;

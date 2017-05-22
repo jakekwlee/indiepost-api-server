@@ -1,35 +1,31 @@
 package com.indiepost.dto.stat;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.indiepost.utils.LocalDateTimeSerializerCustom;
-
 import java.math.BigInteger;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * Created by jake on 17. 4. 24.
  */
 public class TimeDomainStat {
 
-    @JsonSerialize(using = LocalDateTimeSerializerCustom.class)
-    private LocalDateTime statDatetime;
+    private Date statDateTime;
 
     private BigInteger statCount;
 
     public TimeDomainStat() {
     }
 
-    public TimeDomainStat(LocalDateTime statDatetime, BigInteger statCount) {
-        this.statDatetime = statDatetime;
+    public TimeDomainStat(Date statDateTime, BigInteger statCount) {
+        this.statDateTime = statDateTime;
         this.statCount = statCount;
     }
 
-    public LocalDateTime getStatDatetime() {
-        return statDatetime;
+    public Date getStatDateTime() {
+        return statDateTime;
     }
 
-    public void setStatDatetime(LocalDateTime statDatetime) {
-        this.statDatetime = statDatetime;
+    public void setStatDateTime(Date statDateTime) {
+        this.statDateTime = statDateTime;
     }
 
     public BigInteger getStatCount() {

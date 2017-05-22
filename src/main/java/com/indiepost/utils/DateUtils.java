@@ -48,18 +48,21 @@ public class DateUtils {
         return localDateTimeToDate(localDateTime);
     }
 
-    public static List<TimeDomainStat> normalizeTimeDomainStats(List<TimeDomainStat> list, LocalDateTime since, LocalDateTime until) {
+    public static List<TimeDomainStat> normalizeTimeDomainStats(List<TimeDomainStat> list, LocalDate startDate, LocalDate endDate) {
+        if (startDate.getYear() != endDate.getYear() || startDate.getMonthValue() != endDate.getMonthValue()) {
+            return list;
+        }
+        LocalDateTime since = startDate.atStartOfDay();
+        LocalDateTime until = endDate.atTime(23, 59, 59);
         Duration duration = Duration.between(since, until);
         long hours = duration.toHours();
         if (hours > 48 || hours == list.size()) {
             return list;
         }
 
-        LocalDate startDate = since.plusHours(9).toLocalDate();
-        LocalDate endDate = until.plusHours(9).toLocalDate();
-        int expectedHours = 23;
+        int expectedHours = 24;
         if (!startDate.isEqual(endDate)) {
-            expectedHours = 47;
+            expectedHours = 48;
         }
 
         int year = startDate.getYear();
@@ -68,15 +71,15 @@ public class DateUtils {
         LocalDate localDate = LocalDate.of(year, month, day);
 
         List<TimeDomainStat> results = new ArrayList<>();
-        for (long h = 0; h <= expectedHours; ++h) {
+        for (long h = 0; h < expectedHours; ++h) {
             LocalDateTime ldt = localDate.atStartOfDay().plusHours(h);
-            TimeDomainStat timeDomainStat = new TimeDomainStat(ldt, BigInteger.ZERO);
+            TimeDomainStat timeDomainStat = new TimeDomainStat(DateUtils.localDateTimeToDate(ldt), BigInteger.ZERO);
             results.add(timeDomainStat);
         }
 
         for (TimeDomainStat stat : list) {
-            LocalDateTime statDateTime = stat.getStatDatetime();
-            LocalDate statDate = stat.getStatDatetime().toLocalDate();
+            LocalDateTime statDateTime = DateUtils.dateToLocalDateTime(stat.getStatDateTime());
+            LocalDate statDate = statDateTime.toLocalDate();
             int h = statDateTime.getHour();
             if (!statDate.isEqual(localDate)) {
                 h = statDateTime.getHour() + 24;
@@ -84,9 +87,5 @@ public class DateUtils {
             results.get(h).setStatCount(stat.getStatCount());
         }
         return results;
-    }
-
-    public static Period getPeriod(LocalDateTime since, LocalDateTime until) {
-        return Period.between(since.toLocalDate(), until.toLocalDate());
     }
 }

@@ -7,6 +7,7 @@ import com.indiepost.enums.Types.ClientType;
 import com.indiepost.enums.Types.StatType;
 import com.indiepost.model.Stat;
 import com.indiepost.model.Visitor;
+import com.indiepost.utils.DateUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.math.BigInteger;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,6 +27,7 @@ import java.util.List;
  * Created by jake on 17. 4. 17.
  */
 @Repository
+@SuppressWarnings("unchecked")
 public class StatRepositoryNativeSql implements StatRepository {
 
     private static final String EXCLUDE_GOOGLE_BOT = "AND v.browser <> 'Googlebot' AND v.browser <> 'Mediapartners-Google' ";
@@ -64,8 +67,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                 "WHERE s.timestamp BETWEEN :s AND :u " +
                 EXCLUDE_GOOGLE_BOT;
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         return ((BigInteger) query.uniqueResult()).longValue();
     }
 
@@ -77,8 +80,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                 "AND s.postId IS NOT NULL " +
                 EXCLUDE_GOOGLE_BOT;
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         return ((BigInteger) query.uniqueResult()).longValue();
     }
 
@@ -93,7 +96,7 @@ public class StatRepositoryNativeSql implements StatRepository {
         criteria.createAlias("visitor", "v");
         criteria.add(Restrictions.ne("v.browser", "Googlebot"));
         criteria.add(Restrictions.ne("v.browser", "Mediapartners-Google"));
-        setDateCriteria(criteria, since, until);
+        setParameterCriteria(criteria, since, until);
         if (type != null) {
             criteria.add(Restrictions.eq("type", type));
         }
@@ -122,44 +125,45 @@ public class StatRepositoryNativeSql implements StatRepository {
     @Override
     public List<TimeDomainStat> getPageviewTrend(LocalDateTime since, LocalDateTime until) {
         String sqlQuery;
+        Duration duration = Duration.between(since, until);
 
         if (since.getYear() != until.getYear()) {
-            sqlQuery = "SELECT makedate(year(s.timestamp), 1) AS statDatetime, count(*) AS statCount " +
+            sqlQuery = "SELECT makedate(year(s.timestamp), 1) AS statDateTime, count(*) AS statCount " +
                     "FROM Stats AS s " +
                     "INNER JOIN Visitors v ON s.visitorId = v.id " +
                     "WHERE s.timestamp BETWEEN :s AND :u " +
                     EXCLUDE_GOOGLE_BOT +
                     "GROUP BY year(s.timestamp) " +
-                    "ORDER BY statDatetime";
+                    "ORDER BY statDateTime";
         } else if (since.getMonthValue() != until.getMonthValue()) {
-            sqlQuery = "SELECT date_sub(date(s.timestamp), INTERVAL day(s.timestamp) - 1 DAY) AS statDatetime, count(*) AS statCount " +
+            sqlQuery = "SELECT date_sub(date(s.timestamp), INTERVAL day(s.timestamp) - 1 DAY) AS statDateTime, count(*) AS statCount " +
                     "FROM Stats AS s " +
                     "INNER JOIN Visitors v ON s.visitorId = v.id " +
                     "WHERE s.timestamp BETWEEN :s AND :u " +
                     EXCLUDE_GOOGLE_BOT +
                     "GROUP BY year(s.timestamp), month(s.timestamp) " +
-                    "ORDER BY statDatetime";
-        } else if (since.getDayOfMonth() - until.getDayOfMonth() > 2) {
-            sqlQuery = "SELECT date(s.timestamp) AS statDatetime, count(*) AS statCount " +
+                    "ORDER BY statDateTime";
+        } else if (duration.toHours() > 48) {
+            sqlQuery = "SELECT date(s.timestamp) AS statDateTime, count(*) AS statCount " +
                     "FROM Stats AS s " +
                     "INNER JOIN Visitors v ON s.visitorId = v.id " +
                     "WHERE s.timestamp BETWEEN :s AND :u " +
                     EXCLUDE_GOOGLE_BOT +
                     "GROUP BY date(s.timestamp) " +
-                    "ORDER BY statDatetime";
+                    "ORDER BY statDateTime";
         } else {
-            sqlQuery = "SELECT date_add(date(s.timestamp), INTERVAL hour(s.timestamp) HOUR) AS statDatetime, count(*) AS statCount " +
+            sqlQuery = "SELECT date_add(date(s.timestamp), INTERVAL hour(s.timestamp) HOUR) AS statDateTime, count(*) AS statCount " +
                     "FROM Stats AS s " +
                     "INNER JOIN Visitors v ON s.visitorId = v.id " +
                     "WHERE s.timestamp BETWEEN :s AND :u " +
                     EXCLUDE_GOOGLE_BOT +
                     "GROUP BY date(s.timestamp), hour(s.timestamp) " +
-                    "ORDER BY statDatetime";
+                    "ORDER BY statDateTime";
         }
 
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         query.setResultTransformer(new AliasToBeanResultTransformer(TimeDomainStat.class));
         return query.list();
     }
@@ -167,40 +171,41 @@ public class StatRepositoryNativeSql implements StatRepository {
     @Override
     public List<TimeDomainStat> getVisitorTrend(LocalDateTime since, LocalDateTime until) {
         String sqlQuery;
+        Duration duration = Duration.between(since, until);
 
         if (since.getYear() != until.getYear()) {
-            sqlQuery = "SELECT makedate(year(v.timestamp), 1) AS statDatetime, count(*) AS statCount " +
+            sqlQuery = "SELECT makedate(year(v.timestamp), 1) AS statDateTime, count(*) AS statCount " +
                     "FROM Visitors AS v " +
                     "WHERE v.timestamp BETWEEN :s AND :u " +
                     EXCLUDE_GOOGLE_BOT +
                     "GROUP BY year(v.timestamp) " +
-                    "ORDER BY statDatetime";
+                    "ORDER BY statDateTime";
         } else if (since.getMonthValue() != until.getMonthValue()) {
-            sqlQuery = "SELECT date_sub(date(v.timestamp), INTERVAL day(v.timestamp) - 1 DAY) AS statDatetime, count(*) AS statCount " +
+            sqlQuery = "SELECT date_sub(date(v.timestamp), INTERVAL day(v.timestamp) - 1 DAY) AS statDateTime, count(*) AS statCount " +
                     "FROM Visitors AS v " +
                     "WHERE v.timestamp BETWEEN :s AND :u " +
                     EXCLUDE_GOOGLE_BOT +
                     "GROUP BY year(v.timestamp), month(v.timestamp) " +
-                    "ORDER BY statDatetime";
-        } else if (since.getDayOfMonth() - until.getDayOfMonth() > 2) {
-            sqlQuery = "SELECT date(v.timestamp) AS statDatetime, count(*) AS statCount " +
+                    "ORDER BY statDateTime";
+        } else if (duration.toHours() > 48) {
+            sqlQuery = "SELECT date(v.timestamp) AS statDateTime, count(*) AS statCount " +
                     "FROM Visitors AS v " +
                     "WHERE v.timestamp BETWEEN :s AND :u " +
                     EXCLUDE_GOOGLE_BOT +
                     "GROUP BY date(v.timestamp) " +
-                    "ORDER BY statDatetime";
+                    "ORDER BY statDateTime";
         } else {
-            sqlQuery = "SELECT date_add(date(v.timestamp), INTERVAL hour(v.timestamp) HOUR) AS statDatetime, count(*) AS statCount " +
+            sqlQuery = "SELECT date_add(date(v.timestamp), INTERVAL hour(v.timestamp) HOUR) AS statDateTime, count(*) AS statCount " +
                     "FROM Visitors AS v " +
                     "WHERE v.timestamp BETWEEN :s AND :u " +
                     EXCLUDE_GOOGLE_BOT +
                     "GROUP BY date(v.timestamp), hour(v.timestamp) " +
-                    "ORDER BY statDatetime";
+                    "ORDER BY statDateTime";
         }
 
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         query.setResultTransformer(new AliasToBeanResultTransformer(TimeDomainStat.class));
         return query.list();
     }
@@ -218,8 +223,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "GROUP BY c.name " +
                         "ORDER BY statCount DESC";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
@@ -236,8 +241,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "GROUP BY p.displayName " +
                         "ORDER BY statCount DESC";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
     }
@@ -256,8 +261,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         query.setString("t", type.toString());
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
@@ -277,8 +282,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
@@ -299,8 +304,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         query.setString("st", StatType.POST.toString());
         query.setString("t", type.toString());
         query.setLong("l", limit);
@@ -322,8 +327,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY pageview DESC , p.id DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(PostStat.class));
         return query.list();
@@ -342,8 +347,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY uniquePageview DESC, s.postId DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(PostStat.class));
         return query.list();
@@ -363,8 +368,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         query.setString("t", type.toString());
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
@@ -386,8 +391,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         query.setString("st", StatType.POST.toString());
         query.setString("t", type.toString());
         query.setLong("l", limit);
@@ -409,8 +414,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         query.setString("t", type.toString());
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
@@ -432,8 +437,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         query.setString("st", StatType.POST.toString());
         query.setString("t", type.toString());
         query.setLong("l", limit);
@@ -455,8 +460,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
@@ -473,8 +478,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
@@ -491,8 +496,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
@@ -512,8 +517,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
@@ -532,8 +537,8 @@ public class StatRepositoryNativeSql implements StatRepository {
                         "ORDER BY statCount DESC " +
                         "LIMIT :l";
         Query query = getSession().createSQLQuery(sqlQuery);
-        query.setParameter("s", since);
-        query.setParameter("u", until);
+        query.setParameter("s", DateUtils.localDateTimeToDate(since));
+        query.setParameter("u", DateUtils.localDateTimeToDate(until));
         query.setLong("l", limit);
         query.setResultTransformer(new AliasToBeanResultTransformer(ShareStat.class));
         return query.list();
@@ -543,7 +548,7 @@ public class StatRepositoryNativeSql implements StatRepository {
         return entityManager.unwrap(Session.class);
     }
 
-    private void setDateCriteria(Criteria criteria, LocalDateTime since, LocalDateTime until) {
+    private void setParameterCriteria(Criteria criteria, LocalDateTime since, LocalDateTime until) {
         criteria.add(Restrictions.between("timestamp", since, until));
     }
 }

@@ -13,8 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 
 /**
  * Created by jake on 17. 4. 28.
@@ -30,8 +29,8 @@ public class AnalyticsServiceTest {
     public void siteStatsShouldSerializeCorrectly() throws JsonProcessingException {
         SiteStats stats = analyticsService.getStats(
                 new PeriodDto(
-                        LocalDateTime.of(2017, 4, 20, 0, 0, 0).atZone(ZonedDateTime.now().getOffset()),
-                        LocalDateTime.of(2017, 4, 28, 23, 59, 59).atZone(ZonedDateTime.now().getOffset())
+                        LocalDate.of(2017, 4, 28),
+                        LocalDate.of(2017, 4, 28)
                 )
         );
         serializeAndPrintStats(stats, "Site Stats");

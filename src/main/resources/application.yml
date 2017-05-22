@@ -15,7 +15,7 @@ spring:
       ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    show-sql: false
+    show-sql: true
     generate-ddl: true
     properties:
       hibernate:
@@ -23,7 +23,7 @@ spring:
           default:
             directory_provider: filesystem
             indexBase: /data/lucene/indexes/
-        format_sql: false
+        format_sql: true
         max_fetch_depth: 3
         connection:
           charSet: UTF-8
@@ -48,4 +48,4 @@ logging:
   level:
     org:
       springframework:
-        web: info
+        web: debug
