@@ -1,5 +1,7 @@
 package com.indiepost.dto.stat;
 
+import com.indiepost.enums.Types;
+
 import java.time.LocalDate;
 
 /**
@@ -11,6 +13,8 @@ public class PeriodDto {
 
     private LocalDate endDate;
 
+    private Types.TimeDomainDuration duration;
+
     public PeriodDto() {
 
     }
@@ -18,6 +22,22 @@ public class PeriodDto {
     public PeriodDto(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
+        this.duration = Types.TimeDomainDuration.DAILY;
+    }
+
+    public PeriodDto(LocalDate startDate, LocalDate endDate, Types.TimeDomainDuration duration) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.duration = duration;
+
+    }
+
+    public Types.TimeDomainDuration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Types.TimeDomainDuration duration) {
+        this.duration = duration;
     }
 
     public LocalDate getStartDate() {

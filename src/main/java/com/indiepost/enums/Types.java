@@ -43,4 +43,8 @@ public interface Types {
     enum ClientType {
         INDIEPOST_WEBAPP, INDIEPOST_LEGACY_MOBILE_APP
     }
+
+    enum TimeDomainDuration {
+        HOURLY, DAILY, MONTHLY, YEARLY
+    }
 }

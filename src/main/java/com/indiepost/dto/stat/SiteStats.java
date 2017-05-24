@@ -13,8 +13,8 @@ public class SiteStats {
     private Long totalVisitor;
     private Long totalAppVisitor;
     private List<PostStat> postsByPageview;
-    private List<TimeDomainStat> pageviewTrend;
-    private List<TimeDomainStat> visitorTrend;
+    private Trend pageviewTrend;
+    private Trend visitorTrend;
     private List<ShareStat> pageviewByCategory;
     private List<ShareStat> pageviewByAuthor;
     private List<ShareStat> topPagesWebapp;
@@ -148,19 +148,19 @@ public class SiteStats {
         this.totalAppVisitor = totalAppVisitor;
     }
 
-    public List<TimeDomainStat> getPageviewTrend() {
+    public Trend getPageviewTrend() {
         return pageviewTrend;
     }
 
-    public void setPageviewTrend(List<TimeDomainStat> pageviewTrend) {
+    public void setPageviewTrend(Trend pageviewTrend) {
         this.pageviewTrend = pageviewTrend;
     }
 
-    public List<TimeDomainStat> getVisitorTrend() {
+    public Trend getVisitorTrend() {
         return visitorTrend;
     }
 
-    public void setVisitorTrend(List<TimeDomainStat> visitorTrend) {
+    public void setVisitorTrend(Trend visitorTrend) {
         this.visitorTrend = visitorTrend;
     }
 
