@@ -120,16 +120,16 @@ public class AnalyticsRepositoryHibernateNativeSQL implements AnalyticsRepositor
 
     @Override
     public Long getTotalVisitors(LocalDateTime since, LocalDateTime until) {
-        return getTotalUniquePageviews(since, until, null);
+        return getTotalVisitors(since, until, null);
     }
 
     @Override
-    public Long getTotalVisitors(LocalDateTime since, LocalDateTime until, Types.ClientType client) {
+    public Long getTotalVisitors(LocalDateTime since, LocalDateTime until, Types.ClientType clientType) {
         Criteria criteria = getSession().createCriteria(Visitor.class, "v");
         setExcludeBots(criteria);
         criteria.add(Restrictions.between("v.timestamp", since, until));
-        if (client != null) {
-            criteria.add(Restrictions.eq("v.appName", client));
+        if (clientType != null) {
+            criteria.add(Restrictions.eq("v.appName", clientType));
         }
         criteria.setProjection(Projections.rowCount());
         return (Long) criteria.uniqueResult();
@@ -269,7 +269,7 @@ public class AnalyticsRepositoryHibernateNativeSQL implements AnalyticsRepositor
     }
 
     @Override
-    public List<ShareStat> getPageviewsByCategory(LocalDateTime since, LocalDateTime until, Long limit) {
+    public List<ShareStat> getPageviewByAuthor(LocalDateTime since, LocalDateTime until, Long limit) {
         String queryString = "SELECT p.displayName AS statName, count(*) AS statCount " +
                 "FROM Stats s " +
                 "INNER JOIN Visitors v ON s.visitorId = v.id " +
@@ -284,7 +284,7 @@ public class AnalyticsRepositoryHibernateNativeSQL implements AnalyticsRepositor
     }
 
     @Override
-    public List<ShareStat> getPageviewByAuthor(LocalDateTime since, LocalDateTime until, Long limit) {
+    public List<ShareStat> getPageviewsByCategory(LocalDateTime since, LocalDateTime until, Long limit) {
         String queryString = "SELECT c.name AS statName, count(*) AS statCount " +
                 "FROM Stats s " +
                 "INNER JOIN Visitors v ON s.visitorId = v.id " +
@@ -326,13 +326,13 @@ public class AnalyticsRepositoryHibernateNativeSQL implements AnalyticsRepositor
 
     @Override
     public List<ShareStat> getTopPosts(LocalDateTime since, LocalDateTime until, Long limit, Types.ClientType client) {
-        String queryString = "SELECT ifnull(p.title, s.path) AS statName, count(*) AS statCount " +
+        String queryString = "SELECT p.title AS statName, count(*) AS statCount " +
                 "FROM Stats s " +
+                "INNER JOIN Posts p ON s.postId = p.id " +
                 "INNER JOIN Visitors v ON s.visitorId = v.id " +
-                "LEFT JOIN Posts p ON s.postId = p.id " +
                 "WHERE s.timestamp BETWEEN :since AND :until " +
                 getClientTypeRestriction(client) +
-                "GROUP BY s.path " +
+                "GROUP BY p.id " +
                 "ORDER BY statCount DESC " +
                 "LIMIT :limit";
         Query query = getSession().createSQLQuery(queryString);

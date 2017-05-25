@@ -231,6 +231,6 @@ public class PostMapperServiceImpl implements PostMapperService {
     }
 
     private String getDateString(LocalDateTime ldt) {
-        return ldt.format(DateTimeFormatter.ofPattern("yy/MM/dd HH:mm ", Locale.KOREA));
+        return ldt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.KOREA));
     }
 }

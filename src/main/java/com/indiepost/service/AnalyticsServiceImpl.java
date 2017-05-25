@@ -46,8 +46,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                 visitorTrendResult = analyticsRepository.getHourlyVisitorTrend(since, until);
                 break;
             case DAILY:
-                pageviewStatResult = analyticsRepository.getMonthlyPageviewTrend(since, until);
-                visitorTrendResult = analyticsRepository.getMonthlyVisitorTrend(since, until);
+                pageviewStatResult = analyticsRepository.getDailyPageviewTrend(since, until);
+                visitorTrendResult = analyticsRepository.getDailyVisitorTrend(since, until);
                 break;
             case MONTHLY:
                 pageviewStatResult = analyticsRepository.getMonthlyPageviewTrend(since, until);
