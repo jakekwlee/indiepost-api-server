@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -59,7 +60,7 @@ public class User implements Serializable {
     @Size(max = 100)
     private String uuid;
 
-    private LocalDateTime birthday;
+    private LocalDate birthday;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -179,11 +180,11 @@ public class User implements Serializable {
         this.uuid = uuid;
     }
 
-    public LocalDateTime getBirthday() {
+    public LocalDate getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(LocalDateTime birthday) {
+    public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
     }
 

@@ -17,7 +17,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.transaction.Transactional;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -329,8 +328,8 @@ public class AnalyticsRepositoryTest {
 
     private int sumOfTimeDomainStat(List<TimeDomainStat> timeDomainStats) {
         return timeDomainStats.stream()
-                .map(TimeDomainStat::getStatCount)
-                .mapToInt(BigInteger::intValue)
+                .map(TimeDomainStat::getStatValue)
+                .mapToInt(Long::intValue)
                 .sum();
     }
 }

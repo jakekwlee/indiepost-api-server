@@ -9,8 +9,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.net.MalformedURLException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Created by jake on 11/22/16.
@@ -19,8 +19,6 @@ import java.util.Date;
 public class ScheduledTasks {
 
     private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     private final AdminPostService adminPostService;
 
@@ -32,7 +30,6 @@ public class ScheduledTasks {
         this.sitemapService = sitemapService;
     }
 
-
     @Scheduled(fixedRate = 60000)
     public void publishScheduledPosts() {
         adminPostService.publishScheduledPosts();
@@ -40,7 +37,7 @@ public class ScheduledTasks {
 
     @Scheduled(fixedRate = 3600000)
     public void createSitemap() throws MalformedURLException {
-        log.info(dateFormat.format(new Date()) + ": Create Sitemap: /sitemap.xml");
+        log.info(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + ": Create Sitemap: /sitemap.xml");
         sitemapService.createSitemap();
     }
 }

@@ -1,12 +1,10 @@
 package com.indiepost.dto.stat;
 
-import java.math.BigInteger;
-
 /**
  * Created by jake on 17. 5. 10.
  */
 public class PostStat {
-    private BigInteger id;
+    private Long id;
 
     private String title;
 
@@ -14,15 +12,27 @@ public class PostStat {
 
     private String author;
 
-    private BigInteger pageview;
+    private Long pageview;
 
-    private BigInteger uniquePageview;
+    private Long uniquePageview;
 
-    public BigInteger getId() {
+    public PostStat() {
+    }
+
+    public PostStat(Long id, String title, String category, String author, Long pageview, Long uniquePageview) {
+        this.id = id;
+        this.title = title;
+        this.category = category;
+        this.author = author;
+        this.pageview = pageview;
+        this.uniquePageview = uniquePageview;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(BigInteger id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -50,19 +60,19 @@ public class PostStat {
         this.author = author;
     }
 
-    public BigInteger getPageview() {
+    public Long getPageview() {
         return pageview;
     }
 
-    public void setPageview(BigInteger pageview) {
+    public void setPageview(Long pageview) {
         this.pageview = pageview;
     }
 
-    public BigInteger getUniquePageview() {
+    public Long getUniquePageview() {
         return uniquePageview;
     }
 
-    public void setUniquePageview(BigInteger uniquePageview) {
+    public void setUniquePageview(Long uniquePageview) {
         this.uniquePageview = uniquePageview;
     }
 }

@@ -2,8 +2,8 @@ package com.indiepost.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.indiepost.enums.Types.PostStatus;
+import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
 import com.indiepost.model.ImageSet;
-import com.indiepost.utils.LocalDateTimeSerializerCustom;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -31,7 +31,7 @@ public class PostSummaryDto implements Serializable {
 
     private String displayName;
 
-    @JsonSerialize(using = LocalDateTimeSerializerCustom.class)
+    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     private LocalDateTime publishedAt;
 
     private ImageSet titleImage;

@@ -1,8 +1,9 @@
 package com.indiepost.dto.admin;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -26,14 +27,14 @@ public class AdminPostSummaryDto {
 
     private String editorDisplayName;
 
-    @JsonSerialize(using = ToStringSerializer.class)
-    private String createdAt;
+    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
+    private LocalDateTime createdAt;
 
-    @JsonSerialize(using = ToStringSerializer.class)
-    private String publishedAt;
+    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
+    private LocalDateTime publishedAt;
 
-    @JsonSerialize(using = ToStringSerializer.class)
-    private String modifiedAt;
+    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
+    private LocalDateTime modifiedAt;
 
     private boolean featured;
 
@@ -93,27 +94,27 @@ public class AdminPostSummaryDto {
         this.status = status;
     }
 
-    public String getPublishedAt() {
+    public LocalDateTime getPublishedAt() {
         return publishedAt;
     }
 
-    public void setPublishedAt(String publishedAt) {
+    public void setPublishedAt(LocalDateTime publishedAt) {
         this.publishedAt = publishedAt;
     }
 
-    public String getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public String getModifiedAt() {
+    public LocalDateTime getModifiedAt() {
         return modifiedAt;
     }
 
-    public void setModifiedAt(String modifiedAt) {
+    public void setModifiedAt(LocalDateTime modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
 

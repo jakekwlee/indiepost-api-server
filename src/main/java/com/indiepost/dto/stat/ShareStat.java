@@ -1,14 +1,20 @@
 package com.indiepost.dto.stat;
 
-import java.math.BigInteger;
-
 /**
  * Created by jake on 17. 4. 26.
  */
 public class ShareStat {
     private String statName;
 
-    private BigInteger statCount;
+    private Long statValue;
+
+    public ShareStat() {
+    }
+
+    public ShareStat(String statName, Long statValue) {
+        this.statName = statName;
+        this.statValue = statValue;
+    }
 
     public String getStatName() {
         return statName;
@@ -18,11 +24,11 @@ public class ShareStat {
         this.statName = statName;
     }
 
-    public BigInteger getStatCount() {
-        return statCount;
+    public Long getStatValue() {
+        return statValue;
     }
 
-    public void setStatCount(BigInteger statCount) {
-        this.statCount = statCount;
+    public void setStatValue(Long statValue) {
+        this.statValue = statValue;
     }
 }

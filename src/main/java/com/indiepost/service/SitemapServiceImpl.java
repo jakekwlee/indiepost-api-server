@@ -1,10 +1,10 @@
 package com.indiepost.service;
 
 import com.indiepost.config.HomeConfig;
-import com.indiepost.dto.PageDto;
 import com.indiepost.dto.PostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Category;
+import com.indiepost.model.Page;
 import com.indiepost.repository.CategoryRepository;
 import com.indiepost.repository.PageRepository;
 import com.indiepost.repository.PostRepository;
@@ -70,8 +70,8 @@ public class SitemapServiceImpl implements SitemapService {
                     .build();
             webSitemapGenerator.addUrl(webSitemapUrl);
         }
-        List<PageDto> pageDtoList = pageRepository.find(new PageRequest(0, 100, Sort.Direction.ASC, "displayOrder"));
-        for (PageDto page : pageDtoList) {
+        List<Page> pageList = pageRepository.find(new PageRequest(0, 100, Sort.Direction.ASC, "displayOrder"));
+        for (Page page : pageList) {
             WebSitemapUrl webSitemapUrl = new WebSitemapUrl.Options(BASE_URL + "/page/" + page.getSlug())
                     .priority(0.9)
                     .changeFreq(ChangeFreq.MONTHLY)

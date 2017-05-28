@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -103,7 +102,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         List<PostStat> uniquePageviewList = analyticsRepository.getPostsOrderByUniquePageviews(since, until, 3000L);
 
         for (PostStat pageview : pageviewList) {
-            BigInteger postId = pageview.getId();
+            Long postId = pageview.getId();
             for (PostStat uniquePageview : uniquePageviewList) {
                 if (uniquePageview.getId().equals(postId)) {
                     pageview.setUniquePageview(uniquePageview.getUniquePageview());

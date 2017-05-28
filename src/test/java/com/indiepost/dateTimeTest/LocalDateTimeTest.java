@@ -2,9 +2,7 @@ package com.indiepost.dateTimeTest;
 
 import org.junit.Test;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
+import java.time.*;
 
 /**
  * Created by jake on 17. 5. 22.
@@ -12,11 +10,16 @@ import java.time.ZoneId;
 public class LocalDateTimeTest {
     @Test
     public void iso8601zStringDeserializationTest() {
-        String iso8601 = "2007-12-03T10:15:30+08:00";
-        OffsetDateTime source = OffsetDateTime.parse(iso8601);
-        LocalDateTime result = source.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+        String iso8601 = "2017-05-25T22:00:55.000Z";
+        Instant source = Instant.parse(iso8601);
+        LocalDateTime result = source.atZone(ZoneId.systemDefault()).toLocalDateTime();
 
         System.out.println(source);
         System.out.println(result);
+
+        LocalDateTime localDateTime = LocalDateTime.now();
+        OffsetDateTime offsetDateTime = localDateTime.atOffset(ZoneOffset.of("+18:00"));
+        System.out.println(localDateTime);
+        System.out.println(offsetDateTime);
     }
 }

@@ -2,7 +2,6 @@ package com.indiepost.utils;
 
 import com.indiepost.dto.stat.TimeDomainStat;
 
-import java.math.BigInteger;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,6 +11,14 @@ import java.util.List;
  * Created by jake on 17. 4. 28.
  */
 public class DateUtils {
+    public static Instant localDateTimeToInstant(LocalDateTime localDateTime) {
+        return localDateTime.atZone(ZoneId.systemDefault()).toInstant();
+    }
+
+    public static LocalDateTime instantToLocalDateTime(Instant instant) {
+        return instant.atZone(OffsetDateTime.now().getOffset()).toLocalDateTime();
+    }
+
     public static LocalDateTime dateToLocalDateTime(Date date) {
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
@@ -73,18 +80,18 @@ public class DateUtils {
         List<TimeDomainStat> results = new ArrayList<>();
         for (long h = 0; h < expectedHours; ++h) {
             LocalDateTime ldt = localDate.atStartOfDay().plusHours(h);
-            TimeDomainStat timeDomainStat = new TimeDomainStat(DateUtils.localDateTimeToDate(ldt), BigInteger.ZERO);
+            TimeDomainStat timeDomainStat = new TimeDomainStat(ldt, 0L);
             results.add(timeDomainStat);
         }
 
         for (TimeDomainStat stat : list) {
-            LocalDateTime statDateTime = DateUtils.dateToLocalDateTime(stat.getStatDateTime());
+            LocalDateTime statDateTime = stat.getStatDateTime();
             LocalDate statDate = statDateTime.toLocalDate();
             int h = statDateTime.getHour();
             if (!statDate.isEqual(localDate)) {
                 h = statDateTime.getHour() + 24;
             }
-            results.get(h).setStatCount(stat.getStatCount());
+            results.get(h).setStatValue(stat.getStatValue());
         }
         return results;
     }

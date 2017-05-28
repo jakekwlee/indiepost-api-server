@@ -16,11 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by jake on 16. 12. 15.
@@ -167,7 +165,7 @@ public class PostMapperServiceImpl implements PostMapperService {
             post.setExcerpt(adminPostRequestDto.getExcerpt());
         }
         if (adminPostRequestDto.getPublishedAt() != null) {
-            post.setPublishedAt(adminPostRequestDto.getPublishedAt());
+            post.setPublishedAt(adminPostRequestDto.getPublishedAt().atZone(ZoneId.systemDefault()).toLocalDateTime());
         }
         if (adminPostRequestDto.getDisplayName() != null && adminPostRequestDto.getDisplayName().length() > 0) {
             post.setDisplayName(adminPostRequestDto.getDisplayName());
@@ -207,10 +205,9 @@ public class PostMapperServiceImpl implements PostMapperService {
 
         adminPostSummaryDto.setTitle(post.getTitle());
         adminPostSummaryDto.setDisplayName(post.getDisplayName());
-        adminPostSummaryDto.setCreatedAt(getDateString(post.getCreatedAt()));
-        adminPostSummaryDto.setPublishedAt(getDateString(post.getPublishedAt()));
-        adminPostSummaryDto.setModifiedAt(getDateString(post.getModifiedAt()));
-        adminPostSummaryDto.setCreatedAt(getDateString(post.getCreatedAt()));
+        adminPostSummaryDto.setCreatedAt(post.getCreatedAt());
+        adminPostSummaryDto.setPublishedAt(post.getPublishedAt());
+        adminPostSummaryDto.setModifiedAt(post.getModifiedAt());
         adminPostSummaryDto.setLikedCount(post.getLikesCount());
 
         adminPostSummaryDto.setSplash(post.isSplash());
@@ -228,9 +225,5 @@ public class PostMapperServiceImpl implements PostMapperService {
                 post.addTag(tag);
             }
         }
-    }
-
-    private String getDateString(LocalDateTime ldt) {
-        return ldt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.KOREA));
     }
 }

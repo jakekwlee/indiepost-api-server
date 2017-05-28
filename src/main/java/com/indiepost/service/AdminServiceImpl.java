@@ -1,12 +1,9 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.TagDto;
 import com.indiepost.dto.UserDto;
 import com.indiepost.dto.admin.AdminInitResponseDto;
 import com.indiepost.enums.Types.UserRole;
-import com.indiepost.model.Tag;
 import com.indiepost.model.User;
-import com.indiepost.service.mapper.TagMapperService;
 import com.indiepost.service.mapper.UserMapperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,19 +27,13 @@ public class AdminServiceImpl implements AdminService {
 
     private final UserMapperService userMapperService;
 
-    private final TagService tagService;
-
-    private final TagMapperService tagMapperService;
-
     @Autowired
     public AdminServiceImpl(AdminPostService adminPostService, CategoryService categoryService,
-                            TagService tagService, UserService userService, UserMapperService userMapperService, TagMapperService tagMapperService) {
+                            UserService userService, UserMapperService userMapperService) {
         this.adminPostService = adminPostService;
         this.categoryService = categoryService;
-        this.tagService = tagService;
         this.userService = userService;
         this.userMapperService = userMapperService;
-        this.tagMapperService = tagMapperService;
     }
 
     @Override
@@ -52,15 +43,8 @@ public class AdminServiceImpl implements AdminService {
         adminInitResponseDto.setCurrentUser(userMapperService.userToUserDto(currentUser));
         adminInitResponseDto.setAuthors(getUserDtoList(UserRole.Author));
         adminInitResponseDto.setCategories(categoryService.getDtoList());
-        adminInitResponseDto.setTags(getAllTagDtoList());
         adminInitResponseDto.setAuthorNames(adminPostService.findAllDisplayNames());
         return adminInitResponseDto;
-    }
-
-    @Override
-    public List<TagDto> getAllTagDtoList() {
-        List<Tag> tagList = tagService.findAll();
-        return tagMapperService.tagListToTagDtoList(tagList);
     }
 
     @Override

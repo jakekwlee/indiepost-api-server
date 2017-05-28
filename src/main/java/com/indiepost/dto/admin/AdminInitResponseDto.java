@@ -1,7 +1,6 @@
 package com.indiepost.dto.admin;
 
 import com.indiepost.dto.CategoryDto;
-import com.indiepost.dto.TagDto;
 import com.indiepost.dto.UserDto;
 
 import java.util.List;
@@ -19,8 +18,6 @@ public class AdminInitResponseDto {
 
     private UserDto currentUser;
 
-    private List<TagDto> tags;
-
     private List<CategoryDto> categories;
 
     public List<UserDto> getAuthors() {
@@ -37,14 +34,6 @@ public class AdminInitResponseDto {
 
     public void setCurrentUser(UserDto currentUser) {
         this.currentUser = currentUser;
-    }
-
-    public List<TagDto> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<TagDto> tags) {
-        this.tags = tags;
     }
 
     public List<CategoryDto> getCategories() {
