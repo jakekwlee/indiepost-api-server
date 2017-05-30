@@ -75,8 +75,8 @@ public class ImageServiceImpl implements ImageService {
             Image originalImage = saveUploadedImage(bufferedImage, ImageSize.ORIGINAL, alphanumeric, fileExtension, baseUrl);
             images.add(originalImage);
 
-            if (bufferedImage.getWidth() > 1200) {
-                bufferedImage = resizeImage(bufferedImage, 1200);
+            if (bufferedImage.getWidth() > 1440) {
+                bufferedImage = resizeImage(bufferedImage, 1440);
                 Image largeImage = saveUploadedImage(bufferedImage, ImageSize.LARGE, alphanumeric, fileExtension, baseUrl);
                 images.add(largeImage);
             }
