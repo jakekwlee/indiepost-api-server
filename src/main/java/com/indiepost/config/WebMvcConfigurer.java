@@ -6,9 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.resource.PathResourceResolver;
 
 /**
  * Created by jake on 7/31/16.
@@ -16,52 +14,6 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
 @Configuration
 @EnableWebMvc
 public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
-
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry
-                .addResourceHandler("/naver08e868adc7d6dcdd0ee15d4f4692dbbc.html")
-                .addResourceLocations("file:/data/resources/naver08e868adc7d6dcdd0ee15d4f4692dbbc.html")
-                .setCachePeriod(3600)
-                .resourceChain(true)
-                .addResolver(new PathResourceResolver());
-        registry
-                .addResourceHandler("/sitemap.xml")
-                .addResourceLocations("file:/data/resources/sitemap.xml")
-                .setCachePeriod(1800)
-                .resourceChain(true)
-                .addResolver(new PathResourceResolver());
-        registry
-                .addResourceHandler("/google9e42b214f3b4a31f.html")
-                .addResourceLocations("file:/data/resources/google9e42b214f3b4a31f.html")
-                .setCachePeriod(3600)
-                .resourceChain(true)
-                .addResolver(new PathResourceResolver());
-        registry
-                .addResourceHandler("/robots.txt")
-                .addResourceLocations("file:/data/resources/robots.txt")
-                .setCachePeriod(3600)
-                .resourceChain(true)
-                .addResolver(new PathResourceResolver());
-        registry
-                .addResourceHandler("/resources/**")
-                .addResourceLocations("file:/data/resources/")
-                .setCachePeriod(3600)
-                .resourceChain(true)
-                .addResolver(new PathResourceResolver());
-        registry
-                .addResourceHandler("/uploads/**")
-                .addResourceLocations("file:/data/uploads/")
-                .setCachePeriod(3600)
-                .resourceChain(true)
-                .addResolver(new PathResourceResolver());
-        registry
-                .addResourceHandler("/uploadData/**")
-                .addResourceLocations("file:/data/uploadData/")
-                .setCachePeriod(3600)
-                .resourceChain(true)
-                .addResolver(new PathResourceResolver());
-    }
 
     @Bean
     public FilterRegistrationBean someFilterRegistration() {
@@ -90,7 +42,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 //
 //    @Bean
 //    public V8ScriptTemplateConfigurer v8ScriptTemplateConfigurer() {
-//        return new V8ScriptTemplateConfigurer( "static/polyfill.js", "file:/data/resources/indiepost-react-webapp/dist/server.bundle.js");
+//        return new V8ScriptTemplateConfigurer( "static/polyfill.js", "file:/data/static/resources/indiepost-react-webapp/dist/server.bundle.js");
 //    }
 //
 ////    public ScriptTemplateConfigurer scriptTemplateConfigurer() {
@@ -98,7 +50,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 ////        configurer.setEngineName("nashorn");
 ////        configurer.setScripts(
 ////                "static/polyfill.js",
-////                "file:/data/resources/indiepost-react-webapp/src/server.js"
+////                "file:/data/static/resources/indiepost-react-webapp/src/server.js"
 ////        );
 ////        configurer.setRenderFunction("render");
 ////        configurer.setSharedEngine(false);
