@@ -20,6 +20,9 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -172,9 +175,27 @@ public class ImageServiceImpl implements ImageService {
         File file = new File(path);
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
+            String directory = file.getParentFile().getAbsolutePath();
+            setFilePermission(directory);
         }
         ImageIO.write(bufferedImage, formatName, file);
+        setFilePermission(path);
         return file;
+    }
+
+    private void setFilePermission(String path) throws IOException {
+        Set<PosixFilePermission> permissions = new HashSet<>();
+        //add owners permission
+        permissions.add(PosixFilePermission.OWNER_READ);
+        permissions.add(PosixFilePermission.OWNER_WRITE);
+        permissions.add(PosixFilePermission.OWNER_EXECUTE);
+        //add group permissions
+        permissions.add(PosixFilePermission.GROUP_READ);
+        permissions.add(PosixFilePermission.GROUP_EXECUTE);
+        //add others permissions
+        permissions.add(PosixFilePermission.OTHERS_READ);
+        permissions.add(PosixFilePermission.OTHERS_EXECUTE);
+        Files.setPosixFilePermissions(Paths.get(path), permissions);
     }
 
     private BufferedImage resizeImage(BufferedImage sourceImage, int definition) {
