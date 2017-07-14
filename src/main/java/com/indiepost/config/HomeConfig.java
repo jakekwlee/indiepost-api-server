@@ -8,7 +8,7 @@ import org.springframework.context.annotation.PropertySource;
  * Created by jake on 17. 2. 26.
  */
 @Configuration
-@PropertySource("classpath:webapp.properties")
+@PropertySource("classpath:webapp-${spring.profiles.active}.properties")
 @ConfigurationProperties(prefix = "webapp")
 public class HomeConfig {
     private boolean serverSideRendering;

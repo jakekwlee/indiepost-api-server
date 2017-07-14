@@ -11,7 +11,7 @@ import java.util.List;
  */
 
 @Configuration
-@PropertySource("classpath:webapp.properties")
+@PropertySource("classpath:webapp-${spring.profiles.active}.properties")
 @ConfigurationProperties(prefix = "images")
 public class ImageConfig {
     private String fsRoot;
