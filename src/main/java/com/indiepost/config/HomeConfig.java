@@ -16,6 +16,15 @@ public class HomeConfig {
     private String renderingServerUri;
     private String baseUrl;
     private String resourcesPath;
+    private String cdnUrl;
+
+    public String getCdnUrl() {
+        return cdnUrl;
+    }
+
+    public void setCdnUrl(String cdnUrl) {
+        this.cdnUrl = cdnUrl;
+    }
 
     public boolean isServerSideRendering() {
         return serverSideRendering;

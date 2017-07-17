@@ -7,13 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="apple-mobile-web-app-title" content="INDIEPOST">
     <th:block th:utext="${res.meta}"/>
-    <link rel="stylesheet"
-          th:href="@{/resources/indiepost-react-webapp/node_modules/bootstrap/dist/css/bootstrap.min.css}"/>
-    <link rel="stylesheet" th:href="@{/resources/indiepost-react-webapp/css/style.css}"/>
-    <link rel="shortcut icon" type="image/x-icon" th:href="@{/resources/indiepost-react-webapp/css/shortcut.ico}">
-    <link rel="apple-touch-icon" th:href="@{/resources/indiepost-react-webapp/css/app-icon-180.png}">
+    <link rel="stylesheet" th:href="@{${cdnUrl} + '/resources/node_modules/bootstrap/dist/css/bootstrap.min.css'}"/>
+    <link rel="stylesheet" th:href="@{${cdnUrl} + '/resources/css/style.css'}"/>
+    <link rel="shortcut icon" th:href="@{${cdnUrl} + '/resources/images/shortcut.ico'}" type="image/x-icon">
+    <link rel="apple-touch-icon" th:href="@{${cdnUrl} + '/resources/images/app-icon-180.png'}">
+    <link rel="stylesheet" th:href="@{${cdnUrl} + '/resources/fonts/fontello/css/fontello.css'}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:700">
-    <link rel="stylesheet" th:href="@{/resources/indiepost-react-webapp/fonts/fontello/css/fontello.css}">
     <th:block th:utext="${res.link}"/>
 </head>
 <body class="day-theme">
@@ -30,7 +29,7 @@
     }
     /*]]>*/
 </script>
-<script th:src="@{/resources/indiepost-react-webapp/dist/client.bundle.js}"></script>
-<script src="//platform.instagram.com/en_US/embeds.js" async defer="defer"></script>
+<script th:src="@{${cdnUrl} + '/resources/dist/client.bundle.js'}"></script>
+<script th:src="@{https://platform.instagram.com/en_US/embeds.js}" async defer="defer"></script>
 </body>
 </html>

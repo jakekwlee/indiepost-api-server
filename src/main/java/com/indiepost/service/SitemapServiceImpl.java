@@ -8,17 +8,14 @@ import com.indiepost.model.Page;
 import com.indiepost.repository.CategoryRepository;
 import com.indiepost.repository.PageRepository;
 import com.indiepost.repository.PostRepository;
-import com.redfin.sitemapgenerator.ChangeFreq;
-import com.redfin.sitemapgenerator.WebSitemapGenerator;
-import com.redfin.sitemapgenerator.WebSitemapUrl;
+import cz.jiripinkas.jsitemapgenerator.WebPageBuilder;
+import cz.jiripinkas.jsitemapgenerator.generator.SitemapGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.net.MalformedURLException;
 import java.util.List;
 
 /**
@@ -45,40 +42,40 @@ public class SitemapServiceImpl implements SitemapService {
     }
 
     @Override
-    public void createSitemap() throws MalformedURLException {
-        File targetDirectory = new File(SITEMAP_DIR_PATH);
-        WebSitemapGenerator webSitemapGenerator = WebSitemapGenerator.builder(BASE_URL, targetDirectory)
-                .allowMultipleSitemaps(false)
-                .gzip(false)
-                .build();
+    public String buildSitemap() {
+        SitemapGenerator sitemapGenerator = new SitemapGenerator("http://www.indiepost.co.kr");
 
         List<PostSummaryDto> posts = postRepository.findByStatus(
                 PostStatus.PUBLISH,
-                new PageRequest(0, 50000, Sort.Direction.DESC, "publishedAt")
+                new PageRequest(0, 9999, Sort.Direction.DESC, "publishedAt")
         );
+
         for (PostSummaryDto postSummaryDto : posts) {
-            WebSitemapUrl webSitemapUrl = new WebSitemapUrl.Options(BASE_URL + "/post/" + postSummaryDto.getId())
-                    .priority(0.9)
-                    .changeFreq(ChangeFreq.WEEKLY)
-                    .build();
-            webSitemapGenerator.addUrl(webSitemapUrl);
+            sitemapGenerator.addPage(new WebPageBuilder()
+                    .name("post/" + postSummaryDto.getId())
+                    .changeFreqDaily()
+                    .priorityMax()
+                    .build()
+            );
         }
         for (Category category : categoryRepository.findAll()) {
-            WebSitemapUrl webSitemapUrl = new WebSitemapUrl.Options(BASE_URL + "/category/" + category.getSlug())
-                    .priority(0.9)
-                    .changeFreq(ChangeFreq.DAILY)
-                    .build();
-            webSitemapGenerator.addUrl(webSitemapUrl);
+            sitemapGenerator.addPage(new WebPageBuilder()
+                    .name("category/" + category.getSlug())
+                    .changeFreqDaily()
+                    .priorityMax()
+                    .build()
+            );
         }
         List<Page> pageList = pageRepository.find(new PageRequest(0, 100, Sort.Direction.ASC, "displayOrder"));
         for (Page page : pageList) {
-            WebSitemapUrl webSitemapUrl = new WebSitemapUrl.Options(BASE_URL + "/page/" + page.getSlug())
-                    .priority(0.9)
-                    .changeFreq(ChangeFreq.MONTHLY)
-                    .build();
-            webSitemapGenerator.addUrl(webSitemapUrl);
+            sitemapGenerator.addPage(new WebPageBuilder()
+                    .name("page/" + page.getSlug())
+                    .changeFreqDaily()
+                    .priorityMax()
+                    .build()
+            );
         }
 
-        webSitemapGenerator.write();
+        return sitemapGenerator.constructSitemapString();
     }
 }
