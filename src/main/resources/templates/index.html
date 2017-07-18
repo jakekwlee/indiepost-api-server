@@ -20,7 +20,6 @@
 </div>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    window.__CFRF_TOKEN__ = [[${_csrf.token}]];
     window.__CONTEXT_ROOT__ = /*[[@{/}]]*/ '';
     window.__FETCH_COUNT__ = [[${fetchCount}]];
     window.__PRELOADED_STATE__ = deserialize(/*[[${res.state}]]*/);

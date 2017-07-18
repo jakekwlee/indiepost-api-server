@@ -13,8 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -45,11 +46,11 @@ public class AnalyticsStatLoggerServiceImpl implements AnalyticsStatLoggerServic
     }
 
     @Override
-    public void logPageview(HttpServletRequest request, Pageview pageview) throws IOException {
-        Long visitorId = getVisitorId(request, pageview.getUserId());
+    public void logPageview(HttpServletRequest req, HttpServletResponse res, Pageview pageview) throws IOException {
+        Long visitorId = getVisitorId(req, pageview.getUserId());
         Stat stat = new Stat();
         if (visitorId == null) {
-            Visitor visitor = newVisitor(request, pageview.getUserId(), pageview.getAppName(), pageview.getAppVersion());
+            Visitor visitor = newVisitor(req, res, pageview.getUserId(), pageview.getAppName(), pageview.getAppVersion());
             visitorId = visitor.getId();
             stat.setLandingPage(true);
             if (StringUtils.isNotEmpty(pageview.getReferrer())) {
@@ -78,10 +79,10 @@ public class AnalyticsStatLoggerServiceImpl implements AnalyticsStatLoggerServic
     }
 
     @Override
-    public void logAction(HttpServletRequest request, Action action) throws IOException {
-        Long visitorId = getVisitorId(request, action.getUserId());
+    public void logAction(HttpServletRequest req, HttpServletResponse res, Action action) throws IOException {
+        Long visitorId = getVisitorId(req, action.getUserId());
         if (visitorId == null) {
-            Visitor visitor = newVisitor(request, action.getUserId(), action.getAppName(), action.getAppVersion());
+            Visitor visitor = newVisitor(req, res, action.getUserId(), action.getAppName(), action.getAppVersion());
             visitorId = visitor.getId();
         }
         Stat stat = new Stat();
@@ -100,9 +101,9 @@ public class AnalyticsStatLoggerServiceImpl implements AnalyticsStatLoggerServic
     }
 
 
-    private Visitor newVisitor(HttpServletRequest request, Long userId, String appName, String appVersion) throws IOException {
-        String userAgentString = request.getHeader("User-Agent");
-        String ipAddress = request.getRemoteAddr();
+    private Visitor newVisitor(HttpServletRequest req, HttpServletResponse res, Long userId, String appName, String appVersion) throws IOException {
+        String userAgentString = req.getHeader("User-Agent");
+        String ipAddress = req.getRemoteAddr();
 
         Visitor visitor = new Visitor();
         ua_parser.Parser parser = new ua_parser.Parser();
@@ -141,14 +142,26 @@ public class AnalyticsStatLoggerServiceImpl implements AnalyticsStatLoggerServic
         visitor.setTimestamp(LocalDateTime.now());
 
         visitorRepository.save(visitor);
-        HttpSession session = request.getSession();
-        session.setAttribute("visitorId", visitor.getId());
+
+        Cookie cookie = new Cookie("visitorId", visitor.getId().toString());
+        cookie.setMaxAge(1800); // expires after 30min
+        res.addCookie(cookie);
         return visitor;
     }
 
     private Long getVisitorId(HttpServletRequest request, Long userId) throws IOException {
-        HttpSession session = request.getSession();
-        Long visitorId = (Long) session.getAttribute("visitorId");
+        Cookie[] cookieArray = request.getCookies();
+        if (cookieArray == null) {
+            return null;
+        }
+
+        Long visitorId = null;
+        for (Cookie cookie : cookieArray) {
+            if (cookie.getName().equals("visitorId")) {
+                visitorId = Long.parseLong(cookie.getValue());
+                break;
+            }
+        }
 
         if (visitorId == null) {
             return null;

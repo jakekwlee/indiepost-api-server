@@ -1,6 +1,6 @@
 package com.indiepost.config;
 
-import com.indiepost.filter.CORSFilter;
+import com.indiepost.security.CORSFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

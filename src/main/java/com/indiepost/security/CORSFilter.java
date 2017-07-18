@@ -1,4 +1,4 @@
-package com.indiepost.filter;
+package com.indiepost.security;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

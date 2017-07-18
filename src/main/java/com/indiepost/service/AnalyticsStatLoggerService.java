@@ -9,12 +9,13 @@ import com.indiepost.dto.stat.Pageview;
 import com.indiepost.model.Visitor;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public interface AnalyticsStatLoggerService {
     Visitor findVisitorById(Long id);
 
-    void logPageview(HttpServletRequest request, Pageview pageview) throws IOException;
+    void logPageview(HttpServletRequest req, HttpServletResponse res, Pageview pageview) throws IOException;
 
-    void logAction(HttpServletRequest request, Action action) throws IOException;
+    void logAction(HttpServletRequest request, HttpServletResponse res, Action action) throws IOException;
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -26,12 +27,16 @@ public class AnalyticsStatLoggerController {
     }
 
     @PostMapping("/pageview")
-    public void logPageview(HttpServletRequest request, @RequestBody Pageview pageview) throws IOException {
-        analyticsStatLoggerService.logPageview(request, pageview);
+    public void logPageview(HttpServletRequest request,
+                            HttpServletResponse response,
+                            @RequestBody Pageview pageview) throws IOException {
+        analyticsStatLoggerService.logPageview(request, response, pageview);
     }
 
     @PostMapping("/action")
-    public void logAction(HttpServletRequest request, @RequestBody Action action) throws IOException {
-        analyticsStatLoggerService.logAction(request, action);
+    public void logAction(HttpServletRequest request,
+                          HttpServletResponse response,
+                          @RequestBody Action action) throws IOException {
+        analyticsStatLoggerService.logAction(request, response, action);
     }
 }
