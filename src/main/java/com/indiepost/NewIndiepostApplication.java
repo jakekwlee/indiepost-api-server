@@ -1,6 +1,5 @@
 package com.indiepost;
 
-import com.indiepost.config.ImageConfig;
 import com.indiepost.security.MySQLPasswordEncoder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -35,9 +34,4 @@ public class NewIndiepostApplication extends SpringBootServletInitializer {
 //    public ObjectMapper objectMapper() {
 //        return new HibernateAwareObjectMapper();
 //    }
-
-    @Bean
-    public ImageConfig imageConfig() {
-        return new ImageConfig();
-    }
 }

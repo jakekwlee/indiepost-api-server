@@ -23,6 +23,6 @@ public class SitemapServiceTest {
 
     @Test
     public void sitemapShouldCreateCorrectly() throws MalformedURLException {
-        sitemapService.createSitemap();
+        sitemapService.buildSitemap();
     }
 }

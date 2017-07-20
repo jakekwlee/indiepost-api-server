@@ -1,6 +1,6 @@
 package com.indiepost.controller;
 
-import com.indiepost.config.HomeConfig;
+import com.indiepost.config.WebappConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/admin/**")
 public class AdminController {
 
-    private final HomeConfig homeConfig;
+    private final WebappConfig config;
 
     @Autowired
-    public AdminController(HomeConfig homeConfig) {
-        this.homeConfig = homeConfig;
+    public AdminController(WebappConfig config) {
+        this.config = config;
     }
 
     @GetMapping
     public String getDashboard(Model model) {
-        model.addAttribute("cdnUrl", homeConfig.getCdnUrl());
+        model.addAttribute("cdnUrl", config.getCdnUrl());
         return "admin/index";
     }
 }

@@ -100,9 +100,9 @@ public class LegacyPostServiceImpl implements LegacyPostService {
         if (post.getTitleImage() != null) {
             ImageSet titleImageSet = post.getTitleImage();
             if (titleImageSet.getOptimized() != null) {
-                imageUrl = titleImageSet.getOptimized().getFileUrl();
+                imageUrl = titleImageSet.getOptimized().getFilePath();
             } else {
-                imageUrl = titleImageSet.getOriginal().getFileUrl();
+                imageUrl = titleImageSet.getOriginal().getFilePath();
             }
         }
         contentlist.setImageurl(imageUrl);

@@ -144,7 +144,7 @@ public class PostServiceImpl implements PostService {
             relatedPostResponseDto.setExcerpt(postSummaryDto.getExcerpt());
             if (postSummaryDto.getTitleImageId() != null) {
                 Image image = postSummaryDto.getTitleImage().getThumbnail();
-                relatedPostResponseDto.setImageUrl(image.getFileUrl());
+                relatedPostResponseDto.setImageUrl(image.getFilePath());
                 relatedPostResponseDto.setImageWidth(image.getWidth());
                 relatedPostResponseDto.setImageHeight(image.getHeight());
             }

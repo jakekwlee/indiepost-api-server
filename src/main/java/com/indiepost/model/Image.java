@@ -21,14 +21,11 @@ public class Image implements Serializable {
 
     @Column(nullable = false)
     @Size(min = 2, max = 120)
-    private String fileUrl;
+    private String filePath;
 
     @Column(nullable = false)
     @Size(min = 2, max = 120)
     private String fileName;
-
-    @Column(nullable = false)
-    private long fileSize;
 
     @Column(nullable = false)
     private int width;
@@ -48,14 +45,6 @@ public class Image implements Serializable {
         this.id = id;
     }
 
-    public long getFileSize() {
-        return fileSize;
-    }
-
-    public void setFileSize(long size) {
-        this.fileSize = size;
-    }
-
     public int getWidth() {
         return width;
     }
@@ -72,12 +61,12 @@ public class Image implements Serializable {
         this.height = height;
     }
 
-    public String getFileUrl() {
-        return fileUrl;
+    public String getFilePath() {
+        return filePath;
     }
 
-    public void setFileUrl(String fileUrl) {
-        this.fileUrl = fileUrl;
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     public ImageSize getSizeType() {

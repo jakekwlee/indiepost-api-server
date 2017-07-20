@@ -1,28 +1,22 @@
 package com.indiepost.service;
 
-import com.indiepost.config.ImageConfig;
+import com.indiepost.config.WebappConfig;
 import com.indiepost.enums.Types.ImageSize;
 import com.indiepost.exception.FileSaveException;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.repository.ImageRepository;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.attribute.PosixFilePermission;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -33,19 +27,22 @@ import java.util.Set;
 /**
  * Created by jake on 8/17/16.
  */
-@Service
 @Transactional
-public class ImageServiceImpl implements ImageService {
+abstract class ImageServiceAbstract implements ImageService {
 
-    private final ImageRepository imageRepository;
-
-    private final ImageConfig imageConfig;
+    protected final WebappConfig config;
+    final ImageRepository imageRepository;
 
     @Autowired
-    public ImageServiceImpl(ImageRepository imageRepository, ImageConfig imageConfig) {
+    public ImageServiceAbstract(ImageRepository imageRepository, WebappConfig config) {
         this.imageRepository = imageRepository;
-        this.imageConfig = imageConfig;
+        this.config = config;
     }
+
+    abstract protected void saveUploadedImage(BufferedImage bufferedImage, Image image, String contentType) throws IOException;
+
+    @Override
+    abstract public void delete(ImageSet imageSet) throws IOException;
 
     @Override
     public void save(ImageSet imageSet) {
@@ -61,44 +58,46 @@ public class ImageServiceImpl implements ImageService {
 
         for (MultipartFile file : multipartFiles) {
             String contentType = file.getContentType();
-            if (!validateContentType(contentType)) {
-                throw new FileSaveException("File type is not accepted: " + contentType);
-            }
-            String alphanumeric = RandomStringUtils.randomAlphanumeric(imageConfig.getFilenameLength());
-            String fileExtension = contentType.split("/")[1];
+            validateContentType(contentType);
 
-            String baseUrl = imageConfig.getDbLocation() + LocalDateTime.now().format(DateTimeFormatter.ofPattern("/yyyy/MM"));
+            String filenamePrefix = RandomStringUtils.randomAlphanumeric(config.getImageFilenameLength());
 
             ImageSet imageSet = new ImageSet();
             imageSet.setContentType(contentType);
             imageSet.setUploadedAt(LocalDateTime.now());
             Set<Image> images = new HashSet<>();
 
-            BufferedImage bufferedImage = getBufferedImageFromMultipartFile(file);
-            Image originalImage = saveUploadedImage(bufferedImage, ImageSize.ORIGINAL, alphanumeric, fileExtension, baseUrl);
+            BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
+
+            Image originalImage = createImageObject(filenamePrefix, bufferedImage.getWidth(), bufferedImage.getHeight(), contentType, ImageSize.ORIGINAL);
+            saveUploadedImage(bufferedImage, originalImage, contentType);
             images.add(originalImage);
 
             if (bufferedImage.getWidth() > 1440) {
                 bufferedImage = resizeImage(bufferedImage, 1440);
-                Image largeImage = saveUploadedImage(bufferedImage, ImageSize.LARGE, alphanumeric, fileExtension, baseUrl);
+                Image largeImage = createImageObject(filenamePrefix, bufferedImage.getWidth(), bufferedImage.getHeight(), contentType, ImageSize.LARGE);
+                saveUploadedImage(bufferedImage, largeImage, contentType);
                 images.add(largeImage);
             }
 
             if (700 < bufferedImage.getWidth() && bufferedImage.getWidth() <= 1440) {
                 bufferedImage = resizeImage(bufferedImage, 700);
-                Image optimizedImage = saveUploadedImage(bufferedImage, ImageSize.OPTIMIZED, alphanumeric, fileExtension, baseUrl);
+                Image optimizedImage = createImageObject(filenamePrefix, bufferedImage.getWidth(), bufferedImage.getHeight(), contentType, ImageSize.OPTIMIZED);
+                saveUploadedImage(bufferedImage, optimizedImage, contentType);
                 images.add(optimizedImage);
             }
 
             if (400 < bufferedImage.getWidth() && bufferedImage.getWidth() <= 700) {
                 bufferedImage = resizeImage(bufferedImage, 400);
-                Image smallImage = saveUploadedImage(bufferedImage, ImageSize.SMALL, alphanumeric, fileExtension, baseUrl);
+                Image smallImage = createImageObject(filenamePrefix, bufferedImage.getWidth(), bufferedImage.getHeight(), contentType, ImageSize.SMALL);
+                saveUploadedImage(bufferedImage, smallImage, contentType);
                 images.add(smallImage);
             }
 
 
             bufferedImage = generateThumbnail(bufferedImage, 120, 80);
-            Image thumbnailImage = saveUploadedImage(bufferedImage, ImageSize.THUMBNAIL, alphanumeric, fileExtension, baseUrl);
+            Image thumbnailImage = createImageObject(filenamePrefix, bufferedImage.getWidth(), bufferedImage.getHeight(), contentType, ImageSize.THUMBNAIL);
+            saveUploadedImage(bufferedImage, thumbnailImage, contentType);
             images.add(thumbnailImage);
 
             imageSet.setImages(images);
@@ -108,19 +107,14 @@ public class ImageServiceImpl implements ImageService {
         return imageSetList;
     }
 
-    private Image saveUploadedImage(BufferedImage bufferedImage, ImageSize sizeType,
-                                    String alphanumeric, String fileExtension, String baseUrl) throws IOException {
-        int width = bufferedImage.getWidth();
-        int height = bufferedImage.getHeight();
-        String physicalBaseUrl = imageConfig.getFsRoot() + baseUrl;
-        String newFilename = String.format(imageConfig.getFilenameFormat(), alphanumeric, width, height, fileExtension);
-
-        long size = saveToFileSystem(bufferedImage, fileExtension, physicalBaseUrl + '/' + newFilename).length();
+    private Image createImageObject(String filenamePrefix, int width, int height, String contentType, ImageSize sizeType) {
+        String subPath = config.getImageUploadPath() + LocalDateTime.now().format(DateTimeFormatter.ofPattern("/yyyy/MM"));
+        String fileExtension = contentType.split("/")[1];
+        String filename = String.format(config.getImageFilenameFormat(), filenamePrefix, width, height, fileExtension);
 
         Image image = new Image();
-        image.setFileName(newFilename);
-        image.setFileUrl(baseUrl + '/' + newFilename);
-        image.setFileSize(size);
+        image.setFileName(filename);
+        image.setFilePath(subPath + '/' + filename);
         image.setWidth(width);
         image.setHeight(height);
         image.setSizeType(sizeType);
@@ -148,54 +142,10 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public void delete(ImageSet imageSet) throws IOException {
-        Set<Image> images = imageSet.getImages();
-        for (Image image : images) {
-            deleteFileFromFileSystem(image);
-        }
-        imageRepository.delete(imageSet);
-    }
-
-    @Override
     public Long deleteById(Long id) throws IOException {
         ImageSet imageSet = findById(id);
         delete(imageSet);
         return id;
-    }
-
-    private boolean validateContentType(String contentType) {
-        return imageConfig.getAcceptedTypes().contains(contentType);
-    }
-
-    private BufferedImage getBufferedImageFromMultipartFile(MultipartFile file) throws IOException {
-        return ImageIO.read(file.getInputStream());
-    }
-
-    private File saveToFileSystem(BufferedImage bufferedImage, String formatName, String path) throws IOException {
-        File file = new File(path);
-        if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
-            String directory = file.getParentFile().getAbsolutePath();
-            setFilePermission(directory);
-        }
-        ImageIO.write(bufferedImage, formatName, file);
-        setFilePermission(path);
-        return file;
-    }
-
-    private void setFilePermission(String path) throws IOException {
-        Set<PosixFilePermission> permissions = new HashSet<>();
-        //add owners permission
-        permissions.add(PosixFilePermission.OWNER_READ);
-        permissions.add(PosixFilePermission.OWNER_WRITE);
-        permissions.add(PosixFilePermission.OWNER_EXECUTE);
-        //add group permissions
-        permissions.add(PosixFilePermission.GROUP_READ);
-        permissions.add(PosixFilePermission.GROUP_EXECUTE);
-        //add others permissions
-        permissions.add(PosixFilePermission.OTHERS_READ);
-        permissions.add(PosixFilePermission.OTHERS_EXECUTE);
-        Files.setPosixFilePermissions(Paths.get(path), permissions);
     }
 
     private BufferedImage resizeImage(BufferedImage sourceImage, int definition) {
@@ -228,8 +178,9 @@ public class ImageServiceImpl implements ImageService {
         return Scalr.crop(resizedImage, x0, y0, width, height);
     }
 
-    private boolean deleteFileFromFileSystem(Image image) {
-        File fileToDelete = FileUtils.getFile(new File(imageConfig.getFsRoot() + image.getFileUrl()));
-        return FileUtils.deleteQuietly(fileToDelete);
+    private void validateContentType(String contentType) throws FileSaveException {
+        if (!config.getAcceptedImageTypes().contains(contentType)) {
+            throw new FileSaveException("File type is not accepted: " + contentType);
+        }
     }
 }

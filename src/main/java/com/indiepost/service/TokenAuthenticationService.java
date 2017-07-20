@@ -49,7 +49,7 @@ public interface TokenAuthenticationService {
         res.setStatus(HttpServletResponse.SC_OK);
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("roles", authorities);
+        jsonObject.put("roles", authorities.toArray());
         jsonObject.put("username", auth.getName());
 
         Writer writer = res.getWriter();
@@ -74,7 +74,7 @@ public interface TokenAuthenticationService {
         Set<GrantedAuthority> grantedAuthorities = getAuthorities(authList);
 
         return user != null ?
-                new UsernamePasswordAuthenticationToken(user, grantedAuthorities) :
+                new UsernamePasswordAuthenticationToken(user, null, grantedAuthorities) :
                 null;
     }
 

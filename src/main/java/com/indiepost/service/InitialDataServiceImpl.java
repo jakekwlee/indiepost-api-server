@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.config.HomeConfig;
+import com.indiepost.config.WebappConfig;
 import com.indiepost.dto.InitialData;
 import com.indiepost.dto.PostQuery;
 import com.indiepost.dto.PostSummaryDto;
@@ -25,16 +25,16 @@ public class InitialDataServiceImpl implements InitialDataService {
 
     private final PageService pageService;
 
-    private final HomeConfig homeConfig;
+    private final WebappConfig config;
 
     @Autowired
     public InitialDataServiceImpl(CategoryService categoryService, UserService userService,
-                                  PostService postService, PageService pageService, HomeConfig homeConfig) {
+                                  PostService postService, PageService pageService, WebappConfig config) {
         this.categoryService = categoryService;
         this.userService = userService;
         this.postService = postService;
         this.pageService = pageService;
-        this.homeConfig = homeConfig;
+        this.config = config;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class InitialDataServiceImpl implements InitialDataService {
 
         if (withLatestPosts) {
             this.mergePostSummaryDtoListBtoA(posts,
-                    postService.findAll(0, homeConfig.getFetchCount(), true)
+                    postService.findAll(0, config.getFetchCount(), true)
             );
         }
         initialData.setPosts(posts);

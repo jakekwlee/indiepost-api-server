@@ -1,6 +1,6 @@
 package com.indiepost.controller;
 
-import com.indiepost.config.HomeConfig;
+import com.indiepost.config.WebappConfig;
 import com.indiepost.dto.PostDto;
 import com.indiepost.dto.ssr.RenderingResponseDto;
 import com.indiepost.service.PostService;
@@ -29,48 +29,48 @@ public class HomeController {
 
     private final PostService postService;
 
-    private final HomeConfig homeConfig;
+    private final WebappConfig config;
 
     private final SitemapService sitemapService;
 
     @Autowired
-    public HomeController(ServerSideRenderingService serverSideRenderingService, PostService postService, HomeConfig homeConfig, SitemapService sitemapService) {
+    public HomeController(ServerSideRenderingService serverSideRenderingService, PostService postService, WebappConfig config, SitemapService sitemapService) {
         this.serverSideRenderingService = serverSideRenderingService;
         this.postService = postService;
-        this.homeConfig = homeConfig;
+        this.config = config;
         this.sitemapService = sitemapService;
     }
 
-    @GetMapping(value = "/")
+    @GetMapping(value = {"/", "login"})
     public String getHome(Model model, HttpServletRequest request) {
-        if (homeConfig.isServerSideRendering()) {
+        if (config.isServerSideRendering()) {
             serverSideRenderingService.renderHome(model, request.getServletPath());
         } else {
             model.addAttribute("res", new RenderingResponseDto());
         }
-        model.addAttribute("cdnUrl", homeConfig.getCdnUrl());
+        model.addAttribute("cdnUrl", config.getCdnUrl());
         return "index";
     }
 
     @GetMapping("/post/{id}")
     public String getPost(@PathVariable Long id, Model model, HttpServletRequest request) {
-        if (homeConfig.isServerSideRendering()) {
+        if (config.isServerSideRendering()) {
             serverSideRenderingService.renderPost(id, model, request.getServletPath());
         } else {
             model.addAttribute("res", new RenderingResponseDto());
         }
-        model.addAttribute("cdnUrl", homeConfig.getCdnUrl());
+        model.addAttribute("cdnUrl", config.getCdnUrl());
         return "index";
     }
 
     @GetMapping("/page/{slug}")
     public String getPage(@PathVariable String slug, Model model, HttpServletRequest request) {
-        if (homeConfig.isServerSideRendering()) {
+        if (config.isServerSideRendering()) {
             serverSideRenderingService.renderPage(slug, model, request.getServletPath());
         } else {
             model.addAttribute("res", new RenderingResponseDto());
         }
-        model.addAttribute("cdnUrl", homeConfig.getCdnUrl());
+        model.addAttribute("cdnUrl", config.getCdnUrl());
         return "index";
     }
 
@@ -82,34 +82,34 @@ public class HomeController {
 
     @GetMapping("/category/{categoryName}")
     public String getCategoryPage(@PathVariable String categoryName, Model model, HttpServletRequest request) {
-        if (homeConfig.isServerSideRendering()) {
+        if (config.isServerSideRendering()) {
             serverSideRenderingService.renderPostsByCategoryPage(categoryName, model, request.getServletPath());
         } else {
             model.addAttribute("res", new RenderingResponseDto());
         }
-        model.addAttribute("cdnUrl", homeConfig.getCdnUrl());
+        model.addAttribute("cdnUrl", config.getCdnUrl());
         return "index";
     }
 
     @GetMapping("/tag/{tagName}")
     public String getPostsByTagName(@PathVariable String tagName, Model model, HttpServletRequest request) {
-        if (homeConfig.isServerSideRendering()) {
+        if (config.isServerSideRendering()) {
             serverSideRenderingService.renderPostByTagPage(tagName, model, request.getServletPath());
         } else {
             model.addAttribute("res", new RenderingResponseDto());
         }
-        model.addAttribute("cdnUrl", homeConfig.getCdnUrl());
+        model.addAttribute("cdnUrl", config.getCdnUrl());
         return "index";
     }
 
     @GetMapping("/search/{keyword}")
     public String search(@PathVariable String keyword, Model model, HttpServletRequest request) {
-        if (homeConfig.isServerSideRendering()) {
+        if (config.isServerSideRendering()) {
             serverSideRenderingService.renderPostSearchResultsPage(keyword, model, request.getServletPath());
         } else {
             model.addAttribute("res", new RenderingResponseDto());
         }
-        model.addAttribute("cdnUrl", homeConfig.getCdnUrl());
+        model.addAttribute("cdnUrl", config.getCdnUrl());
         return "index";
     }
 

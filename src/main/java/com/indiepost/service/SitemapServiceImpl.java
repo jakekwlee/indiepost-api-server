@@ -1,6 +1,5 @@
 package com.indiepost.service;
 
-import com.indiepost.config.HomeConfig;
 import com.indiepost.dto.PostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Category;
@@ -27,18 +26,12 @@ public class SitemapServiceImpl implements SitemapService {
     private final PostRepository postRepository;
     private final CategoryRepository categoryRepository;
     private final PageRepository pageRepository;
-    private final HomeConfig homeConfig;
-    private String BASE_URL;
-    private String SITEMAP_DIR_PATH;
 
     @Autowired
-    public SitemapServiceImpl(PostRepository postRepository, CategoryRepository categoryRepository, PageRepository pageRepository, HomeConfig homeConfig) {
+    public SitemapServiceImpl(PostRepository postRepository, CategoryRepository categoryRepository, PageRepository pageRepository) {
         this.postRepository = postRepository;
         this.categoryRepository = categoryRepository;
         this.pageRepository = pageRepository;
-        this.homeConfig = homeConfig;
-        this.BASE_URL = this.homeConfig.getBaseUrl();
-        this.SITEMAP_DIR_PATH = this.homeConfig.getResourcesPath();
     }
 
     @Override
