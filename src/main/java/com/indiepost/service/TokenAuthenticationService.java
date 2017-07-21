@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public interface TokenAuthenticationService {
     long EXPIRATION_TIME = 864_000_000; // 10 days
     String SECRET = "ThisIsASecret";
-    String TOKEN_PREFIX = "TwinPeaks";
+    String TOKEN_PREFIX = "Bearer";
     String HEADER_STRING = "Authorization";
 
     static void addAuthentication(HttpServletResponse res, Authentication auth) throws IOException {

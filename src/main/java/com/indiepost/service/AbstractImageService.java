@@ -28,13 +28,13 @@ import java.util.Set;
  * Created by jake on 8/17/16.
  */
 @Transactional
-abstract class ImageServiceAbstract implements ImageService {
+abstract class AbstractImageService implements ImageService {
 
     protected final WebappConfig config;
     final ImageRepository imageRepository;
 
     @Autowired
-    public ImageServiceAbstract(ImageRepository imageRepository, WebappConfig config) {
+    public AbstractImageService(ImageRepository imageRepository, WebappConfig config) {
         this.imageRepository = imageRepository;
         this.config = config;
     }

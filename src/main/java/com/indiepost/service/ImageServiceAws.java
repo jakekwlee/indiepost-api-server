@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Transactional
-public class ImageServiceAws extends ImageServiceAbstract implements ImageService {
+public class ImageServiceAws extends AbstractImageService implements ImageService {
     public ImageServiceAws(ImageRepository imageRepository, WebappConfig config) {
         super(imageRepository, config);
     }
@@ -67,7 +67,6 @@ public class ImageServiceAws extends ImageServiceAbstract implements ImageServic
         multiObjectDeleteRequest.setKeys(keys);
         DeleteObjectsResult delObjRes = getS3Client().deleteObjects(multiObjectDeleteRequest);
         //TODO
-        System.out.println(delObjRes.getDeletedObjects());
     }
 
     private AmazonS3 getS3Client() {

@@ -19,7 +19,7 @@ import java.util.Set;
 /**
  * Created by jake on 7/20/17.
  */
-public class ImageServiceFileSystem extends ImageServiceAbstract {
+public class ImageServiceFileSystem extends AbstractImageService {
     public ImageServiceFileSystem(ImageRepository imageRepository, WebappConfig config) {
         super(imageRepository, config);
     }
