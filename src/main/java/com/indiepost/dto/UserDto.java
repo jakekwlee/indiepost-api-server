@@ -6,6 +6,7 @@ import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public class UserDto {
 
     private UserGender gender;
 
-    private List<Long> roleList;
+    private List<String> roles;
 
     public Long getId() {
         return id;
@@ -109,11 +110,18 @@ public class UserDto {
         this.gender = gender;
     }
 
-    public List<Long> getRoleList() {
-        return roleList;
+    public List<String> getRoles() {
+        return roles;
     }
 
-    public void setRoleList(List<Long> roleList) {
-        this.roleList = roleList;
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+
+    public void addRole(String role) {
+        if (this.roles == null) {
+            this.roles = new ArrayList<>();
+        }
+        this.roles.add(role);
     }
 }

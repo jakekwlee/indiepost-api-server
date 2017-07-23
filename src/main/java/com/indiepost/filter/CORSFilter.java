@@ -1,7 +1,6 @@
-package com.indiepost.security;
+package com.indiepost.filter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -10,33 +9,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * Enabling CORS support  - Access-Control-Allow-Origin
- *
- * @author zeroows@gmail.com
- *         <p>
- *         <code>
- *         <!-- Add this to your web.xml to enable "CORS" -->
- *         <filter>
- *         <filter-name>cors</filter-name>
- *         <filter-class>com.elm.mb.rest.filters.CORSFilter</filter-class>
- *         </filter>
- *         <p>
- *         <filter-mapping>
- *         <filter-name>cors</filter-name>
- *         <url-pattern>/*</url-pattern>
- *         </filter-mapping>
- *         </code>
- */
+
+@Component
 public class CORSFilter extends OncePerRequestFilter {
-    private static final Log LOG = LogFactory.getLog(CORSFilter.class);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         response.addHeader("Access-Control-Allow-Origin", "http://www.indiepost.co.kr");
 
         if (request.getHeader("Access-Control-Request-Method") != null && "OPTIONS".equals(request.getMethod())) {
-            LOG.trace("Sending Header....");
             // CORS "pre-flight" request
             response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
 //			response.addHeader("Access-Control-Allow-Headers", "Authorization");

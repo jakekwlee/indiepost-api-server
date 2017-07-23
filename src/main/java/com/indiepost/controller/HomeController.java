@@ -1,6 +1,6 @@
 package com.indiepost.controller;
 
-import com.indiepost.config.WebappConfig;
+import com.indiepost.config.AppConfig;
 import com.indiepost.dto.PostDto;
 import com.indiepost.dto.ssr.RenderingResponseDto;
 import com.indiepost.service.PostService;
@@ -29,25 +29,33 @@ public class HomeController {
 
     private final PostService postService;
 
-    private final WebappConfig config;
+    private final AppConfig config;
 
     private final SitemapService sitemapService;
 
     @Autowired
-    public HomeController(ServerSideRenderingService serverSideRenderingService, PostService postService, WebappConfig config, SitemapService sitemapService) {
+    public HomeController(ServerSideRenderingService serverSideRenderingService, PostService postService, AppConfig config, SitemapService sitemapService) {
         this.serverSideRenderingService = serverSideRenderingService;
         this.postService = postService;
         this.config = config;
         this.sitemapService = sitemapService;
     }
 
-    @GetMapping(value = {"/", "login"})
+    @GetMapping("/")
     public String getHome(Model model, HttpServletRequest request) {
         if (config.isServerSideRendering()) {
             serverSideRenderingService.renderHome(model, request.getServletPath());
         } else {
             model.addAttribute("res", new RenderingResponseDto());
         }
+        model.addAttribute("cdnUrl", config.getCdnUrl());
+        return "index";
+    }
+
+    @GetMapping("/login")
+    public String getLoginPage(Model model) {
+        // TODO
+        model.addAttribute("res", new RenderingResponseDto());
         model.addAttribute("cdnUrl", config.getCdnUrl());
         return "index";
     }

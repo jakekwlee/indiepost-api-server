@@ -1,6 +1,6 @@
 package com.indiepost.controller;
 
-import com.indiepost.config.WebappConfig;
+import com.indiepost.config.AppConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/admin/**")
 public class AdminController {
 
-    private final WebappConfig config;
+    private final AppConfig config;
 
     @Autowired
-    public AdminController(WebappConfig config) {
+    public AdminController(AppConfig config) {
         this.config = config;
     }
 

@@ -2,6 +2,7 @@ package com.indiepost.controller.api.admin;
 
 import com.indiepost.model.ImageSet;
 import com.indiepost.service.ImageService;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,7 +31,7 @@ public class ImageController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public List<ImageSet> handleImageUpload(@RequestParam("files") MultipartFile[] multipartFiles) throws IOException {
+    public List<ImageSet> handleImageUpload(@RequestParam("files") MultipartFile[] multipartFiles) throws IOException, FileUploadException {
         return imageService.saveUploadedImages(multipartFiles);
     }
 

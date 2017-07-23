@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.config.WebappConfig;
+import com.indiepost.config.AppConfig;
 import com.indiepost.dto.*;
 import com.indiepost.dto.ssr.RenderingRequestDto;
 import com.indiepost.dto.ssr.RenderingResponseDto;
@@ -26,10 +26,10 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
 
     private final RestTemplate restTemplate;
 
-    private final WebappConfig config;
+    private final AppConfig config;
 
     @Autowired
-    public ServerSideRenderingServiceImpl(InitialDataService initialDataService, PostService postService, PageService pageService, RestTemplate restTemplate, WebappConfig config) {
+    public ServerSideRenderingServiceImpl(InitialDataService initialDataService, PostService postService, PageService pageService, RestTemplate restTemplate, AppConfig config) {
         this.initialDataService = initialDataService;
         this.postService = postService;
         this.pageService = pageService;

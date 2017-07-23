@@ -1,12 +1,12 @@
 package com.indiepost.service;
 
-import com.indiepost.config.WebappConfig;
+import com.indiepost.config.AppConfig;
 import com.indiepost.enums.Types.ImageSize;
-import com.indiepost.exception.FileSaveException;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.repository.ImageRepository;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -30,11 +30,11 @@ import java.util.Set;
 @Transactional
 abstract class AbstractImageService implements ImageService {
 
-    protected final WebappConfig config;
+    protected final AppConfig config;
     final ImageRepository imageRepository;
 
     @Autowired
-    public AbstractImageService(ImageRepository imageRepository, WebappConfig config) {
+    public AbstractImageService(ImageRepository imageRepository, AppConfig config) {
         this.imageRepository = imageRepository;
         this.config = config;
     }
@@ -50,9 +50,9 @@ abstract class AbstractImageService implements ImageService {
     }
 
     @Override
-    public List<ImageSet> saveUploadedImages(MultipartFile[] multipartFiles) throws IOException {
+    public List<ImageSet> saveUploadedImages(MultipartFile[] multipartFiles) throws IOException, FileUploadException {
         if (multipartFiles.length == 0) {
-            throw new FileSaveException("File does not uploaded.");
+            throw new FileUploadException("File does not uploaded.");
         }
         List<ImageSet> imageSetList = new ArrayList<>();
 
@@ -178,9 +178,9 @@ abstract class AbstractImageService implements ImageService {
         return Scalr.crop(resizedImage, x0, y0, width, height);
     }
 
-    private void validateContentType(String contentType) throws FileSaveException {
+    private void validateContentType(String contentType) throws FileUploadException {
         if (!config.getAcceptedImageTypes().contains(contentType)) {
-            throw new FileSaveException("File type is not accepted: " + contentType);
+            throw new FileUploadException("File type is not accepted: " + contentType);
         }
     }
 }

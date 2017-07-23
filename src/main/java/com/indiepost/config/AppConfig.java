@@ -12,7 +12,7 @@ import java.util.List;
 @Configuration
 @PropertySource("classpath:webapp-${spring.profiles.active}.properties")
 @ConfigurationProperties(prefix = "webapp")
-public class WebappConfig {
+public class AppConfig {
 
     private String baseUrl;
 
@@ -28,21 +28,22 @@ public class WebappConfig {
 
     private String mediaUploadPath;
 
-    private boolean usingAwsS3;
-
-    private String awsS3BucketName;
-
-    private String awsAccessKey;
-
-    private String awsSecretAccessKey;
-
     private int imageFilenameLength;
 
     private String imageFilenameFormat;
 
     private List<String> acceptedImageTypes;
 
+    private boolean buildSearchIndex;
     private int fetchCount;
+
+    public boolean isBuildSearchIndex() {
+        return buildSearchIndex;
+    }
+
+    public void setBuildSearchIndex(boolean buildSearchIndex) {
+        this.buildSearchIndex = buildSearchIndex;
+    }
 
     public String getBaseUrl() {
         return baseUrl;
@@ -98,38 +99,6 @@ public class WebappConfig {
 
     public void setMediaUploadPath(String mediaUploadPath) {
         this.mediaUploadPath = mediaUploadPath;
-    }
-
-    public boolean isUsingAwsS3() {
-        return usingAwsS3;
-    }
-
-    public void setUsingAwsS3(boolean usingAwsS3) {
-        this.usingAwsS3 = usingAwsS3;
-    }
-
-    public String getAwsS3BucketName() {
-        return awsS3BucketName;
-    }
-
-    public void setAwsS3BucketName(String awsS3BucketName) {
-        this.awsS3BucketName = awsS3BucketName;
-    }
-
-    public String getAwsAccessKey() {
-        return awsAccessKey;
-    }
-
-    public void setAwsAccessKey(String awsAccessKey) {
-        this.awsAccessKey = awsAccessKey;
-    }
-
-    public String getAwsSecretAccessKey() {
-        return awsSecretAccessKey;
-    }
-
-    public void setAwsSecretAccessKey(String awsSecretAccessKey) {
-        this.awsSecretAccessKey = awsSecretAccessKey;
     }
 
     public int getImageFilenameLength() {

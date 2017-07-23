@@ -11,18 +11,18 @@ import org.springframework.stereotype.Component;
  * Created by jake on 11/22/16.
  */
 @Component
-public class ScheduledTasks {
+public class ScheduledTasksRunner {
 
-    private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
+    private static final Logger log = LoggerFactory.getLogger(ScheduledTasksRunner.class);
 
     private final AdminPostService adminPostService;
 
     @Autowired
-    public ScheduledTasks(AdminPostService adminPostService) {
+    public ScheduledTasksRunner(AdminPostService adminPostService) {
         this.adminPostService = adminPostService;
     }
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 600000)
     public void publishScheduledPosts() {
         adminPostService.publishScheduledPosts();
     }

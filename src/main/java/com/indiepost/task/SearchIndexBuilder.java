@@ -1,7 +1,9 @@
-package com.indiepost.config;
+package com.indiepost.task;
 
+import com.indiepost.config.AppConfig;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
@@ -13,10 +15,16 @@ import javax.persistence.PersistenceContext;
  * Created by jake on 17. 3. 12.
  */
 @Component
-public class BuildSearchIndex implements ApplicationListener<ApplicationReadyEvent> {
+public class SearchIndexBuilder implements ApplicationListener<ApplicationReadyEvent> {
 
+    private final AppConfig appConfig;
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Autowired
+    public SearchIndexBuilder(AppConfig appConfig) {
+        this.appConfig = appConfig;
+    }
 
     /**
      * Create an initial Lucene index for the data already present in the
@@ -25,6 +33,9 @@ public class BuildSearchIndex implements ApplicationListener<ApplicationReadyEve
      */
     @Override
     public void onApplicationEvent(final ApplicationReadyEvent event) {
+        if (!appConfig.isBuildSearchIndex()) {
+            return;
+        }
         try {
             FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
             fullTextEntityManager.createIndexer().startAndWait();

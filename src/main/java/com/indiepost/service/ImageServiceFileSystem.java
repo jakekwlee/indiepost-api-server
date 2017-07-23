@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.config.WebappConfig;
+import com.indiepost.config.AppConfig;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.repository.ImageRepository;
@@ -20,7 +20,7 @@ import java.util.Set;
  * Created by jake on 7/20/17.
  */
 public class ImageServiceFileSystem extends AbstractImageService {
-    public ImageServiceFileSystem(ImageRepository imageRepository, WebappConfig config) {
+    public ImageServiceFileSystem(ImageRepository imageRepository, AppConfig config) {
         super(imageRepository, config);
     }
 

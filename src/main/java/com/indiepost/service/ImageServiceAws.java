@@ -7,10 +7,12 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
-import com.indiepost.config.WebappConfig;
+import com.indiepost.config.AppConfig;
+import com.indiepost.config.AwsConfig;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.repository.ImageRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,8 +32,13 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class ImageServiceAws extends AbstractImageService implements ImageService {
-    public ImageServiceAws(ImageRepository imageRepository, WebappConfig config) {
+
+    private final AwsConfig awsConfig;
+
+    @Autowired
+    public ImageServiceAws(ImageRepository imageRepository, AppConfig config, AwsConfig awsConfig) {
         super(imageRepository, config);
+        this.awsConfig = awsConfig;
     }
 
     @Override
@@ -48,7 +55,7 @@ public class ImageServiceAws extends AbstractImageService implements ImageServic
 
         getS3Client().putObject(
                 new PutObjectRequest(
-                        config.getAwsS3BucketName(),
+                        awsConfig.getS3BucketName(),
                         image.getFilePath().substring(1),
                         inputStream,
                         metadata
@@ -58,7 +65,7 @@ public class ImageServiceAws extends AbstractImageService implements ImageServic
 
     @Override
     public void delete(ImageSet imageSet) throws IOException {
-        DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(config.getAwsS3BucketName());
+        DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(awsConfig.getS3BucketName());
 
         List<KeyVersion> keys = imageSet.getImages().stream()
                 .map(image -> new KeyVersion(image.getFilePath().substring(1)))
@@ -70,7 +77,7 @@ public class ImageServiceAws extends AbstractImageService implements ImageServic
     }
 
     private AmazonS3 getS3Client() {
-        BasicAWSCredentials credentials = new BasicAWSCredentials(config.getAwsAccessKey(), config.getAwsSecretAccessKey());
+        BasicAWSCredentials credentials = new BasicAWSCredentials(awsConfig.getAccessKey(), awsConfig.getSecretAccessKey());
         return AmazonS3ClientBuilder.standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(Regions.AP_NORTHEAST_2)

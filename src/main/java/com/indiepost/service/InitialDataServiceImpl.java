@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.config.WebappConfig;
+import com.indiepost.config.AppConfig;
 import com.indiepost.dto.InitialData;
 import com.indiepost.dto.PostQuery;
 import com.indiepost.dto.PostSummaryDto;
@@ -25,11 +25,11 @@ public class InitialDataServiceImpl implements InitialDataService {
 
     private final PageService pageService;
 
-    private final WebappConfig config;
+    private final AppConfig config;
 
     @Autowired
     public InitialDataServiceImpl(CategoryService categoryService, UserService userService,
-                                  PostService postService, PageService pageService, WebappConfig config) {
+                                  PostService postService, PageService pageService, AppConfig config) {
         this.categoryService = categoryService;
         this.userService = userService;
         this.postService = postService;

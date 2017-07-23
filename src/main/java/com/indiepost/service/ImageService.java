@@ -1,6 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.model.ImageSet;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ public interface ImageService {
 
     void save(ImageSet imageSet);
 
-    List<ImageSet> saveUploadedImages(MultipartFile[] multipartFiles) throws IOException;
+    List<ImageSet> saveUploadedImages(MultipartFile[] multipartFiles) throws IOException, FileUploadException;
 
     ImageSet findById(Long id);
 
