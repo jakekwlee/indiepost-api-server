@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.PostSummary;
 import com.indiepost.service.PostService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +31,7 @@ public class LuceneSearchTest {
     @Test
     @Transactional
     public void testLuceneSearch() throws JsonProcessingException {
-        List<PostSummaryDto> dtoList = postService.search("포르노", 0, 100);
+        List<PostSummary> dtoList = postService.search("포르노", 0, 100);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Hibernate5Module());
         String result = objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true)

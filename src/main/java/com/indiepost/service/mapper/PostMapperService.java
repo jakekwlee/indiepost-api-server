@@ -1,7 +1,7 @@
 package com.indiepost.service.mapper;
 
 import com.indiepost.dto.PostDto;
-import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.PostSummary;
 import com.indiepost.dto.admin.AdminPostRequestDto;
 import com.indiepost.dto.admin.AdminPostResponseDto;
 import com.indiepost.dto.admin.AdminPostSummaryDto;
@@ -16,7 +16,7 @@ public interface PostMapperService {
 
     PostDto postToPostDto(Post post);
 
-    PostSummaryDto postToPostSummaryDto(Post post);
+    PostSummary postToPostSummaryDto(Post post);
 
     AdminPostResponseDto postToAdminPostResponseDto(Post post);
 

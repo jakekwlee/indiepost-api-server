@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.indiepost.dto.InitialData;
 import com.indiepost.dto.PageDto;
 import com.indiepost.dto.PostDto;
-import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.PostSummary;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RenderingRequestDto {
     private InitialData initialData;
-    private List<PostSummaryDto> posts;
+    private List<PostSummary> posts;
     private PostDto post;
     private PageDto page;
     private String path;
@@ -44,7 +44,7 @@ public class RenderingRequestDto {
         this.path = path;
     }
 
-    public RenderingRequestDto(InitialData initialData, List<PostSummaryDto> posts, String path) {
+    public RenderingRequestDto(InitialData initialData, List<PostSummary> posts, String path) {
         this.initialData = initialData;
         this.posts = posts;
         this.path = path;
@@ -58,11 +58,11 @@ public class RenderingRequestDto {
         this.initialData = initialData;
     }
 
-    public List<PostSummaryDto> getPosts() {
+    public List<PostSummary> getPosts() {
         return posts;
     }
 
-    public void setPosts(List<PostSummaryDto> posts) {
+    public void setPosts(List<PostSummary> posts) {
         this.posts = posts;
     }
 

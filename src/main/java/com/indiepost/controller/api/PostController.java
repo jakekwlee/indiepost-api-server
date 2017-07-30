@@ -27,7 +27,7 @@ public class PostController {
     }
 
     @GetMapping
-    public List<PostSummaryDto> getPosts(
+    public List<PostSummary> getPosts(
             @RequestParam("p") int page,
             @RequestParam("m") int maxResults) {
 
@@ -35,7 +35,7 @@ public class PostController {
     }
 
     @GetMapping("/category/{id}")
-    public List<PostSummaryDto> getPostsByCategoryId(
+    public List<PostSummary> getPostsByCategoryId(
             @PathVariable Long id,
             @RequestParam("p") int page,
             @RequestParam("m") int maxResults) {
@@ -43,13 +43,13 @@ public class PostController {
     }
 
     @GetMapping("/tag/{tagName}")
-    public List<PostSummaryDto> getPostsByTagName(
+    public List<PostSummary> getPostsByTagName(
             @PathVariable String tagName) {
         return postService.findByTagName(tagName);
     }
 
     @GetMapping("/search")
-    public List<PostSummaryDto> getPosts(
+    public List<PostSummary> getPosts(
             @RequestParam("q") String text,
             @RequestParam("p") int page,
             @RequestParam("m") int maxResults) {
@@ -57,12 +57,12 @@ public class PostController {
     }
 
     @PostMapping
-    public List<PostSummaryDto> getPostsByQuery(@RequestBody PostQuery query) {
+    public List<PostSummary> getPostsByQuery(@RequestBody PostQuery query) {
         return postService.findByQuery(query, query.getPage(), query.getMaxResults(), true);
     }
 
     @PostMapping("/related")
-    public List<PostSummaryDto> getPostByIds(@RequestBody RelatedPostsRequestDto dto) {
+    public List<PostSummary> getPostByIds(@RequestBody RelatedPostsRequestDto dto) {
         return postService.findByIds(dto.getPostIds());
     }
 

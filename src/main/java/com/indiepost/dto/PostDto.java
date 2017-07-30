@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by jake on 17. 1. 22.
  */
-public class PostDto extends PostSummaryDto implements Serializable {
+public class PostDto extends PostSummary implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

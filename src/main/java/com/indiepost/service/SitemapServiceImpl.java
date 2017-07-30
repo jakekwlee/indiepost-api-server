@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.PostSummary;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Category;
 import com.indiepost.model.Page;
@@ -38,14 +38,14 @@ public class SitemapServiceImpl implements SitemapService {
     public String buildSitemap() {
         SitemapGenerator sitemapGenerator = new SitemapGenerator("http://www.indiepost.co.kr");
 
-        List<PostSummaryDto> posts = postRepository.findByStatus(
+        List<PostSummary> posts = postRepository.findByStatus(
                 PostStatus.PUBLISH,
                 new PageRequest(0, 9999, Sort.Direction.DESC, "publishedAt")
         );
 
-        for (PostSummaryDto postSummaryDto : posts) {
+        for (PostSummary postSummary : posts) {
             sitemapGenerator.addPage(new WebPageBuilder()
-                    .name("post/" + postSummaryDto.getId())
+                    .name("post/" + postSummary.getId())
                     .changeFreqDaily()
                     .priorityMax()
                     .build()

@@ -2,7 +2,7 @@ package com.indiepost.repository;
 
 import com.github.fluent.hibernate.transformer.FluentHibernateResultTransformer;
 import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.PostSummary;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Post;
 import com.indiepost.repository.helper.CriteriaHelper;
@@ -86,13 +86,13 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     @Override
-    public List<PostSummaryDto> find(Pageable pageable) {
+    public List<PostSummary> find(Pageable pageable) {
         return findByQuery(new PostQuery(), pageable);
     }
 
 
     @Override
-    public List<PostSummaryDto> findByQuery(PostQuery query, Pageable pageable) {
+    public List<PostSummary> findByQuery(PostQuery query, Pageable pageable) {
         Criteria criteria = getPagedCriteria(pageable);
         ProjectionList projectionList = this.getProjectionList();
         if (query != null && StringUtils.isNotEmpty(query.getCategorySlug())) {
@@ -108,13 +108,13 @@ public class PostRepositoryHibernate implements PostRepository {
         if (conjunction.conditions().iterator().hasNext()) {
             criteria.add(conjunction);
         }
-        criteria.setResultTransformer(new FluentHibernateResultTransformer(PostSummaryDto.class));
+        criteria.setResultTransformer(new FluentHibernateResultTransformer(PostSummary.class));
 
         return criteria.list();
     }
 
     @Override
-    public List<PostSummaryDto> findByCategoryId(Long categoryId, Pageable pageable) {
+    public List<PostSummary> findByCategoryId(Long categoryId, Pageable pageable) {
         PostQuery query = new PostQuery();
         if (categoryId != 0L) {
             query.setCategoryId(categoryId);
@@ -123,18 +123,26 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     @Override
-    public List<PostSummaryDto> findByIds(List<Long> ids) {
-        ProjectionList projectionList = getProjectionList()
-                .add(Property.forName("legacyPostId"), "legacyPostId");
-        Criteria criteria = getCriteria();
-        criteria.setProjection(projectionList);
-        criteria.add(Restrictions.in("id", ids));
-        criteria.setResultTransformer(new FluentHibernateResultTransformer(PostSummaryDto.class));
-        return criteria.list();
+    public List<PostSummary> findByIds(List<Long> ids) {
+        if (ids == null || ids.size() == 0) {
+            return null;
+        }
+        String[] stringArray = ids.stream()
+                .map(id -> id.toString())
+                .toArray(String[]::new);
+
+        String joinedIds = String.join(", ", stringArray);
+        String queryString = "select new com.indiepost.dto.PostSummary(" +
+                "p.id, p.legacyPostId, p.featured, p.picked, p.splash, p.title, p.excerpt, " +
+                "p.displayName, p.publishedAt, p.titleImage, p.titleImageId, p.status, c.id, c.name, " +
+                "p.commentsCount, p.likesCount) from Post p inner join p.category c where p.id in (:ids) ORDER BY field(p.id, " + joinedIds + ")";
+        org.hibernate.Query query = getSession().createQuery(queryString);
+        query.setParameterList("ids", ids);
+        return query.list();
     }
 
     @Override
-    public List<PostSummaryDto> findByStatus(PostStatus status, Pageable pageable) {
+    public List<PostSummary> findByStatus(PostStatus status, Pageable pageable) {
         PostQuery query = new PostQuery();
         query.setStatus(status);
         return this.findByQuery(query, pageable);

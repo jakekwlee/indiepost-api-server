@@ -2,13 +2,15 @@ package com.indiepost.service;
 
 import com.indiepost.dto.PostDto;
 import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.PostSummary;
 import com.indiepost.dto.RelatedPostResponseDto;
+import com.indiepost.dto.stat.PostStat;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
+import com.indiepost.repository.AnalyticsRepository;
 import com.indiepost.repository.ImageRepository;
 import com.indiepost.repository.PostRepository;
 import com.indiepost.repository.TagRepository;
@@ -21,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,13 +43,17 @@ public class PostServiceImpl implements PostService {
 
     private final TagRepository tagRepository;
 
+    private final AnalyticsRepository analyticsRepository;
+
     @Autowired
     public PostServiceImpl(PostRepository postRepository, ImageRepository imageRepository,
-                           PostMapperService postMapperService, TagRepository tagRepository) {
+                           PostMapperService postMapperService, TagRepository tagRepository,
+                           AnalyticsRepository analyticsRepository) {
         this.postRepository = postRepository;
         this.imageRepository = imageRepository;
         this.postMapperService = postMapperService;
         this.tagRepository = tagRepository;
+        this.analyticsRepository = analyticsRepository;
     }
 
     @Override
@@ -85,31 +92,31 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostSummaryDto> findByIds(List<Long> ids) {
-        List<PostSummaryDto> result = postRepository.findByIds(ids);
+    public List<PostSummary> findByIds(List<Long> ids) {
+        List<PostSummary> result = postRepository.findByIds(ids);
         return setTitleImages(result);
     }
 
     @Override
-    public List<PostSummaryDto> findAll(int page, int maxResults, boolean isDesc) {
-        List<PostSummaryDto> result = postRepository.findByStatus(PostStatus.PUBLISH, getPageable(page, maxResults, isDesc));
+    public List<PostSummary> findAll(int page, int maxResults, boolean isDesc) {
+        List<PostSummary> result = postRepository.findByStatus(PostStatus.PUBLISH, getPageable(page, maxResults, isDesc));
         return setTitleImages(result);
     }
 
     @Override
-    public List<PostSummaryDto> findByQuery(PostQuery query, int page, int maxResults, boolean isDesc) {
-        List<PostSummaryDto> result = postRepository.findByQuery(query, getPageable(page, maxResults, isDesc));
+    public List<PostSummary> findByQuery(PostQuery query, int page, int maxResults, boolean isDesc) {
+        List<PostSummary> result = postRepository.findByQuery(query, getPageable(page, maxResults, isDesc));
         return setTitleImages(result);
     }
 
     @Override
-    public List<PostSummaryDto> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc) {
-        List<PostSummaryDto> result = postRepository.findByCategoryId(categoryId, getPageable(page, maxResults, isDesc));
+    public List<PostSummary> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc) {
+        List<PostSummary> result = postRepository.findByCategoryId(categoryId, getPageable(page, maxResults, isDesc));
         return setTitleImages(result);
     }
 
     @Override
-    public List<PostSummaryDto> findByTagName(String tagName) {
+    public List<PostSummary> findByTagName(String tagName) {
         Tag tag = tagRepository.findByTagName(tagName);
         if (tag == null) {
             return null;
@@ -118,7 +125,7 @@ public class PostServiceImpl implements PostService {
         if (postList == null || postList.size() == 0) {
             return null;
         }
-        List<PostSummaryDto> dtoList = postList.stream()
+        List<PostSummary> dtoList = postList.stream()
                 .filter(post -> post.getStatus().equals(PostStatus.PUBLISH))
                 .map(postMapperService::postToPostSummaryDto)
                 .collect(Collectors.toList());
@@ -127,35 +134,35 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<RelatedPostResponseDto> getRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobile) {
-        List<PostSummaryDto> postSummaryDtoList = this.postRepository.findByIds(ids);
-        if (postSummaryDtoList == null) {
+        List<PostSummary> postSummaryList = this.postRepository.findByIds(ids);
+        if (postSummaryList == null) {
             return null;
         }
 
-        this.setTitleImages(postSummaryDtoList);
+        this.setTitleImages(postSummaryList);
         String legacyPostMobileUrl = "http://www.indiepost.co.kr/indiepost/ContentView.do?no=";
         String legacyPostWebUrl = "http://www.indiepost.co.kr/ContentView.do?no=";
 
         List<RelatedPostResponseDto> relatedPostResponseDtoList = new ArrayList<>();
-        for (PostSummaryDto postSummaryDto : postSummaryDtoList) {
+        for (PostSummary postSummary : postSummaryList) {
             RelatedPostResponseDto relatedPostResponseDto = new RelatedPostResponseDto();
-            relatedPostResponseDto.setId(postSummaryDto.getId());
-            relatedPostResponseDto.setTitle(postSummaryDto.getTitle());
-            relatedPostResponseDto.setExcerpt(postSummaryDto.getExcerpt());
-            if (postSummaryDto.getTitleImageId() != null) {
-                Image image = postSummaryDto.getTitleImage().getThumbnail();
+            relatedPostResponseDto.setId(postSummary.getId());
+            relatedPostResponseDto.setTitle(postSummary.getTitle());
+            relatedPostResponseDto.setExcerpt(postSummary.getExcerpt());
+            if (postSummary.getTitleImageId() != null) {
+                Image image = postSummary.getTitleImage().getThumbnail();
                 relatedPostResponseDto.setImageUrl(image.getFilePath());
                 relatedPostResponseDto.setImageWidth(image.getWidth());
                 relatedPostResponseDto.setImageHeight(image.getHeight());
             }
             if (isLegacy) {
                 if (isMobile) {
-                    relatedPostResponseDto.setUrl(legacyPostMobileUrl + postSummaryDto.getLegacyPostId());
+                    relatedPostResponseDto.setUrl(legacyPostMobileUrl + postSummary.getLegacyPostId());
                 } else {
-                    relatedPostResponseDto.setUrl(legacyPostWebUrl + postSummaryDto.getLegacyPostId());
+                    relatedPostResponseDto.setUrl(legacyPostWebUrl + postSummary.getLegacyPostId());
                 }
             } else {
-                relatedPostResponseDto.setUrl("/posts/" + postSummaryDto.getId());
+                relatedPostResponseDto.setUrl("/posts/" + postSummary.getId());
             }
             relatedPostResponseDtoList.add(relatedPostResponseDto);
         }
@@ -163,17 +170,30 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostSummaryDto> search(String text, int page, int maxResults) {
+    public List<PostSummary> getTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit) {
+        List<PostStat> topStats = analyticsRepository.getPostsOrderByUniquePageviews(since, until, limit);
+        List<Long> topPostIds = topStats.stream()
+                .map(postStat -> postStat.getId())
+                .collect(Collectors.toList());
+
+        List<PostSummary> topRatedPosts = postRepository.findByIds(topPostIds);
+        return setTitleImages(topRatedPosts);
+    }
+
+    @Override
+    public List<PostSummary> search(String text, int page, int maxResults) {
         if (text.length() > 30) {
             text = text.substring(0, 30);
         }
         Pageable pageable = getPageable(page, maxResults, true);
         List<Post> postList = postRepository.search(text, pageable);
-        return postList.stream().map(post -> {
-            PostSummaryDto dto = new PostSummaryDto();
-            BeanUtils.copyProperties(post, dto);
-            return dto;
-        }).collect(Collectors.toList());
+        return postList.stream()
+                .map(post -> {
+                    PostSummary dto = new PostSummary();
+                    BeanUtils.copyProperties(post, dto);
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -181,29 +201,29 @@ public class PostServiceImpl implements PostService {
         return postRepository.findIdByLegacyId(legacyId);
     }
 
-    private List<PostSummaryDto> setTitleImages(List<PostSummaryDto> postSummaryDtoList) {
-        List<Long> ids = postSummaryDtoList.stream()
+    private List<PostSummary> setTitleImages(List<PostSummary> postSummaryList) {
+        List<Long> ids = postSummaryList.stream()
                 .filter(postExcerpt -> postExcerpt.getTitleImageId() != null)
-                .map(PostSummaryDto::getTitleImageId)
+                .map(PostSummary::getTitleImageId)
                 .collect(Collectors.toList());
 
         if (ids.size() == 0) {
-            return postSummaryDtoList;
+            return postSummaryList;
         }
 
         List<ImageSet> imageSetList = imageRepository.findByIds(ids);
 
-        for (PostSummaryDto postSummaryDto : postSummaryDtoList) {
-            Long titleImageId = postSummaryDto.getTitleImageId();
+        for (PostSummary postSummary : postSummaryList) {
+            Long titleImageId = postSummary.getTitleImageId();
             for (ImageSet imageSet : imageSetList) {
                 if (imageSet.getId().equals(titleImageId)) {
-                    postSummaryDto.setTitleImage(imageSet);
+                    postSummary.setTitleImage(imageSet);
                     break;
                 }
             }
         }
 
-        return postSummaryDtoList;
+        return postSummaryList;
     }
 
     private Pageable getPageable(int page, int maxResults, boolean isDesc) {

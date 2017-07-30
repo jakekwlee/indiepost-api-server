@@ -13,7 +13,9 @@ public class InitialData {
 
     private UserDto currentUser;
 
-    private List<PostSummaryDto> posts;
+    private List<PostSummary> posts;
+
+    private List<Long> topRated;
 
     private List<PageDto> pages;
 
@@ -35,12 +37,20 @@ public class InitialData {
         this.currentUser = currentUser;
     }
 
-    public List<PostSummaryDto> getPosts() {
+    public List<PostSummary> getPosts() {
         return posts;
     }
 
-    public void setPosts(List<PostSummaryDto> posts) {
+    public void setPosts(List<PostSummary> posts) {
         this.posts = posts;
+    }
+
+    public List<Long> getTopRated() {
+        return topRated;
+    }
+
+    public void setTopRated(List<Long> topRated) {
+        this.topRated = topRated;
     }
 
     public boolean isWithLatestPosts() {

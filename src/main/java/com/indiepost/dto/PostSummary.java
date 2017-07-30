@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 /**
  * Created by jake on 17. 1. 21.
  */
-public class PostSummaryDto implements Serializable {
+public class PostSummary implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -47,6 +47,28 @@ public class PostSummaryDto implements Serializable {
     private int commentsCount;
 
     private int likesCount;
+
+    public PostSummary() {
+    }
+
+    public PostSummary(Long id, Long legacyPostId, boolean featured, boolean picked, boolean splash, String title, String excerpt, String displayName, LocalDateTime publishedAt, ImageSet titleImage, Long titleImageId, PostStatus status, Long categoryId, String categoryName, int commentsCount, int likesCount) {
+        this.id = id;
+        this.legacyPostId = legacyPostId;
+        this.featured = featured;
+        this.picked = picked;
+        this.splash = splash;
+        this.title = title;
+        this.excerpt = excerpt;
+        this.displayName = displayName;
+        this.publishedAt = publishedAt;
+        this.titleImage = titleImage;
+        this.titleImageId = titleImageId;
+        this.status = status;
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+        this.commentsCount = commentsCount;
+        this.likesCount = likesCount;
+    }
 
     public Long getId() {
         return id;

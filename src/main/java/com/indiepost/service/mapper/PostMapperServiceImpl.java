@@ -1,7 +1,7 @@
 package com.indiepost.service.mapper;
 
 import com.indiepost.dto.PostDto;
-import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.PostSummary;
 import com.indiepost.dto.TagDto;
 import com.indiepost.dto.admin.AdminPostRequestDto;
 import com.indiepost.dto.admin.AdminPostResponseDto;
@@ -68,21 +68,21 @@ public class PostMapperServiceImpl implements PostMapperService {
     }
 
     @Override
-    public PostSummaryDto postToPostSummaryDto(Post post) {
-        PostSummaryDto postSummaryDto = new PostSummaryDto();
-        postSummaryDto.setId(post.getId());
-        postSummaryDto.setFeatured(post.isFeatured());
-        postSummaryDto.setSplash(post.isSplash());
-        postSummaryDto.setPicked(post.isPicked());
-        postSummaryDto.setTitle(post.getTitle());
-        postSummaryDto.setExcerpt(post.getExcerpt());
-        postSummaryDto.setCategoryId(post.getCategoryId());
-        postSummaryDto.setCommentsCount(post.getCommentsCount());
-        postSummaryDto.setLikesCount(post.getLikesCount());
-        postSummaryDto.setLegacyPostId(post.getLegacyPostId());
-        postSummaryDto.setDisplayName(post.getDisplayName());
-        postSummaryDto.setTitleImageId(post.getTitleImageId());
-        return postSummaryDto;
+    public PostSummary postToPostSummaryDto(Post post) {
+        PostSummary postSummary = new PostSummary();
+        postSummary.setId(post.getId());
+        postSummary.setFeatured(post.isFeatured());
+        postSummary.setSplash(post.isSplash());
+        postSummary.setPicked(post.isPicked());
+        postSummary.setTitle(post.getTitle());
+        postSummary.setExcerpt(post.getExcerpt());
+        postSummary.setCategoryId(post.getCategoryId());
+        postSummary.setCommentsCount(post.getCommentsCount());
+        postSummary.setLikesCount(post.getLikesCount());
+        postSummary.setLegacyPostId(post.getLegacyPostId());
+        postSummary.setDisplayName(post.getDisplayName());
+        postSummary.setTitleImageId(post.getTitleImageId());
+        return postSummary;
     }
 
     @Override

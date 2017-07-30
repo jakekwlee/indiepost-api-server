@@ -3,12 +3,14 @@ package com.indiepost.service;
 import com.indiepost.config.AppConfig;
 import com.indiepost.dto.InitialData;
 import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.PostSummary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by jake on 17. 1. 22.
@@ -47,34 +49,43 @@ public class InitialDataServiceImpl implements InitialDataService {
 
         PostQuery query = new PostQuery();
         query.setSplash(true);
-        List<PostSummaryDto> posts = postService.findByQuery(query, 0, 1, true);
+        List<PostSummary> posts = postService.findByQuery(query, 0, 1, true);
 
         query.setSplash(false);
         query.setFeatured(true);
-        this.mergePostSummaryDtoListBtoA(posts,
+        this.mergePostSummaryListBtoA(posts,
                 postService.findByQuery(query, 0, 1, true)
         );
 
         query.setFeatured(false);
         query.setPicked(true);
-        this.mergePostSummaryDtoListBtoA(posts,
+        this.mergePostSummaryListBtoA(posts,
                 postService.findByQuery(query, 0, 8, true)
         );
 
         if (withLatestPosts) {
-            this.mergePostSummaryDtoListBtoA(posts,
+            this.mergePostSummaryListBtoA(posts,
                     postService.findAll(0, config.getFetchCount(), true)
             );
         }
+
+        LocalDateTime now = LocalDateTime.now();
+        List<PostSummary> topRatedPosts = postService.getTopRatedPosts(now.minusDays(10L), now, 10L);
+        this.mergePostSummaryListBtoA(posts, topRatedPosts);
         initialData.setPosts(posts);
+        initialData.setTopRated(
+                topRatedPosts.stream()
+                        .map(postSummary -> postSummary.getId())
+                        .collect(Collectors.toList())
+        );
         return initialData;
     }
 
-    private void mergePostSummaryDtoListBtoA(List<PostSummaryDto> dtoListA, List<PostSummaryDto> dtoListB) {
+    private void mergePostSummaryListBtoA(List<PostSummary> dtoListA, List<PostSummary> dtoListB) {
         if (dtoListB.size() > 0) {
-            for (PostSummaryDto postB : dtoListB) {
+            for (PostSummary postB : dtoListB) {
                 boolean isDuplicate = false;
-                for (PostSummaryDto postA : dtoListA) {
+                for (PostSummary postA : dtoListA) {
                     isDuplicate = postB.getId().equals(postA.getId());
                     if (isDuplicate) {
                         break;
