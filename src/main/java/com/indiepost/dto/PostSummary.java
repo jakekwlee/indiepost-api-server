@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
 import com.indiepost.model.ImageSet;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -51,7 +53,9 @@ public class PostSummary implements Serializable {
     public PostSummary() {
     }
 
-    public PostSummary(Long id, Long legacyPostId, boolean featured, boolean picked, boolean splash, String title, String excerpt, String displayName, LocalDateTime publishedAt, ImageSet titleImage, Long titleImageId, PostStatus status, Long categoryId, String categoryName, int commentsCount, int likesCount) {
+    public PostSummary(Long id, Long legacyPostId, boolean featured, boolean picked, boolean splash,
+                       String title, String excerpt, String displayName, LocalDateTime publishedAt, ImageSet titleImage, Long titleImageId,
+                       PostStatus status, Long categoryId, String categoryName, int commentsCount, int likesCount) {
         this.id = id;
         this.legacyPostId = legacyPostId;
         this.featured = featured;
@@ -196,5 +200,28 @@ public class PostSummary implements Serializable {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (!(obj instanceof PostSummary)) {
+            return false;
+        }
+
+        PostSummary postSummary = (PostSummary) obj;
+        return new EqualsBuilder()
+                .append(id, postSummary.getId())
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(id)
+                .append(categoryName)
+                .append(getStatus())
+                .toHashCode();
     }
 }

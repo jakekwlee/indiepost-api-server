@@ -38,4 +38,10 @@ public interface PostService {
     List<PostSummary> search(String text, int page, int maxResults);
 
     Long findIdByLegacyId(Long legacyId);
+
+    PostSummary findSplashPost();
+
+    PostSummary findFeaturePost();
+
+    List<PostSummary> findPickedPosts();
 }

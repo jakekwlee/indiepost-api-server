@@ -201,6 +201,29 @@ public class PostServiceImpl implements PostService {
         return postRepository.findIdByLegacyId(legacyId);
     }
 
+    @Override
+    public PostSummary findSplashPost() {
+        PostQuery query = new PostQuery();
+        query.setSplash(true);
+        List<PostSummary> posts = findByQuery(query, 0, 1, true);
+        return posts == null ? null : posts.get(0);
+    }
+
+    @Override
+    public PostSummary findFeaturePost() {
+        PostQuery query = new PostQuery();
+        query.setFeatured(true);
+        List<PostSummary> posts = findByQuery(query, 0, 1, true);
+        return posts == null ? null : posts.get(0);
+    }
+
+    @Override
+    public List<PostSummary> findPickedPosts() {
+        PostQuery query = new PostQuery();
+        query.setPicked(true);
+        return findByQuery(query, 0, 8, true);
+    }
+
     private List<PostSummary> setTitleImages(List<PostSummary> postSummaryList) {
         List<Long> ids = postSummaryList.stream()
                 .filter(postExcerpt -> postExcerpt.getTitleImageId() != null)

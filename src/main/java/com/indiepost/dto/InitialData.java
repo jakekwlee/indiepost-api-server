@@ -15,7 +15,13 @@ public class InitialData {
 
     private List<PostSummary> posts;
 
-    private List<Long> topRated;
+    private List<PostSummary> topPosts;
+
+    private List<PostSummary> pickedPosts;
+
+    private PostSummary splash;
+
+    private PostSummary featured;
 
     private List<PageDto> pages;
 
@@ -45,12 +51,36 @@ public class InitialData {
         this.posts = posts;
     }
 
-    public List<Long> getTopRated() {
-        return topRated;
+    public List<PostSummary> getTopPosts() {
+        return topPosts;
     }
 
-    public void setTopRated(List<Long> topRated) {
-        this.topRated = topRated;
+    public void setTopPosts(List<PostSummary> topPosts) {
+        this.topPosts = topPosts;
+    }
+
+    public List<PostSummary> getPickedPosts() {
+        return pickedPosts;
+    }
+
+    public void setPickedPosts(List<PostSummary> pickedPosts) {
+        this.pickedPosts = pickedPosts;
+    }
+
+    public PostSummary getSplash() {
+        return splash;
+    }
+
+    public void setSplash(PostSummary splash) {
+        this.splash = splash;
+    }
+
+    public PostSummary getFeatured() {
+        return featured;
+    }
+
+    public void setFeatured(PostSummary featured) {
+        this.featured = featured;
     }
 
     public boolean isWithLatestPosts() {
