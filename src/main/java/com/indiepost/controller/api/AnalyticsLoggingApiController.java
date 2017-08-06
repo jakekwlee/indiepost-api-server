@@ -2,7 +2,7 @@ package com.indiepost.controller.api;
 
 import com.indiepost.dto.stat.Action;
 import com.indiepost.dto.stat.Pageview;
-import com.indiepost.service.AnalyticsStatLoggerService;
+import com.indiepost.service.AnalyticsLoggerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,25 +18,25 @@ import java.io.IOException;
  */
 @RestController
 @RequestMapping("/api/stat")
-public class AnalyticsStatLoggerController {
-    private final AnalyticsStatLoggerService analyticsStatLoggerService;
+public class AnalyticsLoggingApiController {
+    private final AnalyticsLoggerService analyticsLoggerService;
 
     @Autowired
-    public AnalyticsStatLoggerController(AnalyticsStatLoggerService analyticsStatLoggerService) {
-        this.analyticsStatLoggerService = analyticsStatLoggerService;
+    public AnalyticsLoggingApiController(AnalyticsLoggerService analyticsLoggerService) {
+        this.analyticsLoggerService = analyticsLoggerService;
     }
 
     @PostMapping("/pageview")
     public void logPageview(HttpServletRequest request,
                             HttpServletResponse response,
                             @RequestBody Pageview pageview) throws IOException {
-        analyticsStatLoggerService.logPageview(request, response, pageview);
+        analyticsLoggerService.logPageview(request, response, pageview);
     }
 
     @PostMapping("/action")
     public void logAction(HttpServletRequest request,
                           HttpServletResponse response,
                           @RequestBody Action action) throws IOException {
-        analyticsStatLoggerService.logAction(request, response, action);
+        analyticsLoggerService.logAction(request, response, action);
     }
 }

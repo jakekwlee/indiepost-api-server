@@ -1,6 +1,8 @@
-package com.indiepost.model;
+package com.indiepost.model.analytics;
 
 import com.indiepost.enums.Types.ClientType;
+import com.indiepost.model.User;
+import com.indiepost.model.UserAgent;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -24,7 +26,6 @@ public class Visitor {
     @Enumerated(EnumType.STRING)
     private ClientType appName;
 
-    @NotNull
     @Size(max = 20)
     private String appVersion;
 

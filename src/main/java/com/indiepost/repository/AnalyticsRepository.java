@@ -5,7 +5,7 @@ import com.indiepost.dto.stat.ShareStat;
 import com.indiepost.dto.stat.TimeDomainStat;
 import com.indiepost.enums.Types.ClientType;
 import com.indiepost.enums.Types.StatType;
-import com.indiepost.model.Stat;
+import com.indiepost.model.analytics.Stat;
 
 import java.time.LocalDateTime;
 import java.util.List;

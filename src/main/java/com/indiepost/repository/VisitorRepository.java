@@ -1,6 +1,6 @@
 package com.indiepost.repository;
 
-import com.indiepost.model.Visitor;
+import com.indiepost.model.analytics.Visitor;
 
 /**
  * Created by jake on 17. 4. 9.

@@ -1,6 +1,6 @@
 package com.indiepost.repository;
 
-import com.indiepost.model.Stat;
+import com.indiepost.model.analytics.Stat;
 
 /**
  * Created by jake on 17. 4. 17.

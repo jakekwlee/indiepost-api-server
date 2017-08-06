@@ -83,7 +83,6 @@ public class PostQuery {
         this.status = status;
     }
 
-
     public LocalDateTime getDateFrom() {
         return dateFrom;
     }

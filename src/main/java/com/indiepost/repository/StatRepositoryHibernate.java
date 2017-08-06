@@ -1,6 +1,6 @@
 package com.indiepost.repository;
 
-import com.indiepost.model.Stat;
+import com.indiepost.model.analytics.Stat;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 

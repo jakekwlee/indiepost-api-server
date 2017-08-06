@@ -3,9 +3,9 @@ package com.indiepost.service;
 import com.indiepost.dto.stat.Action;
 import com.indiepost.dto.stat.Pageview;
 import com.indiepost.enums.Types;
-import com.indiepost.model.Stat;
 import com.indiepost.model.UserAgent;
-import com.indiepost.model.Visitor;
+import com.indiepost.model.analytics.Stat;
+import com.indiepost.model.analytics.Visitor;
 import com.indiepost.repository.PostRepository;
 import com.indiepost.repository.StatRepository;
 import com.indiepost.repository.VisitorRepository;
@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
  */
 @Service
 @Transactional
-public class AnalyticsStatLoggerServiceImpl implements AnalyticsStatLoggerService {
+public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
 
     private final VisitorRepository visitorRepository;
 
@@ -34,7 +34,7 @@ public class AnalyticsStatLoggerServiceImpl implements AnalyticsStatLoggerServic
     private final PostRepository postRepository;
 
     @Autowired
-    public AnalyticsStatLoggerServiceImpl(VisitorRepository visitorRepository, StatRepository statRepository, PostRepository postRepository) {
+    public AnalyticsLoggerServiceImpl(VisitorRepository visitorRepository, StatRepository statRepository, PostRepository postRepository) {
         this.visitorRepository = visitorRepository;
         this.statRepository = statRepository;
         this.postRepository = postRepository;
@@ -100,10 +100,15 @@ public class AnalyticsStatLoggerServiceImpl implements AnalyticsStatLoggerServic
         statRepository.save(stat);
     }
 
+    @Override
+    public String logAndGetLink(String uid) {
+        return null;
+    }
+
 
     private Visitor newVisitor(HttpServletRequest req, HttpServletResponse res, Long userId, String appName, String appVersion) throws IOException {
         String userAgentString = req.getHeader("User-Agent");
-        String ipAddress = req.getRemoteAddr();
+        String ipAddress = getIpAddress(req);
 
         Visitor visitor = new Visitor();
         ua_parser.Parser parser = new ua_parser.Parser();
@@ -175,6 +180,11 @@ public class AnalyticsStatLoggerServiceImpl implements AnalyticsStatLoggerServic
             }
         }
         return visitorId;
+    }
+
+    private String getIpAddress(HttpServletRequest req) {
+        String ip = req.getHeader("X-FORWARDED-FOR");
+        return ip != null ? ip : req.getRemoteAddr();
     }
 
     private Types.Channel getChannelType(String browserName, String referrer) {

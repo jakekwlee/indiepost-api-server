@@ -1,6 +1,6 @@
 package com.indiepost.repository;
 
-import com.indiepost.model.Visitor;
+import com.indiepost.model.analytics.Visitor;
 import org.hibernate.Criteria;
 import org.springframework.stereotype.Repository;
 

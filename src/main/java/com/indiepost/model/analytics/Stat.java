@@ -1,8 +1,9 @@
-package com.indiepost.model;
+package com.indiepost.model.analytics;
 
 import com.indiepost.enums.Types.ActionType;
 import com.indiepost.enums.Types.Channel;
 import com.indiepost.enums.Types.StatType;
+import com.indiepost.model.Post;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
