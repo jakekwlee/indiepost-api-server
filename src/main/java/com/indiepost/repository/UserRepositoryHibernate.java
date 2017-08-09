@@ -3,17 +3,17 @@ package com.indiepost.repository;
 import com.indiepost.enums.Types.UserGender;
 import com.indiepost.enums.Types.UserState;
 import com.indiepost.model.User;
-import com.indiepost.repository.helper.CriteriaHelper;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+
+import static com.indiepost.repository.utils.CriteriaUtils.setPageToCriteria;
 
 /**
  * Created by jake on 7/30/16.
@@ -22,17 +22,8 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class UserRepositoryHibernate implements UserRepository {
 
-
-    private final CriteriaHelper criteriaHelper;
-
     @PersistenceContext
     private EntityManager entityManager;
-
-    @Autowired
-    public UserRepositoryHibernate(CriteriaHelper criteriaHelper) {
-        this.criteriaHelper = criteriaHelper;
-    }
-
 
     @Override
     public void save(User user) {
@@ -106,6 +97,6 @@ public class UserRepositoryHibernate implements UserRepository {
     }
 
     private Criteria getCriteria(Pageable pageable) {
-        return criteriaHelper.setPageToCriteria(getCriteria(), pageable);
+        return setPageToCriteria(getCriteria(), pageable);
     }
 }

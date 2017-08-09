@@ -5,7 +5,6 @@ import com.indiepost.dto.PostQuery;
 import com.indiepost.dto.PostSummary;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Post;
-import com.indiepost.repository.helper.CriteriaHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
@@ -17,7 +16,6 @@ import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -27,6 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.indiepost.repository.utils.CriteriaUtils.buildConjunction;
+import static com.indiepost.repository.utils.CriteriaUtils.setPageToCriteria;
+
 /**
  * Created by jake on 7/30/16.
  */
@@ -34,15 +35,8 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public class PostRepositoryHibernate implements PostRepository {
 
-    private final CriteriaHelper criteriaHelper;
-
     @PersistenceContext
     private EntityManager entityManager;
-
-    @Autowired
-    public PostRepositoryHibernate(CriteriaHelper criteriaHelper) {
-        this.criteriaHelper = criteriaHelper;
-    }
 
     @Override
     public Post findById(Long id) {
@@ -80,7 +74,7 @@ public class PostRepositoryHibernate implements PostRepository {
     @Override
     public Long count(PostQuery query) {
         Conjunction conjunction = Restrictions.conjunction();
-        criteriaHelper.buildConjunction(query, conjunction);
+        buildConjunction(query, conjunction);
         return (Long) getCriteria().add(conjunction).setProjection(Projections.rowCount())
                 .uniqueResult();
     }
@@ -103,7 +97,7 @@ public class PostRepositoryHibernate implements PostRepository {
         Conjunction conjunction = Restrictions.conjunction();
 
         if (query != null) {
-            criteriaHelper.buildConjunction(query, conjunction);
+            buildConjunction(query, conjunction);
         }
         if (conjunction.conditions().iterator().hasNext()) {
             criteria.add(conjunction);
@@ -122,6 +116,7 @@ public class PostRepositoryHibernate implements PostRepository {
         return this.findByQuery(query, pageable);
     }
 
+    @SuppressWarnings("JpaQlInspection")
     @Override
     public List<PostSummary> findByIds(List<Long> ids) {
         if (ids == null || ids.size() == 0) {
@@ -269,6 +264,6 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     private Criteria getPagedCriteria(Pageable pageable) {
-        return criteriaHelper.setPageToCriteria(getCriteria(), pageable);
+        return setPageToCriteria(getCriteria(), pageable);
     }
 }

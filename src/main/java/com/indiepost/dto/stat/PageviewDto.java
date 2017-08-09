@@ -5,13 +5,10 @@ import javax.validation.constraints.NotNull;
 /**
  * Created by jake on 17. 4. 19.
  */
-public class Pageview {
+public class PageviewDto {
 
     @NotNull
     private String path;
-
-    @NotNull
-    private String type;
 
     @NotNull
     private String appName;
@@ -31,14 +28,6 @@ public class Pageview {
 
     public void setPath(String path) {
         this.path = path;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getAppName() {

@@ -7,12 +7,10 @@ import com.indiepost.enums.Types.UserRole;
 import com.indiepost.model.Post;
 import com.indiepost.model.Role;
 import com.indiepost.model.User;
-import com.indiepost.repository.helper.CriteriaHelper;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -25,6 +23,9 @@ import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.indiepost.repository.utils.CriteriaUtils.buildConjunction;
+import static com.indiepost.repository.utils.CriteriaUtils.setPageToCriteria;
+
 /**
  * Created by jake on 17. 1. 11.
  */
@@ -32,15 +33,8 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
-    private final CriteriaHelper criteriaHelper;
-
     @PersistenceContext
     private EntityManager entityManager;
-
-    @Autowired
-    public AdminPostRepositoryHibernate(CriteriaHelper criteriaHelper) {
-        this.criteriaHelper = criteriaHelper;
-    }
 
     @Override
     public Long save(Post post) {
@@ -81,7 +75,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
         Conjunction conjunction = Restrictions.conjunction();
 
         if (query != null) {
-            criteriaHelper.buildConjunction(query, conjunction);
+            buildConjunction(query, conjunction);
         }
 
         switch (role) {
@@ -114,7 +108,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     @Override
     public Long count(PostQuery postQuery) {
         Conjunction conjunction = Restrictions.conjunction();
-        criteriaHelper.buildConjunction(postQuery, conjunction);
+        buildConjunction(postQuery, conjunction);
         return (Long) getCriteria().add(conjunction).setProjection(Projections.rowCount())
                 .uniqueResult();
     }
@@ -176,7 +170,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     }
 
     private Criteria getPagedCriteria(Pageable pageable) {
-        return criteriaHelper.setPageToCriteria(getCriteria(), pageable);
+        return setPageToCriteria(getCriteria(), pageable);
     }
 
     private Aliases getAliases() {

@@ -3,7 +3,8 @@ package com.indiepost.service;
 import com.indiepost.dto.stat.*;
 import com.indiepost.enums.Types;
 import com.indiepost.enums.Types.ClientType;
-import com.indiepost.repository.AnalyticsRepository;
+import com.indiepost.repository.StatRepository;
+import com.indiepost.repository.VisitorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +12,6 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,11 +21,14 @@ import java.util.List;
 @Transactional
 public class AnalyticsServiceImpl implements AnalyticsService {
 
-    private final AnalyticsRepository analyticsRepository;
+    private final StatRepository statRepository;
+
+    private final VisitorRepository visitorRepository;
 
     @Autowired
-    public AnalyticsServiceImpl(AnalyticsRepository analyticsRepository) {
-        this.analyticsRepository = analyticsRepository;
+    public AnalyticsServiceImpl(StatRepository statRepository, VisitorRepository visitorRepository) {
+        this.statRepository = statRepository;
+        this.visitorRepository = visitorRepository;
     }
 
     @Override
@@ -38,57 +41,39 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         List<TimeDomainStat> pageviewStatResult;
         List<TimeDomainStat> visitorTrendResult;
 
-        Types.TimeDomainDuration timeDomainDuration = periodDto.getDuration();
-        switch (timeDomainDuration) {
-            case HOURLY:
-                pageviewStatResult = analyticsRepository.getHourlyPageviewTrend(since, until);
-                visitorTrendResult = analyticsRepository.getHourlyVisitorTrend(since, until);
-                break;
-            case DAILY:
-                pageviewStatResult = analyticsRepository.getDailyPageviewTrend(since, until);
-                visitorTrendResult = analyticsRepository.getDailyVisitorTrend(since, until);
-                break;
-            case MONTHLY:
-                pageviewStatResult = analyticsRepository.getMonthlyPageviewTrend(since, until);
-                visitorTrendResult = analyticsRepository.getMonthlyVisitorTrend(since, until);
-                break;
-            case YEARLY:
-                pageviewStatResult = analyticsRepository.getYearlyPageviewTrend(since, until);
-                visitorTrendResult = analyticsRepository.getYearlyVisitorTrend(since, until);
-                break;
-            default:
-                pageviewStatResult = new ArrayList<>();
-                visitorTrendResult = new ArrayList<>();
-                break;
-        }
+        Types.TimeDomainDuration duration = periodDto.getDuration();
+        pageviewStatResult = statRepository.getPageviewTrend(since, until, duration);
+        visitorTrendResult = visitorRepository.getVisitorTrend(since, until, duration);
 
         Trend pageviewTrend = new Trend();
         Trend visitorTrend = new Trend();
-        pageviewTrend.setDuration(timeDomainDuration);
+        pageviewTrend.setDuration(duration);
         pageviewTrend.setResult(pageviewStatResult);
-        visitorTrend.setDuration(timeDomainDuration);
+        visitorTrend.setDuration(duration);
         visitorTrend.setResult(visitorTrendResult);
 
         SiteStats stats = new SiteStats();
         stats.setPageviewTrend(pageviewTrend);
         stats.setVisitorTrend(visitorTrend);
 
-        stats.setTotalPageview(analyticsRepository.getTotalPageviews(since, until));
-        stats.setTotalUniquePageview(analyticsRepository.getTotalUniquePageviews(since, until));
-        stats.setTotalUniquePostview(analyticsRepository.getTotalUniquePostviews(since, until));
-        stats.setTotalPostview(analyticsRepository.getTotalPostviews(since, until));
-        stats.setTotalVisitor(analyticsRepository.getTotalVisitors(since, until));
-        stats.setTotalAppVisitor(analyticsRepository.getTotalVisitors(since, until, ClientType.INDIEPOST_LEGACY_MOBILE_APP));
-        stats.setTopPagesWebapp(analyticsRepository.getTopPages(since, until, 10L));
-        stats.setTopPosts(analyticsRepository.getTopPosts(since, until, 10L));
-        stats.setPageviewByAuthor(analyticsRepository.getPageviewByAuthor(since, until, 100L));
-        stats.setPageviewByCategory(analyticsRepository.getPageviewsByCategory(since, until, 30L));
-        stats.setTopBrowser(analyticsRepository.getTopWebBrowsers(since, until, 10L));
-        stats.setTopChannel(analyticsRepository.getTopChannel(since, until, 10L));
-        stats.setTopReferrer(analyticsRepository.getTopReferrers(since, until, 10L));
-        stats.setTopOs(analyticsRepository.getTopOs(since, until, 10L));
-        stats.setTopTags(analyticsRepository.getTopTags(since, until, 10L));
         stats.setPostsByPageview(getPostsOrderByPageviews(periodDto));
+
+        stats.setTotalPageview(statRepository.getTotalPageviews(since, until));
+        stats.setTotalUniquePageview(statRepository.getTotalUniquePageviews(since, until));
+        stats.setTotalUniquePostview(statRepository.getTotalUniquePostviews(since, until));
+        stats.setTotalPostview(statRepository.getTotalPostviews(since, until));
+        stats.setTopPagesWebapp(statRepository.getTopPages(since, until, 10L));
+        stats.setTopPosts(statRepository.getTopPosts(since, until, 10L));
+        stats.setPageviewByAuthor(statRepository.getPageviewByAuthor(since, until, 100L));
+        stats.setPageviewByCategory(statRepository.getPageviewsByCategory(since, until, 30L));
+        stats.setTopTags(statRepository.getTopTags(since, until, 10L));
+
+        stats.setTotalVisitor(visitorRepository.getTotalVisitors(since, until));
+        stats.setTotalAppVisitor(visitorRepository.getTotalVisitors(since, until, ClientType.INDIEPOST_LEGACY_MOBILE_APP.toString()));
+        stats.setTopBrowser(visitorRepository.getTopWebBrowsers(since, until, 10L));
+        stats.setTopChannel(visitorRepository.getTopChannel(since, until, 10L));
+        stats.setTopReferrer(visitorRepository.getTopReferrers(since, until, 10L));
+        stats.setTopOs(visitorRepository.getTopOs(since, until, 10L));
 
         return stats;
     }
@@ -98,8 +83,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(LocalTime.MAX);
 
-        List<PostStat> pageviewList = analyticsRepository.getPostsOrderByPageviews(since, until, 3000L);
-        List<PostStat> uniquePageviewList = analyticsRepository.getPostsOrderByUniquePageviews(since, until, 3000L);
+        List<PostStat> pageviewList = statRepository.getPostsOrderByPageviews(since, until, 3000L);
+        List<PostStat> uniquePageviewList = statRepository.getPostsOrderByUniquePageviews(since, until, 3000L);
 
         for (PostStat pageview : pageviewList) {
             Long postId = pageview.getId();

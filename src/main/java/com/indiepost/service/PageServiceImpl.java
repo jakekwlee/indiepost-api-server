@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by jake on 17. 3. 5.
@@ -76,13 +75,11 @@ public class PageServiceImpl implements PageService {
 
     @Override
     public List<PageDto> find(int pageNumber, int maxResults, boolean isDesc) {
-        List<Page> pageList = pageRepository.find(getPageable(pageNumber, maxResults, isDesc));
+        List<PageDto> pageList = pageRepository.find(getPageable(pageNumber, maxResults, isDesc));
         if (pageList.size() == 0) {
             return null;
         }
-        return pageList.stream()
-                .map(this::pageToPageDto)
-                .collect(Collectors.toList());
+        return pageList;
     }
 
     @Override

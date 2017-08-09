@@ -1,4 +1,4 @@
-package com.indiepost.repository.helper;
+package com.indiepost.repository.utils;
 
 import org.hibernate.HibernateException;
 import org.hibernate.property.access.internal.PropertyAccessStrategyFieldImpl;

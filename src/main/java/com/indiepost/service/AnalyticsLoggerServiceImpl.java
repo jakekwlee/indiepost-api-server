@@ -1,15 +1,14 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.stat.Action;
-import com.indiepost.dto.stat.Pageview;
-import com.indiepost.enums.Types;
+import com.indiepost.dto.stat.ActionDto;
+import com.indiepost.dto.stat.PageviewDto;
+import com.indiepost.enums.Types.Channel;
+import com.indiepost.enums.Types.ClientType;
 import com.indiepost.model.UserAgent;
-import com.indiepost.model.analytics.Stat;
-import com.indiepost.model.analytics.Visitor;
-import com.indiepost.repository.PostRepository;
-import com.indiepost.repository.StatRepository;
-import com.indiepost.repository.VisitorRepository;
-import org.apache.commons.lang3.StringUtils;
+import com.indiepost.model.analytics.*;
+import com.indiepost.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.security.Principal;
 import java.time.LocalDateTime;
+
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.springframework.util.StringUtils.isEmpty;
 
 /**
  * Created by jake on 17. 5. 25.
@@ -27,84 +30,132 @@ import java.time.LocalDateTime;
 @Transactional
 public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
 
+    private static final Logger logger = LoggerFactory.getLogger(AnalyticsLoggerServiceImpl.class);
+
+    private static final String[] BLACKLIST = {"Googlebot", "Mediapartners-Google"};
+
     private final VisitorRepository visitorRepository;
 
-    private final StatRepository statRepository;
+    private final PageviewRepository pageviewRepository;
+
+    private final ActionRepository actionRepository;
+
+    private final LinkRepository linkRepository;
+
+    private final ClickRepository clickRepository;
 
     private final PostRepository postRepository;
 
+    private final UserService userService;
+
     @Autowired
-    public AnalyticsLoggerServiceImpl(VisitorRepository visitorRepository, StatRepository statRepository, PostRepository postRepository) {
+    public AnalyticsLoggerServiceImpl(VisitorRepository visitorRepository, PageviewRepository pageviewRepository,
+                                      PostRepository postRepository, ActionRepository actionRepository,
+                                      UserService userService, LinkRepository linkRepository, ClickRepository clickRepository) {
         this.visitorRepository = visitorRepository;
-        this.statRepository = statRepository;
+        this.pageviewRepository = pageviewRepository;
         this.postRepository = postRepository;
+        this.actionRepository = actionRepository;
+        this.userService = userService;
+        this.linkRepository = linkRepository;
+        this.clickRepository = clickRepository;
     }
 
     @Override
     public Visitor findVisitorById(Long id) {
-        return visitorRepository.findById(id);
+        return visitorRepository.findOne(id);
     }
 
     @Override
-    public void logPageview(HttpServletRequest req, HttpServletResponse res, Pageview pageview) throws IOException {
-        Long visitorId = getVisitorId(req, pageview.getUserId());
-        Stat stat = new Stat();
+    public void logPageview(HttpServletRequest req, HttpServletResponse res, PageviewDto pageviewDto) throws IOException {
+        Long visitorId = getVisitorId(req, pageviewDto.getUserId());
+        Pageview pageview = new Pageview();
+
         if (visitorId == null) {
-            Visitor visitor = newVisitor(req, res, pageview.getUserId(), pageview.getAppName(), pageview.getAppVersion());
+            Visitor visitor = newVisitor(req, res, pageviewDto.getUserId(), pageviewDto.getAppName(), pageviewDto.getAppVersion());
+            if (visitor == null) {
+                return;
+            }
             visitorId = visitor.getId();
-            stat.setLandingPage(true);
-            if (StringUtils.isNotEmpty(pageview.getReferrer())) {
-                String referrer = pageview.getReferrer();
+            pageview.setLandingPage(true);
+
+            if (isNotEmpty(pageviewDto.getReferrer())) {
+                String referrer = pageviewDto.getReferrer();
                 if (referrer.length() > 1 && referrer.endsWith("/")) {
                     referrer = referrer.substring(0, referrer.length() - 1);
                 }
-                stat.setReferrer(referrer);
+                visitor.setReferrer(referrer);
             }
-            Types.Channel channel = getChannelType(visitor.getBrowser(), pageview.getReferrer());
-            stat.setChannel(channel);
+            Channel channel = getChannelType(visitor.getBrowser(), pageviewDto.getReferrer());
+            visitor.setChannel(channel);
         }
-        stat.setVisitorId(visitorId);
-        stat.setPath(pageview.getPath());
-        stat.setType(Types.StatType.valueOf(pageview.getType()));
-        if (pageview.getPostId() != null) {
-            if (!pageview.getAppName().contains("LEGACY")) {
-                stat.setPostId(pageview.getPostId());
+        pageview.setVisitorId(visitorId);
+        pageview.setPath(pageviewDto.getPath());
+        if (pageviewDto.getPostId() != null) {
+            if (!pageviewDto.getAppName().contains("LEGACY")) {
+                pageview.setPostId(pageviewDto.getPostId());
             } else {
-                Long id = postRepository.findIdByLegacyId(pageview.getPostId());
-                stat.setPostId(id);
+                Long id = postRepository.findIdByLegacyId(pageviewDto.getPostId());
+                pageview.setPostId(id);
             }
         }
-        stat.setTimestamp(LocalDateTime.now());
-        statRepository.save(stat);
+        pageview.setTimestamp(LocalDateTime.now());
+        pageviewRepository.save(pageview);
     }
 
     @Override
-    public void logAction(HttpServletRequest req, HttpServletResponse res, Action action) throws IOException {
-        Long visitorId = getVisitorId(req, action.getUserId());
+    public void logAction(HttpServletRequest req, HttpServletResponse res, ActionDto actionDto) throws IOException {
+        Long visitorId = getVisitorId(req, actionDto.getUserId());
         if (visitorId == null) {
-            Visitor visitor = newVisitor(req, res, action.getUserId(), action.getAppName(), action.getAppVersion());
+            Visitor visitor = newVisitor(req, res, actionDto.getUserId(), actionDto.getAppName(), actionDto.getAppVersion());
+            if (visitor == null) {
+                return;
+            }
             visitorId = visitor.getId();
         }
-        Stat stat = new Stat();
-        stat.setVisitorId(visitorId);
-        stat.setPath(action.getPath());
-        stat.setType(Types.StatType.ACTION);
-        stat.setAction(Types.ActionType.valueOf(action.getAction()));
-        if (StringUtils.isNotEmpty(action.getLabel())) {
-            stat.setLabel(action.getLabel());
+        Action action = new Action();
+        action.setVisitorId(visitorId);
+        action.setPath(actionDto.getPath());
+        action.setActionType(actionDto.getActionType());
+        if (isNotEmpty(actionDto.getLabel())) {
+            action.setLabel(actionDto.getLabel());
         }
-        if (action.getValue() != null) {
-            stat.setValue(action.getValue());
+        if (actionDto.getValue() != null) {
+            action.setValue(actionDto.getValue());
         }
-        stat.setTimestamp(LocalDateTime.now());
-        statRepository.save(stat);
+        action.setTimestamp(LocalDateTime.now());
+        actionRepository.save(action);
     }
 
     @Override
-    public String logAndGetLink(String uid) {
-        return null;
+    public String logClickAndGetLink(HttpServletRequest req, HttpServletResponse res, Principal principal, String linkUid) throws IOException {
+        if (isEmpty(linkUid)) {
+            return "/";
+        }
+        Link link = linkRepository.findByUid(linkUid);
+        if (link == null) {
+            return "/";
+        }
+        Long userId = null;
+        if (isNotEmpty(principal.getName())) {
+            userId = userService.getCurrentUser().getId();
+        }
+        Long visitorId = getVisitorId(req, userId);
+        if (visitorId == null) {
+            Visitor visitor = newVisitor(req, res, userId, ClientType.INDIEPOST_AD_ENGINE.toString(), "0.9.0");
+            if (visitor == null) {
+                return link.getUrl();
+            }
+            visitorId = visitor.getId();
+        }
+        Click click = new Click();
+        click.setVisitorId(visitorId);
+        click.setPath(req.getRequestURI());
+        click.setLink(link);
+        click.setTimestamp(LocalDateTime.now());
+        clickRepository.save(click);
+        return link.getUrl();
     }
-
 
     private Visitor newVisitor(HttpServletRequest req, HttpServletResponse res, Long userId, String appName, String appVersion) throws IOException {
         String userAgentString = req.getHeader("User-Agent");
@@ -118,7 +169,13 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
         String osName = ua.os.family;
         String deviceName = ua.device.family;
 
-        if (StringUtils.isNotEmpty(browserName)) {
+        if (isNotEmpty(browserName)) {
+            for (String s : BLACKLIST) {
+                if (browserName.contains(s)) {
+                    logger.info("A visitor is filtered by blacklist, skip DB insert: {} ({}).", browserName, ipAddress);
+                    return null;
+                }
+            }
             visitor.setBrowser(browserName);
             visitor.setBrowserVersion(getBrowserVersion(ua.userAgent));
         } else {
@@ -128,12 +185,12 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
             visitor.setUserAgent(userAgent);
         }
 
-        if (StringUtils.isNotEmpty(osName)) {
+        if (isNotEmpty(osName)) {
             visitor.setOs(osName);
             visitor.setOsVersion(this.getOsVersion(ua.os));
         }
 
-        if (StringUtils.isNotEmpty(deviceName)) {
+        if (isNotEmpty(deviceName)) {
             visitor.setDevice(deviceName);
         }
 
@@ -141,7 +198,10 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
             visitor.setUserId(userId);
         }
 
-        visitor.setAppName(Types.ClientType.valueOf(appName));
+        if (ClientType.INDIEPOST_AD_ENGINE.toString().equals(appName)) {
+            visitor.setAdVisitor(true);
+        }
+        visitor.setAppName(appName);
         visitor.setAppVersion(appVersion);
         visitor.setIpAddress(ipAddress);
         visitor.setTimestamp(LocalDateTime.now());
@@ -187,38 +247,38 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
         return ip != null ? ip : req.getRemoteAddr();
     }
 
-    private Types.Channel getChannelType(String browserName, String referrer) {
+    private Channel getChannelType(String browserName, String referrer) {
         if (browserName.toLowerCase().contains("facebook")) {
-            return Types.Channel.FACEBOOK;
+            return Channel.FACEBOOK;
         }
-        if (StringUtils.isEmpty(referrer)) {
-            return Types.Channel.NONE;
+        if (isEmpty(referrer)) {
+            return Channel.NONE;
         }
         String domain = referrer.split("//")[1].split("/")[0];
 
-        if (domain.contains("indiepost")) {
-            return Types.Channel.NONE;
+        if (domain.contains("indiepost.co.kr")) {
+            return Channel.INBOUND_LINK;
         }
         if (domain.contains("goo")) {
-            return Types.Channel.GOOGLE;
+            return Channel.GOOGLE;
         }
         if (domain.contains("facebook") || domain.contains("fb")) {
-            return Types.Channel.FACEBOOK;
+            return Channel.FACEBOOK;
         }
         if (domain.contains("t.co")) {
-            return Types.Channel.TWITTER;
+            return Channel.TWITTER;
         }
         if (domain.contains("naver")) {
-            return Types.Channel.NAVER;
+            return Channel.NAVER;
         }
         if (domain.contains("daum")) {
-            return Types.Channel.DAUM;
+            return Channel.DAUM;
         }
         if (domain.contains("instagram")) {
-            return Types.Channel.INSTAGRAM;
+            return Channel.INSTAGRAM;
         }
 
-        return Types.Channel.OTHER;
+        return Channel.OTHER;
     }
 
     private String getBrowserVersion(ua_parser.UserAgent userAgent) {

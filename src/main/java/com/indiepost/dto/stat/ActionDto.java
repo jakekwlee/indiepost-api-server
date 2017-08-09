@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 /**
  * Created by jake on 17. 4. 21.
  */
-public class Action {
+public class ActionDto {
 
     private Long id;
 
@@ -19,7 +19,7 @@ public class Action {
     private String path;
 
     @NotNull
-    private String action;
+    private String actionType;
 
     private String label;
 
@@ -43,12 +43,12 @@ public class Action {
         this.path = path;
     }
 
-    public String getAction() {
-        return action;
+    public String getActionType() {
+        return actionType;
     }
 
-    public void setAction(String type) {
-        this.action = type;
+    public void setActionType(String type) {
+        this.actionType = type;
     }
 
     public String getLabel() {

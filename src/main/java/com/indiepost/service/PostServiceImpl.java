@@ -10,9 +10,9 @@ import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
-import com.indiepost.repository.AnalyticsRepository;
 import com.indiepost.repository.ImageRepository;
 import com.indiepost.repository.PostRepository;
+import com.indiepost.repository.StatRepository;
 import com.indiepost.repository.TagRepository;
 import com.indiepost.service.mapper.PostMapperService;
 import org.springframework.beans.BeanUtils;
@@ -43,17 +43,17 @@ public class PostServiceImpl implements PostService {
 
     private final TagRepository tagRepository;
 
-    private final AnalyticsRepository analyticsRepository;
+    private final StatRepository statRepository;
 
     @Autowired
     public PostServiceImpl(PostRepository postRepository, ImageRepository imageRepository,
                            PostMapperService postMapperService, TagRepository tagRepository,
-                           AnalyticsRepository analyticsRepository) {
+                           StatRepository statRepository) {
         this.postRepository = postRepository;
         this.imageRepository = imageRepository;
         this.postMapperService = postMapperService;
         this.tagRepository = tagRepository;
-        this.analyticsRepository = analyticsRepository;
+        this.statRepository = statRepository;
     }
 
     @Override
@@ -171,7 +171,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostSummary> getTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit) {
-        List<PostStat> topStats = analyticsRepository.getPostsOrderByUniquePageviews(since, until, limit);
+        List<PostStat> topStats = statRepository.getPostsOrderByUniquePageviews(since, until, limit);
         List<Long> topPostIds = topStats.stream()
                 .map(postStat -> postStat.getId())
                 .collect(Collectors.toList());

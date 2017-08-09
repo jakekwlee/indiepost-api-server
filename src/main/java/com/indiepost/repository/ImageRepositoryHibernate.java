@@ -2,19 +2,19 @@ package com.indiepost.repository;
 
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
-import com.indiepost.repository.helper.CriteriaHelper;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+
+import static com.indiepost.repository.utils.CriteriaUtils.setPageToCriteria;
 
 /**
  * Created by jake on 8/17/16.
@@ -23,14 +23,8 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class ImageRepositoryHibernate implements ImageRepository {
 
-    private final CriteriaHelper criteriaHelper;
     @PersistenceContext
     private EntityManager entityManager;
-
-    @Autowired
-    public ImageRepositoryHibernate(CriteriaHelper criteriaHelper) {
-        this.criteriaHelper = criteriaHelper;
-    }
 
     @Override
     public void save(ImageSet imageSet) {
@@ -93,6 +87,6 @@ public class ImageRepositoryHibernate implements ImageRepository {
     }
 
     private Criteria getCriteria(Pageable pageable) {
-        return criteriaHelper.setPageToCriteria(getCriteria(), pageable);
+        return setPageToCriteria(getCriteria(), pageable);
     }
 }
