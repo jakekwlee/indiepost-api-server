@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 public class Pageview extends Stat {
 
     @NotNull
+    @Column(nullable = false, columnDefinition = "bit(1) default b'0'")
     private Boolean isLandingPage = false;
 
     @ManyToOne

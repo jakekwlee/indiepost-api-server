@@ -32,8 +32,6 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
 
     private static final Logger logger = LoggerFactory.getLogger(AnalyticsLoggerServiceImpl.class);
 
-    private static final String[] BLACKLIST = {"Googlebot", "Mediapartners-Google"};
-
     private final VisitorRepository visitorRepository;
 
     private final PageviewRepository pageviewRepository;
@@ -137,7 +135,7 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
             return "/";
         }
         Long userId = null;
-        if (isNotEmpty(principal.getName())) {
+        if (principal != null) {
             userId = userService.getCurrentUser().getId();
         }
         Long visitorId = getVisitorId(req, userId);
@@ -169,12 +167,10 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
         String osName = ua.os.family;
         String deviceName = ua.device.family;
 
-        if (isNotEmpty(browserName)) {
-            for (String s : BLACKLIST) {
-                if (browserName.contains(s)) {
-                    logger.info("A visitor is filtered by blacklist, skip DB insert: {} ({}).", browserName, ipAddress);
-                    return null;
-                }
+        if (isNotEmpty(deviceName)) {
+            if (deviceName.contains("Spider")) {
+                logger.info("A visitor is filtered by blacklist, skip DB insert: {} : {} : {}",
+                        browserName, ipAddress, req.getRequestURI());
             }
             visitor.setBrowser(browserName);
             visitor.setBrowserVersion(getBrowserVersion(ua.userAgent));

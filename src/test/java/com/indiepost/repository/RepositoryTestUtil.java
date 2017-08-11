@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.indiepost.dto.stat.PeriodDto;
 import com.indiepost.dto.stat.TimeDomainStat;
+import com.indiepost.model.analytics.Campaign;
+import com.indiepost.model.analytics.Click;
+import com.indiepost.model.analytics.Link;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,6 +41,31 @@ public interface RepositoryTestUtil {
         return new PeriodDto(since, until);
     }
 
+    static Campaign newTestCampaign() {
+        Campaign campaign = new Campaign();
+        campaign.setName("test campaign");
+        campaign.setClientName("test client");
+        campaign.setGoal(1000L);
+        campaign.setStartAt(LocalDateTime.now().minusHours(10L));
+        campaign.setEndAt(LocalDateTime.now().plusHours(10L));
+        return campaign;
+    }
+
+    static Link newTestLink() {
+        Link link = new Link();
+        link.setName("test link");
+        link.setUrl("https://google.com");
+        link.setUid("aa332211");
+        link.setCreatedAt(LocalDateTime.now());
+        return link;
+    }
+
+    static Click newTestClick() {
+        Click click = new Click();
+        click.setPath("http://www.indiepost.co.kr/link/ava");
+        click.setTimestamp(LocalDateTime.now());
+        return click;
+    }
 
     static void testSerializeAndPrintStats(List list, PeriodDto dto, String name) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();

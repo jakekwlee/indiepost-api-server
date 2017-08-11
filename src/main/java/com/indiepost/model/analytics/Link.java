@@ -14,7 +14,7 @@ public class Link {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @NotNull
@@ -35,9 +35,12 @@ public class Link {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "link")
     private List<Click> clicks;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "campaignId")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "campaignId", nullable = false, updatable = false, insertable = false)
     private Campaign campaign;
+
+    @Column(name = "campaignId")
+    private Long campaignId;
 
     public Campaign getCampaign() {
         return campaign;
@@ -93,5 +96,13 @@ public class Link {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Long getCampaignId() {
+        return campaignId;
+    }
+
+    public void setCampaignId(Long campaignId) {
+        this.campaignId = campaignId;
     }
 }

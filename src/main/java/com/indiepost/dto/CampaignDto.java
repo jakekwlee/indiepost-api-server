@@ -1,48 +1,56 @@
-package com.indiepost.model.analytics;
+package com.indiepost.dto;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
- * Created by jake on 8/7/17.
+ * Created by jake on 8/10/17.
  */
-@Entity
-@Table(name = "Campaigns")
-public class Campaign {
+public class CampaignDto {
+
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue
     private Long id;
 
     @NotNull
+    @Min(2)
+    @Max(30)
     private String clientName;
 
     @NotNull
+    @Min(2)
+    @Max(30)
     private String name;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "campaign")
-    private List<Link> links;
-
     @NotNull
+    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     private LocalDateTime startAt;
 
     @NotNull
+    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     private LocalDateTime endAt;
 
+    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
+    private LocalDateTime createAt;
+
     @NotNull
-    private LocalDateTime createdAt;
+    private Long goal = 0L;
 
-    private Long goal;
+    private Long validClicks = 0L;
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    private Long allClicks = 0L;
+
+    public Long getAllClicks() {
+        return allClicks;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setAllClicks(Long allClicks) {
+        this.allClicks = allClicks;
     }
 
     public Long getId() {
@@ -69,14 +77,6 @@ public class Campaign {
         this.name = name;
     }
 
-    public List<Link> getLinks() {
-        return links;
-    }
-
-    public void setLinks(List<Link> links) {
-        this.links = links;
-    }
-
     public LocalDateTime getStartAt() {
         return startAt;
     }
@@ -93,6 +93,14 @@ public class Campaign {
         this.endAt = endAt;
     }
 
+    public LocalDateTime getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(LocalDateTime createAt) {
+        this.createAt = createAt;
+    }
+
     public Long getGoal() {
         return goal;
     }
@@ -100,4 +108,13 @@ public class Campaign {
     public void setGoal(Long goal) {
         this.goal = goal;
     }
+
+    public Long getValidClicks() {
+        return validClicks;
+    }
+
+    public void setValidClicks(Long validClicks) {
+        this.validClicks = validClicks;
+    }
+
 }
