@@ -1,7 +1,5 @@
 package com.indiepost.service;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -12,6 +10,8 @@ import com.indiepost.config.AwsConfig;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.repository.ImageRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +22,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +32,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class ImageServiceAws extends AbstractImageService implements ImageService {
 
+    private static final Logger log = LoggerFactory.getLogger(ImageServiceAws.class);
     private final AwsConfig awsConfig;
 
     @Autowired
@@ -65,21 +65,34 @@ public class ImageServiceAws extends AbstractImageService implements ImageServic
 
     @Override
     public void delete(ImageSet imageSet) throws IOException {
-        DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(awsConfig.getS3BucketName());
-
         List<KeyVersion> keys = imageSet.getImages().stream()
                 .map(image -> new KeyVersion(image.getFilePath().substring(1)))
-                .collect(Collectors.toCollection(ArrayList::new));
+                .collect(Collectors.toList());
 
-        multiObjectDeleteRequest.setKeys(keys);
-        DeleteObjectsResult delObjRes = getS3Client().deleteObjects(multiObjectDeleteRequest);
-        //TODO
+        DeleteObjectsRequest request = new DeleteObjectsRequest(awsConfig.getS3BucketName()).withKeys(keys);
+        DeleteObjectsResult result;
+        try {
+            result = getS3Client().deleteObjects(request);
+            log.info("Successfully deleted all the {} items.", result.getDeletedObjects().size());
+            imageRepository.delete(imageSet);
+        } catch (MultiObjectDeleteException mode) {
+            printDeleteResults(mode);
+        }
+    }
+
+    private void printDeleteResults(MultiObjectDeleteException deleteException) {
+        log.error(deleteException.getMessage());
+        log.error("No. of objects successfully deleted = {}", deleteException.getDeletedObjects().size());
+        log.error("No. of objects failed to delete = {}", deleteException.getErrors().size());
+        log.error("Printing error data...{}");
+        for (MultiObjectDeleteException.DeleteError deleteError : deleteException.getErrors()) {
+            log.error("Object Key: {}\t{}\t{}",
+                    deleteError.getKey(), deleteError.getCode(), deleteError.getMessage());
+        }
     }
 
     private AmazonS3 getS3Client() {
-        BasicAWSCredentials credentials = new BasicAWSCredentials(awsConfig.getAccessKey(), awsConfig.getSecretAccessKey());
         return AmazonS3ClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(Regions.AP_NORTHEAST_2)
                 .build();
     }

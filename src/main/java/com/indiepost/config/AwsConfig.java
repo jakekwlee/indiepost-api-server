@@ -11,26 +11,9 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:webapp-${spring.profiles.active}.properties")
 @ConfigurationProperties(prefix = "webapp.aws")
 public class AwsConfig {
-    private String accessKey;
-    private String secretAccessKey;
+    ;
     private String s3BucketName;
     private boolean usingS3;
-
-    public String getAccessKey() {
-        return accessKey;
-    }
-
-    public void setAccessKey(String accessKey) {
-        this.accessKey = accessKey;
-    }
-
-    public String getSecretAccessKey() {
-        return secretAccessKey;
-    }
-
-    public void setSecretAccessKey(String secretAccessKey) {
-        this.secretAccessKey = secretAccessKey;
-    }
 
     public String getS3BucketName() {
         return s3BucketName;
