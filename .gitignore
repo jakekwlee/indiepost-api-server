@@ -245,3 +245,4 @@ venv/
 
 migration/dist/*
 migration/dist/
+/src/main/resources/webapp-prod.properties

@@ -171,6 +171,7 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
             if (deviceName.contains("Spider")) {
                 logger.info("A visitor is filtered by blacklist, skip DB insert: {} : {} : {}",
                         browserName, ipAddress, req.getRequestURI());
+                return null;
             }
             visitor.setBrowser(browserName);
             visitor.setBrowserVersion(getBrowserVersion(ua.userAgent));
