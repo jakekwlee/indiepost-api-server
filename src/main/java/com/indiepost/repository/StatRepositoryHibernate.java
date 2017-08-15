@@ -55,7 +55,13 @@ public class StatRepositoryHibernate implements StatRepository {
 
     @Override
     public Long getTotalPageviews(LocalDateTime since, LocalDateTime until) {
-        return getTotalPageviews(since, until, null);
+        Criteria criteria = createCriteria();
+        criteria.createAlias("visitor", "v");
+        criteria.add(Restrictions.ne("s.class", "Click"));
+        criteria.add(Restrictions.between("s.timestamp", since, until));
+        criteria.add(Restrictions.ne("v.appName", ClientType.INDIEPOST_AD_ENGINE.toString()));
+        criteria.setProjection(Projections.rowCount());
+        return (Long) criteria.uniqueResult();
     }
 
     @Override
@@ -64,18 +70,21 @@ public class StatRepositoryHibernate implements StatRepository {
         criteria.createAlias("visitor", "v");
         criteria.add(Restrictions.ne("s.class", "Click"));
         criteria.add(Restrictions.between("s.timestamp", since, until));
-        if (client != null) {
-            criteria.add(Restrictions.eq("v.appName", client));
-        } else {
-            criteria.add(Restrictions.ne("v.appName", ClientType.INDIEPOST_AD_ENGINE.toString()));
-        }
+        criteria.add(Restrictions.eq("v.appName", client));
         criteria.setProjection(Projections.rowCount());
         return (Long) criteria.uniqueResult();
     }
 
     @Override
     public Long getTotalPostviews(LocalDateTime since, LocalDateTime until) {
-        return getTotalPostviews(since, until, null);
+        Criteria criteria = createCriteria();
+        criteria.createAlias("visitor", "v");
+        criteria.add(Restrictions.isNotNull("s.postId"));
+        criteria.add(Restrictions.ne("s.class", "Click"));
+        criteria.add(Restrictions.between("s.timestamp", since, until));
+        criteria.add(Restrictions.ne("v.appName", ClientType.INDIEPOST_AD_ENGINE.toString()));
+        criteria.setProjection(Projections.rowCount());
+        return (Long) criteria.uniqueResult();
     }
 
     @Override
@@ -85,29 +94,23 @@ public class StatRepositoryHibernate implements StatRepository {
         criteria.add(Restrictions.isNotNull("s.postId"));
         criteria.add(Restrictions.ne("s.class", "Click"));
         criteria.add(Restrictions.between("s.timestamp", since, until));
-        if (client != null) {
-            criteria.add(Restrictions.eq("v.appName", client));
-        } else {
-            criteria.add(Restrictions.ne("v.appName", ClientType.INDIEPOST_AD_ENGINE.toString()));
-        }
+        criteria.add(Restrictions.eq("v.appName", client));
         criteria.setProjection(Projections.rowCount());
         return (Long) criteria.uniqueResult();
     }
 
     @Override
     public Long getTotalUniquePageviews(LocalDateTime since, LocalDateTime until) {
-        return getTotalPageviews(since, until, null);
+        Query query = getNamedQuery("@GET_TOTAL_UNIQUE_PAGEVIEWS");
+        query.setParameter("since", localDateTimeToDate(since));
+        query.setParameter("until", localDateTimeToDate(until));
+        return ((BigInteger) query.uniqueResult()).longValue();
     }
 
     @Override
     public Long getTotalUniquePageviews(LocalDateTime since, LocalDateTime until, String client) {
-        Query query;
-        if (client != null) {
-            query = getNamedQuery("@GET_TOTAL_UNIQUE_PAGEVIEWS");
-        } else {
-            query = getNamedQuery("@GET_TOTAL_UNIQUE_PAGEVIEWS_BY_CLIENT");
-            query.setParameter("client", client);
-        }
+        Query query = getNamedQuery("GET_TOTAL_UNIQUE_PAGEVIEWS_BY_CLIENT");
+        query.setParameter("client", client);
         query.setParameter("since", localDateTimeToDate(since));
         query.setParameter("until", localDateTimeToDate(until));
         return ((BigInteger) query.uniqueResult()).longValue();
@@ -115,18 +118,16 @@ public class StatRepositoryHibernate implements StatRepository {
 
     @Override
     public Long getTotalUniquePostviews(LocalDateTime since, LocalDateTime until) {
-        return getTotalUniquePostviews(since, until, null);
+        Query query = getNamedQuery("@GET_TOTAL_UNIQUE_PAGEVIEWS_ON_POSTS");
+        query.setParameter("since", localDateTimeToDate(since));
+        query.setParameter("until", localDateTimeToDate(until));
+        return ((BigInteger) query.uniqueResult()).longValue();
     }
 
     @Override
     public Long getTotalUniquePostviews(LocalDateTime since, LocalDateTime until, String client) {
-        Query query;
-        if (client != null) {
-            query = getNamedQuery("@GET_TOTAL_UNIQUE_PAGEVIEWS_ON_POSTS");
-        } else {
-            query = getNamedQuery("@GET_TOTAL_UNIQUE_PAGEVIEWS_ON_POSTS_BY_CLIENT");
-            query.setParameter("client", client);
-        }
+        Query query = getNamedQuery("@GET_TOTAL_UNIQUE_PAGEVIEWS_ON_POSTS_BY_CLIENT");
+        query.setParameter("client", client);
         query.setParameter("since", localDateTimeToDate(since));
         query.setParameter("until", localDateTimeToDate(until));
         return ((BigInteger) query.uniqueResult()).longValue();

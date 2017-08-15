@@ -52,18 +52,18 @@ public class VisitorRepositoryHibernate implements VisitorRepository {
 
     @Override
     public Long getTotalVisitors(LocalDateTime since, LocalDateTime until) {
-        return getTotalVisitors(since, until, null);
+        Criteria criteria = createCriteria();
+        criteria.add(Restrictions.between("v.timestamp", since, until));
+        criteria.add(Restrictions.eq("v.adVisitor", false));
+        criteria.setProjection(Projections.rowCount());
+        return (Long) criteria.uniqueResult();
     }
 
     @Override
     public Long getTotalVisitors(LocalDateTime since, LocalDateTime until, String client) {
         Criteria criteria = createCriteria();
         criteria.add(Restrictions.between("v.timestamp", since, until));
-        if (client != null) {
-            criteria.add(Restrictions.eq("v.appName", client));
-        } else {
-            criteria.add(Restrictions.eq("v.adVisitor", false));
-        }
+        criteria.add(Restrictions.eq("v.appName", client));
         criteria.setProjection(Projections.rowCount());
         return (Long) criteria.uniqueResult();
     }
