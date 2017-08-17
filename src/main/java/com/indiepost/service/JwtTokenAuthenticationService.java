@@ -7,6 +7,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,10 +28,11 @@ import java.util.stream.Collectors;
  */
 @Service
 public class JwtTokenAuthenticationService implements TokenAuthenticationService {
-
     private final JwtConfig jwtConfig;
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
+    @Value("${jwt.token:ThisIsSecret}")
+    private String secretKey;
 
     @Autowired
     public JwtTokenAuthenticationService(JwtConfig jwtConfig, AuthenticationManager authenticationManager, UserService userService) {
@@ -88,7 +90,7 @@ public class JwtTokenAuthenticationService implements TokenAuthenticationService
 
         return Jwts.builder()
                 .setClaims(claims)
-                .signWith(SignatureAlgorithm.HS512, jwtConfig.getSecretKey())
+                .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
     }
 }

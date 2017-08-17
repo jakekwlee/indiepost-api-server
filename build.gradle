@@ -14,11 +14,13 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'idea'
-apply plugin: 'war'
 
-war {
-    baseName = 'new-indiepost'
-    version = '1.5.0-SNAPSHOT'
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.indiepost.NewIndiepostApplication'
+        )
+    }
 }
 
 sourceCompatibility = 1.8
@@ -48,7 +50,6 @@ dependencies {
     compile group: 'org.imgscalr', name: 'imgscalr-lib', version: '4.2'//platform.twitter.com/widgets.js
     compile group: 'org.json', name: 'json', version: '20160810'
     compile 'org.springframework.boot:spring-boot-configuration-processor'
-    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     compile('com.github.v-ladynev:fluent-hibernate-core:0.3.1') {
         exclude group: 'org.hibernate'
     }

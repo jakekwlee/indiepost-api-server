@@ -48,7 +48,7 @@ public class PostMapperServiceTest {
     @Before
     @Transactional
     public void init() {
-        post = adminPostService.findById(44L);
+        post = adminPostService.findById(2193L);
         postRequestDto = new AdminPostRequestDto();
         postResponseDto = new AdminPostResponseDto();
 
@@ -95,8 +95,6 @@ public class PostMapperServiceTest {
         postResponseDto.setLikesCount(post.getLikesCount());
     }
 
-    @Test
-    @Transactional
     public void testMapPostToPostResponse() {
         AdminPostResponseDto adminPostResponseDto =
                 this.postMapperService.postToAdminPostResponseDto(this.post);

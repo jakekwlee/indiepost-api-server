@@ -33,7 +33,6 @@ public class AdminPostDtoSerializaionTest {
      *
      * @throws JsonProcessingException
      */
-    @Test
     public void adminPostSummaryDtoListShouldSerializeCorrectly() throws JsonProcessingException {
         List<AdminPostSummaryDto> postList = adminPostService.find(20, 10, true);
         ObjectMapper objectMapper = new ObjectMapper();

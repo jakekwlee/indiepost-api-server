@@ -4,6 +4,7 @@ import com.indiepost.config.JwtConfig;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,8 +24,9 @@ import java.util.stream.Collectors;
 
 @Component
 public class JWTAuthenticationFilter extends GenericFilterBean {
-
     private final JwtConfig jwtConfig;
+    @Value("${jwt.token:ThisIsSecret}")
+    private String secretKey;
 
     @Autowired
     public JWTAuthenticationFilter(JwtConfig jwtConfig) {
@@ -41,7 +43,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
         }
 
         Claims claims = Jwts.parser()
-                .setSigningKey(jwtConfig.getSecretKey())
+                .setSigningKey(secretKey)
                 .parseClaimsJws(token.replace(jwtConfig.getTokenPrefix(), ""))
                 .getBody();
 

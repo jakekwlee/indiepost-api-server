@@ -11,19 +11,13 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:webapp-${spring.profiles.active}.properties")
 @ConfigurationProperties(prefix = "webapp.jwt")
 public class JwtConfig {
-    private String secretKey;
     private String tokenPrefix;
+
     private String httpHeaderName;
+
     private long tokenExpiration;
+
     private long rememberMeExpiration;
-
-    public String getSecretKey() {
-        return secretKey;
-    }
-
-    public void setSecretKey(String secretKey) {
-        this.secretKey = secretKey;
-    }
 
     public String getTokenPrefix() {
         return tokenPrefix;
