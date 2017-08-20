@@ -2,6 +2,7 @@ FROM ubuntu:16.04
 
 MAINTAINER Jake Lee <bwv1050@gmail.com>
 
+COPY nginx.conf /etc/nginx/
 COPY indiepost.conf /etc/nginx/conf.d/
 VOLUME ["/etc/nginx"]
 
