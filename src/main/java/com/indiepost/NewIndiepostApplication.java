@@ -22,9 +22,4 @@ public class NewIndiepostApplication {
     public PasswordEncoder passwordEncoder() {
         return new MySQLPasswordEncoder();
     }
-
-//    @Bean
-//    public ObjectMapper objectMapper() {
-//        return new HibernateAwareObjectMapper();
-//    }
 }

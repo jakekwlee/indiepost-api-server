@@ -12,6 +12,7 @@ buildscript {
 }
 
 apply plugin: 'java'
+apply plugin: 'war'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'idea'
 
@@ -21,6 +22,11 @@ jar {
                 'Main-Class': 'com.indiepost.NewIndiepostApplication'
         )
     }
+}
+
+war {
+    baseName = 'new-indiepost'
+    version = '1.5.5-SNAPSHOT'
 }
 
 sourceCompatibility = 1.8
