@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: prod
+    active: dev
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
   http:
@@ -50,7 +50,7 @@ logging:
 spring:
   profiles: dev
   datasource:
-    url: jdbc:mysql://db.indiepost.docker:3306/indiepost?useUnicode=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&characterEncoding=UTF-8&sessionVariables=sql_mode=''&useSSL=false
+    url: jdbc:mysql://localhost:3306/indiepost?useUnicode=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&characterEncoding=UTF-8&sessionVariables=sql_mode=''&useSSL=false
     username: indiepost
     password: indiepost
   jpa:
