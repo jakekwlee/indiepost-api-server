@@ -11,6 +11,8 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.indiepost.service.MailService.formatAddress;
+
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -38,15 +40,26 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
+    public void sendMessage(SimpleMailMessage message, Setting setting) {
+        getMailSender(setting).send(message);
+    }
+
+    @Override
     public String[] getMailReceivers(Types.UserRole role) {
         List<User> users = userService.findByRolesEnum(role, 0, 100, false);
         return users.stream()
-                .map(user -> user.getDisplayName() + " <" + user.getEmail() + ">")
+                .map(user -> formatAddress(user.getDisplayName(), user.getEmail()))
                 .collect(Collectors.toList()).toArray(new String[0]);
     }
 
     private JavaMailSender getMailSender() {
-        Setting setting = settingRepository.get();
+        return getMailSender(null);
+    }
+
+    private JavaMailSender getMailSender(Setting setting) {
+        if (setting == null) {
+            setting = settingRepository.get();
+        }
 
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setDefaultEncoding("UTF-8");

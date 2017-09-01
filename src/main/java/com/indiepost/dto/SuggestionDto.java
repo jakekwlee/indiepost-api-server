@@ -1,7 +1,6 @@
 package com.indiepost.dto;
 
 import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
 
@@ -19,11 +18,12 @@ public class SuggestionDto {
     @NotNull
     private String content;
 
-    @NotEmpty
+    @NotNull
     private String proposer = "Anonymous";
 
     @Email
-    private String email;
+    @NotNull
+    private String email = "no-reply@indiepost.co.kr";
 
     private String contact;
 

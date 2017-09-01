@@ -35,6 +35,18 @@ public class Setting {
     @Max(50)
     private String mailPassword;
 
+    @NotNull
+    @Max(20)
+    private String mailPersonalName;
+
+    public String getMailPersonalName() {
+        return mailPersonalName;
+    }
+
+    public void setMailPersonalName(String mailPersonalName) {
+        this.mailPersonalName = mailPersonalName;
+    }
+
     public int getMailPort() {
         return mailPort;
     }
