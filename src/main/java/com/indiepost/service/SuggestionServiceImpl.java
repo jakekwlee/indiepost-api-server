@@ -1,8 +1,11 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.SuggestionDto;
+import com.indiepost.enums.Types;
 import com.indiepost.model.Setting;
 import com.indiepost.repository.SettingRepository;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
@@ -30,27 +33,27 @@ public class SuggestionServiceImpl implements SuggestionService {
     @Override
     public void handelSuggestion(SuggestionDto dto) {
         Setting setting = settingRepository.get();
-        String proposerName = dto.getProposer();
-        String proposerEmail = dto.getEmail();
-        String text = dto.getContent()
-                .concat("\n\nContact: ")
-                .concat(dto.getContact());
+        String subject = sanitize(dto.getSubject());
+        String proposerName = dto.getProposer() != null ? sanitize(dto.getProposer()) : "Anonymous";
+        String proposerEmail = dto.getEmail() != null ? sanitize(dto.getEmail()) : "no-reply@indiepost.co.kr";
+        String text = sanitize(dto.getContent());
+        if (dto.getContact() != null) {
+            text += "\n\nContact: " + sanitize(dto.getContact());
+        }
         String from = formatAddress(proposerName, setting.getMailUsername());
         String replyTo = formatAddress(proposerName, proposerEmail);
 
-//        String[] mailingList = mailService.getMailReceivers(Types.UserRole.EditorInChief);
-        String[] mailReceivers = {formatAddress(
-                "인디포스트 관리자",
-                "sysadmin@indiepost.co.kr>"
-        )};
+        String[] mailReceivers = mailService.getMailReceivers(Types.UserRole.Administrator);
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from);
         message.setTo(mailReceivers);
-        message.setSubject(dto.getSubject());
+        message.setSubject(subject);
         message.setText(text);
         message.setReplyTo(replyTo);
         mailService.sendMessage(message, setting);
     }
 
-
+    private String sanitize(String str) {
+        return Jsoup.clean(str, Whitelist.simpleText());
+    }
 }

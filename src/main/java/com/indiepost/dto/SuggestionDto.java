@@ -3,6 +3,7 @@ package com.indiepost.dto;
 import org.hibernate.validator.constraints.Email;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * Created by jake on 8/31/17.
@@ -13,17 +14,21 @@ public class SuggestionDto {
     private Long userId;
 
     @NotNull
+    @Size(min = 1, max = 200)
     private String subject;
 
     @NotNull
+    @Size(min = 10, max = 10000)
     private String content;
 
     @NotNull
-    private String proposer = "Anonymous";
+    @Size(min = 1, max = 100)
+    private String proposer;
 
-    @Email
     @NotNull
-    private String email = "no-reply@indiepost.co.kr";
+    @Email
+    @Size(min = 1, max = 100)
+    private String email;
 
     private String contact;
 
