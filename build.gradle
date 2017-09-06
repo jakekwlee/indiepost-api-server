@@ -14,13 +14,11 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'idea'
+apply plugin: 'war'
 
-jar {
-    manifest {
-        attributes(
-                'Main-Class': 'com.indiepost.NewIndiepostApplication'
-        )
-    }
+war {
+    baseName = 'new-indiepost'
+    version = '1.6.0-SNAPSHOT'
 }
 
 sourceCompatibility = 1.8

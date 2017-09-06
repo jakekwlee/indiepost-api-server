@@ -1,6 +1,8 @@
 package com.indiepost.service;
 
 import com.indiepost.NewIndiepostApplication;
+import com.indiepost.dto.InquiryDto;
+import com.indiepost.dto.SuggestionDto;
 import com.indiepost.enums.Types;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
-public class TestMailService {
+public class MailServiceTest {
     @Autowired
     private MailService mailService;
 
@@ -50,5 +52,28 @@ public class TestMailService {
                 assertEquals("Indiepost <sysadmin@indiepost.co.kr>", to);
             }
         }
+    }
+
+    @Test
+    public void testSendSuggestion() {
+        SuggestionDto dto = new SuggestionDto();
+//        dto.setProposer("이기원");
+//        dto.setEmail("bwv1050@gmail.com");
+        dto.setSubject("MailService 테스트 이메일");
+        dto.setContact("010-7369-1070");
+        dto.setContent("테스트 이메일입니다.\n\n이메일 테스트 중...");
+        mailService.sendSuggestion(dto);
+    }
+
+    @Test
+    public void testSendInquiry() {
+        InquiryDto dto = new InquiryDto();
+        dto.setInquirer("이기원");
+        dto.setClientName("인디포스트");
+        dto.setEmail("playsbach@naver.com");
+        dto.setContact("010-7369-1070");
+        dto.setUrl("http://www.indiepost.co.kr");
+        dto.setContent("광고 문의사항 테스트, from testSendInquiry method.");
+        mailService.sendInquiry(dto);
     }
 }

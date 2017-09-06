@@ -1,7 +1,8 @@
 package com.indiepost.controller.api;
 
+import com.indiepost.dto.InquiryDto;
 import com.indiepost.dto.SuggestionDto;
-import com.indiepost.service.SuggestionService;
+import com.indiepost.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,18 +13,23 @@ import javax.validation.Valid;
 /**
  * Created by jake on 8/31/17.
  */
-@RestController("/api/suggestion")
-public class SuggestionController {
+@RestController("/api/mail")
+public class MailController {
 
-    private final SuggestionService suggestionService;
+    private final MailService mailService;
 
     @Autowired
-    public SuggestionController(SuggestionService suggestionService) {
-        this.suggestionService = suggestionService;
+    public MailController(MailService mailService) {
+        this.mailService = mailService;
     }
 
-    @PostMapping
+    @PostMapping("/suggestion")
     public void postSuggestion(@RequestBody @Valid SuggestionDto dto) {
-        suggestionService.handelSuggestion(dto);
+        mailService.sendSuggestion(dto);
+    }
+
+    @PostMapping("/inquiry")
+    public void postInquiry(@RequestBody @Valid InquiryDto dto) {
+        mailService.sendInquiry(dto);
     }
 }
