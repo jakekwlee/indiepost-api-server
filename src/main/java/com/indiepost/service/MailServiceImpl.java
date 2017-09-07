@@ -98,8 +98,8 @@ public class MailServiceImpl implements MailService {
         String from = formatAddress(inquirer, setting.getMailUsername());
         String replyTo = formatAddress(inquirer, sanitize(dto.getEmail()));
 
-//        String[] mailReceivers = mailService.getMailReceivers(Types.UserRole.Administrator);
-        String[] mailReceivers = {formatAddress("Jake Lee", "bwv1050@gmail.com")};
+        String[] mailReceivers = getMailReceivers(Types.UserRole.Administrator);
+//        String[] mailReceivers = {formatAddress("Jake Lee", "bwv1050@gmail.com")};
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from);
