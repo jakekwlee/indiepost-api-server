@@ -19,9 +19,9 @@
 </div>
 <script th:inline="javascript">
     /*<![CDATA[*/
-    window.__CONTEXT_ROOT__ = /*[[@{/}]]*/ '';
-    window.__FETCH_COUNT__ = [[${fetchCount}]];
-    window.__PRELOADED_STATE__ = deserialize(/*[[${res.state}]]*/);
+    window.CONTEXT_ROOT = /*[[@{/}]]*/ '';
+    window.FETCH_COUNT = [[${fetchCount}]];
+    window.PRELOADED_STATE = deserialize(/*[[${res.state}]]*/);
     function deserialize(serializedJavascript) {
       return eval('(' + serializedJavascript + ')');
     }
