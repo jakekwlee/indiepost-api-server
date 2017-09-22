@@ -4,7 +4,6 @@ import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.InquiryDto;
 import com.indiepost.dto.SuggestionDto;
 import com.indiepost.enums.Types;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,7 +24,7 @@ public class MailServiceTest {
     @Autowired
     private MailService mailService;
 
-    @Test
+    //    @Test
     public void mailServiceShouldSendMessageProperly() {
         String from = "테스터 <indiepost.mail@gmail.com>";
         String[] to = {"시스템관리자 <sysadmin@indiepost.co.kr>"};
@@ -42,7 +41,7 @@ public class MailServiceTest {
         mailService.sendMessage(message);
     }
 
-    @Test
+    //    @Test
     public void testGetMailReceivers() {
         Types.UserRole userRole = Types.UserRole.Administrator;
         String[] mailTo = mailService.getMailReceivers(userRole);
@@ -54,7 +53,7 @@ public class MailServiceTest {
         }
     }
 
-    @Test
+    //    @Test
     public void testSendSuggestion() {
         SuggestionDto dto = new SuggestionDto();
 //        dto.setProposer("이기원");
@@ -65,7 +64,7 @@ public class MailServiceTest {
         mailService.sendSuggestion(dto);
     }
 
-    @Test
+    //    @Test
     public void testSendInquiry() {
         InquiryDto dto = new InquiryDto();
         dto.setInquirer("이기원");
