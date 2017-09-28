@@ -18,14 +18,14 @@ import javax.persistence.*;
                         "WHERE s.timestamp BETWEEN :since AND :until AND v.appName = :client"),
 
         @NamedNativeQuery(name = "@GET_TOTAL_UNIQUE_PAGEVIEWS_ON_POSTS",
-                query = "SELECT count(DISTINCT s.path, v.id) " +
+                query = "SELECT count(DISTINCT s.postId, v.id) " +
                         "FROM Stats s INNER JOIN Visitors v ON s.visitorId = v.id AND v.adVisitor IS FALSE " +
-                        "WHERE s.timestamp BETWEEN :since AND :until"),
+                        "WHERE s.timestamp BETWEEN :since AND :until AND s.postId IS NOT NULL"),
 
         @NamedNativeQuery(name = "@GET_TOTAL_UNIQUE_PAGEVIEWS_ON_POSTS_BY_CLIENT",
-                query = "SELECT count(DISTINCT s.path, v.id) " +
+                query = "SELECT count(DISTINCT s.postId, v.id) " +
                         "FROM Stats s INNER JOIN Visitors v ON s.visitorId = v.id " +
-                        "WHERE s.timestamp BETWEEN :since AND :until AND v.appName = :client"),
+                        "WHERE s.timestamp BETWEEN :since AND :until AND v.appName = :client AND s.postId IS NOT NULL"),
 
         @NamedNativeQuery(name = "@GET_PAGEVIEW_TREND_HOURLY",
                 query = "SELECT date_add(date(s.timestamp), INTERVAL hour(s.timestamp) HOUR) AS statDateTime, count(*) AS statValue " +

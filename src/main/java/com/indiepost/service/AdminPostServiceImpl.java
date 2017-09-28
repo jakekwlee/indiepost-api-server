@@ -131,6 +131,7 @@ public class AdminPostServiceImpl implements AdminPostService {
     public AdminPostResponseDto save(AdminPostRequestDto adminPostRequestDto) {
         User currentUser = userService.getCurrentUser();
         Post post = postMapperService.adminPostRequestDtoToPost(adminPostRequestDto);
+        post.setStatus(PostStatus.valueOf(adminPostRequestDto.getStatus()));
         post.setCreatedAt(LocalDateTime.now());
         post.setModifiedAt(LocalDateTime.now());
         post.setAuthor(currentUser);

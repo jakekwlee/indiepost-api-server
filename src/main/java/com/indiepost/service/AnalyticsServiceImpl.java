@@ -60,8 +60,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
         stats.setTotalPageview(statRepository.getTotalPageviews(since, until));
         stats.setTotalUniquePageview(statRepository.getTotalUniquePageviews(since, until));
-        stats.setTotalUniquePostview(statRepository.getTotalUniquePostviews(since, until));
         stats.setTotalPostview(statRepository.getTotalPostviews(since, until));
+        stats.setTotalUniquePostview(statRepository.getTotalUniquePostviews(since, until));
         stats.setTopPagesWebapp(statRepository.getTopPages(since, until, 10L));
         stats.setTopPosts(statRepository.getTopPosts(since, until, 10L));
         stats.setPageviewByAuthor(statRepository.getPageviewByAuthor(since, until, 100L));

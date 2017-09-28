@@ -1,6 +1,7 @@
 package com.indiepost.model;
 
 import com.indiepost.enums.Types;
+import com.indiepost.model.analytics.Pageview;
 import com.indiepost.model.legacy.Contentlist;
 import org.apache.lucene.analysis.charfilter.HTMLStripCharFilterFactory;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
@@ -174,6 +175,17 @@ public class Post implements Serializable {
     @Column(nullable = false)
     @Min(0)
     private int likesCount = 0;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "post")
+    private List<Pageview> pageviews;
+
+    public List<Pageview> getPageviews() {
+        return pageviews;
+    }
+
+    public void setPageviews(List<Pageview> pageviews) {
+        this.pageviews = pageviews;
+    }
 
     public Long getId() {
         return id;
