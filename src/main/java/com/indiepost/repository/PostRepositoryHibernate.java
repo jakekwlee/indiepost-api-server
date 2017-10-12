@@ -144,6 +144,15 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     @Override
+    public List<PostSummary> findScheduledPosts() {
+        return getCriteria()
+                .setProjection(getProjectionList())
+                .add(Restrictions.eq("status", PostStatus.FUTURE))
+                .setResultTransformer(new FluentHibernateResultTransformer(PostSummary.class))
+                .list();
+    }
+
+    @Override
     public List<Post> search(String text, Pageable pageable) {
         Criteria criteria = getSession().createCriteria(Post.class);
         criteria.add(Restrictions.eq("status", PostStatus.PUBLISH))

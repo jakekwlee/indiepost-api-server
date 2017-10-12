@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by jake on 17. 4. 28.
  */
-public class DateUtils {
+public class DateUtil {
     public static Instant localDateTimeToInstant(LocalDateTime localDateTime) {
         return localDateTime.atZone(ZoneId.systemDefault()).toInstant();
     }

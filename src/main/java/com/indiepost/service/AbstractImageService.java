@@ -1,10 +1,14 @@
 package com.indiepost.service;
 
 import com.indiepost.config.AppConfig;
+import com.indiepost.dto.PostImageSetListDto;
 import com.indiepost.enums.Types.ImageSize;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
+import com.indiepost.model.Post;
 import com.indiepost.repository.ImageRepository;
+import com.indiepost.repository.PostRepository;
+import com.indiepost.utils.DomUtil;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.imgscalr.Scalr;
@@ -33,10 +37,13 @@ abstract class AbstractImageService implements ImageService {
     protected final AppConfig config;
     final ImageRepository imageRepository;
 
+    private final PostRepository postRepository;
+
     @Autowired
-    public AbstractImageService(ImageRepository imageRepository, AppConfig config) {
+    public AbstractImageService(ImageRepository imageRepository, PostRepository postRepository, AppConfig config) {
         this.imageRepository = imageRepository;
         this.config = config;
+        this.postRepository = postRepository;
     }
 
     abstract protected void saveUploadedImage(BufferedImage bufferedImage, Image image, String contentType) throws IOException;
@@ -61,8 +68,11 @@ abstract class AbstractImageService implements ImageService {
             validateContentType(contentType);
 
             String filenamePrefix = RandomStringUtils.randomAlphanumeric(config.getImageFilenameLength());
+            DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("yyyy/MM/dd/");
+            String imageSetPrefix = LocalDateTime.now().format(dtFormat) + filenamePrefix;
 
             ImageSet imageSet = new ImageSet();
+            imageSet.setPrefix(imageSetPrefix);
             imageSet.setContentType(contentType);
             imageSet.setUploadedAt(LocalDateTime.now());
             Set<Image> images = new HashSet<>();
@@ -108,13 +118,14 @@ abstract class AbstractImageService implements ImageService {
     }
 
     private Image createImageObject(String filenamePrefix, int width, int height, String contentType, ImageSize sizeType) {
-        String subPath = config.getImageUploadPath() + LocalDateTime.now().format(DateTimeFormatter.ofPattern("/yyyy/MM"));
+        DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("/yyyy/MM/dd/");
+        String subPath = config.getImageUploadPath() + LocalDateTime.now().format(dtFormat);
         String fileExtension = contentType.split("/")[1];
         String filename = String.format(config.getImageFilenameFormat(), filenamePrefix, width, height, fileExtension);
 
         Image image = new Image();
         image.setFileName(filename);
-        image.setFilePath(subPath + '/' + filename);
+        image.setFilePath(subPath + filename);
         image.setWidth(width);
         image.setHeight(height);
         image.setSizeType(sizeType);
@@ -134,6 +145,24 @@ abstract class AbstractImageService implements ImageService {
     @Override
     public List<ImageSet> findAll(int page, int maxResults) {
         return imageRepository.findAll(new PageRequest(page, maxResults, Sort.Direction.DESC, "uploadedAt"));
+    }
+
+    @Override
+    public PostImageSetListDto findImagesOnPost(Long postId) {
+        Post post = postRepository.findById(postId);
+        PostImageSetListDto postImageSetListDto = new PostImageSetListDto();
+        if (post == null) {
+            return null;
+        }
+        String content = post.getContent();
+
+        ImageSet titleImage = post.getTitleImage();
+        int size = titleImage.getImages().size();
+        List<String> prefixList = DomUtil.getImagePrefixes(content);
+        List<ImageSet> imageSetList = imageRepository.findByPrefixes(prefixList);
+        postImageSetListDto.setTitleImage(titleImage);
+        postImageSetListDto.setImages(imageSetList);
+        return postImageSetListDto;
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.indiepost.dto.stat.TimeDomainStat;
-import com.indiepost.utils.DateUtils;
+import com.indiepost.utils.DateUtil;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -26,7 +26,7 @@ public class AnalyticServiceUnitTest {
         input.add(new TimeDomainStat(d1, 1000L));
         input.add(new TimeDomainStat(d2, 3000L));
         List<TimeDomainStat> output =
-                DateUtils.normalizeTimeDomainStats(
+                DateUtil.normalizeTimeDomainStats(
                         input,
                         LocalDate.of(2017, 1, 1),
                         LocalDate.of(2017, 1, 1));

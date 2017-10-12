@@ -18,7 +18,7 @@ import java.util.List;
 
 import static com.indiepost.repository.utils.CriteriaUtils.getShare;
 import static com.indiepost.repository.utils.CriteriaUtils.getTrend;
-import static com.indiepost.utils.DateUtils.normalizeTimeDomainStats;
+import static com.indiepost.utils.DateUtil.normalizeTimeDomainStats;
 
 /**
  * Created by jake on 8/9/17.

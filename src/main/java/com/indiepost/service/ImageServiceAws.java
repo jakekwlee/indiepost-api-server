@@ -10,6 +10,7 @@ import com.indiepost.config.AwsConfig;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.repository.ImageRepository;
+import com.indiepost.repository.PostRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,8 @@ public class ImageServiceAws extends AbstractImageService implements ImageServic
     private final AwsConfig awsConfig;
 
     @Autowired
-    public ImageServiceAws(ImageRepository imageRepository, AppConfig config, AwsConfig awsConfig) {
-        super(imageRepository, config);
+    public ImageServiceAws(ImageRepository imageRepository, PostRepository postRepository, AppConfig appConfig, AwsConfig awsConfig) {
+        super(imageRepository, postRepository, appConfig);
         this.awsConfig = awsConfig;
     }
 

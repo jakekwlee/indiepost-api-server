@@ -21,7 +21,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.indiepost.utils.DateUtils.localDateTimeToDate;
+import static com.indiepost.utils.DateUtil.localDateTimeToDate;
 
 /**
  * Created by jake on 17. 1. 14.

@@ -1,6 +1,7 @@
 package com.indiepost.controller.api;
 
 import com.indiepost.dto.*;
+import com.indiepost.service.ImageService;
 import com.indiepost.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +17,12 @@ public class PostController {
 
     private final PostService postService;
 
+    private final ImageService imageService;
+
     @Autowired
-    public PostController(PostService postService) {
+    public PostController(PostService postService, ImageService imageService) {
         this.postService = postService;
+        this.imageService = imageService;
     }
 
     @GetMapping("/{id}")
@@ -69,5 +73,15 @@ public class PostController {
     @PostMapping(value = "/relatedPosts")
     public List<RelatedPostResponseDto> getRelatedPosts(@RequestBody RelatedPostsRequestDto dto) {
         return postService.getRelatedPosts(dto.getPostIds(), dto.isLegacy(), dto.isMobile());
+    }
+
+    @GetMapping(value = "/images/{id}")
+    public PostImageSetListDto getImagesOnPost(@PathVariable Long id) {
+        return imageService.findImagesOnPost(id);
+    }
+
+    @GetMapping(value = "/future")
+    public List<PostSummary> getScheduledPosts() {
+        return postService.getScheduledPosts();
     }
 }

@@ -177,7 +177,15 @@ public class PostServiceImpl implements PostService {
                 .collect(Collectors.toList());
 
         List<PostSummary> topRatedPosts = postRepository.findByIds(topPostIds);
+        if (topRatedPosts == null) {
+            return new ArrayList<>();
+        }
         return setTitleImages(topRatedPosts);
+    }
+
+    @Override
+    public List<PostSummary> getScheduledPosts() {
+        return postRepository.findScheduledPosts();
     }
 
     @Override

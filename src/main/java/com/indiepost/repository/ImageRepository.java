@@ -14,9 +14,13 @@ public interface ImageRepository {
 
     ImageSet findById(Long id);
 
+    ImageSet findByPrefix(String prefix);
+
     List<ImageSet> findByIds(List<Long> ids);
 
     List<ImageSet> findAll(Pageable pageable);
+
+    List<ImageSet> findByPrefixes(List<String> prefixes);
 
     void update(ImageSet imageSet);
 

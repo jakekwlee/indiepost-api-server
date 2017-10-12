@@ -4,6 +4,7 @@ import com.indiepost.config.AppConfig;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.repository.ImageRepository;
+import com.indiepost.repository.PostRepository;
 import org.apache.commons.io.FileUtils;
 
 import javax.imageio.ImageIO;
@@ -20,8 +21,8 @@ import java.util.Set;
  * Created by jake on 7/20/17.
  */
 public class ImageServiceFileSystem extends AbstractImageService {
-    public ImageServiceFileSystem(ImageRepository imageRepository, AppConfig config) {
-        super(imageRepository, config);
+    public ImageServiceFileSystem(ImageRepository imageRepository, PostRepository postRepository, AppConfig config) {
+        super(imageRepository, postRepository, config);
     }
 
     @Override

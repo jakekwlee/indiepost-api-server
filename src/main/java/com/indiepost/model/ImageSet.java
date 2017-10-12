@@ -42,6 +42,10 @@ public class ImageSet {
     @Size(max = 300)
     private String caption;
 
+    @Size(max = 20)
+    @Column(unique = true, nullable = false)
+    private String prefix;
+
     @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     @Column(nullable = false)
     private LocalDateTime uploadedAt;
@@ -116,5 +120,13 @@ public class ImageSet {
             }
         }
         return null;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 }

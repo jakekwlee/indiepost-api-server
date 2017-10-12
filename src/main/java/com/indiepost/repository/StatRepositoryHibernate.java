@@ -20,8 +20,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.indiepost.repository.utils.CriteriaUtils.*;
-import static com.indiepost.utils.DateUtils.localDateTimeToDate;
-import static com.indiepost.utils.DateUtils.normalizeTimeDomainStats;
+import static com.indiepost.utils.DateUtil.localDateTimeToDate;
+import static com.indiepost.utils.DateUtil.normalizeTimeDomainStats;
 
 /**
  * Created by jake on 8/9/17.

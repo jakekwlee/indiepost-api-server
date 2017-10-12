@@ -35,6 +35,8 @@ public interface PostService {
 
     List<PostSummary> getTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit);
 
+    List<PostSummary> getScheduledPosts();
+
     List<PostSummary> search(String text, int page, int maxResults);
 
     Long findIdByLegacyId(Long legacyId);

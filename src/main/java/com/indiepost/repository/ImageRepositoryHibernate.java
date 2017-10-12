@@ -40,6 +40,13 @@ public class ImageRepositoryHibernate implements ImageRepository {
     }
 
     @Override
+    public ImageSet findByPrefix(String prefix) {
+        return (ImageSet) getCriteria()
+                .add(Restrictions.eq("prefix", prefix))
+                .uniqueResult();
+    }
+
+    @Override
     public List<ImageSet> findByIds(List<Long> ids) {
         return getCriteria()
                 .createAlias("images", "images", JoinType.LEFT_OUTER_JOIN)
@@ -52,6 +59,15 @@ public class ImageRepositoryHibernate implements ImageRepository {
     public List<ImageSet> findAll(Pageable pageable) {
         return getCriteria(pageable)
                 .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY).list();
+    }
+
+    @Override
+    public List<ImageSet> findByPrefixes(List<String> prefixes) {
+        return getCriteria()
+                .createAlias("images", "images", JoinType.LEFT_OUTER_JOIN)
+                .add(Restrictions.in("prefix", prefixes))
+                .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
+                .list();
     }
 
     @Override

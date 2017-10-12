@@ -33,5 +33,7 @@ public interface PostRepository {
 
     List<PostSummary> findByStatus(Types.PostStatus status, Pageable pageable);
 
+    List<PostSummary> findScheduledPosts();
+
     List<Post> search(String text, Pageable pageable);
 }
