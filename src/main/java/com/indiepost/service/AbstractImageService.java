@@ -158,7 +158,7 @@ abstract class AbstractImageService implements ImageService {
 
         ImageSet titleImage = post.getTitleImage();
         int size = titleImage.getImages().size();
-        List<String> prefixList = DomUtil.getImagePrefixes(content);
+        Set<String> prefixList = DomUtil.getImagePrefixes(content);
         List<ImageSet> imageSetList = imageRepository.findByPrefixes(prefixList);
         postImageSetListDto.setTitleImage(titleImage);
         postImageSetListDto.setImages(imageSetList);

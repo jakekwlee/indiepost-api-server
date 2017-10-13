@@ -148,6 +148,7 @@ public class PostRepositoryHibernate implements PostRepository {
         return getCriteria()
                 .setProjection(getProjectionList())
                 .add(Restrictions.eq("status", PostStatus.FUTURE))
+                .addOrder(Order.asc("publishedAt"))
                 .setResultTransformer(new FluentHibernateResultTransformer(PostSummary.class))
                 .list();
     }

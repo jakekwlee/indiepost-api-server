@@ -12,8 +12,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,7 +42,7 @@ public class ImageRepositoryTest {
 
     @Test
     public void findByPrefixesShouldReturnProperImageSetList() {
-        List<String> prefixList = new ArrayList<>();
+        Set<String> prefixList = new LinkedHashSet<>();
         String[] prefixArray = {
                 "2016/06/KykQo6TS",
                 "2016/06/hLAxroNO",

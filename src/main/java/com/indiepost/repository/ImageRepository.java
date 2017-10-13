@@ -4,6 +4,7 @@ import com.indiepost.model.ImageSet;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by jake on 8/17/16.
@@ -20,7 +21,7 @@ public interface ImageRepository {
 
     List<ImageSet> findAll(Pageable pageable);
 
-    List<ImageSet> findByPrefixes(List<String> prefixes);
+    List<ImageSet> findByPrefixes(Set<String> prefixes);
 
     void update(ImageSet imageSet);
 

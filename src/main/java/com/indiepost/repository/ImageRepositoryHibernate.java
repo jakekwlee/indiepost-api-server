@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.Set;
 
 import static com.indiepost.repository.utils.CriteriaUtils.setPageToCriteria;
 
@@ -62,7 +63,7 @@ public class ImageRepositoryHibernate implements ImageRepository {
     }
 
     @Override
-    public List<ImageSet> findByPrefixes(List<String> prefixes) {
+    public List<ImageSet> findByPrefixes(Set<String> prefixes) {
         return getCriteria()
                 .createAlias("images", "images", JoinType.LEFT_OUTER_JOIN)
                 .add(Restrictions.in("prefix", prefixes))
