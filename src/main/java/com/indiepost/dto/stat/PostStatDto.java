@@ -1,10 +1,18 @@
 package com.indiepost.dto.stat;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
+
+import java.time.LocalDateTime;
+
 /**
  * Created by jake on 17. 5. 10.
  */
-public class PostStat {
+public class PostStatDto {
     private Long id;
+
+    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
+    private LocalDateTime publishedAt;
 
     private String title;
 
@@ -16,24 +24,20 @@ public class PostStat {
 
     private Long uniquePageview;
 
-    public PostStat() {
-    }
-
-    public PostStat(Long id, String title, String category, String author, Long pageview, Long uniquePageview) {
-        this.id = id;
-        this.title = title;
-        this.category = category;
-        this.author = author;
-        this.pageview = pageview;
-        this.uniquePageview = uniquePageview;
-    }
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public LocalDateTime getPublishedAt() {
+        return publishedAt;
+    }
+
+    public void setPublishedAt(LocalDateTime publishedAt) {
+        this.publishedAt = publishedAt;
     }
 
     public String getTitle() {

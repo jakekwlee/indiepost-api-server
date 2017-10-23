@@ -1,7 +1,7 @@
 package com.indiepost.repository.utils;
 
 import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.stat.PostStat;
+import com.indiepost.dto.stat.PostStatDto;
 import com.indiepost.dto.stat.ShareStat;
 import com.indiepost.dto.stat.TimeDomainStat;
 import com.indiepost.enums.Types;
@@ -114,61 +114,15 @@ public interface CriteriaUtils {
         if (client != null) {
             query.setParameter("client", client);
         }
-        query.setResultTransformer(new ResultTransformer() {
-            @Override
-            public Object transformTuple(Object[] tuple, String[] aliases) {
-                return new ShareStat(
-                        (String) tuple[0],
-                        ((BigInteger) tuple[1]).longValue()
-                );
-            }
-
-            @Override
-            public List transformList(List collection) {
-                return collection;
-            }
-        });
+        query.setResultTransformer(new ShareStatResultTransformer());
         return query.list();
     }
 
-    static List<PostStat> getPostShare(Query query, LocalDateTime since, LocalDateTime until, Long limit) {
+    static List<PostStatDto> getPostShare(Query query, LocalDateTime since, LocalDateTime until, Long limit) {
         query.setParameter("since", localDateTimeToDate(since));
         query.setParameter("until", localDateTimeToDate(until));
         query.setLong("limit", limit);
-        query.setResultTransformer(new ResultTransformer() {
-            @Override
-            public Object transformTuple(Object[] tuple, String[] aliases) {
-                PostStat postStat = new PostStat();
-                for (int i = 0; i < tuple.length; ++i) {
-                    switch (aliases[i]) {
-                        case "id":
-                            postStat.setId(((BigInteger) tuple[i]).longValue());
-                            break;
-                        case "title":
-                            postStat.setTitle((String) tuple[i]);
-                            break;
-                        case "author":
-                            postStat.setAuthor((String) tuple[i]);
-                            break;
-                        case "category":
-                            postStat.setCategory((String) tuple[i]);
-                            break;
-                        case "pageview":
-                            postStat.setPageview(((BigInteger) tuple[i]).longValue());
-                            break;
-                        case "uniquePageview":
-                            postStat.setUniquePageview(((BigInteger) tuple[i]).longValue());
-                            break;
-                    }
-                }
-                return postStat;
-            }
-
-            @Override
-            public List transformList(List collection) {
-                return collection;
-            }
-        });
+        query.setResultTransformer(new PostStatsResultTransformer());
         return query.list();
     }
 }

@@ -12,7 +12,7 @@ public class SiteStats {
     private Long totalPostview;
     private Long totalVisitor;
     private Long totalAppVisitor;
-    private List<PostStat> postsByPageview;
+    private List<PostStatDto> postsByPageview;
     private Trend pageviewTrend;
     private Trend visitorTrend;
     private List<ShareStat> pageviewByCategory;
@@ -36,11 +36,11 @@ public class SiteStats {
     private List<ShareStat> topTags;
     private List<ShareStat> topChannel;
 
-    public List<PostStat> getPostsByPageview() {
+    public List<PostStatDto> getPostsByPageview() {
         return postsByPageview;
     }
 
-    public void setPostsByPageview(List<PostStat> postsByPageview) {
+    public void setPostsByPageview(List<PostStatDto> postsByPageview) {
         this.postsByPageview = postsByPageview;
     }
 

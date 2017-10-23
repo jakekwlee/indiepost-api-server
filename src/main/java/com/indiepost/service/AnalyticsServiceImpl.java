@@ -3,6 +3,8 @@ package com.indiepost.service;
 import com.indiepost.dto.stat.*;
 import com.indiepost.enums.Types;
 import com.indiepost.enums.Types.ClientType;
+import com.indiepost.model.StatMetadata;
+import com.indiepost.repository.StatMetadataRepository;
 import com.indiepost.repository.StatRepository;
 import com.indiepost.repository.VisitorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +13,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -25,10 +26,13 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     private final VisitorRepository visitorRepository;
 
+    private final StatMetadataRepository statMetadataRepository;
+
     @Autowired
-    public AnalyticsServiceImpl(StatRepository statRepository, VisitorRepository visitorRepository) {
+    public AnalyticsServiceImpl(StatRepository statRepository, VisitorRepository visitorRepository, StatMetadataRepository statMetadataRepository) {
         this.statRepository = statRepository;
         this.visitorRepository = visitorRepository;
+        this.statMetadataRepository = statMetadataRepository;
     }
 
     @Override
@@ -56,7 +60,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         stats.setPageviewTrend(pageviewTrend);
         stats.setVisitorTrend(visitorTrend);
 
-        stats.setPostsByPageview(getPostsOrderByPageviews(periodDto));
+        stats.setPostsByPageview(statRepository.getPostStatsOrderByPageviews(since, until, 3000L));
 
         stats.setTotalPageview(statRepository.getTotalPageviews(since, until));
         stats.setTotalUniquePageview(statRepository.getTotalUniquePageviews(since, until));
@@ -79,22 +83,16 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     }
 
     @Override
-    public List<PostStat> getPostsOrderByPageviews(PeriodDto dto) {
-        LocalDateTime since = dto.getStartDate().atStartOfDay();
-        LocalDateTime until = dto.getEndDate().atTime(LocalTime.MAX);
+    public List<PostStatDto> getAllPostStats() {
+        return statRepository.getAllPostStats();
+    }
 
-        List<PostStat> pageviewList = statRepository.getPostsOrderByPageviews(since, until, 3000L);
-        List<PostStat> uniquePageviewList = statRepository.getPostsOrderByUniquePageviews(since, until, 3000L);
-
-        for (PostStat pageview : pageviewList) {
-            Long postId = pageview.getId();
-            for (PostStat uniquePageview : uniquePageviewList) {
-                if (uniquePageview.getId().equals(postId)) {
-                    pageview.setUniquePageview(uniquePageview.getUniquePageview());
-                    break;
-                }
-            }
-        }
-        return pageviewList;
+    @Override
+    public void accumulatePostStats() {
+        LocalDateTime now = LocalDateTime.now();
+        statRepository.updatePostStats(now);
+        StatMetadata statMetadata = statMetadataRepository.findOne(1);
+        statMetadata.setPostPageviewLastUpdatedAt(now);
+        statMetadataRepository.save(statMetadata);
     }
 }

@@ -18,7 +18,7 @@ apply plugin: 'war'
 
 war {
     baseName = 'new-indiepost'
-    version = '1.6.7-SNAPSHOT'
+    version = '1.6.8-SNAPSHOT'
 }
 
 sourceCompatibility = 1.8

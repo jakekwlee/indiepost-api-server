@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 /**
  * Created by jake on 8/10/17.
  */
@@ -25,4 +27,6 @@ public interface CampaignRepository extends CrudRepository<Campaign, Long> {
                     "WHERE s.class = 'Click' AND l.campaignId = :campaignId " +
                     "AND s.timestamp BETWEEN c.startAt AND c.endAt")
     Long countValidClicksByCampaignId(@Param("campaignId") Long campaignId);
+
+    List<Campaign> findAllByOrderByCreatedAtDesc();
 }

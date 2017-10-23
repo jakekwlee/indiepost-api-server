@@ -1,13 +1,13 @@
 package com.indiepost.controller.api.admin;
 
 import com.indiepost.dto.stat.PeriodDto;
+import com.indiepost.dto.stat.PostStatDto;
 import com.indiepost.dto.stat.SiteStats;
 import com.indiepost.service.AnalyticsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * Created by jake on 17. 4. 29.
@@ -26,5 +26,12 @@ public class AdminAnalyticsController {
     @PostMapping
     public SiteStats getSiteStats(@RequestBody PeriodDto periodDto) {
         return analyticsService.getStats(periodDto);
+    }
+
+    @GetMapping("/posts")
+    public List<PostStatDto> getAllPostStats() {
+        // accumulate post stats before fetch
+        analyticsService.accumulatePostStats();
+        return analyticsService.getAllPostStats();
     }
 }

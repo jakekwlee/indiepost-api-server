@@ -1,7 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.stat.PeriodDto;
-import com.indiepost.dto.stat.PostStat;
+import com.indiepost.dto.stat.PostStatDto;
 import com.indiepost.dto.stat.SiteStats;
 
 import java.util.List;
@@ -13,5 +13,7 @@ public interface AnalyticsService {
 
     SiteStats getStats(PeriodDto periodDto);
 
-    List<PostStat> getPostsOrderByPageviews(PeriodDto periodDto);
+    List<PostStatDto> getAllPostStats();
+
+    void accumulatePostStats();
 }

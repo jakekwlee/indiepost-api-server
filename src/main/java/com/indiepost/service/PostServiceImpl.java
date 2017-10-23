@@ -4,7 +4,7 @@ import com.indiepost.dto.PostDto;
 import com.indiepost.dto.PostQuery;
 import com.indiepost.dto.PostSummary;
 import com.indiepost.dto.RelatedPostResponseDto;
-import com.indiepost.dto.stat.PostStat;
+import com.indiepost.dto.stat.PostStatDto;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
@@ -171,7 +171,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostSummary> getTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit) {
-        List<PostStat> topStats = statRepository.getPostsOrderByUniquePageviews(since, until, limit);
+        List<PostStatDto> topStats = statRepository.getPostStatsOrderByPageviews(since, until, limit);
         List<Long> topPostIds = topStats.stream()
                 .map(postStat -> postStat.getId())
                 .collect(Collectors.toList());

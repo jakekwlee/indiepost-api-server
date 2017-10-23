@@ -1,11 +1,12 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.stat.PostStat;
+import com.indiepost.dto.stat.PostStatDto;
 import com.indiepost.dto.stat.ShareStat;
 import com.indiepost.dto.stat.TimeDomainStat;
 import com.indiepost.enums.Types.ClientType;
 import com.indiepost.enums.Types.TimeDomainDuration;
 import com.indiepost.model.analytics.Stat;
+import com.indiepost.repository.utils.PostStatsResultTransformer;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -46,6 +47,13 @@ public class StatRepositoryHibernate implements StatRepository {
     @Override
     public void delete(Stat stat) {
         getSession().delete(stat);
+    }
+
+    @Override
+    public void updatePostStats(LocalDateTime now) {
+        Query query = getNamedQuery("@UPDATE_POST_PAGEVIEWS");
+        query.setParameter("now", now);
+        query.executeUpdate();
     }
 
     @Override
@@ -109,7 +117,7 @@ public class StatRepositoryHibernate implements StatRepository {
 
     @Override
     public Long getTotalUniquePageviews(LocalDateTime since, LocalDateTime until, String client) {
-        Query query = getNamedQuery("GET_TOTAL_UNIQUE_PAGEVIEWS_BY_CLIENT");
+        Query query = getNamedQuery("@GET_TOTAL_UNIQUE_PAGEVIEWS_BY_CLIENT");
         query.setParameter("client", client);
         query.setParameter("since", localDateTimeToDate(since));
         query.setParameter("until", localDateTimeToDate(until));
@@ -171,15 +179,16 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public List<PostStat> getPostsOrderByPageviews(LocalDateTime since, LocalDateTime until, Long limit) {
-        Query query = getNamedQuery("@GET_POSTS_ORDER_BY_PAGEVIEWS");
+    public List<PostStatDto> getPostStatsOrderByPageviews(LocalDateTime since, LocalDateTime until, Long limit) {
+        Query query = getNamedQuery("@GET_POST_STATS_ORDER_BY_PAGEVIEWS");
         return getPostShare(query, since, until, limit);
     }
 
     @Override
-    public List<PostStat> getPostsOrderByUniquePageviews(LocalDateTime since, LocalDateTime until, Long limit) {
-        Query query = getNamedQuery("@GET_POSTS_ORDER_BY_UNIQUE_PAGEVIEWS");
-        return getPostShare(query, since, until, limit);
+    public List<PostStatDto> getAllPostStats() {
+        Query query = getNamedQuery("@GET_ALL_POST_STATS");
+        query.setResultTransformer(new PostStatsResultTransformer());
+        return query.list();
     }
 
     @Override

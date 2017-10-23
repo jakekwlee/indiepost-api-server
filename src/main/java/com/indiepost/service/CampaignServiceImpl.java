@@ -54,7 +54,7 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     public List<CampaignDto> findAll() {
-        List<Campaign> campaigns = (List<Campaign>) campaignRepository.findAll();
+        List<Campaign> campaigns = campaignRepository.findAllByOrderByCreatedAtDesc();
         return campaigns.stream()
                 .map(campaign -> campaignToDto(campaign))
                 .collect(Collectors.toList());

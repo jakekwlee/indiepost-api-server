@@ -1,6 +1,6 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.stat.PostStat;
+import com.indiepost.dto.stat.PostStatDto;
 import com.indiepost.dto.stat.ShareStat;
 import com.indiepost.dto.stat.TimeDomainStat;
 import com.indiepost.enums.Types;
@@ -18,6 +18,8 @@ public interface StatRepository {
     void update(Stat stat);
 
     void delete(Stat stat);
+
+    void updatePostStats(LocalDateTime now);
 
     Stat findOne(Long id);
 
@@ -39,9 +41,9 @@ public interface StatRepository {
 
     List<TimeDomainStat> getPageviewTrend(LocalDateTime since, LocalDateTime until, Types.TimeDomainDuration duration);
 
-    List<PostStat> getPostsOrderByPageviews(LocalDateTime since, LocalDateTime until, Long limit);
+    List<PostStatDto> getPostStatsOrderByPageviews(LocalDateTime since, LocalDateTime until, Long limit);
 
-    List<PostStat> getPostsOrderByUniquePageviews(LocalDateTime since, LocalDateTime until, Long limit);
+    List<PostStatDto> getAllPostStats();
 
     List<ShareStat> getPageviewsByCategory(LocalDateTime since, LocalDateTime until, Long limit);
 
