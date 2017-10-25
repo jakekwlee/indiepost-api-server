@@ -1,6 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.PageDto;
+import com.indiepost.enums.Types;
 
 import java.util.List;
 
@@ -18,6 +19,8 @@ public interface PageService {
     PageDto findBySlug(String slug);
 
     List<PageDto> find(int page, int maxResults, boolean isDesc);
+
+    List<PageDto> find(Types.PostStatus pageStatus, int page, int maxResults, boolean isDesc);
 
     void delete(PageDto pageDto);
 

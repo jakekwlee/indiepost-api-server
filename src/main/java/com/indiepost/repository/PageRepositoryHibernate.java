@@ -2,6 +2,7 @@ package com.indiepost.repository;
 
 import com.github.fluent.hibernate.transformer.FluentHibernateResultTransformer;
 import com.indiepost.dto.PageDto;
+import com.indiepost.enums.Types;
 import com.indiepost.model.Page;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -48,21 +49,17 @@ public class PageRepositoryHibernate implements PageRepository {
 
     @Override
     public List<PageDto> find(Pageable pageable) {
-        return getPagedCriteria(pageable)
-                .createAlias("author", "a")
-                .setProjection(
-                        Projections.projectionList()
-                                .add(Property.forName("id"), "id")
-                                .add(Property.forName("title"), "title")
-                                .add(Property.forName("slug"), "slug")
-                                .add(Property.forName("createdAt"), "createdAt")
-                                .add(Property.forName("modifiedAt"), "modifiedAt")
-                                .add(Property.forName("displayOrder"), "displayOrder")
-                                .add(Property.forName("type"), "type")
-                                .add(Property.forName("a.displayName"), "authorDisplayName")
-                )
-                .setResultTransformer(new FluentHibernateResultTransformer(PageDto.class))
-                .list();
+        Criteria criteria = getPagedCriteria(pageable);
+        setProjectionForDto(criteria);
+        return criteria.list();
+    }
+
+    @Override
+    public List<PageDto> find(Pageable pageable, Types.PostStatus pageStatus) {
+        Criteria criteria = getPagedCriteria(pageable);
+        criteria.add(Restrictions.eq("status", pageStatus));
+        setProjectionForDto(criteria);
+        return criteria.list();
     }
 
     @Override
@@ -76,6 +73,23 @@ public class PageRepositoryHibernate implements PageRepository {
         return (Page) getCriteria()
                 .add(Restrictions.eq("slug", slug))
                 .uniqueResult();
+    }
+
+    private void setProjectionForDto(Criteria criteria) {
+        criteria.createAlias("author", "a")
+                .setProjection(
+                        Projections.projectionList()
+                                .add(Property.forName("id"), "id")
+                                .add(Property.forName("title"), "title")
+                                .add(Property.forName("slug"), "slug")
+                                .add(Property.forName("createdAt"), "createdAt")
+                                .add(Property.forName("modifiedAt"), "modifiedAt")
+                                .add(Property.forName("displayOrder"), "displayOrder")
+                                .add(Property.forName("type"), "type")
+                                .add(Property.forName("status"), "status")
+                                .add(Property.forName("a.displayName"), "authorDisplayName")
+                )
+                .setResultTransformer(new FluentHibernateResultTransformer(PageDto.class));
     }
 
     private Session getSession() {

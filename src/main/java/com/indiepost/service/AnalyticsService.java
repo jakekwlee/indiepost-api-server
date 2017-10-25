@@ -15,5 +15,7 @@ public interface AnalyticsService {
 
     List<PostStatDto> getAllPostStats();
 
+    List<PostStatDto> getPostStats(PeriodDto periodDto);
+
     void accumulatePostStats();
 }

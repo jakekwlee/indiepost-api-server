@@ -1,5 +1,7 @@
 package com.indiepost.model;
 
+import com.indiepost.enums.Types;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -39,6 +41,10 @@ public class Page {
     private Long authorId;
 
     private String type = "";
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Types.PostStatus status = Types.PostStatus.PUBLISH;
 
     public Long getId() {
         return id;
@@ -118,5 +124,13 @@ public class Page {
 
     public void setDisplayOrder(int displayOrder) {
         this.displayOrder = displayOrder;
+    }
+
+    public Types.PostStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(Types.PostStatus status) {
+        this.status = status;
     }
 }

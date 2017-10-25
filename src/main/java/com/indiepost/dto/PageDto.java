@@ -1,6 +1,7 @@
 package com.indiepost.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.indiepost.enums.Types;
 import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,8 @@ public class PageDto {
     private String slug;
 
     private int displayOrder;
+
+    private Types.PostStatus status;
 
     private String authorDisplayName;
 
@@ -100,5 +103,13 @@ public class PageDto {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Types.PostStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(Types.PostStatus status) {
+        this.status = status;
     }
 }

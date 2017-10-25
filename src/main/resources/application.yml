@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: prod
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
   http:
@@ -80,7 +80,7 @@ spring:
       hibernate:
         format_sql: false
   thymeleaf:
-    cache: false
+    cache: true
 logging:
   level:
     org:

@@ -60,8 +60,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         stats.setPageviewTrend(pageviewTrend);
         stats.setVisitorTrend(visitorTrend);
 
-        stats.setPostsByPageview(statRepository.getPostStatsOrderByPageviews(since, until, 3000L));
-
         stats.setTotalPageview(statRepository.getTotalPageviews(since, until));
         stats.setTotalUniquePageview(statRepository.getTotalUniquePageviews(since, until));
         stats.setTotalPostview(statRepository.getTotalPostviews(since, until));
@@ -84,7 +82,17 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     @Override
     public List<PostStatDto> getAllPostStats() {
+        accumulatePostStats();
         return statRepository.getAllPostStats();
+    }
+
+    @Override
+    public List<PostStatDto> getPostStats(PeriodDto periodDto) {
+        LocalDate startDate = periodDto.getStartDate();
+        LocalDate endDate = periodDto.getEndDate();
+        LocalDateTime since = startDate.atStartOfDay();
+        LocalDateTime until = endDate.atTime(23, 59, 59);
+        return statRepository.getPostStatsOrderByPageviews(since, until, 3000L);
     }
 
     @Override

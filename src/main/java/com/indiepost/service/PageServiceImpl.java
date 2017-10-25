@@ -1,6 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.PageDto;
+import com.indiepost.enums.Types;
 import com.indiepost.model.Page;
 import com.indiepost.model.User;
 import com.indiepost.repository.PageRepository;
@@ -39,6 +40,7 @@ public class PageServiceImpl implements PageService {
         page.setSlug(pageDto.getSlug());
         page.setDisplayOrder(pageDto.getDisplayOrder());
         page.setType(pageDto.getType());
+        page.setStatus(pageDto.getStatus());
 
         User currentUser = userService.getCurrentUser();
         page.setAuthor(currentUser);
@@ -56,6 +58,7 @@ public class PageServiceImpl implements PageService {
         page.setSlug(pageDto.getSlug());
         page.setDisplayOrder(pageDto.getDisplayOrder());
         page.setType(pageDto.getType());
+        page.setStatus(pageDto.getStatus());
 
         page.setModifiedAt(LocalDateTime.now());
         pageRepository.update(page);
@@ -75,7 +78,18 @@ public class PageServiceImpl implements PageService {
 
     @Override
     public List<PageDto> find(int pageNumber, int maxResults, boolean isDesc) {
-        List<PageDto> pageList = pageRepository.find(getPageable(pageNumber, maxResults, isDesc));
+        Pageable pageable = getPageable(pageNumber, maxResults, isDesc);
+        List<PageDto> pageList = pageRepository.find(pageable);
+        if (pageList.size() == 0) {
+            return null;
+        }
+        return pageList;
+    }
+
+    @Override
+    public List<PageDto> find(Types.PostStatus pageStatus, int pageNumber, int maxResults, boolean isDesc) {
+        Pageable pageable = getPageable(pageNumber, maxResults, isDesc);
+        List<PageDto> pageList = pageRepository.find(pageable, pageStatus);
         if (pageList.size() == 0) {
             return null;
         }
@@ -110,6 +124,7 @@ public class PageServiceImpl implements PageService {
         pageDto.setDisplayOrder(page.getDisplayOrder());
         pageDto.setModifiedAt(page.getModifiedAt());
         pageDto.setCreatedAt(page.getCreatedAt());
+        pageDto.setStatus(page.getStatus());
         return pageDto;
     }
 

@@ -237,7 +237,7 @@ import javax.persistence.*;
                         "       FROM Posts p" +
                         "       INNER JOIN Stats s ON s.postId = p.id" +
                         "       INNER JOIN Visitors v ON v.id = s.visitorId" +
-                        "       WHERE s.timestamp > (SELECT postPageviewLastUpdatedAt FROM StatMetadata)" +
+                        "       WHERE s.timestamp > (SELECT postPageviewLastUpdatedAt FROM StatMetadata WHERE id = 1)" +
                         "       AND s.timestamp <= :now" +
                         "       AND p.status = 'PUBLISH' " +
                         "       GROUP BY p.id" +

@@ -57,8 +57,8 @@ public class User implements Serializable {
     @Size(min = 7, max = 15)
     private String phone;
 
-    @Size(max = 100)
-    private String uuid;
+    @Size(max = 500)
+    private String uid;
 
     private LocalDate birthday;
 
@@ -172,12 +172,12 @@ public class User implements Serializable {
         this.phone = phone;
     }
 
-    public String getUuid() {
-        return uuid;
+    public String getUid() {
+        return uid;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public LocalDate getBirthday() {

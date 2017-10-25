@@ -30,8 +30,11 @@ public class AdminAnalyticsController {
 
     @GetMapping("/posts")
     public List<PostStatDto> getAllPostStats() {
-        // accumulate post stats before fetch
-        analyticsService.accumulatePostStats();
         return analyticsService.getAllPostStats();
+    }
+
+    @PostMapping("/posts")
+    public List<PostStatDto> getPostStats(@RequestBody PeriodDto periodDto) {
+        return analyticsService.getPostStats(periodDto);
     }
 }

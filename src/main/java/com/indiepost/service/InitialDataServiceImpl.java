@@ -3,6 +3,7 @@ package com.indiepost.service;
 import com.indiepost.config.AppConfig;
 import com.indiepost.dto.InitialData;
 import com.indiepost.dto.PostSummary;
+import com.indiepost.enums.Types;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +44,7 @@ public class InitialDataServiceImpl implements InitialDataService {
         initialData.setCategories(categoryService.getDtoList());
         initialData.setCurrentUser(userService.getCurrentUserDto());
         initialData.setWithLatestPosts(withLatestPosts);
-        initialData.setPages(pageService.find(0, 100, false));
+        initialData.setPages(pageService.find(Types.PostStatus.PUBLISH, 0, 100, false));
 
         initialData.setSplash(postService.findSplashPost());
         initialData.setFeatured(postService.findFeaturePost());

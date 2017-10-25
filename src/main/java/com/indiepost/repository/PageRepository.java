@@ -1,5 +1,6 @@
 package com.indiepost.repository;
 
+import com.indiepost.enums.Types;
 import com.indiepost.model.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,6 +20,8 @@ public interface PageRepository {
     void delete(Page page);
 
     List find(Pageable pageable);
+
+    List find(Pageable pageable, Types.PostStatus pageStatus);
 
     Long count();
 
