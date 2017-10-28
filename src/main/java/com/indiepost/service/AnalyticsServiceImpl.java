@@ -1,9 +1,9 @@
 package com.indiepost.service;
 
+import com.indiepost.dto.StatMetadata;
 import com.indiepost.dto.stat.*;
 import com.indiepost.enums.Types;
 import com.indiepost.enums.Types.ClientType;
-import com.indiepost.model.StatMetadata;
 import com.indiepost.repository.StatMetadataRepository;
 import com.indiepost.repository.StatRepository;
 import com.indiepost.repository.VisitorRepository;
@@ -22,17 +22,19 @@ import java.util.List;
 @Transactional
 public class AnalyticsServiceImpl implements AnalyticsService {
 
+    private final StatMetadataRepository statMetadataRepository;
+
     private final StatRepository statRepository;
 
     private final VisitorRepository visitorRepository;
 
-    private final StatMetadataRepository statMetadataRepository;
-
     @Autowired
-    public AnalyticsServiceImpl(StatRepository statRepository, VisitorRepository visitorRepository, StatMetadataRepository statMetadataRepository) {
+    public AnalyticsServiceImpl(StatMetadataRepository statMetadataRepository,
+                                StatRepository statRepository,
+                                VisitorRepository visitorRepository) {
+        this.statMetadataRepository = statMetadataRepository;
         this.statRepository = statRepository;
         this.visitorRepository = visitorRepository;
-        this.statMetadataRepository = statMetadataRepository;
     }
 
     @Override
@@ -81,9 +83,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     }
 
     @Override
-    public List<PostStatDto> getAllPostStats() {
-        accumulatePostStats();
-        return statRepository.getAllPostStats();
+    public PostStatsDto getAllPostStats() {
+        List<PostStatDto> statData = statRepository.getAllPostStatsFromCache();
+        StatMetadata metadata = statMetadataRepository.findOne(1L);
+        LocalDateTime lastUpdated = metadata.getPostStatsUpdatedAt();
+        return new PostStatsDto(lastUpdated, statData);
     }
 
     @Override
@@ -96,11 +100,16 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     }
 
     @Override
-    public void accumulatePostStats() {
+    public void updateCachedPostStats() {
+        statRepository.deleteAllPostStatsCache();
+        statRepository.updatePostStatsCache();
+
+        StatMetadata statMetadata = statMetadataRepository.findOne(1L);
+        if (statMetadata == null) {
+            statMetadata = new StatMetadata();
+        }
         LocalDateTime now = LocalDateTime.now();
-        statRepository.updatePostStats(now);
-        StatMetadata statMetadata = statMetadataRepository.findOne(1);
-        statMetadata.setPostPageviewLastUpdatedAt(now);
+        statMetadata.setPostStatsUpdatedAt(now);
         statMetadataRepository.save(statMetadata);
     }
 }

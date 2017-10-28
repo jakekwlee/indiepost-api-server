@@ -20,9 +20,9 @@ public class PostStatDto {
 
     private String author;
 
-    private Long pageview;
+    private Long pageviews;
 
-    private Long uniquePageview;
+    private Long uniquePageviews;
 
     public Long getId() {
         return id;
@@ -64,19 +64,19 @@ public class PostStatDto {
         this.author = author;
     }
 
-    public Long getPageview() {
-        return pageview;
+    public Long getPageviews() {
+        return pageviews;
     }
 
-    public void setPageview(Long pageview) {
-        this.pageview = pageview;
+    public void setPageviews(Long pageviews) {
+        this.pageviews = pageviews;
     }
 
-    public Long getUniquePageview() {
-        return uniquePageview;
+    public Long getUniquePageviews() {
+        return uniquePageviews;
     }
 
-    public void setUniquePageview(Long uniquePageview) {
-        this.uniquePageview = uniquePageview;
+    public void setUniquePageviews(Long uniquePageviews) {
+        this.uniquePageviews = uniquePageviews;
     }
 }

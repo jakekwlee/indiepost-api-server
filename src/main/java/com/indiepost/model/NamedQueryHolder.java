@@ -53,13 +53,13 @@ import javax.persistence.*;
 
         @NamedNativeQuery(name = "@GET_POST_STATS_ORDER_BY_PAGEVIEWS",
                 query = "SELECT p.id, p.title, p.displayName AS author, c.name AS category, " +
-                        "p.publishedAt, count(*) AS pageview, count(DISTINCT v.id) AS uniquePageview " +
+                        "p.publishedAt, count(*) AS pageviews, count(DISTINCT v.id) AS uniquePageview " +
                         "FROM Stats s " +
                         "INNER JOIN Visitors v ON s.visitorId = v.id " +
                         "INNER JOIN Posts p ON s.postId = p.id INNER JOIN Categories c ON p.categoryId = c.id " +
                         "WHERE s.timestamp BETWEEN :since AND :until " +
                         "AND p.status ='PUBLISH' " +
-                        "GROUP BY p.id ORDER BY pageview DESC , p.id DESC LIMIT :limit"),
+                        "GROUP BY p.id ORDER BY pageviews DESC , p.id DESC LIMIT :limit"),
 
         @NamedNativeQuery(name = "@GET_PAGEVIEWS_ORDER_BY_AUTHOR",
                 query = "SELECT p.displayName AS statName, count(*) AS statValue " +
@@ -111,8 +111,7 @@ import javax.persistence.*;
 
         @NamedNativeQuery(name = "@GET_TOP_TAGS",
                 query = "SELECT t.name AS statName, count(*) AS statValue FROM Stats s " +
-                        "INNER JOIN Posts p ON s.postId = p.id " +
-                        "INNER JOIN Posts_Tags pt ON p.id = pt.postId " +
+                        "INNER JOIN Posts_Tags pt ON s.postId = pt.postId " +
                         "INNER JOIN Tags t ON pt.tagId = t.id " +
                         "WHERE s.timestamp BETWEEN :since AND :until " +
                         "GROUP BY t.id " +
@@ -230,28 +229,38 @@ import javax.persistence.*;
                         "GROUP BY v.channel " +
                         "ORDER BY statValue DESC " +
                         "LIMIT :limit"),
-        @NamedNativeQuery(name = "@UPDATE_POST_PAGEVIEWS",
-                query = "INSERT INTO PostStats (postId, pageview, uniquePageview)" +
-                        "   SELECT i.postId, i.ipv, i.iuv FROM (" +
-                        "       SELECT p.id AS postId, COUNT(*) AS ipv, COUNT(DISTINCT v.id) AS iuv" +
-                        "       FROM Posts p" +
-                        "       INNER JOIN Stats s ON s.postId = p.id" +
-                        "       INNER JOIN Visitors v ON v.id = s.visitorId" +
-                        "       WHERE s.timestamp > (SELECT postPageviewLastUpdatedAt FROM StatMetadata WHERE id = 1)" +
-                        "       AND s.timestamp <= :now" +
-                        "       AND p.status = 'PUBLISH' " +
-                        "       GROUP BY p.id" +
-                        "       ORDER BY p.publishedAt DESC)" +
-                        "      AS i " +
-                        "ON DUPLICATE KEY UPDATE pageview = pageview + i.ipv, uniquePageview = uniquePageview + i.iuv"),
 
         @NamedNativeQuery(name = "@GET_ALL_POST_STATS",
                 query = "SELECT p.id, p.title, p.publishedAt, p.displayName author, c.name category, " +
-                        "s.pageview, s.uniquePageview FROM PostStats s " +
-                        "INNER JOIN Posts p ON p.id = s.postId " +
-                        "INNER JOIN Categories c ON c.id = p.categoryId " +
-                        "WHERE p.status = 'PUBLISH' " +
-                        "ORDER BY p.publishedAt DESC")
+                        "count(*) AS pageviews, count(DISTINCT s.visitorId) AS uniquePageviews " +
+                        "FROM Posts p " +
+                        "LEFT JOIN Stats s ON s.postId = p.id " +
+                        "INNER JOIN Categories c ON p.categoryId = c.id " +
+                        "AND p.status = 'PUBLISH' " +
+                        "GROUP BY p.id " +
+                        "ORDER BY p.publishedAt DESC"),
+        @NamedNativeQuery(name = "@GET_ALL_POST_STATS_FROM_CACHE",
+                query = "SELECT p.id, p.title, p.publishedAt, p.displayName author, c.name category, " +
+                        "s.pageviews, s.uniquePageviews " +
+                        "FROM CachedPostStats s " +
+                        "INNER JOIN Posts p ON s.postId = p.id " +
+                        "INNER JOIN Categories c ON p.categoryId = c.id " +
+                        "ORDER BY p.publishedAt DESC"),
+
+        @NamedNativeQuery(name = "@UPDATE_ALL_POST_STATS_CACHE",
+                query = "INSERT INTO CachedPostStats  (postId, pageviews, uniquePageviews) " +
+                        "SELECT p.id postId, count(*) AS pageviews, count(DISTINCT s.visitorId) AS uniquePageviews " +
+                        "FROM Posts p " +
+                        "LEFT JOIN Stats s ON s.postId = p.id " +
+                        "INNER JOIN Categories c ON p.categoryId = c.id " +
+                        "AND p.status = 'PUBLISH' " +
+                        "GROUP BY p.id " +
+                        "ORDER BY p.publishedAt DESC"
+        ),
+
+        @NamedNativeQuery(name = "@DELETE_ALL_POST_STATS_CACHE",
+                query = "DELETE FROM CachedPostStats WHERE id > 0"
+        )
 })
 public class NamedQueryHolder {
     @Id

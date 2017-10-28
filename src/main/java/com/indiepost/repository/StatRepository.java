@@ -19,8 +19,6 @@ public interface StatRepository {
 
     void delete(Stat stat);
 
-    void updatePostStats(LocalDateTime now);
-
     Stat findOne(Long id);
 
     Long getTotalPageviews(LocalDateTime since, LocalDateTime until);
@@ -45,6 +43,8 @@ public interface StatRepository {
 
     List<PostStatDto> getAllPostStats();
 
+    List<PostStatDto> getAllPostStatsFromCache();
+
     List<ShareStat> getPageviewsByCategory(LocalDateTime since, LocalDateTime until, Long limit);
 
     List<ShareStat> getPageviewByAuthor(LocalDateTime since, LocalDateTime until, Long limit);
@@ -64,5 +64,9 @@ public interface StatRepository {
     List<ShareStat> getTopTags(LocalDateTime since, LocalDateTime until, Long limit);
 
     List<ShareStat> getTopTags(LocalDateTime since, LocalDateTime until, Long limit, String client);
+
+    void updatePostStatsCache();
+
+    void deleteAllPostStatsCache();
 
 }

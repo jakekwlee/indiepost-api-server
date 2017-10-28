@@ -50,13 +50,6 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public void updatePostStats(LocalDateTime now) {
-        Query query = getNamedQuery("@UPDATE_POST_PAGEVIEWS");
-        query.setParameter("now", now);
-        query.executeUpdate();
-    }
-
-    @Override
     public Stat findOne(Long id) {
         return entityManager.find(Stat.class, id);
     }
@@ -192,6 +185,13 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
+    public List<PostStatDto> getAllPostStatsFromCache() {
+        Query query = getNamedQuery("@GET_ALL_POST_STATS_FROM_CACHE");
+        query.setResultTransformer(new PostStatsResultTransformer());
+        return query.list();
+    }
+
+    @Override
     public List<ShareStat> getPageviewsByCategory(LocalDateTime since, LocalDateTime until, Long limit) {
         Query query = getNamedQuery("@GET_PAGEVIEWS_ORDER_BY_CATEGORY");
         return getShare(query, since, until, limit);
@@ -249,6 +249,18 @@ public class StatRepositoryHibernate implements StatRepository {
     public List<ShareStat> getTopTags(LocalDateTime since, LocalDateTime until, Long limit, String client) {
         Query query = getNamedQuery("@GET_TOP_TAGS_BY_CLIENT");
         return getShare(query, since, until, limit, client);
+    }
+
+    @Override
+    public void updatePostStatsCache() {
+        Query query = getNamedQuery("@UPDATE_ALL_POST_STATS_CACHE");
+        query.executeUpdate();
+    }
+
+    @Override
+    public void deleteAllPostStatsCache() {
+        Query query = getNamedQuery("@DELETE_ALL_POST_STATS_CACHE");
+        query.executeUpdate();
     }
 
     private Session getSession() {

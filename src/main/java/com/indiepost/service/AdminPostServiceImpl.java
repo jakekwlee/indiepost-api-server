@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -246,7 +245,7 @@ public class AdminPostServiceImpl implements AdminPostService {
             }
             post.setStatus(PostStatus.PUBLISH);
             adminPostRepository.update(post);
-            log.info(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ": Publish Scheduled Post - " + post.getId());
+            log.info(String.format("[%s] %s", post.getId(), post.getTitle()));
         }
     }
 

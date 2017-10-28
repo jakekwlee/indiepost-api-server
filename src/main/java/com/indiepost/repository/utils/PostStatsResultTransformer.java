@@ -31,11 +31,11 @@ public class PostStatsResultTransformer implements ResultTransformer {
                 case "publishedAt":
                     postStatDto.setPublishedAt(((Timestamp) tuple[i]).toLocalDateTime());
                     break;
-                case "pageview":
-                    postStatDto.setPageview(((BigInteger) tuple[i]).longValue());
+                case "pageviews":
+                    postStatDto.setPageviews(((BigInteger) tuple[i]).longValue());
                     break;
-                case "uniquePageview":
-                    postStatDto.setUniquePageview(((BigInteger) tuple[i]).longValue());
+                case "uniquePageviews":
+                    postStatDto.setUniquePageviews(((BigInteger) tuple[i]).longValue());
                     break;
             }
         }

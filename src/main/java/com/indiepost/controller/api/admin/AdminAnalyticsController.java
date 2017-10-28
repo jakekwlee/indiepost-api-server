@@ -2,6 +2,7 @@ package com.indiepost.controller.api.admin;
 
 import com.indiepost.dto.stat.PeriodDto;
 import com.indiepost.dto.stat.PostStatDto;
+import com.indiepost.dto.stat.PostStatsDto;
 import com.indiepost.dto.stat.SiteStats;
 import com.indiepost.service.AnalyticsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class AdminAnalyticsController {
     }
 
     @GetMapping("/posts")
-    public List<PostStatDto> getAllPostStats() {
+    public PostStatsDto getAllPostStats() {
         return analyticsService.getAllPostStats();
     }
 
