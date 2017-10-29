@@ -38,7 +38,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     }
 
     @Override
-    public SiteStats getStats(PeriodDto periodDto) {
+    public OverviewStats getOverviewStats(PeriodDto periodDto) {
         LocalDate startDate = periodDto.getStartDate();
         LocalDate endDate = periodDto.getEndDate();
         LocalDateTime since = startDate.atStartOfDay();
@@ -58,7 +58,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         visitorTrend.setDuration(duration);
         visitorTrend.setResult(visitorTrendResult);
 
-        SiteStats stats = new SiteStats();
+        OverviewStats stats = new OverviewStats();
         stats.setPageviewTrend(pageviewTrend);
         stats.setVisitorTrend(visitorTrend);
 
@@ -79,6 +79,27 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         stats.setTopReferrer(visitorRepository.getTopReferrers(since, until, 10L));
         stats.setTopOs(visitorRepository.getTopOs(since, until, 10L));
 
+        return stats;
+    }
+
+    @Override
+    public RecentAndOldPostStats getRecentAndOldPostStats(PeriodDto periodDto) {
+        LocalDate startDate = periodDto.getStartDate();
+        LocalDate endDate = periodDto.getEndDate();
+        LocalDateTime since = startDate.atStartOfDay();
+        LocalDateTime until = endDate.atTime(23, 59, 59);
+        Types.TimeDomainDuration duration = periodDto.getDuration();
+
+        List<TimeDomainDoubleStat> resultStats = statRepository.getRecentAndOldPageviewTrend(since, until, duration);
+        DoubleTrend trend = new DoubleTrend();
+        trend.setDuration(duration);
+        trend.setResult(resultStats);
+        trend.setStatName("Time domain old and new post pageviews trend");
+
+        RecentAndOldPostStats stats = new RecentAndOldPostStats();
+        stats.setTrend(trend);
+        stats.setTopRecentPosts(statRepository.getTopRecentPosts(since, until, 10L));
+        stats.setTopOldPosts(statRepository.getTopOldPosts(since, until, 10L));
         return stats;
     }
 

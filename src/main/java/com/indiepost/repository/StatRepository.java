@@ -2,8 +2,9 @@ package com.indiepost.repository;
 
 import com.indiepost.dto.stat.PostStatDto;
 import com.indiepost.dto.stat.ShareStat;
+import com.indiepost.dto.stat.TimeDomainDoubleStat;
 import com.indiepost.dto.stat.TimeDomainStat;
-import com.indiepost.enums.Types;
+import com.indiepost.enums.Types.TimeDomainDuration;
 import com.indiepost.model.analytics.Stat;
 
 import java.time.LocalDateTime;
@@ -37,7 +38,9 @@ public interface StatRepository {
 
     Long getTotalUniquePostviews(LocalDateTime since, LocalDateTime until, String client);
 
-    List<TimeDomainStat> getPageviewTrend(LocalDateTime since, LocalDateTime until, Types.TimeDomainDuration duration);
+    List<TimeDomainStat> getPageviewTrend(LocalDateTime since, LocalDateTime until, TimeDomainDuration duration);
+
+    List<TimeDomainDoubleStat> getRecentAndOldPageviewTrend(LocalDateTime since, LocalDateTime until, TimeDomainDuration duration);
 
     List<PostStatDto> getPostStatsOrderByPageviews(LocalDateTime since, LocalDateTime until, Long limit);
 
@@ -64,6 +67,10 @@ public interface StatRepository {
     List<ShareStat> getTopTags(LocalDateTime since, LocalDateTime until, Long limit);
 
     List<ShareStat> getTopTags(LocalDateTime since, LocalDateTime until, Long limit, String client);
+
+    List<ShareStat> getTopRecentPosts(LocalDateTime since, LocalDateTime until, Long limit);
+
+    List<ShareStat> getTopOldPosts(LocalDateTime since, LocalDateTime until, Long limit);
 
     void updatePostStatsCache();
 

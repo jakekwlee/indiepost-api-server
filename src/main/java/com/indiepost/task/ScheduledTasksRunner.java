@@ -35,7 +35,7 @@ public class ScheduledTasksRunner {
         log.info(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ": Publish Scheduled Posts:");
     }
 
-    @Scheduled(cron = "* 0,30 * * * *")
+    @Scheduled(cron = "0 0/30 * * * ?")
     public void updateCachedPostStats() {
         analyticsService.updateCachedPostStats();
         log.info(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ": Update cached post stats.");

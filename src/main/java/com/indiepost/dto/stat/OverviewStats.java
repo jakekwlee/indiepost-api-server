@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by jake on 17. 4. 27.
  */
-public class SiteStats {
+public class OverviewStats {
     private Long totalPageview;
     private Long totalUniquePageview;
     private Long totalUniquePostview;

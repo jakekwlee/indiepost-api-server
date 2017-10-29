@@ -3,6 +3,7 @@ package com.indiepost.repository.utils;
 import com.indiepost.dto.PostQuery;
 import com.indiepost.dto.stat.PostStatDto;
 import com.indiepost.dto.stat.ShareStat;
+import com.indiepost.dto.stat.TimeDomainDoubleStat;
 import com.indiepost.dto.stat.TimeDomainStat;
 import com.indiepost.enums.Types;
 import org.apache.commons.lang3.StringUtils;
@@ -92,6 +93,34 @@ public interface CriteriaUtils {
                 return new TimeDomainStat(
                         ((Date) tuple[0]).toLocalDate().atStartOfDay(),
                         ((BigInteger) tuple[1]).longValue()
+                );
+            }
+
+            @Override
+            public List transformList(List collection) {
+                return collection;
+            }
+        });
+        return query.list();
+    }
+
+    static List<TimeDomainDoubleStat> getDoubleTrend(Query query, Types.TimeDomainDuration duration, LocalDateTime since, LocalDateTime until) {
+        query.setParameter("since", localDateTimeToDate(since));
+        query.setParameter("until", localDateTimeToDate(until));
+        query.setResultTransformer(new ResultTransformer() {
+            @Override
+            public Object transformTuple(Object[] tuple, String[] aliases) {
+                if (Types.TimeDomainDuration.HOURLY.equals(duration)) {
+                    return new TimeDomainDoubleStat(
+                            ((Timestamp) tuple[0]).toLocalDateTime(),
+                            ((BigInteger) tuple[1]).longValue(),
+                            ((BigInteger) tuple[2]).longValue()
+                    );
+                }
+                return new TimeDomainDoubleStat(
+                        ((Date) tuple[0]).toLocalDate().atStartOfDay(),
+                        ((BigInteger) tuple[1]).longValue(),
+                        ((BigInteger) tuple[2]).longValue()
                 );
             }
 

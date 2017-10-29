@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.stat.PeriodDto;
 import com.indiepost.dto.stat.ShareStat;
+import com.indiepost.dto.stat.TimeDomainDoubleStat;
 import com.indiepost.dto.stat.TimeDomainStat;
 import com.indiepost.enums.Types.ClientType;
 import com.indiepost.enums.Types.TimeDomainDuration;
@@ -60,10 +61,9 @@ public class StatRepositoryTest {
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
         List<TimeDomainStat> pageviewTrend = statRepository.getPageviewTrend(since, until, TimeDomainDuration.DAILY);
         testSerializeAndPrintStats(pageviewTrend, dto, "Daily Pageview Trend");
-        Assert.assertEquals("PageviewTrend(Daily) should contain 3 day of results", 3, pageviewTrend.size());
+        Assert.assertEquals("PageviewTrend(Daily) should contain 5 day of results", 5, pageviewTrend.size());
         Assert.assertNotEquals("Sum of pageviewTrend should not 0", sumOfTimeDomainStat(pageviewTrend), 0);
     }
-
 
     @Test
     public void testRetrieveOneDayPageviewTrend() throws JsonProcessingException {
@@ -77,8 +77,72 @@ public class StatRepositoryTest {
     }
 
     @Test
+    public void testRetrieveYearlyOldAndNewPageviewTrend() throws JsonProcessingException {
+        PeriodDto dto = getYearlyPeriod();
+        LocalDateTime since = dto.getStartDate().atStartOfDay();
+        LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
+        List<TimeDomainDoubleStat> pageviewTrend = statRepository.getRecentAndOldPageviewTrend(since, until, TimeDomainDuration.YEARLY);
+        testSerializeAndPrintStats(pageviewTrend, dto, "Yearly Old And New Pageview Trend");
+        Long totalPageviewExpected = statRepository.getTotalPostviews(since, until);
+        Long totalPageviewActual = pageviewTrend.stream()
+                .map(s -> s.getValue1())
+                .mapToLong(value -> value.longValue())
+                .sum();
+        Assert.assertEquals("Method should return correct value", totalPageviewExpected, totalPageviewActual);
+    }
+
+    @Test
+    public void testRetrieveMonthlyOldAndNewPageviewTrend() throws JsonProcessingException {
+        PeriodDto dto = getMonthlyPeriod();
+        LocalDateTime since = dto.getStartDate().atStartOfDay();
+        LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
+        List<TimeDomainDoubleStat> pageviewTrend = statRepository.getRecentAndOldPageviewTrend(since, until, TimeDomainDuration.MONTHLY);
+        testSerializeAndPrintStats(pageviewTrend, dto, "Monthly Old And New Pageview Trend");
+        Long totalPageviewExpected = statRepository.getTotalPostviews(since, until);
+        Long totalPageviewActual = pageviewTrend.stream()
+                .map(s -> s.getValue1())
+                .mapToLong(value -> value.longValue())
+                .sum();
+        testSerializeAndPrintStats(pageviewTrend, dto, "Monthly Pageview Trend");
+        Assert.assertEquals("Method should return correct value", totalPageviewExpected, totalPageviewActual);
+    }
+
+    @Test
+    public void testRetrieveDailyOldAndNewPageviewTrend() throws JsonProcessingException {
+        PeriodDto dto = getDailyPeriod();
+        LocalDateTime since = dto.getStartDate().atStartOfDay();
+        LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
+        List<TimeDomainDoubleStat> pageviewTrend = statRepository.getRecentAndOldPageviewTrend(since, until, TimeDomainDuration.DAILY);
+        testSerializeAndPrintStats(pageviewTrend, dto, "Daily Old And New Pageview Trend");
+        Long totalPageviewExpected = statRepository.getTotalPostviews(since, until);
+        Long totalPageviewActual = pageviewTrend.stream()
+                .map(s -> s.getValue1())
+                .mapToLong(value -> value.longValue())
+                .sum();
+        testSerializeAndPrintStats(pageviewTrend, dto, "Daily Pageview Trend");
+        Assert.assertEquals("PageviewTrend(Daily) should contain 5 day of results", 5, pageviewTrend.size());
+        Assert.assertEquals("Method should return correct value", totalPageviewExpected, totalPageviewActual);
+    }
+
+    @Test
+    public void testRetrieveOneDayOldAndNewPageviewTrend() throws JsonProcessingException {
+        PeriodDto dto = getOneDayPeriod();
+        LocalDateTime since = dto.getStartDate().atStartOfDay();
+        LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
+        List<TimeDomainDoubleStat> pageviewTrend = statRepository.getRecentAndOldPageviewTrend(since, until, TimeDomainDuration.HOURLY);
+        testSerializeAndPrintStats(pageviewTrend, dto, "One Day Old And New Pageview Trend");
+        Long totalPageviewExpected = statRepository.getTotalPostviews(since, until);
+        Long totalPageviewActual = pageviewTrend.stream()
+                .map(s -> s.getValue1())
+                .mapToLong(value -> value.longValue())
+                .sum();
+        Assert.assertEquals("Method should return correct value", totalPageviewExpected, totalPageviewActual);
+        Assert.assertEquals("PageviewTrend(Hourly) should contain 24 hours of results", 24, pageviewTrend.size());
+    }
+
+    @Test
     public void testRetrieveYearlyTotalPageview() throws JsonProcessingException {
-        Long expected = 4991L;
+        Long expected = 306542L;
         PeriodDto dto = getYearlyPeriod();
         Long result = testRetrieveTotals(dto);
         Assert.assertEquals(expected, result);
@@ -86,7 +150,7 @@ public class StatRepositoryTest {
 
     @Test
     public void testRetrieveMonthlyTotalPageview() throws JsonProcessingException {
-        Long expected = 24485L;
+        Long expected = 234267L;
         PeriodDto dto = getMonthlyPeriod();
         Long result = testRetrieveTotals(dto);
         Assert.assertEquals(expected, result);
@@ -94,7 +158,7 @@ public class StatRepositoryTest {
 
     @Test
     public void testRetrieveDailyTotalPageview() throws JsonProcessingException {
-        Long expected = 4786L;
+        Long expected = 13405L;
         PeriodDto dto = getDailyPeriod();
         Long result = testRetrieveTotals(dto);
         Assert.assertEquals(expected, result);
@@ -102,7 +166,7 @@ public class StatRepositoryTest {
 
     @Test
     public void testRetrieveOneDayTotalPageview() throws JsonProcessingException {
-        Long expected = 1315L;
+        Long expected = 2184L;
         PeriodDto dto = getOneDayPeriod();
         Long result = testRetrieveTotals(dto);
         Assert.assertEquals(expected, result);

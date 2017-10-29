@@ -2,6 +2,7 @@ package com.indiepost.repository;
 
 import com.indiepost.dto.stat.PostStatDto;
 import com.indiepost.dto.stat.ShareStat;
+import com.indiepost.dto.stat.TimeDomainDoubleStat;
 import com.indiepost.dto.stat.TimeDomainStat;
 import com.indiepost.enums.Types.ClientType;
 import com.indiepost.enums.Types.TimeDomainDuration;
@@ -172,6 +173,42 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
+    public List<TimeDomainDoubleStat> getRecentAndOldPageviewTrend(LocalDateTime since, LocalDateTime until, TimeDomainDuration duration) {
+        switch (duration) {
+            case HOURLY:
+                return getOldAndNewPageviewTrendHourly(since, until);
+            case DAILY:
+                return getOldAndNewPageviewTrendDaily(since, until);
+            case MONTHLY:
+                return getOldAndNewPageviewTrendMonthly(since, until);
+            case YEARLY:
+                return getOldAndNewPageviewTrendYearly(since, until);
+            default:
+                return getOldAndNewPageviewTrendHourly(since, until);
+        }
+    }
+
+    private List<TimeDomainDoubleStat> getOldAndNewPageviewTrendHourly(LocalDateTime since, LocalDateTime until) {
+        Query query = getNamedQuery("@GET_OLD_AND_NEW_PAGEVIEW_TREND_HOURLY");
+        return getDoubleTrend(query, TimeDomainDuration.HOURLY, since, until);
+    }
+
+    private List<TimeDomainDoubleStat> getOldAndNewPageviewTrendDaily(LocalDateTime since, LocalDateTime until) {
+        Query query = getNamedQuery("@GET_OLD_AND_NEW_PAGEVIEW_TREND_DAILY");
+        return getDoubleTrend(query, TimeDomainDuration.DAILY, since, until);
+    }
+
+    private List<TimeDomainDoubleStat> getOldAndNewPageviewTrendMonthly(LocalDateTime since, LocalDateTime until) {
+        Query query = getNamedQuery("@GET_OLD_AND_NEW_PAGEVIEW_TREND_MONTHLY");
+        return getDoubleTrend(query, TimeDomainDuration.MONTHLY, since, until);
+    }
+
+    private List<TimeDomainDoubleStat> getOldAndNewPageviewTrendYearly(LocalDateTime since, LocalDateTime until) {
+        Query query = getNamedQuery("@GET_OLD_AND_NEW_PAGEVIEW_TREND_YEARLY");
+        return getDoubleTrend(query, TimeDomainDuration.YEARLY, since, until);
+    }
+
+    @Override
     public List<PostStatDto> getPostStatsOrderByPageviews(LocalDateTime since, LocalDateTime until, Long limit) {
         Query query = getNamedQuery("@GET_POST_STATS_ORDER_BY_PAGEVIEWS");
         return getPostShare(query, since, until, limit);
@@ -249,6 +286,18 @@ public class StatRepositoryHibernate implements StatRepository {
     public List<ShareStat> getTopTags(LocalDateTime since, LocalDateTime until, Long limit, String client) {
         Query query = getNamedQuery("@GET_TOP_TAGS_BY_CLIENT");
         return getShare(query, since, until, limit, client);
+    }
+
+    @Override
+    public List<ShareStat> getTopRecentPosts(LocalDateTime since, LocalDateTime until, Long limit) {
+        Query query = getNamedQuery("@GET_TOP_RECENT_POSTS");
+        return getShare(query, since, until, limit, null);
+    }
+
+    @Override
+    public List<ShareStat> getTopOldPosts(LocalDateTime since, LocalDateTime until, Long limit) {
+        Query query = getNamedQuery("@GET_TOP_OLD_POSTS");
+        return getShare(query, since, until, limit, null);
     }
 
     @Override

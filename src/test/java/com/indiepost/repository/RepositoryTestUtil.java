@@ -19,25 +19,25 @@ import java.util.List;
 public interface RepositoryTestUtil {
     static PeriodDto getYearlyPeriod() {
         LocalDate since = LocalDate.of(2015, 4, 20);
-        LocalDate until = LocalDate.of(2017, 4, 26);
+        LocalDate until = LocalDate.of(2017, 8, 31);
         return new PeriodDto(since, until);
     }
 
     static PeriodDto getMonthlyPeriod() {
-        LocalDate since = LocalDate.of(2017, 4, 25);
-        LocalDate until = LocalDate.of(2017, 5, 10);
+        LocalDate since = LocalDate.of(2017, 6, 1);
+        LocalDate until = LocalDate.of(2017, 8, 31);
         return new PeriodDto(since, until);
     }
 
     static PeriodDto getDailyPeriod() {
-        LocalDate since = LocalDate.of(2017, 4, 24);
-        LocalDate until = LocalDate.of(2017, 4, 26);
+        LocalDate since = LocalDate.of(2017, 8, 1);
+        LocalDate until = LocalDate.of(2017, 8, 5);
         return new PeriodDto(since, until);
     }
 
     static PeriodDto getOneDayPeriod() {
-        LocalDate since = LocalDate.of(2017, 4, 26);
-        LocalDate until = LocalDate.of(2017, 4, 26);
+        LocalDate since = LocalDate.of(2017, 8, 5);
+        LocalDate until = LocalDate.of(2017, 8, 5);
         return new PeriodDto(since, until);
     }
 

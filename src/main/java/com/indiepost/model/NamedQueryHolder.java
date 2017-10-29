@@ -27,6 +27,7 @@ import javax.persistence.*;
                         "FROM Stats s INNER JOIN Visitors v ON s.visitorId = v.id " +
                         "WHERE s.timestamp BETWEEN :since AND :until AND v.appName = :client AND s.postId IS NOT NULL"),
 
+
         @NamedNativeQuery(name = "@GET_PAGEVIEW_TREND_HOURLY",
                 query = "SELECT date_add(date(s.timestamp), INTERVAL hour(s.timestamp) HOUR) AS statDateTime, count(*) AS statValue " +
                         "FROM Stats s " +
@@ -51,9 +52,43 @@ import javax.persistence.*;
                         "WHERE s.timestamp BETWEEN :since AND :until AND s.class <> 'Click' " +
                         "GROUP BY year(s.timestamp) ORDER BY statDateTime"),
 
+
+        @NamedNativeQuery(name = "@GET_OLD_AND_NEW_PAGEVIEW_TREND_HOURLY",
+                query = "SELECT date_add(date(s.timestamp), INTERVAL hour(s.timestamp) HOUR) AS dateTime, " +
+                        "COUNT(*) AS pageviews, " +
+                        "COUNT(IF(DATE_ADD(p.publishedAt, INTERVAL 10 DAY) > s.timestamp, TRUE, NULL)) AS recentPageviews " +
+                        "FROM Stats s INNER JOIN Posts p ON s.postId = p.id " +
+                        "WHERE s.timestamp BETWEEN :since AND :until AND s.class <> 'Click' " +
+                        "GROUP BY date(s.timestamp), hour(s.timestamp) ORDER BY dateTime"),
+
+        @NamedNativeQuery(name = "@GET_OLD_AND_NEW_PAGEVIEW_TREND_DAILY",
+                query = "SELECT date(s.timestamp) AS dateTime, " +
+                        "COUNT(*) AS pageviews, " +
+                        "COUNT(IF(DATE_ADD(p.publishedAt, INTERVAL 10 DAY) > s.timestamp, TRUE, NULL)) AS recentPageviews " +
+                        "FROM Stats s INNER JOIN Posts p ON s.postId = p.id " +
+                        "WHERE s.timestamp BETWEEN :since AND :until AND s.class <> 'Click' " +
+                        "GROUP BY date(s.timestamp) ORDER BY dateTime"),
+
+        @NamedNativeQuery(name = "@GET_OLD_AND_NEW_PAGEVIEW_TREND_MONTHLY",
+                query = "SELECT date_sub(date(s.timestamp), INTERVAL day(s.timestamp) - 1 DAY) AS dateTime, " +
+                        "COUNT(*) AS pageviews, " +
+                        "COUNT(IF(DATE_ADD(p.publishedAt, INTERVAL 10 DAY) > s.timestamp, TRUE, NULL)) AS recentPageviews " +
+                        "FROM Stats s INNER JOIN Posts p ON s.postId = p.id " +
+                        "WHERE s.timestamp BETWEEN :since AND :until AND s.class <> 'Click' " +
+                        "GROUP BY year(s.timestamp), month(s.timestamp) ORDER BY dateTime"),
+
+        @NamedNativeQuery(name = "@GET_OLD_AND_NEW_PAGEVIEW_TREND_YEARLY",
+                query = "SELECT makedate(year(s.timestamp), 1) AS dateTime, " +
+                        "COUNT(*) AS pageviews, " +
+                        "COUNT(IF(DATE_ADD(p.publishedAt, INTERVAL 10 DAY) > s.timestamp, TRUE, NULL)) AS recentPageviews " +
+                        "FROM Stats s INNER JOIN Posts p ON s.postId = p.id " +
+                        "WHERE s.timestamp BETWEEN :since AND :until AND s.class <> 'Click' " +
+                        "GROUP BY year(s.timestamp) ORDER BY dateTime"),
+
+
         @NamedNativeQuery(name = "@GET_POST_STATS_ORDER_BY_PAGEVIEWS",
                 query = "SELECT p.id, p.title, p.displayName AS author, c.name AS category, " +
-                        "p.publishedAt, count(*) AS pageviews, count(DISTINCT v.id) AS uniquePageview " +
+                        "p.publishedAt, count(*) AS pageviews, count(DISTINCT v.id) AS uniquePageviews " +
                         "FROM Stats s " +
                         "INNER JOIN Visitors v ON s.visitorId = v.id " +
                         "INNER JOIN Posts p ON s.postId = p.id INNER JOIN Categories c ON p.categoryId = c.id " +
@@ -73,6 +108,7 @@ import javax.persistence.*;
                         "WHERE s.timestamp BETWEEN :since AND :until " +
                         "GROUP BY c.name ORDER BY statValue DESC LIMIT :limit"),
 
+
         @NamedNativeQuery(name = "@GET_TOP_PAGES",
                 query = "SELECT ifnull(p.title, s.path) AS statName, count(*) AS statValue " +
                         "FROM Stats s LEFT JOIN Posts p ON s.postId = p.id " +
@@ -89,6 +125,20 @@ import javax.persistence.*;
                 query = "SELECT p.title AS statName, count(*) AS statValue " +
                         "FROM Stats s INNER JOIN Posts p ON s.postId = p.id " +
                         "WHERE s.timestamp BETWEEN :since AND :until " +
+                        "GROUP BY p.id ORDER BY statValue DESC LIMIT :limit"),
+
+        @NamedNativeQuery(name = "@GET_TOP_RECENT_POSTS",
+                query = "SELECT p.title AS statName, count(*) AS statValue " +
+                        "FROM Stats s INNER JOIN Posts p ON s.postId = p.id " +
+                        "WHERE s.timestamp BETWEEN :since AND :until " +
+                        "AND date_add(p.publishedAt, INTERVAL 10 DAY) > s.timestamp " +
+                        "GROUP BY p.id ORDER BY statValue DESC LIMIT :limit"),
+
+        @NamedNativeQuery(name = "@GET_TOP_OLD_POSTS",
+                query = "SELECT p.title AS statName, count(*) AS statValue " +
+                        "FROM Stats s INNER JOIN Posts p ON s.postId = p.id " +
+                        "WHERE s.timestamp BETWEEN :since AND :until " +
+                        "AND date_add(p.publishedAt, INTERVAL 10 DAY) <= s.timestamp " +
                         "GROUP BY p.id ORDER BY statValue DESC LIMIT :limit"),
 
         @NamedNativeQuery(name = "@GET_TOP_POSTS_BY_CLINT_TYPE",
@@ -130,6 +180,7 @@ import javax.persistence.*;
                         "ORDER BY statValue DESC " +
                         "LIMIT :limit"),
 
+
         @NamedNativeQuery(name = "@GET_VISITORS_TREND_HOURLY",
                 query = "SELECT date_add(date(v.timestamp), INTERVAL hour(v.timestamp) HOUR) AS statDateTime, count(*) AS statValue " +
                         "FROM Visitors AS v " +
@@ -157,6 +208,7 @@ import javax.persistence.*;
                         "WHERE v.timestamp BETWEEN :since AND :until AND v.adVisitor IS FALSE " +
                         "GROUP BY year(v.timestamp) " +
                         "ORDER BY statDateTime"),
+
 
         @NamedNativeQuery(name = "@GET_TOP_REFERRERS",
                 query = "SELECT v.referrer AS statName, count(*) AS statValue " +
@@ -230,6 +282,7 @@ import javax.persistence.*;
                         "ORDER BY statValue DESC " +
                         "LIMIT :limit"),
 
+
         @NamedNativeQuery(name = "@GET_ALL_POST_STATS",
                 query = "SELECT p.id, p.title, p.publishedAt, p.displayName author, c.name category, " +
                         "count(*) AS pageviews, count(DISTINCT s.visitorId) AS uniquePageviews " +
@@ -239,6 +292,7 @@ import javax.persistence.*;
                         "AND p.status = 'PUBLISH' " +
                         "GROUP BY p.id " +
                         "ORDER BY p.publishedAt DESC"),
+
         @NamedNativeQuery(name = "@GET_ALL_POST_STATS_FROM_CACHE",
                 query = "SELECT p.id, p.title, p.publishedAt, p.displayName author, c.name category, " +
                         "s.pageviews, s.uniquePageviews " +
