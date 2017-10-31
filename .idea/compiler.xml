@@ -2,6 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="new-indeipost_main" target="1.8" />
+      <module name="new-indeipost_test" target="1.8" />
       <module name="new-indiepost_main" target="1.8" />
       <module name="new-indiepost_test" target="1.8" />
     </bytecodeTargetLevel>
