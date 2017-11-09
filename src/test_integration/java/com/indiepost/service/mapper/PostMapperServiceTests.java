@@ -8,7 +8,6 @@ import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.service.AdminPostService;
 import com.indiepost.service.PostService;
-import com.indiepost.service.mapper.PostMapperService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

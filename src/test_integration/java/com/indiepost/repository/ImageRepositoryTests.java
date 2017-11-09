@@ -3,7 +3,6 @@ package com.indiepost.repository;
 import com.indiepost.NewIndiepostApplication;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
-import com.indiepost.repository.ImageRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -8,7 +8,6 @@ import com.indiepost.dto.stat.TimeDomainDoubleStat;
 import com.indiepost.dto.stat.TimeDomainStat;
 import com.indiepost.enums.Types.ClientType;
 import com.indiepost.enums.Types.TimeDomainDuration;
-import com.indiepost.repository.StatRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

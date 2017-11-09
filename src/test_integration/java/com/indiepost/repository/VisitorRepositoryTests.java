@@ -5,7 +5,6 @@ import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.stat.PeriodDto;
 import com.indiepost.dto.stat.ShareStat;
 import com.indiepost.enums.Types.ClientType;
-import com.indiepost.repository.VisitorRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,9 +1,6 @@
 package com.indiepost.service;
 
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.dto.PostDto;
-import com.indiepost.service.PostService;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,22 +8,23 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.net.MalformedURLException;
+
+import static org.junit.Assert.assertTrue;
+
 /**
- * Created by jake on 17. 4. 23.
+ * Created by jake on 17. 3. 21.
  */
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
-public class PostServiceTests {
-
+public class SitemapServiceTests {
     @Autowired
-    private PostService postService;
+    private SitemapService sitemapService;
 
     @Test
-    public void testFindPostIdByLegacyId() {
-        Long legacyId = 10171L;
-        Long id = postService.findIdByLegacyId(legacyId);
-        PostDto postDto = postService.findById(id);
-        Assert.assertEquals(legacyId, postDto.getLegacyPostId());
+    public void sitemapShouldCreateCorrectly() throws MalformedURLException {
+        assertTrue(sitemapService.buildSitemap().length() > 120000);
     }
 }

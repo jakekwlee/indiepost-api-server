@@ -67,7 +67,7 @@ dependencies {
 }
 
 sourceSets {
-    integrationTest {
+    test_integration {
         java {
             compileClasspath += main.output
             compileClasspath += main.compileClasspath
@@ -79,8 +79,8 @@ sourceSets {
 }
 
 task integrationTest(type: Test) {
-    testClassesDirs = sourceSets.testIntegration.output
-    classpath = sourceSets.testIntegration.runtimeClasspath
+    testClassesDirs = sourceSets.test_integration.output
+    classpath = sourceSets.test_integration.runtimeClasspath
 }
 
 compileJava.dependsOn(processResources)

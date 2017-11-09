@@ -4,7 +4,6 @@ import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.InquiryDto;
 import com.indiepost.dto.SuggestionDto;
 import com.indiepost.enums.Types;
-import com.indiepost.service.MailService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
