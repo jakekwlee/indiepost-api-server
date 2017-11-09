@@ -8,6 +8,7 @@ import com.indiepost.dto.stat.TimeDomainDoubleStat;
 import com.indiepost.dto.stat.TimeDomainStat;
 import com.indiepost.enums.Types.ClientType;
 import com.indiepost.enums.Types.TimeDomainDuration;
+import com.indiepost.repository.StatRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +21,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.indiepost.repository.RepositoryTestUtil.*;
+import static com.indiepost.repository.helper.RepositoryTestHelper.*;
 
 /**
  * Created by jake on 8/9/17.
@@ -29,7 +30,7 @@ import static com.indiepost.repository.RepositoryTestUtil.*;
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
 @Transactional
-public class StatRepositoryTest {
+public class StatRepositoryTests {
 
     @Autowired
     private StatRepository statRepository;
@@ -142,7 +143,7 @@ public class StatRepositoryTest {
 
     @Test
     public void testRetrieveYearlyTotalPageview() throws JsonProcessingException {
-        Long expected = 306542L;
+        Long expected = 306747L;
         PeriodDto dto = getYearlyPeriod();
         Long result = testRetrieveTotals(dto);
         Assert.assertEquals(expected, result);

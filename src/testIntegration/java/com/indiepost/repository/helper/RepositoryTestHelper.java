@@ -1,4 +1,4 @@
-package com.indiepost.repository;
+package com.indiepost.repository.helper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by jake on 8/10/17.
  */
-public interface RepositoryTestUtil {
+public interface RepositoryTestHelper {
     static PeriodDto getYearlyPeriod() {
         LocalDate since = LocalDate.of(2015, 4, 20);
         LocalDate until = LocalDate.of(2017, 8, 31);

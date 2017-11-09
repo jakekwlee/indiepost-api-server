@@ -1,6 +1,9 @@
 package com.indiepost.service;
 
 import com.indiepost.NewIndiepostApplication;
+import com.indiepost.dto.PostDto;
+import com.indiepost.service.PostService;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +17,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
-public class PostServiceTest {
+public class PostServiceTests {
 
     @Autowired
     private PostService postService;
@@ -23,9 +26,7 @@ public class PostServiceTest {
     public void testFindPostIdByLegacyId() {
         Long legacyId = 10171L;
         Long id = postService.findIdByLegacyId(legacyId);
-        System.out.println("===================================");
-        System.out.println("Input:" + legacyId);
-        System.out.println("Output:" + id);
-        System.out.println("===================================");
+        PostDto postDto = postService.findById(id);
+        Assert.assertEquals(legacyId, postDto.getLegacyPostId());
     }
 }

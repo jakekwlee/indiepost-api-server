@@ -4,6 +4,8 @@ import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.InquiryDto;
 import com.indiepost.dto.SuggestionDto;
 import com.indiepost.enums.Types;
+import com.indiepost.service.MailService;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,11 +22,11 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
-public class MailServiceTest {
+public class MailServiceIntegrationTests {
     @Autowired
     private MailService mailService;
 
-    //    @Test
+    @Test
     public void mailServiceShouldSendMessageProperly() {
         String from = "테스터 <indiepost.mail@gmail.com>";
         String[] to = {"시스템관리자 <sysadmin@indiepost.co.kr>"};
@@ -38,10 +40,10 @@ public class MailServiceTest {
         message.setSubject(title);
         message.setText(text);
         message.setReplyTo(replyTo);
-        mailService.sendMessage(message);
+//        mailService.sendMessage(message);
     }
 
-    //    @Test
+    @Test
     public void testGetMailReceivers() {
         Types.UserRole userRole = Types.UserRole.Administrator;
         String[] mailTo = mailService.getMailReceivers(userRole);
@@ -53,18 +55,18 @@ public class MailServiceTest {
         }
     }
 
-    //    @Test
+    @Test
     public void testSendSuggestion() {
         SuggestionDto dto = new SuggestionDto();
-//        dto.setProposer("이기원");
-//        dto.setEmail("bwv1050@gmail.com");
+        dto.setProposer("이기원");
+        dto.setEmail("bwv1050@gmail.com");
         dto.setSubject("MailService 테스트 이메일");
         dto.setContact("010-7369-1070");
         dto.setContent("테스트 이메일입니다.\n\n이메일 테스트 중...");
-        mailService.sendSuggestion(dto);
+//        mailService.sendSuggestion(dto);
     }
 
-    //    @Test
+    @Test
     public void testSendInquiry() {
         InquiryDto dto = new InquiryDto();
         dto.setInquirer("이기원");
@@ -73,6 +75,6 @@ public class MailServiceTest {
         dto.setContact("010-7369-1070");
         dto.setUrl("http://www.indiepost.co.kr");
         dto.setContent("광고 문의사항 테스트, from testSendInquiry method.");
-        mailService.sendInquiry(dto);
+//        mailService.sendInquiry(dto);
     }
 }

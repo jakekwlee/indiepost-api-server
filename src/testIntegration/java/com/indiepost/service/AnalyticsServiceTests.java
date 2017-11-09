@@ -7,6 +7,7 @@ import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.stat.OverviewStats;
 import com.indiepost.dto.stat.PeriodDto;
 import com.indiepost.dto.stat.RecentAndOldPostStats;
+import com.indiepost.service.AnalyticsService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ import java.time.LocalDate;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
-public class AnalyticsServiceTest {
+public class AnalyticsServiceTests {
     @Autowired
     private AnalyticsService analyticsService;
 

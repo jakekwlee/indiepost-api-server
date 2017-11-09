@@ -1,12 +1,11 @@
-package com.indiepost.search;
+package com.indiepost.serialization;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.dto.PostSummary;
-import com.indiepost.service.PostService;
+import com.indiepost.model.ImageSet;
+import com.indiepost.service.ImageService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,25 +16,30 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import java.util.List;
 
 /**
- * Created by jake on 17. 3. 16.
+ * Created by jake on 17. 1. 22.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
-public class TagSearchTest {
-    @Autowired
-    private PostService postService;
+public class ImageSetSerializationTests {
 
+    @Autowired
+    private ImageService imageService;
+
+    /**
+     * Usage: CMS MediaExplorer
+     *
+     * @throws JsonProcessingException
+     */
     @Test
-    public void tagSearchShouldReturnPostsCorrectly() throws JsonProcessingException {
-        List<PostSummary> dtoList = postService.findByTagName("독립영화");
+    public void imageSetShouldSerializeCorrectly() throws JsonProcessingException {
+        List<ImageSet> imageSetList = imageService.findAll(2, 10);
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new Hibernate5Module());
-        System.out.println("\n\n*** Start serialize PostsByTagName ***\n\n");
+        System.out.println("*** Start serialize List<ImageSet> ***");
+        System.out.println("Result Length: " + imageSetList.size());
         String result = objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true)
-                .writeValueAsString(dtoList);
-        System.out.println("Length of results: " + (dtoList.size()) + " posts");
-        System.out.println("Size of results: " + (result.getBytes().length / 1024.0) + " kb");
+                .writeValueAsString(imageSetList);
+
         System.out.println(result);
     }
 }

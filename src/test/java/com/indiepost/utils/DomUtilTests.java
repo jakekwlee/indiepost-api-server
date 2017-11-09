@@ -11,10 +11,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Created by jake on 10/12/17.
  */
-public class DomUtilTest {
+public class DomUtilTests {
     @Test
     public void getImagePrefixesShouldExtractImagePrefixesFromPostContent() throws JsonProcessingException {
         String content = "<p>인디포스트는 동영상 스트리밍 서비스 옥수수(oksusu)와 함께 작품성 있는 영화를 선별해 추천하는 무료영화 이벤트를 진행합니다. 10월 14일 토요일부터 16일 월요일까지, 3일 동안 통신사 관계없이 누구나 옥수수에서 무료로 영화를 감상할 수 있습니다. 모바일 앱과 웹사이트에서 모두 볼 수 있으며, 중단 후에는 언제든지 &lsquo;이어보기&rsquo;로 다시 감상할 수 있습니다.</p>\n" +
@@ -45,16 +48,11 @@ public class DomUtilTest {
                 "<h5><strong>[옥수수에서 무료로 영화 감상하기]</strong></h5>\n" +
                 "<h5>모바일 동영상 서비스 '옥수수(oksusu)'에서는 매주 토요일마다 최신 영화 한 편을 무료로 제공한다. 앱을 다운로드 받으면 이동통신사 상관없이 모두 감상할 수 있다. 또한 매주 수요일에는 영화제 수상작 또는 작품성 있는 예술영화 한 편을 선정하여 무료로 제공한다. 그 밖에 옥수수 앱 내 &lsquo;전국민 무료 VOD&rsquo; 메뉴에서는 역시 이동통신사 상관없이 다양한 영화를 언제든지 무료로 감상할 수 있다.</h5>";
         Set<String> imageSetPrefixList = DomUtil.getImagePrefixes(content);
-        int expectedNumberOfImages = 4;
         List<String> expectedImageSetPrefixList = Arrays.asList(
                 "2017/10/13/hJVwPo", "2017/10/13/k5q1j8", "2017/10/13/BaQ5b8", "2017/10/13/lxJMjF"
         );
 
-        Assert.assertEquals(expectedNumberOfImages, imageSetPrefixList.size());
-        Assert.assertTrue(CollectionUtils.isEqualCollection(expectedImageSetPrefixList, imageSetPrefixList));
-        ObjectMapper objectMapper = new ObjectMapper();
-        String result = objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true)
-                .writeValueAsString(imageSetPrefixList);
-        System.out.println(result);
+        assertEquals(4, imageSetPrefixList.size());
+        assertTrue(CollectionUtils.isEqualCollection(expectedImageSetPrefixList, imageSetPrefixList));
     }
 }

@@ -27,7 +27,7 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
-public class PostDtoSerializationTest {
+public class PostDtoSerializationTests {
 
     @Autowired
     private PostService postService;

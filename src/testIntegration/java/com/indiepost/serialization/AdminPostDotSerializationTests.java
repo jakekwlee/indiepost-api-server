@@ -23,7 +23,7 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
-public class AdminPostDtoSerializaionTest {
+public class AdminPostDotSerializationTests {
 
     @Autowired
     private AdminPostService adminPostService;

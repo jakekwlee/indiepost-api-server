@@ -5,6 +5,7 @@ import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.stat.PeriodDto;
 import com.indiepost.dto.stat.ShareStat;
 import com.indiepost.enums.Types.ClientType;
+import com.indiepost.repository.VisitorRepository;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +18,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.indiepost.repository.RepositoryTestUtil.*;
+import static com.indiepost.repository.helper.RepositoryTestHelper.*;
 
 /**
  * Created by jake on 17. 5. 25.
@@ -26,7 +27,7 @@ import static com.indiepost.repository.RepositoryTestUtil.*;
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
 @Transactional
-public class VisitorRepositoryTest {
+public class VisitorRepositoryTests {
 
     @Autowired
     private VisitorRepository visitorRepository;
