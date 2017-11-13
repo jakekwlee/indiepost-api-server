@@ -25,9 +25,9 @@ public class AdminPostResponseDto extends AdminPostRequestDto {
 
     private int commentsCount = 0;
 
-    private Long authorId;
+    private Long creatorId;
 
-    private Long editorId;
+    private Long modifiedUserId;
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -77,19 +77,19 @@ public class AdminPostResponseDto extends AdminPostRequestDto {
         this.commentsCount = commentsCount;
     }
 
-    public Long getAuthorId() {
-        return authorId;
+    public Long getCreatorId() {
+        return creatorId;
     }
 
-    public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
     }
 
-    public Long getEditorId() {
-        return editorId;
+    public Long getModifiedUserId() {
+        return modifiedUserId;
     }
 
-    public void setEditorId(Long editorId) {
-        this.editorId = editorId;
+    public void setModifiedUserId(Long modifiedUserId) {
+        this.modifiedUserId = modifiedUserId;
     }
 }

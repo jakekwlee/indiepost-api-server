@@ -46,8 +46,8 @@ public class User implements Serializable {
     @Email
     private String email;
 
-    @Pattern(regexp = "[_0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]{2,10}")
-    @Size(min = 2, max = 20)
+    @Pattern(regexp = "[_0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]{2,30}")
+    @Size(min = 2, max = 30)
     private String displayName;
 
     @Column(nullable = false)
@@ -71,14 +71,7 @@ public class User implements Serializable {
     private UserGender gender;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<Like> likes;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "author")
-    private List<Post> authoredPosts;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "editor")
-    private List<Post> editedPosts;
-
+    private List<Bookmark> bookmarks;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Comment> comments;
@@ -92,12 +85,12 @@ public class User implements Serializable {
     )
     private List<Role> roles;
 
-    public List<Like> getLikes() {
-        return likes;
+    public List<Bookmark> getBookmarks() {
+        return bookmarks;
     }
 
-    public void setLikes(List<Like> likes) {
-        this.likes = likes;
+    public void setBookmarks(List<Bookmark> bookmarks) {
+        this.bookmarks = bookmarks;
     }
 
     public List<Comment> getComments() {
@@ -194,22 +187,6 @@ public class User implements Serializable {
 
     public void setState(UserState state) {
         this.state = state;
-    }
-
-    public List<Post> getAuthoredPosts() {
-        return authoredPosts;
-    }
-
-    public void setAuthoredPosts(List<Post> authoredPosts) {
-        this.authoredPosts = authoredPosts;
-    }
-
-    public List<Post> getEditedPosts() {
-        return editedPosts;
-    }
-
-    public void setEditedPosts(List<Post> editedPosts) {
-        this.editedPosts = editedPosts;
     }
 
     public UserGender getGender() {

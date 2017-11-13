@@ -89,17 +89,17 @@ public class PostMapperServiceTests {
         postResponseDto.setCreatedAt(post.getCreatedAt());
         postResponseDto.setModifiedAt(post.getModifiedAt());
         postResponseDto.setPublishedAt(post.getPublishedAt());
-        postResponseDto.setAuthorId(post.getAuthor().getId());
-        postResponseDto.setEditorId(post.getEditor().getId());
+        postResponseDto.setCreatorId(post.getCreator().getId());
+        postResponseDto.setModifiedUserId(post.getModifiedUser().getId());
         postResponseDto.setCommentsCount(post.getCommentsCount());
-        postResponseDto.setLikesCount(post.getLikesCount());
+        postResponseDto.setLikesCount(post.getBookmarkCount());
     }
 
     public void testMapPostToPostResponse() {
         AdminPostResponseDto adminPostResponseDto =
                 this.postMapperService.postToAdminPostResponseDto(this.post);
-        assertEquals(this.postResponseDto.getAuthorId(), adminPostResponseDto.getAuthorId());
-        assertEquals(this.postResponseDto.getEditorId(), adminPostResponseDto.getEditorId());
+        assertEquals(this.postResponseDto.getCreatorId(), adminPostResponseDto.getCreatorId());
+        assertEquals(this.postResponseDto.getModifiedUserId(), adminPostResponseDto.getModifiedUserId());
         assertEquals(this.postResponseDto.getTitle(), adminPostResponseDto.getTitle());
         assertEquals(this.postResponseDto.getContent(), adminPostResponseDto.getContent());
         assertEquals(this.postResponseDto.getExcerpt(), adminPostResponseDto.getExcerpt());

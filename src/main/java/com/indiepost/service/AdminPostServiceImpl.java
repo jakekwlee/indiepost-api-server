@@ -133,8 +133,8 @@ public class AdminPostServiceImpl implements AdminPostService {
         post.setStatus(PostStatus.valueOf(adminPostRequestDto.getStatus()));
         post.setCreatedAt(LocalDateTime.now());
         post.setModifiedAt(LocalDateTime.now());
-        post.setAuthor(currentUser);
-        post.setEditor(currentUser);
+        post.setCreator(currentUser);
+        post.setModifiedUser(currentUser);
         save(post);
         return postMapperService.postToAdminPostResponseDto(post);
     }
@@ -150,7 +150,7 @@ public class AdminPostServiceImpl implements AdminPostService {
             post.setOriginal(originalPost);
         } else {
             post = postMapperService.adminPostRequestDtoToPost(adminPostRequestDto);
-            post.setAuthor(currentUser);
+            post.setCreator(currentUser);
             post.setCreatedAt(LocalDateTime.now());
         }
         if (StringUtils.isEmpty(post.getTitle())) {
@@ -168,7 +168,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         if (post.getPublishedAt() == null) {
             post.setPublishedAt(LocalDateTime.now().plusDays(7));
         }
-        post.setEditor(currentUser);
+        post.setModifiedUser(currentUser);
         post.setModifiedAt(LocalDateTime.now());
         post.setStatus(PostStatus.AUTOSAVE);
         post.setCategory(categoryRepository.getReference(2L));

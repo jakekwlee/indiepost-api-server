@@ -47,8 +47,8 @@ public class PostMapperServiceImpl implements PostMapperService {
         destPost.setContent(srcPost.getContent());
         destPost.setDisplayName(srcPost.getDisplayName());
         destPost.setStatus(srcPost.getStatus());
-        destPost.setAuthor(srcPost.getAuthor());
-        destPost.setEditor(srcPost.getEditor());
+        destPost.setCreator(srcPost.getCreator());
+        destPost.setModifiedUser(srcPost.getModifiedUser());
         destPost.setCreatedAt(srcPost.getCreatedAt());
         destPost.setPublishedAt(srcPost.getPublishedAt());
         destPost.setModifiedAt(srcPost.getModifiedAt());
@@ -78,7 +78,7 @@ public class PostMapperServiceImpl implements PostMapperService {
         postSummary.setExcerpt(post.getExcerpt());
         postSummary.setCategoryId(post.getCategoryId());
         postSummary.setCommentsCount(post.getCommentsCount());
-        postSummary.setLikesCount(post.getLikesCount());
+        postSummary.setLikesCount(post.getBookmarkCount());
         postSummary.setLegacyPostId(post.getLegacyPostId());
         postSummary.setDisplayName(post.getDisplayName());
         postSummary.setTitleImageId(post.getTitleImageId());
@@ -102,14 +102,14 @@ public class PostMapperServiceImpl implements PostMapperService {
         responseDto.setPublishedAt(post.getPublishedAt());
 
         responseDto.setCategoryId(post.getCategory().getId());
-        responseDto.setAuthorId(post.getAuthor().getId());
+        responseDto.setCreatorId(post.getCreator().getId());
 
         responseDto.setPicked(post.isPicked());
         responseDto.setFeatured(post.isFeatured());
         responseDto.setSplash(post.isSplash());
 
         responseDto.setCommentsCount(post.getCommentsCount());
-        responseDto.setLikesCount(post.getLikesCount());
+        responseDto.setLikesCount(post.getBookmarkCount());
 
         if (post.getOriginal() != null) {
             responseDto.setOriginalId(post.getOriginal().getId());
@@ -197,8 +197,8 @@ public class PostMapperServiceImpl implements PostMapperService {
         AdminPostSummaryDto adminPostSummaryDto = new AdminPostSummaryDto();
 
         adminPostSummaryDto.setId(post.getId());
-        adminPostSummaryDto.setAuthorDisplayName(post.getAuthor().getDisplayName());
-        adminPostSummaryDto.setEditorDisplayName(post.getEditor().getDisplayName());
+        adminPostSummaryDto.setAuthorDisplayName(post.getCreator().getDisplayName());
+        adminPostSummaryDto.setEditorDisplayName(post.getModifiedUser().getDisplayName());
         adminPostSummaryDto.setCategoryName(post.getCategory().getName());
         adminPostSummaryDto.setTags(this.tagMapperService.tagListToTagStringList(post.getTags()));
         adminPostSummaryDto.setStatus(post.getStatus().toString());
@@ -208,7 +208,7 @@ public class PostMapperServiceImpl implements PostMapperService {
         adminPostSummaryDto.setCreatedAt(post.getCreatedAt());
         adminPostSummaryDto.setPublishedAt(post.getPublishedAt());
         adminPostSummaryDto.setModifiedAt(post.getModifiedAt());
-        adminPostSummaryDto.setLikedCount(post.getLikesCount());
+        adminPostSummaryDto.setLikedCount(post.getBookmarkCount());
 
         adminPostSummaryDto.setSplash(post.isSplash());
         adminPostSummaryDto.setFeatured(post.isFeatured());

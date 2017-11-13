@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
  * Created by jake on 7/25/16.
  */
 @Entity
-@Table(name = "Likes")
-public class Like implements Serializable {
+@Table(name = "Bookmarks")
+public class Bookmark implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -24,7 +24,7 @@ public class Like implements Serializable {
     private Post post;
 
     @Column(nullable = false)
-    private LocalDateTime likedAt;
+    private LocalDateTime createdAt;
 
     public User getUser() {
         return user;
@@ -42,11 +42,11 @@ public class Like implements Serializable {
         this.post = post;
     }
 
-    public LocalDateTime getLikedAt() {
-        return likedAt;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setLikedAt(LocalDateTime likedAt) {
-        this.likedAt = likedAt;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

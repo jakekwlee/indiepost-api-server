@@ -94,7 +94,7 @@ public class LegacyPostServiceImpl implements LegacyPostService {
         contentlist.setMenuno(post.getCategory().getId());
         contentlist.setContentname(StringEscapeUtils.escapeHtml4(post.getTitle()));
         contentlist.setContenttext(post.getExcerpt());
-        contentlist.setWriterid(post.getAuthor().getUsername());
+        contentlist.setWriterid(post.getCreator().getUsername());
         contentlist.setWritername(post.getDisplayName());
         String imageUrl = "";
         if (post.getTitleImage() != null) {

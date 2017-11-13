@@ -51,7 +51,6 @@ import java.util.List;
         }
 
 )
-
 public class Post implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -130,18 +129,18 @@ public class Post implements Serializable {
     private Types.PostStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "authorId", nullable = false)
-    private User author;
+    @JoinColumn(name = "creatorId", nullable = false)
+    private User creator;
 
-    @Column(name = "authorId", nullable = false, insertable = false, updatable = false)
-    private Long authorId;
+    @Column(name = "creatorId", nullable = false, insertable = false, updatable = false)
+    private Long creatorId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "editorId", nullable = false)
-    private User editor;
+    @JoinColumn(name = "modifiedUserId", nullable = false)
+    private User modifiedUser;
 
-    @Column(name = "editorId", nullable = false, insertable = false, updatable = false)
-    private Long editorId;
+    @Column(name = "modifiedUserId", nullable = false, insertable = false, updatable = false)
+    private Long modifiedUserId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "categoryId", nullable = false)
@@ -170,11 +169,11 @@ public class Post implements Serializable {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("likedAt DESC")
-    private List<Like> likes;
+    private List<Bookmark> bookmarks;
 
     @Column(nullable = false)
     @Min(0)
-    private int likesCount = 0;
+    private int bookmarkCount = 0;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "post")
     private List<Pageview> pageviews;
@@ -259,12 +258,12 @@ public class Post implements Serializable {
         this.excerpt = excerpt;
     }
 
-    public int getLikesCount() {
-        return likesCount;
+    public int getBookmarkCount() {
+        return bookmarkCount;
     }
 
-    public void setLikesCount(int likesCount) {
-        this.likesCount = likesCount;
+    public void setBookmarkCount(int bookmarkCount) {
+        this.bookmarkCount = bookmarkCount;
     }
 
     public int getCommentsCount() {
@@ -338,12 +337,12 @@ public class Post implements Serializable {
         return commentId;
     }
 
-    public List<Like> getLikes() {
-        return likes;
+    public List<Bookmark> getBookmarks() {
+        return bookmarks;
     }
 
-    public void setLikes(List<Like> likes) {
-        this.likes = likes;
+    public void setBookmarks(List<Bookmark> bookmarks) {
+        this.bookmarks = bookmarks;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -354,20 +353,20 @@ public class Post implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public User getAuthor() {
-        return author;
+    public User getCreator() {
+        return creator;
     }
 
-    public void setAuthor(User author) {
-        this.author = author;
+    public void setCreator(User creator) {
+        this.creator = creator;
     }
 
-    public User getEditor() {
-        return editor;
+    public User getModifiedUser() {
+        return modifiedUser;
     }
 
-    public void setEditor(User editor) {
-        this.editor = editor;
+    public void setModifiedUser(User modifiedUser) {
+        this.modifiedUser = modifiedUser;
     }
 
     public Post getOriginal() {
@@ -402,20 +401,20 @@ public class Post implements Serializable {
         this.legacyPostId = legacyPostId;
     }
 
-    public Long getAuthorId() {
-        return authorId;
+    public Long getCreatorId() {
+        return creatorId;
     }
 
-    public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
     }
 
-    public Long getEditorId() {
-        return editorId;
+    public Long getModifiedUserId() {
+        return modifiedUserId;
     }
 
-    public void setEditorId(Long editorId) {
-        this.editorId = editorId;
+    public void setModifiedUserId(Long modifiedUserId) {
+        this.modifiedUserId = modifiedUserId;
     }
 
     public Long getCategoryId() {

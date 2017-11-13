@@ -27,6 +27,11 @@ public interface Types {
         User, Author, Editor, EditorInChief, Administrator
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    enum ProfileRole {
+        FeatureEditor, FreeranceEditor, Photographer
+    }
+
     enum StatType {
         ACTION, POST, PAGE, HOME, SEARCH, TAG, CATEGORY, NOTICE
     }
