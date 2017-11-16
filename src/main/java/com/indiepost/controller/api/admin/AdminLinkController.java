@@ -1,6 +1,6 @@
 package com.indiepost.controller.api.admin;
 
-import com.indiepost.dto.LinkDto;
+import com.indiepost.dto.analytics.LinkDto;
 import com.indiepost.service.LinkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

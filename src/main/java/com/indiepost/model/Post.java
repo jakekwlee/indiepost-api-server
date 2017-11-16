@@ -2,7 +2,7 @@ package com.indiepost.model;
 
 import com.indiepost.enums.Types;
 import com.indiepost.model.analytics.Pageview;
-import com.indiepost.model.legacy.Contentlist;
+import com.indiepost.model.legacy.LegacyPost;
 import org.apache.lucene.analysis.charfilter.HTMLStripCharFilterFactory;
 import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
 import org.apache.lucene.analysis.core.StopFilterFactory;
@@ -20,7 +20,9 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by jake on 7/24/16.
@@ -70,7 +72,7 @@ public class Post implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "legacyPostId")
-    private Contentlist legacyPost;
+    private LegacyPost legacyPost;
 
     @Column(name = "legacyPostId", nullable = false, insertable = false, updatable = false)
     private Long legacyPostId;
@@ -143,32 +145,30 @@ public class Post implements Serializable {
     private Long modifiedUserId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "categoryId", nullable = false)
+    @JoinColumn(name = "categoryId", nullable = false, insertable = false, updatable = false)
     private Category category;
 
-    @Column(name = "categoryId", nullable = false, insertable = false, updatable = false)
+    @Column(name = "categoryId", nullable = false)
     private Long categoryId;
 
-    @ManyToMany
-    @OrderBy("id desc")
-    @JoinTable(
-            name = "Posts_Tags",
-            joinColumns = {@JoinColumn(name = "postId")},
-            inverseJoinColumns = {@JoinColumn(name = "tagId")}
+    @OneToMany(
+            mappedBy = "post",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
     )
-    @IndexedEmbedded
-    private List<Tag> tags = new ArrayList<>();
+    @OrderBy("priority")
+    private List<PostProfile> postProfiles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("createdAt")
-    private List<Comment> comments;
+    @OneToMany(
+            mappedBy = "post",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @OrderBy("priority asc, tag_id desc")
+    private List<PostTag> postTags = new ArrayList<>();
 
-    @Column(nullable = false)
-    @Min(0)
-    private int commentsCount = 0;
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("likedAt DESC")
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt DESC")
     private List<Bookmark> bookmarks;
 
     @Column(nullable = false)
@@ -177,6 +177,14 @@ public class Post implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "post")
     private List<Pageview> pageviews;
+
+    public List<PostTag> getPostTags() {
+        return postTags;
+    }
+
+    public void setPostTags(List<PostTag> postTags) {
+        this.postTags = postTags;
+    }
 
     public List<Pageview> getPageviews() {
         return pageviews;
@@ -266,14 +274,6 @@ public class Post implements Serializable {
         this.bookmarkCount = bookmarkCount;
     }
 
-    public int getCommentsCount() {
-        return commentsCount;
-    }
-
-    public void setCommentsCount(int commentsCount) {
-        this.commentsCount = commentsCount;
-    }
-
     public Types.PostStatus getStatus() {
         return status;
     }
@@ -290,51 +290,78 @@ public class Post implements Serializable {
         this.category = category;
     }
 
-    public List<Tag> getTags() {
-        return tags;
+    public List<PostProfile> getPostProfiles() {
+        return postProfiles;
     }
 
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
+    public void setPostProfiles(List<PostProfile> postProfiles) {
+        this.postProfiles = postProfiles;
+    }
+
+    public void addProfile(Profile profile) {
+        int priority = 1;
+        int size = this.postProfiles.size();
+        if (size > 0) {
+            PostProfile lastOne = this.postProfiles.get(size - 1);
+            priority = lastOne.getPriority() + 1;
+        }
+        PostProfile postProfile = new PostProfile(this, profile, LocalDateTime.now(), priority);
+        this.postProfiles.add(postProfile);
+        profile.getPostProfiles().add(postProfile);
+    }
+
+    public void removeProfile(Profile profile) {
+        for (Iterator<PostProfile> iterator = postProfiles.iterator();
+             iterator.hasNext(); ) {
+            PostProfile postProfile = iterator.next();
+
+            if (postProfile.getPost().equals(this) &&
+                    postProfile.getProfile().equals(profile)) {
+                iterator.remove();
+                postProfile.getProfile().getPostProfiles().remove(postProfile);
+                postProfile.setPost(null);
+                postProfile.setProfile(null);
+            }
+        }
+    }
+
+    public List<Profile> getProfiles() {
+        return postProfiles.stream()
+                .map(postProfile -> postProfile.getProfile())
+                .collect(Collectors.toList());
     }
 
     public void addTag(Tag tag) {
-        if (!this.tags.contains(tag)) {
-            this.tags.add(tag);
-            tag.addPost(this);
+        int priority = 1;
+        int size = this.postTags.size();
+        if (size > 0) {
+            PostTag lastOne = this.postTags.get(size - 1);
+            priority = lastOne.getPriority() + 1;
+        }
+        PostTag postTag = new PostTag(this, tag, LocalDateTime.now(), priority);
+        this.postTags.add(postTag);
+        tag.getPostTags().add(postTag);
+    }
+
+    public void removeTag(Tag tag) {
+        for (Iterator<PostTag> iterator = postTags.iterator();
+             iterator.hasNext(); ) {
+            PostTag postTag = iterator.next();
+
+            if (postTag.getPost().equals(this) &&
+                    postTag.getTag().equals(tag)) {
+                iterator.remove();
+                postTag.getTag().getPostTags().remove(postTag);
+                postTag.setPost(null);
+                postTag.setTag(null);
+            }
         }
     }
 
-    public Long removeTag(Tag tag) {
-        Long tagId = tag.getId();
-        if (this.tags.contains(tag)) {
-            this.tags.remove(tag);
-            tag.removePost(this);
-        }
-        return tagId;
-    }
-
-    public void clearTags() {
-        this.tags.clear();
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
-    public void addComment(Comment comment) {
-        this.comments.add(comment);
-    }
-
-    public Long removeComment(Comment comment) {
-        Long commentId = comment.getId();
-        this.comments.remove(comment);
-        return commentId;
+    public List<Tag> getTags() {
+        return postTags.stream()
+                .map(postTag -> postTag.getTag())
+                .collect(Collectors.toList());
     }
 
     public List<Bookmark> getBookmarks() {
@@ -377,11 +404,11 @@ public class Post implements Serializable {
         this.original = original;
     }
 
-    public Contentlist getLegacyPost() {
+    public LegacyPost getLegacyPost() {
         return legacyPost;
     }
 
-    public void setLegacyPost(Contentlist legacyPost) {
+    public void setLegacyPost(LegacyPost legacyPost) {
         this.legacyPost = legacyPost;
     }
 

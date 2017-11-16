@@ -1,6 +1,6 @@
 package com.indiepost.controller.api.admin;
 
-import com.indiepost.dto.CampaignDto;
+import com.indiepost.dto.analytics.CampaignDto;
 import com.indiepost.service.CampaignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

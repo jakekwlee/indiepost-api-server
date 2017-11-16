@@ -27,7 +27,7 @@ public class ImageSet {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Fetch(FetchMode.SUBSELECT)
+    @Fetch(FetchMode.JOIN)
     @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
     @Cascade({CascadeType.ALL, CascadeType.SAVE_UPDATE})
     @JoinColumn(name = "imageSetId")

@@ -1,7 +1,7 @@
 package com.indiepost.service;
 
+import com.indiepost.dto.AdminInitialData;
 import com.indiepost.dto.UserDto;
-import com.indiepost.dto.admin.AdminInitResponseDto;
 import com.indiepost.enums.Types.UserRole;
 
 import java.util.List;
@@ -17,5 +17,5 @@ public interface AdminService {
 
     UserDto getCurrentUserDto();
 
-    AdminInitResponseDto buildInitialResponse();
+    AdminInitialData buildInitialResponse();
 }

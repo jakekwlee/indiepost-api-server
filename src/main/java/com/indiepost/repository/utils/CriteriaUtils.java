@@ -1,10 +1,10 @@
 package com.indiepost.repository.utils;
 
-import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.stat.PostStatDto;
-import com.indiepost.dto.stat.ShareStat;
-import com.indiepost.dto.stat.TimeDomainDoubleStat;
-import com.indiepost.dto.stat.TimeDomainStat;
+import com.indiepost.dto.analytics.PostStatDto;
+import com.indiepost.dto.analytics.ShareStat;
+import com.indiepost.dto.analytics.TimeDomainDoubleStat;
+import com.indiepost.dto.analytics.TimeDomainStat;
+import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
@@ -44,38 +44,32 @@ public interface CriteriaUtils {
         return criteria;
     }
 
-    static void buildConjunction(PostQuery query, Conjunction conjunction) {
-        if (query.getAuthorId() != null) {
-            conjunction.add(Restrictions.eq("authorId", query.getAuthorId()));
+    static Conjunction buildConjunction(PostQuery query) {
+        Conjunction conjunction = new Conjunction();
+        if (query == null) {
+            return conjunction;
         }
-        if (query.getEditorId() != null) {
-            conjunction.add(Restrictions.eq("editorId", query.getEditorId()));
-        }
-        if (query.getCategoryId() != null) {
+        if (query.getCreatorId() != null)
+            conjunction.add(Restrictions.eq("creatorId", query.getCreatorId()));
+        if (query.getModifiedUserId() != null)
+            conjunction.add(Restrictions.eq("modifiedUserId", query.getModifiedUserId()));
+        if (query.getCategoryId() != null)
             conjunction.add(Restrictions.eq("categoryId", query.getCategoryId()));
-        }
-        if (StringUtils.isNotEmpty(query.getCategorySlug())) {
+        if (StringUtils.isNotEmpty(query.getCategorySlug()))
             conjunction.add(Restrictions.ilike("category.slug", query.getCategorySlug()));
-        }
-
-        if (query.getStatus() != null) {
+        if (query.getStatus() != null)
             conjunction.add(Restrictions.eq("status", query.getStatus()));
-        }
-        if (query.getDateFrom() != null) {
+        if (query.getDateFrom() != null)
             conjunction.add(Restrictions.ge("publishedAt", query.getDateFrom()));
-        }
-        if (query.getDateTo() != null) {
+        if (query.getDateTo() != null)
             conjunction.add(Restrictions.le("publishedAt", query.getDateTo()));
-        }
-        if (query.isSplash()) {
+        if (query.isSplash())
             conjunction.add(Restrictions.eq("splash", query.isSplash()));
-        }
-        if (query.isFeatured()) {
+        if (query.isFeatured())
             conjunction.add(Restrictions.eq("featured", query.isFeatured()));
-        }
-        if (query.isPicked()) {
+        if (query.isPicked())
             conjunction.add(Restrictions.eq("picked", query.isPicked()));
-        }
+        return conjunction;
     }
 
     static List<TimeDomainStat> getTrend(Query query, Types.TimeDomainDuration duration, LocalDateTime since, LocalDateTime until) {

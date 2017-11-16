@@ -2,7 +2,6 @@ package com.indiepost.model.analytics;
 
 import com.indiepost.enums.Types;
 import com.indiepost.model.User;
-import com.indiepost.model.UserAgent;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -54,16 +53,16 @@ public class Visitor {
     @NotNull
     @Enumerated(EnumType.STRING)
     private Types.Channel channel = Types.Channel.NONE;
+
     @NotNull
     private LocalDateTime timestamp;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", insertable = false, updatable = false)
     private User user;
+
     @Column(name = "userId")
     private Long userId;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "userAgentId")
-    private UserAgent userAgent;
 
     public boolean isAdVisitor() {
         return adVisitor;
@@ -185,11 +184,4 @@ public class Visitor {
         this.ipAddress = ipAddress;
     }
 
-    public UserAgent getUserAgent() {
-        return userAgent;
-    }
-
-    public void setUserAgent(UserAgent userAgent) {
-        this.userAgent = userAgent;
-    }
 }

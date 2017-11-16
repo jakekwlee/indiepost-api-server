@@ -1,9 +1,9 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.PostDto;
-import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.PostSummary;
-import com.indiepost.dto.RelatedPostResponseDto;
+import com.indiepost.dto.post.PostDto;
+import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.PostSummaryDto;
+import com.indiepost.dto.post.RelatedPostResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,37 +13,37 @@ import java.util.List;
  */
 public interface PostService {
 
-    PostDto findById(Long id);
+    PostDto findOne(Long id);
 
-    PostDto findByLegacyId(Long id);
+    PostDto findOneByLegacyId(Long id);
 
     Long count();
 
     Long count(PostQuery query);
 
-    List<PostSummary> findByIds(List<Long> ids);
+    List<PostSummaryDto> findByIds(List<Long> ids);
 
-    List<PostSummary> findAll(int page, int maxResults, boolean isDesc);
+    List<PostSummaryDto> find(int page, int maxResults, boolean isDesc);
 
-    List<PostSummary> findByQuery(PostQuery query, int page, int maxResults, boolean isDesc);
+    List<PostSummaryDto> findByQuery(PostQuery query, boolean isDesc);
 
-    List<PostSummary> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc);
+    List<PostSummaryDto> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc);
 
-    List<PostSummary> findByTagName(String tagName);
+    List<PostSummaryDto> findByTagName(String tagName);
 
-    List<RelatedPostResponseDto> getRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobile);
+    List<RelatedPostResponse> getRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobile);
 
-    List<PostSummary> getTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit);
+    List<PostSummaryDto> getTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit);
 
-    List<PostSummary> getScheduledPosts();
+    List<PostSummaryDto> getScheduledPosts();
 
-    List<PostSummary> search(String text, int page, int maxResults);
+    List<PostSummaryDto> search(String text, int page, int maxResults);
 
     Long findIdByLegacyId(Long legacyId);
 
-    PostSummary findSplashPost();
+    PostSummaryDto findSplashPost();
 
-    PostSummary findFeaturePost();
+    PostSummaryDto findFeaturePost();
 
-    List<PostSummary> findPickedPosts();
+    List<PostSummaryDto> findPickedPosts();
 }

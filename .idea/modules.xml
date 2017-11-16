@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/new-indiepost.iml" filepath="$PROJECT_DIR$/.idea/modules/new-indiepost.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/new-indiepost_main.iml" filepath="$PROJECT_DIR$/.idea/modules/new-indiepost_main.iml" group="new-indiepost" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/new-indiepost_test.iml" filepath="$PROJECT_DIR$/.idea/modules/new-indiepost_test.iml" group="new-indiepost" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/new-indiepost_test_integration.iml" filepath="$PROJECT_DIR$/.idea/modules/new-indiepost_test_integration.iml" group="new-indiepost" />
     </modules>
   </component>
 </project>

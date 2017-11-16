@@ -1,8 +1,8 @@
 package com.indiepost.controller;
 
 import com.indiepost.config.AppConfig;
-import com.indiepost.dto.PostDto;
-import com.indiepost.dto.ssr.RenderingResponseDto;
+import com.indiepost.dto.ServerSideRenderingResponse;
+import com.indiepost.dto.post.PostDto;
 import com.indiepost.service.PostService;
 import com.indiepost.service.ServerSideRenderingService;
 import com.indiepost.service.SitemapService;
@@ -46,7 +46,7 @@ public class HomeController {
         if (config.isServerSideRendering()) {
             serverSideRenderingService.renderHome(model, request.getServletPath());
         } else {
-            model.addAttribute("res", new RenderingResponseDto());
+            model.addAttribute("res", new ServerSideRenderingResponse());
         }
         model.addAttribute("cdnUrl", config.getCdnUrl());
         return "index";
@@ -55,7 +55,7 @@ public class HomeController {
     @GetMapping("/login")
     public String getLoginPage(Model model) {
         // TODO
-        model.addAttribute("res", new RenderingResponseDto());
+        model.addAttribute("res", new ServerSideRenderingResponse());
         model.addAttribute("cdnUrl", config.getCdnUrl());
         return "index";
     }
@@ -65,7 +65,7 @@ public class HomeController {
         if (config.isServerSideRendering()) {
             serverSideRenderingService.renderPost(id, model, request.getServletPath());
         } else {
-            model.addAttribute("res", new RenderingResponseDto());
+            model.addAttribute("res", new ServerSideRenderingResponse());
         }
         model.addAttribute("cdnUrl", config.getCdnUrl());
         return "index";
@@ -76,7 +76,7 @@ public class HomeController {
         if (config.isServerSideRendering()) {
             serverSideRenderingService.renderPage(slug, model, request.getServletPath());
         } else {
-            model.addAttribute("res", new RenderingResponseDto());
+            model.addAttribute("res", new ServerSideRenderingResponse());
         }
         model.addAttribute("cdnUrl", config.getCdnUrl());
         return "index";
@@ -84,7 +84,7 @@ public class HomeController {
 
     @GetMapping("/ContentView.do")
     public String getPostByLegacyId(@RequestParam Long no) {
-        PostDto postDto = postService.findByLegacyId(no);
+        PostDto postDto = postService.findOneByLegacyId(no);
         return "redirect:post/" + postDto.getId();
     }
 
@@ -93,7 +93,7 @@ public class HomeController {
         if (config.isServerSideRendering()) {
             serverSideRenderingService.renderPostsByCategoryPage(categoryName, model, request.getServletPath());
         } else {
-            model.addAttribute("res", new RenderingResponseDto());
+            model.addAttribute("res", new ServerSideRenderingResponse());
         }
         model.addAttribute("cdnUrl", config.getCdnUrl());
         return "index";
@@ -104,7 +104,7 @@ public class HomeController {
         if (config.isServerSideRendering()) {
             serverSideRenderingService.renderPostByTagPage(tagName, model, request.getServletPath());
         } else {
-            model.addAttribute("res", new RenderingResponseDto());
+            model.addAttribute("res", new ServerSideRenderingResponse());
         }
         model.addAttribute("cdnUrl", config.getCdnUrl());
         return "index";
@@ -115,7 +115,7 @@ public class HomeController {
         if (config.isServerSideRendering()) {
             serverSideRenderingService.renderPostSearchResultsPage(keyword, model, request.getServletPath());
         } else {
-            model.addAttribute("res", new RenderingResponseDto());
+            model.addAttribute("res", new ServerSideRenderingResponse());
         }
         model.addAttribute("cdnUrl", config.getCdnUrl());
         return "index";

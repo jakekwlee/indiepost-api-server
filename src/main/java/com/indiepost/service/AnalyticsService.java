@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.stat.*;
+import com.indiepost.dto.analytics.*;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface AnalyticsService {
 
-    OverviewStats getOverviewStats(PeriodDto periodDto);
+    Overview getOverviewStats(PeriodDto periodDto);
 
     RecentAndOldPostStats getRecentAndOldPostStats(PeriodDto periodDto);
 

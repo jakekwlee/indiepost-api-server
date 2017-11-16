@@ -1,7 +1,7 @@
 package com.indiepost.controller.api;
 
-import com.indiepost.dto.InquiryDto;
-import com.indiepost.dto.SuggestionDto;
+import com.indiepost.dto.Inquiry;
+import com.indiepost.dto.Suggestion;
 import com.indiepost.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,12 +26,12 @@ public class MailController {
     }
 
     @PostMapping("/suggestion")
-    public void postSuggestion(@RequestBody @Valid SuggestionDto dto) {
+    public void postSuggestion(@RequestBody @Valid Suggestion dto) {
         mailService.sendSuggestion(dto);
     }
 
     @PostMapping("/inquiry")
-    public void postInquiry(@RequestBody @Valid InquiryDto dto) {
+    public void postInquiry(@RequestBody @Valid Inquiry dto) {
         mailService.sendInquiry(dto);
     }
 }

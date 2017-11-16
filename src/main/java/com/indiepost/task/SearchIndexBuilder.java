@@ -18,6 +18,7 @@ import javax.persistence.PersistenceContext;
 public class SearchIndexBuilder implements ApplicationListener<ApplicationReadyEvent> {
 
     private final AppConfig appConfig;
+
     @PersistenceContext
     private EntityManager entityManager;
 

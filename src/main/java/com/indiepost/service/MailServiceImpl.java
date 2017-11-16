@@ -1,7 +1,7 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.InquiryDto;
-import com.indiepost.dto.SuggestionDto;
+import com.indiepost.dto.Inquiry;
+import com.indiepost.dto.Suggestion;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Setting;
 import com.indiepost.model.User;
@@ -60,7 +60,7 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public void sendSuggestion(SuggestionDto dto) {
+    public void sendSuggestion(Suggestion dto) {
         Setting setting = settingRepository.get();
         String subject = sanitize(dto.getSubject());
         String proposerName = dto.getProposer() != null ? sanitize(dto.getProposer()) : "Anonymous";
@@ -84,7 +84,7 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public void sendInquiry(InquiryDto dto) {
+    public void sendInquiry(Inquiry dto) {
         Setting setting = settingRepository.get();
         String inquirer = sanitize(dto.getInquirer());
         String clientName = dto.getClientName() != null ? sanitize(dto.getClientName()) : "";

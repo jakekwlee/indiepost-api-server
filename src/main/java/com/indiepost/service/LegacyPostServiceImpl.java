@@ -4,10 +4,10 @@ import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.ImageSet;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
-import com.indiepost.model.legacy.Contentlist;
-import com.indiepost.model.legacy.Detaillist;
-import com.indiepost.repository.LegacyContentListRepository;
-import com.indiepost.repository.LegacyDetailListRepository;
+import com.indiepost.model.legacy.LegacyPost;
+import com.indiepost.model.legacy.LegacyPostContent;
+import com.indiepost.repository.LegacyPostContentRepository;
+import com.indiepost.repository.LegacyPostRepository;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,61 +23,61 @@ import java.util.List;
 @Transactional
 public class LegacyPostServiceImpl implements LegacyPostService {
 
-    private final LegacyContentListRepository legacyContentListRepository;
+    private final LegacyPostRepository legacyPostRepository;
 
-    private final LegacyDetailListRepository legacyDetailListRepository;
+    private final LegacyPostContentRepository legacyPostContentRepository;
 
     @Autowired
-    public LegacyPostServiceImpl(LegacyContentListRepository legacyContentListRepository, LegacyDetailListRepository legacyDetailListRepository) {
-        this.legacyContentListRepository = legacyContentListRepository;
-        this.legacyDetailListRepository = legacyDetailListRepository;
+    public LegacyPostServiceImpl(LegacyPostRepository legacyPostRepository, LegacyPostContentRepository legacyPostContentRepository) {
+        this.legacyPostRepository = legacyPostRepository;
+        this.legacyPostContentRepository = legacyPostContentRepository;
     }
 
     @Override
-    public Contentlist save(Post post) {
-        Contentlist contentlist = new Contentlist();
-        Detaillist detaillist = new Detaillist();
+    public LegacyPost save(Post post) {
+        LegacyPost legacyPost = new LegacyPost();
+        LegacyPostContent legacyPostContent = new LegacyPostContent();
 
-        copyNewToLegacy(post, contentlist, detaillist);
+        copyNewToLegacy(post, legacyPost, legacyPostContent);
 
-        Long id = legacyContentListRepository.save(contentlist);
-        detaillist.setParent(id);
+        Long id = legacyPostRepository.save(legacyPost);
+        legacyPostContent.setParent(id);
 
-        legacyDetailListRepository.save(detaillist);
-        return contentlist;
+        legacyPostContentRepository.save(legacyPostContent);
+        return legacyPost;
     }
 
     @Override
     public void update(Post post) {
-        Contentlist contentlist = post.getLegacyPost();
-        if (contentlist == null) {
+        LegacyPost legacyPost = post.getLegacyPost();
+        if (legacyPost == null) {
             return;
         }
-        List<Detaillist> detaillistList = legacyDetailListRepository.findByParent(contentlist.getNo());
-        for (Detaillist detaillist : detaillistList) {
-            legacyDetailListRepository.delete(detaillist);
+        List<LegacyPostContent> legacyPostContentList = legacyPostContentRepository.findByParent(legacyPost.getNo());
+        for (LegacyPostContent legacyPostContent : legacyPostContentList) {
+            legacyPostContentRepository.delete(legacyPostContent);
         }
-        Detaillist detaillist = new Detaillist();
-        copyNewToLegacy(post, contentlist, detaillist);
+        LegacyPostContent legacyPostContent = new LegacyPostContent();
+        copyNewToLegacy(post, legacyPost, legacyPostContent);
 
-        legacyContentListRepository.update(contentlist);
-        detaillist.setParent(contentlist.getNo());
-        legacyDetailListRepository.save(detaillist);
+        legacyPostRepository.update(legacyPost);
+        legacyPostContent.setParent(legacyPost.getNo());
+        legacyPostContentRepository.save(legacyPostContent);
     }
 
     @Override
     public void delete(Post post) {
-        Contentlist contentlist = post.getLegacyPost();
-        this.deleteContentAndDetail(contentlist);
+        LegacyPost legacyPost = post.getLegacyPost();
+        this.deleteContentAndDetail(legacyPost);
     }
 
     @Override
     public void deleteById(Long id) {
-        Contentlist contentlist = legacyContentListRepository.findByNo(id);
-        this.deleteContentAndDetail(contentlist);
+        LegacyPost legacyPost = legacyPostRepository.findByNo(id);
+        this.deleteContentAndDetail(legacyPost);
     }
 
-    private void copyNewToLegacy(Post post, Contentlist contentlist, Detaillist detaillist) {
+    private void copyNewToLegacy(Post post, LegacyPost legacyPost, LegacyPostContent legacyPostContent) {
         Long status;
 
         // TODO
@@ -89,13 +89,13 @@ public class LegacyPostServiceImpl implements LegacyPostService {
         String regDatePattern = "yyyyMMdd";
         String modifyDatePattern = "yyyyMMddHH";
 
-        contentlist.setRegdate(post.getCreatedAt().format(DateTimeFormatter.ofPattern(regDatePattern)));
-        contentlist.setModifydate(post.getPublishedAt().format(DateTimeFormatter.ofPattern(modifyDatePattern)));
-        contentlist.setMenuno(post.getCategory().getId());
-        contentlist.setContentname(StringEscapeUtils.escapeHtml4(post.getTitle()));
-        contentlist.setContenttext(post.getExcerpt());
-        contentlist.setWriterid(post.getCreator().getUsername());
-        contentlist.setWritername(post.getDisplayName());
+        legacyPost.setRegdate(post.getCreatedAt().format(DateTimeFormatter.ofPattern(regDatePattern)));
+        legacyPost.setModifydate(post.getPublishedAt().format(DateTimeFormatter.ofPattern(modifyDatePattern)));
+        legacyPost.setMenuno(post.getCategory().getId());
+        legacyPost.setContentname(StringEscapeUtils.escapeHtml4(post.getTitle()));
+        legacyPost.setContenttext(post.getExcerpt());
+        legacyPost.setWriterid(post.getCreator().getUsername());
+        legacyPost.setWritername(post.getDisplayName());
         String imageUrl = "";
         if (post.getTitleImage() != null) {
             ImageSet titleImageSet = post.getTitleImage();
@@ -105,30 +105,30 @@ public class LegacyPostServiceImpl implements LegacyPostService {
                 imageUrl = titleImageSet.getOriginal().getFilePath();
             }
         }
-        contentlist.setImageurl(imageUrl);
-        contentlist.setImageurl2("");
-        contentlist.setDataurl("");
-        contentlist.setSubs(0L);
-        contentlist.setIsdisplay(status);
-        contentlist.setIsmain(status);
-        contentlist.setPrice(0L);
-        contentlist.setDataurl("");
-        contentlist.setIsarticleservice(0L);
-        contentlist.setIsstreamingservice(0L);
-        contentlist.setIsdownloadservice(0L);
-        contentlist.setPrice(0L);
-        if (contentlist.getHit() == null || contentlist.getHit() == 0) {
-            contentlist.setGoods(0L);
-            contentlist.setUv(0L);
-            contentlist.setJjim(0L);
-            contentlist.setHit(0L);
+        legacyPost.setImageurl(imageUrl);
+        legacyPost.setImageurl2("");
+        legacyPost.setDataurl("");
+        legacyPost.setSubs(0L);
+        legacyPost.setIsdisplay(status);
+        legacyPost.setIsmain(status);
+        legacyPost.setPrice(0L);
+        legacyPost.setDataurl("");
+        legacyPost.setIsarticleservice(0L);
+        legacyPost.setIsstreamingservice(0L);
+        legacyPost.setIsdownloadservice(0L);
+        legacyPost.setPrice(0L);
+        if (legacyPost.getHit() == null || legacyPost.getHit() == 0) {
+            legacyPost.setGoods(0L);
+            legacyPost.setUv(0L);
+            legacyPost.setJjim(0L);
+            legacyPost.setHit(0L);
         }
-        contentlist.setListseq(0L);
-        contentlist.setListseqmain(0L);
-        contentlist.setOs(0L);
-        contentlist.setPlatform(0L);
-        contentlist.setType1no(1L);
-        contentlist.setType2no(1L);
+        legacyPost.setListseq(0L);
+        legacyPost.setListseqmain(0L);
+        legacyPost.setOs(0L);
+        legacyPost.setPlatform(0L);
+        legacyPost.setType1no(1L);
+        legacyPost.setType2no(1L);
 
         List<Tag> tags = post.getTags();
 
@@ -138,24 +138,24 @@ public class LegacyPostServiceImpl implements LegacyPostService {
             for (int i = 0; i < tagArray.length; ++i) {
                 tagNameArray[i] = tagArray[i].getName();
             }
-            contentlist.setKeyword(String.join(", ", tagNameArray));
+            legacyPost.setKeyword(String.join(", ", tagNameArray));
         }
 
-        detaillist.setIorder(1L);
-        detaillist.setData(post.getContent());
-        detaillist.setType(9L);
-        detaillist.setIspay(0L);
+        legacyPostContent.setIorder(1L);
+        legacyPostContent.setData(post.getContent());
+        legacyPostContent.setType(9L);
+        legacyPostContent.setIspay(0L);
     }
 
-    private void deleteContentAndDetail(Contentlist contentlist) {
-        if (contentlist == null) {
+    private void deleteContentAndDetail(LegacyPost legacyPost) {
+        if (legacyPost == null) {
             return;
         }
-        Long parentId = contentlist.getNo();
-        legacyContentListRepository.delete(contentlist);
-        List<Detaillist> detaillistList = legacyDetailListRepository.findByParent(parentId);
-        for (Detaillist detaillist : detaillistList) {
-            legacyDetailListRepository.delete(detaillist);
+        Long parentId = legacyPost.getNo();
+        legacyPostRepository.delete(legacyPost);
+        List<LegacyPostContent> legacyPostContentList = legacyPostContentRepository.findByParent(parentId);
+        for (LegacyPostContent legacyPostContent : legacyPostContentList) {
+            legacyPostContentRepository.delete(legacyPostContent);
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.config.AppConfig;
-import com.indiepost.dto.PostImageSetListDto;
+import com.indiepost.dto.PostImageSetDto;
 import com.indiepost.enums.Types.ImageSize;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
@@ -148,9 +148,9 @@ abstract class AbstractImageService implements ImageService {
     }
 
     @Override
-    public PostImageSetListDto findImagesOnPost(Long postId) {
+    public PostImageSetDto findImagesOnPost(Long postId) {
         Post post = postRepository.findById(postId);
-        PostImageSetListDto postImageSetListDto = new PostImageSetListDto();
+        PostImageSetDto postImageSetDto = new PostImageSetDto();
         if (post == null) {
             return null;
         }
@@ -160,9 +160,9 @@ abstract class AbstractImageService implements ImageService {
         int size = titleImage.getImages().size();
         Set<String> prefixList = DomUtil.getImagePrefixes(content);
         List<ImageSet> imageSetList = imageRepository.findByPrefixes(prefixList);
-        postImageSetListDto.setTitleImage(titleImage);
-        postImageSetListDto.setImages(imageSetList);
-        return postImageSetListDto;
+        postImageSetDto.setTitleImage(titleImage);
+        postImageSetDto.setImages(imageSetList);
+        return postImageSetDto;
     }
 
     @Override

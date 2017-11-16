@@ -1,8 +1,8 @@
 package com.indiepost.controller.api.admin;
 
-import com.indiepost.dto.admin.AdminPostRequestDto;
-import com.indiepost.dto.admin.AdminPostResponseDto;
-import com.indiepost.dto.admin.AdminPostSummaryDto;
+import com.indiepost.dto.post.AdminPostRequestDto;
+import com.indiepost.dto.post.AdminPostResponseDto;
+import com.indiepost.dto.post.AdminPostSummaryDto;
 import com.indiepost.service.AdminPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,22 +25,22 @@ public class AdminPostController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public AdminPostResponseDto getPost(@PathVariable Long id) {
-        return adminPostService.getPostResponse(id);
+    public AdminPostResponseDto get(@PathVariable Long id) {
+        return adminPostService.findOne(id);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public AdminPostResponseDto savePost(@RequestBody AdminPostRequestDto adminPostRequestDto) {
+    public AdminPostResponseDto save(@RequestBody AdminPostRequestDto adminPostRequestDto) {
         return adminPostService.save(adminPostRequestDto);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public void updatePost(@RequestBody AdminPostRequestDto adminPostRequestDto, @PathVariable Long id) {
+    public void update(@RequestBody AdminPostRequestDto adminPostRequestDto, @PathVariable Long id) {
         adminPostService.update(id, adminPostRequestDto);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public Long deletePost(@PathVariable Long id) {
+    public Long delete(@PathVariable Long id) {
         adminPostService.deleteById(id);
         return id;
     }
@@ -56,13 +56,12 @@ public class AdminPostController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<AdminPostSummaryDto> getPostList() {
-        return adminPostService.getAdminPostTableDtoList(0, 1000000, true);
+    public List<AdminPostSummaryDto> getPosts() {
+        return adminPostService.find(0, 1000000, true);
     }
 
     @RequestMapping(value = "/lastUpdated", method = RequestMethod.GET)
     public List<AdminPostSummaryDto> getLastUpdated() {
         return adminPostService.getLastUpdated(LocalDateTime.now().minusDays(1));
     }
-
 }

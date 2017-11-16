@@ -1,14 +1,12 @@
 package com.indiepost.repository;
 
-import com.github.fluent.hibernate.request.aliases.Aliases;
-import com.indiepost.dto.PostQuery;
+import com.github.fluent.hibernate.transformer.FluentHibernateResultTransformer;
+import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types.PostStatus;
-import com.indiepost.enums.Types.UserRole;
 import com.indiepost.model.Post;
-import com.indiepost.model.Role;
 import com.indiepost.model.User;
+import com.indiepost.repository.utils.CriteriaUtils;
 import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
 import org.springframework.data.domain.Pageable;
@@ -18,13 +16,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static com.indiepost.repository.utils.CriteriaUtils.buildConjunction;
-import static com.indiepost.repository.utils.CriteriaUtils.setPageToCriteria;
 
 /**
  * Created by jake on 17. 1. 11.
@@ -58,27 +52,43 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     }
 
     @Override
+    public void deleteById(Long id) {
+        Post post = findById(id);
+        delete(post);
+    }
+
+    @Override
     public List<Post> find(User user, Pageable pageable) {
         return find(user, null, pageable);
     }
 
-
     @Override
     public List<Post> find(User user, PostQuery query, Pageable pageable) {
-        Criteria criteria = getPagedCriteria(pageable);
-        getAliases().addToCriteria(criteria);
-        // TODO Projection List<AdminPostSummaryDto>
+        Criteria criteria = getCriteria(pageable)
+                .createAlias("creator", "creator")
+                .createAlias("modifiedUser", "modifiedUser")
+                .createAlias("category", "category");
+
         // TODO fetch n + 1 problem
-//        criteria.setProjection(getProjectionList());
-        criteria.setFetchMode("tags", FetchMode.JOIN);
-        UserRole role = getRole(user);
-        Conjunction conjunction = Restrictions.conjunction();
+        Projection projection = Projections.projectionList()
+                .add(Property.forName("id"), "id")
+                .add(Property.forName("title"), "title")
+                .add(Property.forName("status"), "status")
+                .add(Property.forName("displayName"), "displayName")
+                .add(Property.forName("category.name"), "category.name")
+                .add(Property.forName("creator.displayName"), "creator.displayName")
+                .add(Property.forName("modifiedUser.displayName"), "modifiedUser.displayName")
+                .add(Property.forName("createdAt"), "createdAt")
+                .add(Property.forName("publishedAt"), "publishedAt")
+                .add(Property.forName("modifiedAt"), "modifiedAt")
+                .add(Property.forName("bookmarkCount"), "bookmarkCount");
 
-        if (query != null) {
-            buildConjunction(query, conjunction);
-        }
+        criteria.setProjection(projection);
+        Conjunction conjunction = query == null ?
+                Restrictions.conjunction() :
+                CriteriaUtils.buildConjunction(query);
 
-        switch (role) {
+        switch (user.getHighestRole()) {
             case Administrator:
                 break;
             case EditorInChief:
@@ -87,15 +97,15 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
                 break;
             default:
                 conjunction.add(getPrivacyCriterion(user.getId()));
-                conjunction.add(Restrictions.eq("author.id", user.getId()));
+                conjunction.add(Restrictions.eq("creatorId", user.getId()));
                 break;
         }
 
+        // if conjunction is not empty
         if (conjunction.conditions().iterator().hasNext()) {
             criteria.add(conjunction);
         }
-        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-
+        criteria.setResultTransformer(new FluentHibernateResultTransformer(Post.class));
         return criteria.list();
     }
 
@@ -106,10 +116,11 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     }
 
     @Override
-    public Long count(PostQuery postQuery) {
-        Conjunction conjunction = Restrictions.conjunction();
-        buildConjunction(postQuery, conjunction);
-        return (Long) getCriteria().add(conjunction).setProjection(Projections.rowCount())
+    public Long count(PostQuery query) {
+        Conjunction conjunction = CriteriaUtils.buildConjunction(query);
+        return (Long) getCriteria()
+                .add(conjunction)
+                .setProjection(Projections.rowCount())
                 .uniqueResult();
     }
 
@@ -148,18 +159,15 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
     @Override
     public List<String> findAllDisplayNames() {
-        Criteria criteria = getCriteria()
+        return getCriteria()
                 .add(Restrictions.ne("displayName", ""))
                 .setProjection(
                         Projections.distinct(
                                 Projections.projectionList()
                                         .add(Projections.property("displayName"))
-
                         )
-                );
-        return criteria.list();
+                ).list();
     }
-
 
     private Session getSession() {
         return entityManager.unwrap(Session.class);
@@ -169,37 +177,14 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
         return getSession().createCriteria(Post.class);
     }
 
-    private Criteria getPagedCriteria(Pageable pageable) {
-        return setPageToCriteria(getCriteria(), pageable);
-    }
-
-    private Aliases getAliases() {
-        return Aliases.create()
-                .add("author", "author", JoinType.INNER)
-                .add("editor", "editor", JoinType.INNER)
-                .add("category", "category", JoinType.INNER);
-    }
-
-    private ProjectionList getProjectionList() {
-        return Projections.projectionList()
-                .add(Property.forName("id"), "id")
-                .add(Property.forName("title"), "title")
-                .add(Property.forName("status"), "status")
-                .add(Property.forName("displayName"), "displayName")
-                .add(Property.forName("category.name"), "category.name")
-                .add(Property.forName("author.displayName"), "author.displayName")
-                .add(Property.forName("editor.displayName"), "editor.displayName")
-                .add(Property.forName("createdAt"), "createdAt")
-                .add(Property.forName("publishedAt"), "publishedAt")
-                .add(Property.forName("modifiedAt"), "modifiedAt")
-                .add(Property.forName("likesCount"), "likesCount")
-                .add(Property.forName("tags"), "tags");
+    private Criteria getCriteria(Pageable pageable) {
+        return CriteriaUtils.setPageToCriteria(getCriteria(), pageable);
     }
 
     private Criterion getPrivacyCriterion(Long userId) {
         return Restrictions.not(
                 Restrictions.and(
-                        Restrictions.ne("editor.id", userId),
+                        Restrictions.ne("modifiedUserId", userId),
                         Restrictions.or(
                                 Restrictions.eq("status", PostStatus.TRASH),
                                 Restrictions.eq("status", PostStatus.DRAFT),
@@ -207,30 +192,5 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
                         )
                 )
         );
-    }
-
-    private UserRole getRole(User user) {
-        List<Role> roleList = user.getRoles();
-        int userLevel = 1;
-        for (Role role : roleList) {
-            if (role.getLevel() > userLevel) {
-                userLevel = role.getLevel();
-            }
-        }
-
-        switch (userLevel) {
-            case 9:
-                return UserRole.Administrator;
-            case 7:
-                return UserRole.EditorInChief;
-            case 5:
-                return UserRole.Editor;
-            case 3:
-                return UserRole.Author;
-            case 1:
-                return UserRole.User;
-            default:
-                return UserRole.User;
-        }
     }
 }

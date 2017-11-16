@@ -80,8 +80,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getCurrentUser() {
         String username = getCurrentUsername();
+
+        // TODO for test purpose
         if (username == null) {
-            return null;
+            username = "indiepost";
         }
         return findByUsername(username);
     }

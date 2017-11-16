@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.CampaignDto;
+import com.indiepost.dto.analytics.CampaignDto;
 import com.indiepost.model.analytics.Campaign;
 import com.indiepost.repository.CampaignRepository;
 import org.springframework.beans.factory.annotation.Autowired;

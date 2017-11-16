@@ -1,7 +1,7 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.InquiryDto;
-import com.indiepost.dto.SuggestionDto;
+import com.indiepost.dto.Inquiry;
+import com.indiepost.dto.Suggestion;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Setting;
 import org.jsoup.Jsoup;
@@ -26,7 +26,7 @@ public interface MailService {
 
     String[] getMailReceivers(Types.UserRole role);
 
-    void sendSuggestion(SuggestionDto dto);
+    void sendSuggestion(Suggestion dto);
 
-    void sendInquiry(InquiryDto dto);
+    void sendInquiry(Inquiry dto);
 }

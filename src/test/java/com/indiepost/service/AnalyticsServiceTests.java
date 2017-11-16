@@ -1,52 +1,41 @@
 package com.indiepost.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.indiepost.dto.stat.TimeDomainStat;
-import com.indiepost.utils.DateUtil;
-import org.junit.Assert;
+import com.indiepost.NewIndiepostApplication;
+import com.indiepost.dto.analytics.Overview;
+import com.indiepost.dto.analytics.RecentAndOldPostStats;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static testHelper.JsonSerializer.printToJson;
+import static testHelper.PeriodMaker.getDailyPeriod;
 
 /**
  * Created by jake on 17. 4. 28.
  */
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = NewIndiepostApplication.class)
+@WebAppConfiguration
 public class AnalyticsServiceTests {
+
+    @Autowired
+    private AnalyticsService analyticsService;
+
     @Test
-    public void normalizeTimeDomainStatsWorksCorrectly() throws JsonProcessingException {
+    public void overviewStatsShouldSerializeCorrectly() throws JsonProcessingException {
+        Overview stats = analyticsService
+                .getOverviewStats(getDailyPeriod());
+        printToJson(stats);
+    }
 
-        List<TimeDomainStat> input = new ArrayList<>();
-        LocalDateTime d1 = LocalDateTime.of(2017, 1, 1, 4, 0, 0);
-        LocalDateTime d2 = LocalDateTime.of(2017, 1, 1, 10, 0, 0);
-
-        Long d1Value = 1000L;
-        Long d2Value = 3000L;
-
-        input.add(new TimeDomainStat(d1, d1Value));
-        input.add(new TimeDomainStat(d2, d2Value));
-        List<TimeDomainStat> output =
-                DateUtil.normalizeTimeDomainStats(
-                        input,
-                        LocalDate.of(2017, 1, 1),
-                        LocalDate.of(2017, 1, 1));
-        assertEquals(24, output.size());
-        for(int i = 0; i < output.size(); ++i) {
-            TimeDomainStat stat = output.get(i);
-            if (i == 4) {
-                assertEquals(d1Value, stat.getStatValue());
-            } else if (i == 10) {
-                assertEquals(d2Value, stat.getStatValue());
-            } else {
-                assertEquals((Long) 0L, stat.getStatValue());
-            }
-        }
+    @Test
+    public void recentAndOldStatsShouldSerializeCorrectly() throws JsonProcessingException {
+        RecentAndOldPostStats stats =
+                analyticsService.getRecentAndOldPostStats(getDailyPeriod());
+        printToJson(stats);
     }
 }

@@ -1,10 +1,9 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.stat.ActionDto;
-import com.indiepost.dto.stat.PageviewDto;
+import com.indiepost.dto.analytics.ActionDto;
+import com.indiepost.dto.analytics.PageviewDto;
 import com.indiepost.enums.Types.Channel;
 import com.indiepost.enums.Types.ClientType;
-import com.indiepost.model.UserAgent;
 import com.indiepost.model.analytics.*;
 import com.indiepost.repository.*;
 import org.slf4j.Logger;
@@ -167,20 +166,13 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
         String osName = ua.os.family;
         String deviceName = ua.device.family;
 
-        if (isNotEmpty(deviceName)) {
-            if (deviceName.contains("Spider")) {
-                logger.info("A visitor is filtered by blacklist, skip DB insert: {} : {} : {}",
-                        browserName, ipAddress, req.getRequestURI());
-                return null;
-            }
-            visitor.setBrowser(browserName);
-            visitor.setBrowserVersion(getBrowserVersion(ua.userAgent));
-        } else {
-            UserAgent userAgent = new UserAgent();
-            userAgent.setUaString(userAgentString);
-            userAgent.setUaHash(userAgentString);
-            visitor.setUserAgent(userAgent);
+        if (deviceName.contains("Spider")) {
+            logger.info("A visitor is filtered by blacklist, skip DB insert: {} : {} : {}",
+                    browserName, ipAddress, req.getRequestURI());
+            return null;
         }
+        visitor.setBrowser(browserName);
+        visitor.setBrowserVersion(getBrowserVersion(ua.userAgent));
 
         if (isNotEmpty(osName)) {
             visitor.setOs(osName);

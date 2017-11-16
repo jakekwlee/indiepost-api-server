@@ -73,9 +73,6 @@ public class User implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Bookmark> bookmarks;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Comment> comments;
-
     @Column(nullable = false)
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
@@ -85,20 +82,35 @@ public class User implements Serializable {
     )
     private List<Role> roles;
 
+    public UserRole getHighestRole() {
+        int userLevel = 1;
+        for (Role role : this.roles) {
+            if (role.getLevel() > userLevel) {
+                userLevel = role.getLevel();
+            }
+        }
+        switch (userLevel) {
+            case 9:
+                return UserRole.Administrator;
+            case 7:
+                return UserRole.EditorInChief;
+            case 5:
+                return UserRole.Editor;
+            case 3:
+                return UserRole.Author;
+            case 1:
+                return UserRole.User;
+            default:
+                return UserRole.User;
+        }
+    }
+
     public List<Bookmark> getBookmarks() {
         return bookmarks;
     }
 
     public void setBookmarks(List<Bookmark> bookmarks) {
         this.bookmarks = bookmarks;
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
     }
 
     public List<Role> getRoles() {

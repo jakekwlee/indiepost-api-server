@@ -1,17 +1,15 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.admin.AdminPostRequestDto;
-import com.indiepost.dto.admin.AdminPostResponseDto;
-import com.indiepost.dto.admin.AdminPostSummaryDto;
+import com.indiepost.dto.post.AdminPostRequestDto;
+import com.indiepost.dto.post.AdminPostResponseDto;
+import com.indiepost.dto.post.AdminPostSummaryDto;
+import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types.PostStatus;
-import com.indiepost.model.Post;
-import com.indiepost.model.Tag;
-import com.indiepost.model.User;
-import com.indiepost.model.legacy.Contentlist;
+import com.indiepost.model.*;
+import com.indiepost.model.legacy.LegacyPost;
 import com.indiepost.repository.AdminPostRepository;
-import com.indiepost.repository.CategoryRepository;
-import com.indiepost.service.mapper.PostMapperService;
+import com.indiepost.repository.ProfileRepository;
+import com.indiepost.repository.TagRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +24,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.indiepost.mapper.PostMapper.*;
+
 /**
  * Created by jake on 17. 1. 14.
  */
@@ -36,83 +36,47 @@ public class AdminPostServiceImpl implements AdminPostService {
     private static final Logger log = LoggerFactory.getLogger(AdminPostServiceImpl.class);
 
     private final AdminPostRepository adminPostRepository;
-
-    private final CategoryRepository categoryRepository;
-
+    private final ProfileRepository profileRepository;
+    private final TagRepository tagRepository;
     private final UserService userService;
-
-    private final PostMapperService postMapperService;
-
     private final LegacyPostService legacyPostService;
 
     @Autowired
     public AdminPostServiceImpl(AdminPostRepository adminPostRepository, UserService userService,
-                                CategoryRepository categoryRepository, PostMapperService postMapperService, LegacyPostService legacyPostService) {
+                                LegacyPostService legacyPostService, ProfileRepository profileRepository, TagRepository tagRepository) {
         this.adminPostRepository = adminPostRepository;
-        this.categoryRepository = categoryRepository;
         this.userService = userService;
-        this.postMapperService = postMapperService;
         this.legacyPostService = legacyPostService;
-    }
-
-    @Override
-    public Long save(Post post) {
-        return adminPostRepository.save(post);
-    }
-
-    @Override
-    public Post findById(Long id) {
-        return adminPostRepository.findById(id);
-    }
-
-    @Override
-    public AdminPostResponseDto getDtoById(Long id) {
-        Post post = findById(id);
-        if (post == null) {
-            return null;
-        }
-        List<Tag> tagList = post.getTags();
-        if (tagList != null) {
-            tagList.get(0);
-        }
-        if (post.getTitleImage() != null) {
-            post.getTitleImage().getImages();
-        }
-        return postMapperService.postToAdminPostResponseDto(post);
-    }
-
-    @Override
-    public void update(Post post) {
-        adminPostRepository.update(post);
-    }
-
-    @Override
-    public void delete(Post post) {
-        legacyPostService.deleteById(post.getId());
-        adminPostRepository.delete(post);
+        this.profileRepository = profileRepository;
+        this.tagRepository = tagRepository;
     }
 
     @Override
     public void deleteById(Long id) {
         Post post = adminPostRepository.findById(id);
-        delete(post);
+        legacyPostService.deleteById(id);
+        adminPostRepository.delete(post);
     }
 
+    // using
     @Override
     public List<AdminPostSummaryDto> find(int page, int maxResults, boolean isDesc) {
         User currentUser = userService.getCurrentUser();
-        List<Post> postList = adminPostRepository.find(currentUser, getPageable(page, maxResults, isDesc));
-        return postList.stream()
-                .map(postMapperService::postToAdminPostSummaryDto)
+        Pageable pageable = getPageable(page, maxResults, isDesc);
+        List<Post> posts = adminPostRepository.find(currentUser, pageable);
+        return posts.stream()
+                .map(post -> toAdminPostSummaryDto(post))
                 .collect(Collectors.toList());
     }
 
+    // no usage
     @Override
-    public List<AdminPostSummaryDto> findByQuery(PostQuery query, int page, int maxResults, boolean isDesc) {
+    public List<AdminPostSummaryDto> find(PostQuery query) {
         User currentUser = userService.getCurrentUser();
-        List<Post> postList = adminPostRepository.find(currentUser, query, getPageable(page, maxResults, isDesc));
-        return postList.stream()
-                .map(postMapperService::postToAdminPostSummaryDto)
+        Pageable pageable = getPageable(query.getPage(), query.getMaxResults(), true);
+        List<Post> posts = adminPostRepository.find(currentUser, query, pageable);
+        return posts.stream()
+                .map(post -> toAdminPostSummaryDto(post))
                 .collect(Collectors.toList());
     }
 
@@ -127,29 +91,39 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
-    public AdminPostResponseDto save(AdminPostRequestDto adminPostRequestDto) {
+    public AdminPostResponseDto save(AdminPostRequestDto postRequestDto) {
         User currentUser = userService.getCurrentUser();
-        Post post = postMapperService.adminPostRequestDtoToPost(adminPostRequestDto);
-        post.setStatus(PostStatus.valueOf(adminPostRequestDto.getStatus()));
+        Post post = adminPostRequestDtoToPost(postRequestDto);
+        post.setStatus(PostStatus.valueOf(postRequestDto.getStatus()));
         post.setCreatedAt(LocalDateTime.now());
         post.setModifiedAt(LocalDateTime.now());
         post.setCreator(currentUser);
         post.setModifiedUser(currentUser);
-        save(post);
-        return postMapperService.postToAdminPostResponseDto(post);
+
+        if (postRequestDto.getProfileIds() != null) {
+            List<Profile> profiles = profileRepository.findByIdIn(postRequestDto.getProfileIds());
+            addProfilesToPost(post, profiles);
+        }
+        if (postRequestDto.getTagIds() != null) {
+            List<Tag> tags = tagRepository.findByIds(postRequestDto.getTagIds());
+            addTagsToPost(post, tags);
+        }
+
+        adminPostRepository.save(post);
+        return toAdminPostResponseDto(post);
     }
 
     @Override
-    public AdminPostResponseDto createAutosave(AdminPostRequestDto adminPostRequestDto) {
+    public AdminPostResponseDto createAutosave(AdminPostRequestDto postRequestDto) {
         Post post;
         User currentUser = userService.getCurrentUser();
-        if (adminPostRequestDto.getId() != null) {
-            Post originalPost = findById(adminPostRequestDto.getId());
-            post = postMapperService.postToPost(originalPost);
-            postMapperService.adminPostRequestDtoToPost(adminPostRequestDto, post);
+        if (postRequestDto.getId() != null) {
+            Post originalPost = adminPostRepository.findById(postRequestDto.getId());
+            post = postToPost(originalPost);
+            adminPostRequestDtoToPost(postRequestDto, post);
             post.setOriginal(originalPost);
         } else {
-            post = postMapperService.adminPostRequestDtoToPost(adminPostRequestDto);
+            post = adminPostRequestDtoToPost(postRequestDto);
             post.setCreator(currentUser);
             post.setCreatedAt(LocalDateTime.now());
         }
@@ -171,58 +145,48 @@ public class AdminPostServiceImpl implements AdminPostService {
         post.setModifiedUser(currentUser);
         post.setModifiedAt(LocalDateTime.now());
         post.setStatus(PostStatus.AUTOSAVE);
-        post.setCategory(categoryRepository.getReference(2L));
-        save(post);
-        return postMapperService.postToAdminPostResponseDto(post);
+        post.setCategoryId(2L);
+        adminPostRepository.save(post);
+        return toAdminPostResponseDto(post);
     }
 
     @Override
-    public void updateAutosave(Long id, AdminPostRequestDto adminPostRequestDto) {
-        Post post = findById(id);
-        postMapperService.adminPostRequestDtoToPost(adminPostRequestDto, post);
-        update(post);
+    public void updateAutosave(Long postId, AdminPostRequestDto postRequestDto) {
+        Post post = adminPostRepository.findById(postId);
+        adminPostRequestDtoToPost(postRequestDto, post);
+        adminPostRepository.update(post);
     }
 
     @Override
-    public AdminPostResponseDto update(Long id, AdminPostRequestDto adminPostRequestDto) {
-        Post originalPost = findById(id);
-        if (adminPostRequestDto.getOriginalId() != null && !adminPostRequestDto.getId().equals(id)) {
-            deleteById(adminPostRequestDto.getId());
+    public AdminPostResponseDto update(Long id, AdminPostRequestDto postRequestDto) {
+        Post originalPost = adminPostRepository.findById(id);
+        if (postRequestDto.getOriginalId() != null && !postRequestDto.getId().equals(id)) {
+            deleteById(postRequestDto.getId());
         }
-        if (PostStatus.valueOf(adminPostRequestDto.getStatus()).equals(
-                PostStatus.AUTOSAVE
-        )) {
-            adminPostRequestDto.setStatus(null);
+        PostStatus postDtoStatus = PostStatus.valueOf(postRequestDto.getStatus());
+        if (postDtoStatus.equals(PostStatus.AUTOSAVE)) {
+            postRequestDto.setStatus(null);
         }
-        postMapperService.adminPostRequestDtoToPost(adminPostRequestDto, originalPost);
+        adminPostRequestDtoToPost(postRequestDto, originalPost);
 
         PostStatus status = originalPost.getStatus();
         if (status.equals(PostStatus.FUTURE) || status.equals(PostStatus.PUBLISH)) {
-            Contentlist contentlist = originalPost.getLegacyPost();
-            if (contentlist == null) {
-                contentlist = legacyPostService.save(originalPost);
-                originalPost.setLegacyPost(contentlist);
+            LegacyPost legacyPost = originalPost.getLegacyPost();
+            if (legacyPost == null) {
+                legacyPost = legacyPostService.save(originalPost);
+                originalPost.setLegacyPost(legacyPost);
             } else {
                 legacyPostService.update(originalPost);
             }
         }
-        update(originalPost);
-        return postMapperService.postToAdminPostResponseDto(originalPost);
+        adminPostRepository.update(originalPost);
+        return toAdminPostResponseDto(originalPost);
     }
 
     @Override
-    public AdminPostResponseDto getPostResponse(Long id) {
-        return postMapperService.postToAdminPostResponseDto(findById(id));
-    }
-
-    @Override
-    public List<AdminPostSummaryDto> getAdminPostTableDtoList(int page, int maxResults, boolean isDesc) {
-        User currentUser = userService.getCurrentUser();
-        List<Post> postList = adminPostRepository.find(currentUser, getPageable(page, maxResults, isDesc));
-
-        return postList.stream()
-                .map(postMapperService::postToAdminPostSummaryDto)
-                .collect(Collectors.toList());
+    public AdminPostResponseDto findOne(Long id) {
+        Post post = adminPostRepository.findById(id);
+        return toAdminPostResponseDto(post);
     }
 
     @Override
@@ -249,6 +213,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         }
     }
 
+    @Override
     public List<String> findAllDisplayNames() {
         return adminPostRepository.findAllDisplayNames();
     }
@@ -257,5 +222,74 @@ public class AdminPostServiceImpl implements AdminPostService {
         return isDesc ?
                 new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt") :
                 new PageRequest(page, maxResults, Sort.Direction.ASC, "publishedAt");
+    }
+
+    private AdminPostResponseDto toAdminPostResponseDto(Post post) {
+        AdminPostResponseDto responseDto = new AdminPostResponseDto();
+        responseDto.setId(post.getId());
+        responseDto.setTitle(post.getTitle());
+        responseDto.setContent(post.getContent());
+        responseDto.setExcerpt(post.getExcerpt());
+        responseDto.setDisplayName(post.getDisplayName());
+        responseDto.setTitleImage(post.getTitleImage());
+        responseDto.setTitleImageId(post.getTitleImageId());
+        responseDto.setStatus(post.getStatus().toString());
+
+        responseDto.setCreatedAt(post.getCreatedAt());
+        responseDto.setModifiedAt(post.getModifiedAt());
+        responseDto.setPublishedAt(post.getPublishedAt());
+
+        responseDto.setCategoryId(post.getCategoryId());
+        responseDto.setCreatorId(post.getCreatorId());
+        responseDto.setModifiedUserId(post.getModifiedUserId());
+
+        responseDto.setPicked(post.isPicked());
+        responseDto.setFeatured(post.isFeatured());
+        responseDto.setSplash(post.isSplash());
+
+        responseDto.setBookmarkCount(post.getBookmarkCount());
+
+        if (post.getOriginalId() != null) {
+            responseDto.setOriginalId(post.getOriginalId());
+        }
+        if (!post.getTags().isEmpty()) {
+            List<Long> tagIds = post.getPostTags().stream()
+                    .map(postTag -> postTag.getId().getTagId())
+                    .collect(Collectors.toList());
+            responseDto.setTagIds(tagIds);
+        }
+        if (!post.getPostProfiles().isEmpty()) {
+            List<Long> profileIds = post.getPostProfiles().stream()
+                    .map(postProfile -> postProfile.getId().getProfileId())
+                    .collect(Collectors.toList());
+            responseDto.setProfileIds(profileIds);
+        }
+        if (post.getTitleImage() != null) {
+            ImageSet titleTimageSet = post.getTitleImage();
+            titleTimageSet.getImages();
+            responseDto.setTitleImage(titleTimageSet);
+        }
+        return responseDto;
+    }
+
+    private AdminPostSummaryDto toAdminPostSummaryDto(Post post) {
+        AdminPostSummaryDto postSummaryDto = new AdminPostSummaryDto();
+        postSummaryDto.setId(post.getId());
+        postSummaryDto.setCreatorName(post.getCreator().getDisplayName());
+        postSummaryDto.setModifiedUserName(post.getModifiedUser().getDisplayName());
+        postSummaryDto.setCategoryName(post.getCategory().getName());
+
+        postSummaryDto.setStatus(post.getStatus().toString());
+        postSummaryDto.setTitle(post.getTitle());
+        postSummaryDto.setDisplayName(post.getDisplayName());
+        postSummaryDto.setCreatedAt(post.getCreatedAt());
+        postSummaryDto.setPublishedAt(post.getPublishedAt());
+        postSummaryDto.setModifiedAt(post.getModifiedAt());
+        postSummaryDto.setBookmarkCount(post.getBookmarkCount());
+
+        postSummaryDto.setSplash(post.isSplash());
+        postSummaryDto.setFeatured(post.isFeatured());
+        postSummaryDto.setPicked(post.isPicked());
+        return postSummaryDto;
     }
 }

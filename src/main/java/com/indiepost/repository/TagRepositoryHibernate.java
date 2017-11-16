@@ -57,6 +57,13 @@ public class TagRepositoryHibernate implements TagRepository {
     }
 
     @Override
+    public List<Tag> findByIds(List<Long> ids) {
+        return getCriteria()
+                .add(Restrictions.in("id", ids))
+                .list();
+    }
+
+    @Override
     public void update(Tag tag) {
         getSession().update(tag);
     }

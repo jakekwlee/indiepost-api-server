@@ -10,6 +10,9 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by jake on 17. 11. 13.
@@ -24,9 +27,15 @@ public class Profile implements Serializable {
     @GeneratedValue
     private Long id;
 
-    @NotNull
     @Column(nullable = false)
     private String name;
+
+    @OneToMany(
+            mappedBy = "profile",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<PostProfile> postProfiles = new ArrayList<>();
 
     @NotNull
     @Column(nullable = false)
@@ -144,5 +153,26 @@ public class Profile implements Serializable {
 
     public void setModifiedAt(LocalDateTime modifiedAt) {
         this.modifiedAt = modifiedAt;
+    }
+
+    public List<PostProfile> getPostProfiles() {
+        return postProfiles;
+    }
+
+    public void setPostProfiles(List<PostProfile> postProfiles) {
+        this.postProfiles = postProfiles;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Profile profile = (Profile) o;
+        return Objects.equals(name, profile.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

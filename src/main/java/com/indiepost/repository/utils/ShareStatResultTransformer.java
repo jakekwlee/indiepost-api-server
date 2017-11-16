@@ -1,6 +1,6 @@
 package com.indiepost.repository.utils;
 
-import com.indiepost.dto.stat.ShareStat;
+import com.indiepost.dto.analytics.ShareStat;
 import org.hibernate.transform.ResultTransformer;
 
 import java.math.BigInteger;

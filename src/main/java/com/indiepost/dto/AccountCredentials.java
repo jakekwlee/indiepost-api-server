@@ -4,8 +4,11 @@ package com.indiepost.dto;
  * Created by jake on 7/18/17.
  */
 public class AccountCredentials {
+
     private String username;
+
     private String password;
+
     private boolean rememberMe;
 
     public String getUsername() {

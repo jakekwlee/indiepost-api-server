@@ -1,6 +1,6 @@
 package com.indiepost.controller.api.admin;
 
-import com.indiepost.dto.stat.*;
+import com.indiepost.dto.analytics.*;
 import com.indiepost.service.AnalyticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +22,7 @@ public class AdminAnalyticsController {
     }
 
     @PostMapping
-    public OverviewStats getOverviewStats(@RequestBody PeriodDto periodDto) {
+    public Overview getOverviewStats(@RequestBody PeriodDto periodDto) {
         return analyticsService.getOverviewStats(periodDto);
     }
 

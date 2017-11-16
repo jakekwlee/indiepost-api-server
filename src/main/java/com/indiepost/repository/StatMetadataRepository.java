@@ -1,6 +1,6 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.StatMetadata;
+import com.indiepost.model.StatMetadata;
 import org.springframework.data.repository.CrudRepository;
 
 /**

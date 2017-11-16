@@ -1,10 +1,9 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.admin.AdminPostRequestDto;
-import com.indiepost.dto.admin.AdminPostResponseDto;
-import com.indiepost.dto.admin.AdminPostSummaryDto;
-import com.indiepost.model.Post;
+import com.indiepost.dto.post.AdminPostRequestDto;
+import com.indiepost.dto.post.AdminPostResponseDto;
+import com.indiepost.dto.post.AdminPostSummaryDto;
+import com.indiepost.dto.post.PostQuery;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,21 +12,14 @@ import java.util.List;
  * Created by jake on 17. 1. 14.
  */
 public interface AdminPostService {
-    Long save(Post post);
 
-    Post findById(Long id);
-
-    AdminPostResponseDto getDtoById(Long id);
-
-    void update(Post post);
-
-    void delete(Post post);
+    AdminPostResponseDto findOne(Long id);
 
     void deleteById(Long id);
 
     List<AdminPostSummaryDto> find(int page, int maxResults, boolean isDesc);
 
-    List<AdminPostSummaryDto> findByQuery(PostQuery query, int page, int maxResults, boolean isDesc);
+    List<AdminPostSummaryDto> find(PostQuery query);
 
     Long count();
 
@@ -37,13 +29,9 @@ public interface AdminPostService {
 
     AdminPostResponseDto createAutosave(AdminPostRequestDto adminPostRequestDto);
 
-    void updateAutosave(Long id, AdminPostRequestDto adminPostRequestDto);
+    void updateAutosave(Long postId, AdminPostRequestDto adminPostRequestDto);
 
     AdminPostResponseDto update(Long id, AdminPostRequestDto adminPostRequestDto);
-
-    AdminPostResponseDto getPostResponse(Long id);
-
-    List<AdminPostSummaryDto> getAdminPostTableDtoList(int page, int maxResults, boolean isDesc);
 
     List<AdminPostSummaryDto> getLastUpdated(LocalDateTime dateFrom);
 

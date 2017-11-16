@@ -1,9 +1,9 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.StatMetadata;
-import com.indiepost.dto.stat.*;
+import com.indiepost.dto.analytics.*;
 import com.indiepost.enums.Types;
 import com.indiepost.enums.Types.ClientType;
+import com.indiepost.model.StatMetadata;
 import com.indiepost.repository.StatMetadataRepository;
 import com.indiepost.repository.StatRepository;
 import com.indiepost.repository.VisitorRepository;
@@ -38,7 +38,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     }
 
     @Override
-    public OverviewStats getOverviewStats(PeriodDto periodDto) {
+    public Overview getOverviewStats(PeriodDto periodDto) {
         LocalDate startDate = periodDto.getStartDate();
         LocalDate endDate = periodDto.getEndDate();
         LocalDateTime since = startDate.atStartOfDay();
@@ -58,7 +58,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         visitorTrend.setDuration(duration);
         visitorTrend.setResult(visitorTrendResult);
 
-        OverviewStats stats = new OverviewStats();
+        Overview stats = new Overview();
         stats.setPageviewTrend(pageviewTrend);
         stats.setVisitorTrend(visitorTrend);
 

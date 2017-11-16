@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.PostImageSetListDto;
+import com.indiepost.dto.PostImageSetDto;
 import com.indiepost.model.ImageSet;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +23,7 @@ public interface ImageService {
 
     List<ImageSet> findAll(int page, int maxResults);
 
-    PostImageSetListDto findImagesOnPost(Long postId);
+    PostImageSetDto findImagesOnPost(Long postId);
 
     void update(ImageSet imageSet);
 

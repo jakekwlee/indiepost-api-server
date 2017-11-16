@@ -65,6 +65,8 @@ logging:
     org:
       springframework:
         web: debug
+scheduling:
+  enabled: false
 
 ---
 
@@ -86,3 +88,5 @@ logging:
     org:
       springframework:
         web: info
+scheduling:
+  enabled: true

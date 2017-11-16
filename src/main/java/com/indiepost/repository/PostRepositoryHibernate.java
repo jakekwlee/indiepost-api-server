@@ -1,8 +1,8 @@
 package com.indiepost.repository;
 
 import com.github.fluent.hibernate.transformer.FluentHibernateResultTransformer;
-import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.PostSummary;
+import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Post;
 import org.apache.commons.lang3.StringUtils;
@@ -54,61 +54,63 @@ public class PostRepositoryHibernate implements PostRepository {
 
     @Override
     public Long findIdByLegacyId(Long legacyId) {
-        Criteria criteria = getCriteria().setProjection(
-                Projections.projectionList()
-                        .add(Property.forName("id"), "id")
-                        .add(Property.forName("legacyPostId"), "legacyPostId")
-        );
-        criteria.add(Restrictions.eq("legacyPostId", legacyId));
-        criteria.setResultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP);
+        Projection projection = Projections.projectionList()
+                .add(Property.forName("id"), "id")
+                .add(Property.forName("legacyPostId"), "legacyPostId");
+
+        Criteria criteria = getCriteria()
+                .setProjection(projection)
+                .add(Restrictions.eq("legacyPostId", legacyId))
+                .setResultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP);
+
         Map post = (HashMap) criteria.uniqueResult();
         return (Long) post.get("id");
     }
 
     @Override
     public Long count() {
-        return (Long) getCriteria().setProjection(Projections.rowCount())
+        return (Long) getCriteria()
+                .setProjection(Projections.rowCount())
                 .uniqueResult();
     }
 
     @Override
     public Long count(PostQuery query) {
-        Conjunction conjunction = Restrictions.conjunction();
-        buildConjunction(query, conjunction);
-        return (Long) getCriteria().add(conjunction).setProjection(Projections.rowCount())
+        Conjunction conjunction = buildConjunction(query);
+        return (Long) getCriteria()
+                .add(conjunction)
+                .setProjection(Projections.rowCount())
                 .uniqueResult();
     }
 
     @Override
-    public List<PostSummary> find(Pageable pageable) {
+    public List<PostSummaryDto> find(Pageable pageable) {
         return findByQuery(new PostQuery(), pageable);
     }
 
 
     @Override
-    public List<PostSummary> findByQuery(PostQuery query, Pageable pageable) {
+    public List<PostSummaryDto> findByQuery(PostQuery query, Pageable pageable) {
         Criteria criteria = getPagedCriteria(pageable);
         ProjectionList projectionList = this.getProjectionList();
+
         if (query != null && StringUtils.isNotEmpty(query.getCategorySlug())) {
             criteria.createAlias("category", "category");
             projectionList.add(Property.forName("category.slug"), "categoryName");
         }
-        criteria.setProjection(projectionList);
-        Conjunction conjunction = Restrictions.conjunction();
 
-        if (query != null) {
-            buildConjunction(query, conjunction);
-        }
+        criteria.setProjection(projectionList);
+        Conjunction conjunction = buildConjunction(query);
+
         if (conjunction.conditions().iterator().hasNext()) {
             criteria.add(conjunction);
         }
-        criteria.setResultTransformer(new FluentHibernateResultTransformer(PostSummary.class));
-
+        criteria.setResultTransformer(new FluentHibernateResultTransformer(PostSummaryDto.class));
         return criteria.list();
     }
 
     @Override
-    public List<PostSummary> findByCategoryId(Long categoryId, Pageable pageable) {
+    public List<PostSummaryDto> findByCategoryId(Long categoryId, Pageable pageable) {
         PostQuery query = new PostQuery();
         if (categoryId != 0L) {
             query.setCategoryId(categoryId);
@@ -118,7 +120,7 @@ public class PostRepositoryHibernate implements PostRepository {
 
     @SuppressWarnings("JpaQlInspection")
     @Override
-    public List<PostSummary> findByIds(List<Long> ids) {
+    public List<PostSummaryDto> findByIds(List<Long> ids) {
         if (ids == null || ids.size() == 0) {
             return null;
         }
@@ -127,29 +129,29 @@ public class PostRepositoryHibernate implements PostRepository {
                 .toArray(String[]::new);
 
         String joinedIds = String.join(", ", stringArray);
-        String queryString = "select new com.indiepost.dto.PostSummary(" +
+        String queryString = "select new com.indiepost.dto.post.PostSummaryDto(" +
                 "p.id, p.legacyPostId, p.featured, p.picked, p.splash, p.title, p.excerpt, " +
                 "p.displayName, p.publishedAt, p.titleImage, p.titleImageId, p.status, c.id, c.name, " +
-                "p.commentsCount, p.likesCount) from Post p inner join p.category c where p.id in (:ids) ORDER BY field(p.id, " + joinedIds + ")";
+                "p.bookmarkCount) from Post p inner join p.category c where p.id in (:ids) ORDER BY field(p.id, " + joinedIds + ")";
         org.hibernate.Query query = getSession().createQuery(queryString);
         query.setParameterList("ids", ids);
         return query.list();
     }
 
     @Override
-    public List<PostSummary> findByStatus(PostStatus status, Pageable pageable) {
+    public List<PostSummaryDto> findByStatus(PostStatus status, Pageable pageable) {
         PostQuery query = new PostQuery();
         query.setStatus(status);
         return this.findByQuery(query, pageable);
     }
 
     @Override
-    public List<PostSummary> findScheduledPosts() {
+    public List<PostSummaryDto> findScheduledPosts() {
         return getCriteria()
                 .setProjection(getProjectionList())
                 .add(Restrictions.eq("status", PostStatus.FUTURE))
                 .addOrder(Order.asc("publishedAt"))
-                .setResultTransformer(new FluentHibernateResultTransformer(PostSummary.class))
+                .setResultTransformer(new FluentHibernateResultTransformer(PostSummaryDto.class))
                 .list();
     }
 
@@ -258,11 +260,12 @@ public class PostRepositoryHibernate implements PostRepository {
                 .add(Property.forName("splash"), "splash")
                 .add(Property.forName("publishedAt"), "publishedAt")
                 .add(Property.forName("displayName"), "displayName")
-                .add(Property.forName("commentsCount"), "commentsCount")
-                .add(Property.forName("likesCount"), "likesCount")
+                .add(Property.forName("bookmarkCount"), "bookmarkCount")
                 .add(Property.forName("categoryId"), "categoryId")
                 .add(Property.forName("status"), "status")
-                .add(Property.forName("titleImageId"), "titleImageId");
+                .add(Property.forName("titleImageId"), "titleImageId")
+                .add(Property.forName("titleImage"), "titleImage")
+                .add(Property.forName("titleImage.images"), "titleImage.images");
     }
 
     private Session getSession() {

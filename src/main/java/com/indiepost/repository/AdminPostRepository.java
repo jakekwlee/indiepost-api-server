@@ -1,6 +1,6 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.PostQuery;
+import com.indiepost.dto.post.PostQuery;
 import com.indiepost.model.Post;
 import com.indiepost.model.User;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +19,8 @@ public interface AdminPostRepository {
     void update(Post post);
 
     void delete(Post post);
+
+    void deleteById(Long id);
 
     List<Post> find(User user, Pageable pageable);
 
