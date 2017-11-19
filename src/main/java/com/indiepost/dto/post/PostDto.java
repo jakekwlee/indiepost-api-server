@@ -1,6 +1,6 @@
 package com.indiepost.dto.post;
 
-import com.indiepost.model.Profile;
+import com.indiepost.model.Contributor;
 import com.indiepost.model.Tag;
 
 import java.io.Serializable;
@@ -18,7 +18,7 @@ public class PostDto extends PostSummaryDto implements Serializable {
 
     private List<Tag> tags = new ArrayList<>();
 
-    private List<Profile> profiles = new ArrayList<>();
+    private List<Contributor> contributors = new ArrayList<>();
 
     public String getContent() {
         return content;
@@ -36,11 +36,11 @@ public class PostDto extends PostSummaryDto implements Serializable {
         this.tags = tags;
     }
 
-    public List<Profile> getProfiles() {
-        return profiles;
+    public List<Contributor> getContributors() {
+        return contributors;
     }
 
-    public void setProfiles(List<Profile> profiles) {
-        this.profiles = profiles;
+    public void setContributors(List<Contributor> contributors) {
+        this.contributors = contributors;
     }
 }

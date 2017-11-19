@@ -14,7 +14,6 @@ import com.indiepost.repository.ImageRepository;
 import com.indiepost.repository.PostRepository;
 import com.indiepost.repository.StatRepository;
 import com.indiepost.repository.TagRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -60,7 +59,7 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(id);
         // TODO I will find better solution!
         post.getTags();
-        post.getProfiles();
+        post.getContributors();
         ImageSet titleImage = post.getTitleImage();
         if (titleImage != null) {
             titleImage.getOptimized();
@@ -73,7 +72,7 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findByLegacyId(id);
         // TODO same above
         post.getTags();
-        post.getProfiles();
+        post.getContributors();
         ImageSet titleImage = post.getTitleImage();
         if (titleImage != null) {
             titleImage.getOptimized();
@@ -198,14 +197,7 @@ public class PostServiceImpl implements PostService {
             text = text.substring(0, 30);
         }
         Pageable pageable = getPageable(page, maxResults, true);
-        List<Post> postList = postRepository.search(text, pageable);
-        return postList.stream()
-                .map(post -> {
-                    PostSummaryDto dto = new PostSummaryDto();
-                    BeanUtils.copyProperties(post, dto);
-                    return dto;
-                })
-                .collect(Collectors.toList());
+        return postRepository.search(text, pageable);
     }
 
     @Override

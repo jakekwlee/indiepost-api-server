@@ -5,6 +5,7 @@ import com.indiepost.model.Post;
 import com.indiepost.model.User;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -32,7 +33,9 @@ public interface AdminPostRepository {
 
     Long count(PostQuery postQuery);
 
-    List<Post> findScheduledPosts();
+    List<Post> findScheduledToBePublished();
+
+    List<Post> findScheduledToBeIndexed(LocalDateTime indicesLastUpdatedAt);
 
     void disableSplashPosts();
 

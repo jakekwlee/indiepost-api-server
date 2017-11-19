@@ -28,7 +28,7 @@ public interface Types {
     }
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    enum ProfileRole {
+    enum ContributorRole {
         FeatureEditor, FreeranceEditor, Photographer
     }
 

@@ -1,10 +1,5 @@
 package com.indiepost.model;
 
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Boost;
-import org.hibernate.search.annotations.Field;
-
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -27,8 +22,6 @@ public class Tag implements Serializable {
 
     @Size(min = 1, max = 50)
     @Column(nullable = false, unique = true)
-    @Field(boost = @Boost(1.6f))
-    @Analyzer(impl = StandardAnalyzer.class)
     private String name;
 
     @OneToMany(

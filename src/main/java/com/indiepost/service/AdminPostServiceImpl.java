@@ -8,8 +8,10 @@ import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.*;
 import com.indiepost.model.legacy.LegacyPost;
 import com.indiepost.repository.AdminPostRepository;
-import com.indiepost.repository.ProfileRepository;
+import com.indiepost.repository.ContributorRepository;
+import com.indiepost.repository.MetadataRepository;
 import com.indiepost.repository.TagRepository;
+import com.indiepost.repository.elasticsearch.PostEsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,19 +38,24 @@ public class AdminPostServiceImpl implements AdminPostService {
     private static final Logger log = LoggerFactory.getLogger(AdminPostServiceImpl.class);
 
     private final AdminPostRepository adminPostRepository;
-    private final ProfileRepository profileRepository;
+    private final ContributorRepository contributorRepository;
     private final TagRepository tagRepository;
+    private final MetadataRepository metadataRepository;
     private final UserService userService;
     private final LegacyPostService legacyPostService;
+    private final PostEsRepository postEsRepository;
 
     @Autowired
-    public AdminPostServiceImpl(AdminPostRepository adminPostRepository, UserService userService,
-                                LegacyPostService legacyPostService, ProfileRepository profileRepository, TagRepository tagRepository) {
+    public AdminPostServiceImpl(AdminPostRepository adminPostRepository, ContributorRepository contributorRepository, TagRepository tagRepository,
+                                MetadataRepository metadataRepository, PostEsRepository postEsRepository,
+                                UserService userService, LegacyPostService legacyPostService) {
         this.adminPostRepository = adminPostRepository;
+        this.contributorRepository = contributorRepository;
+        this.tagRepository = tagRepository;
+        this.metadataRepository = metadataRepository;
         this.userService = userService;
         this.legacyPostService = legacyPostService;
-        this.profileRepository = profileRepository;
-        this.tagRepository = tagRepository;
+        this.postEsRepository = postEsRepository;
     }
 
     @Override
@@ -100,9 +107,9 @@ public class AdminPostServiceImpl implements AdminPostService {
         post.setCreator(currentUser);
         post.setModifiedUser(currentUser);
 
-        if (postRequestDto.getProfileIds() != null) {
-            List<Profile> profiles = profileRepository.findByIdIn(postRequestDto.getProfileIds());
-            addProfilesToPost(post, profiles);
+        if (postRequestDto.getContributorIds() != null) {
+            List<Contributor> contributors = contributorRepository.findByIdIn(postRequestDto.getContributorIds());
+            addContributorsToPost(post, contributors);
         }
         if (postRequestDto.getTagIds() != null) {
             List<Tag> tags = tagRepository.findByIds(postRequestDto.getTagIds());
@@ -195,25 +202,6 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
-    public void publishScheduledPosts() {
-        List<Post> posts = adminPostRepository.findScheduledPosts();
-        if (posts == null) {
-            return;
-        }
-        for (Post post : posts) {
-            if (post.isSplash()) {
-                adminPostRepository.disableSplashPosts();
-            }
-            if (post.isFeatured()) {
-                adminPostRepository.disableFeaturedPosts();
-            }
-            post.setStatus(PostStatus.PUBLISH);
-            adminPostRepository.update(post);
-            log.info(String.format("[%s] %s", post.getId(), post.getTitle()));
-        }
-    }
-
-    @Override
     public List<String> findAllDisplayNames() {
         return adminPostRepository.findAllDisplayNames();
     }
@@ -258,11 +246,11 @@ public class AdminPostServiceImpl implements AdminPostService {
                     .collect(Collectors.toList());
             responseDto.setTagIds(tagIds);
         }
-        if (!post.getPostProfiles().isEmpty()) {
-            List<Long> profileIds = post.getPostProfiles().stream()
-                    .map(postProfile -> postProfile.getId().getProfileId())
+        if (!post.getPostContributors().isEmpty()) {
+            List<Long> contributorIds = post.getPostContributors().stream()
+                    .map(postContributor -> postContributor.getId().getContributorId())
                     .collect(Collectors.toList());
-            responseDto.setProfileIds(profileIds);
+            responseDto.setContributorIds(contributorIds);
         }
         if (post.getTitleImage() != null) {
             ImageSet titleTimageSet = post.getTitleImage();
@@ -292,4 +280,5 @@ public class AdminPostServiceImpl implements AdminPostService {
         postSummaryDto.setPicked(post.isPicked());
         return postSummaryDto;
     }
+
 }

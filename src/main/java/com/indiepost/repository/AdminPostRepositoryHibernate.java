@@ -125,10 +125,20 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     }
 
     @Override
-    public List<Post> findScheduledPosts() {
+    public List<Post> findScheduledToBePublished() {
         return getCriteria()
                 .add(Restrictions.eq("status", PostStatus.FUTURE))
                 .add(Restrictions.le("publishedAt", LocalDateTime.now()))
+                .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
+                .list();
+    }
+
+    @Override
+    public List<Post> findScheduledToBeIndexed(LocalDateTime indicesLastUpdated) {
+        return getCriteria()
+                .add(Restrictions.eq("status", PostStatus.PUBLISH))
+                .add(Restrictions.gt("modifiedAt", indicesLastUpdated))
+                .addOrder(Order.asc("publishedAt"))
                 .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
                 .list();
     }

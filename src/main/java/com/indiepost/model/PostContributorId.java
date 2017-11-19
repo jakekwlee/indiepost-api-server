@@ -6,19 +6,19 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-public class PostProfileId implements Serializable {
+public class PostContributorId implements Serializable {
     @Column
     private Long postId;
 
     @Column
-    private Long profileId;
+    private Long contributorId;
 
-    private PostProfileId() {
+    private PostContributorId() {
     }
 
-    public PostProfileId(Long postId, Long profileId) {
+    public PostContributorId(Long postId, Long contributorId) {
         this.postId = postId;
-        this.profileId = profileId;
+        this.contributorId = contributorId;
     }
 
     public Long getPostId() {
@@ -29,17 +29,17 @@ public class PostProfileId implements Serializable {
         this.postId = postId;
     }
 
-    public Long getProfileId() {
-        return profileId;
+    public Long getContributorId() {
+        return contributorId;
     }
 
-    public void setProfileId(Long profileId) {
-        this.profileId = profileId;
+    public void setContributorId(Long contributorId) {
+        this.contributorId = contributorId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(postId, profileId);
+        return Objects.hash(postId, contributorId);
     }
 
     @Override
@@ -50,8 +50,8 @@ public class PostProfileId implements Serializable {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        PostProfileId that = (PostProfileId) obj;
+        PostContributorId that = (PostContributorId) obj;
         return Objects.equals(postId, that.postId) &&
-                Objects.equals(profileId, that.profileId);
+                Objects.equals(contributorId, that.contributorId);
     }
 }

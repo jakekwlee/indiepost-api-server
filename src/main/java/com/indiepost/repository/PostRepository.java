@@ -35,5 +35,5 @@ public interface PostRepository {
 
     List<PostSummaryDto> findScheduledPosts();
 
-    List<Post> search(String text, Pageable pageable);
+    List<PostSummaryDto> search(String text, Pageable pageable);
 }

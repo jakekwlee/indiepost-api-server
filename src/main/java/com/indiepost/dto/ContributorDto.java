@@ -5,7 +5,7 @@ import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
 
 import java.time.LocalDateTime;
 
-public class ProfileDto {
+public class ContributorDto {
     private Long id;
     private String name;
     private String email;

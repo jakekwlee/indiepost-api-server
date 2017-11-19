@@ -14,6 +14,11 @@ import java.util.regex.Pattern;
  * Created by jake on 10/12/17.
  */
 public class DomUtil {
+    public static String htmlToText(String html) {
+        Document document = Jsoup.parseBodyFragment(html);
+        return document.text();
+    }
+
     public static Set<String> getImagePrefixes(String content) {
         Pattern pattern = Pattern.compile("\\d{4}/\\d{2}/(\\d{2}/)*\\w{6,8}");
         Set<String> imagePrefixList = new LinkedHashSet<>();

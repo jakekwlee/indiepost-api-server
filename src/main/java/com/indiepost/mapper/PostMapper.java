@@ -4,8 +4,8 @@ import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
+import com.indiepost.model.Contributor;
 import com.indiepost.model.Post;
-import com.indiepost.model.Profile;
 import com.indiepost.model.Tag;
 import org.springframework.beans.BeanUtils;
 
@@ -90,10 +90,10 @@ public class PostMapper {
         }
     }
 
-    public static void addProfilesToPost(Post post, List<Profile> profiles) {
-        post.getPostProfiles().clear();
-        for (Profile profile : profiles) {
-            post.addProfile(profile);
+    public static void addContributorsToPost(Post post, List<Contributor> contributors) {
+        post.getPostContributors().clear();
+        for (Contributor contributor : contributors) {
+            post.addContributor(contributor);
         }
     }
 

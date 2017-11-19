@@ -3,8 +3,8 @@ package com.indiepost.service;
 import com.indiepost.dto.analytics.*;
 import com.indiepost.enums.Types;
 import com.indiepost.enums.Types.ClientType;
-import com.indiepost.model.StatMetadata;
-import com.indiepost.repository.StatMetadataRepository;
+import com.indiepost.model.Metadata;
+import com.indiepost.repository.MetadataRepository;
 import com.indiepost.repository.StatRepository;
 import com.indiepost.repository.VisitorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,17 +22,17 @@ import java.util.List;
 @Transactional
 public class AnalyticsServiceImpl implements AnalyticsService {
 
-    private final StatMetadataRepository statMetadataRepository;
+    private final MetadataRepository metadataRepository;
 
     private final StatRepository statRepository;
 
     private final VisitorRepository visitorRepository;
 
     @Autowired
-    public AnalyticsServiceImpl(StatMetadataRepository statMetadataRepository,
+    public AnalyticsServiceImpl(MetadataRepository metadataRepository,
                                 StatRepository statRepository,
                                 VisitorRepository visitorRepository) {
-        this.statMetadataRepository = statMetadataRepository;
+        this.metadataRepository = metadataRepository;
         this.statRepository = statRepository;
         this.visitorRepository = visitorRepository;
     }
@@ -106,8 +106,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     @Override
     public PostStatsDto getAllPostStats() {
         List<PostStatDto> statData = statRepository.getAllPostStatsFromCache();
-        StatMetadata metadata = statMetadataRepository.findOne(1L);
-        LocalDateTime lastUpdated = metadata.getPostStatsUpdatedAt();
+        Metadata metadata = metadataRepository.findOne(1L);
+        LocalDateTime lastUpdated = metadata.getPostStatsLastUpdated();
         return new PostStatsDto(lastUpdated, statData);
     }
 
@@ -122,15 +122,16 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     @Override
     public void updateCachedPostStats() {
+        // TODO move to PostScheduledTaskService
         statRepository.deleteAllPostStatsCache();
         statRepository.updatePostStatsCache();
 
-        StatMetadata statMetadata = statMetadataRepository.findOne(1L);
-        if (statMetadata == null) {
-            statMetadata = new StatMetadata();
+        Metadata metadata = metadataRepository.findOne(1L);
+        if (metadata == null) {
+            metadata = new Metadata();
         }
         LocalDateTime now = LocalDateTime.now();
-        statMetadata.setPostStatsUpdatedAt(now);
-        statMetadataRepository.save(statMetadata);
+        metadata.setPostStatsLastUpdated(now);
+        metadataRepository.save(metadata);
     }
 }

@@ -55,13 +55,13 @@ public class AdminPostServiceTests {
         );
         Long[] expectedProfiles = {1L, 2L};
         assertNotNull(
-                "Post profileIds should not be null",
-                responseDto.getProfileIds()
+                "Post contributorIds should not be null",
+                responseDto.getContributorIds()
         );
         assertArrayEquals(
-                "Post profileIds contain array of profile_id properly",
+                "Post contributorIds contain array of contributor_id properly",
                 expectedProfiles,
-                responseDto.getProfileIds().toArray()
+                responseDto.getContributorIds().toArray()
         );
         printToJson(responseDto);
     }

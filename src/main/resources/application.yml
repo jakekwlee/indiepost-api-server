@@ -17,9 +17,6 @@ spring:
     generate-ddl: true
     properties:
       hibernate:
-        search:
-          default:
-            directory_provider: ram
         max_fetch_depth: 3
         connection:
           charSet: UTF-8

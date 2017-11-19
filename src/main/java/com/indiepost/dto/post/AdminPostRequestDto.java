@@ -41,7 +41,7 @@ public class AdminPostRequestDto {
 
     private boolean splash;
 
-    private List<Long> profileIds;
+    private List<Long> contributorIds;
 
     private List<Long> tagIds;
 
@@ -149,12 +149,12 @@ public class AdminPostRequestDto {
         this.splash = splash;
     }
 
-    public List<Long> getProfileIds() {
-        return profileIds;
+    public List<Long> getContributorIds() {
+        return contributorIds;
     }
 
-    public void setProfileIds(List<Long> profileIds) {
-        this.profileIds = profileIds;
+    public void setContributorIds(List<Long> contributorIds) {
+        this.contributorIds = contributorIds;
     }
 
     public List<Long> getTagIds() {

@@ -1,6 +1,6 @@
 package com.indiepost.model;
 
-import com.indiepost.enums.Types.ProfileRole;
+import com.indiepost.enums.Types.ContributorRole;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.URL;
 
@@ -18,8 +18,8 @@ import java.util.Objects;
  * Created by jake on 17. 11. 13.
  */
 @Entity
-@Table(name = "Profiles")
-public class Profile implements Serializable {
+@Table(name = "Contributors")
+public class Contributor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -31,16 +31,16 @@ public class Profile implements Serializable {
     private String name;
 
     @OneToMany(
-            mappedBy = "profile",
+            mappedBy = "contributor",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<PostProfile> postProfiles = new ArrayList<>();
+    private List<PostContributor> postContributors = new ArrayList<>();
 
     @NotNull
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ProfileRole role;
+    private ContributorRole role;
 
     @Email
     private String email;
@@ -83,11 +83,11 @@ public class Profile implements Serializable {
         this.name = name;
     }
 
-    public ProfileRole getRole() {
+    public ContributorRole getRole() {
         return role;
     }
 
-    public void setRole(ProfileRole role) {
+    public void setRole(ContributorRole role) {
         this.role = role;
     }
 
@@ -155,20 +155,20 @@ public class Profile implements Serializable {
         this.modifiedAt = modifiedAt;
     }
 
-    public List<PostProfile> getPostProfiles() {
-        return postProfiles;
+    public List<PostContributor> getPostContributors() {
+        return postContributors;
     }
 
-    public void setPostProfiles(List<PostProfile> postProfiles) {
-        this.postProfiles = postProfiles;
+    public void setPostContributors(List<PostContributor> postContributors) {
+        this.postContributors = postContributors;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Profile profile = (Profile) o;
-        return Objects.equals(name, profile.name);
+        Contributor contributor = (Contributor) o;
+        return Objects.equals(name, contributor.name);
     }
 
     @Override

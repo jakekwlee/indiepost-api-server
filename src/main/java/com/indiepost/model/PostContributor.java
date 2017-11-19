@@ -5,18 +5,18 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "Posts_Profiles")
-public class PostProfile {
+@Table(name = "Posts_Contributors")
+public class PostContributor {
     @EmbeddedId
-    private PostProfileId id;
+    private PostContributorId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("postId")
     private Post post;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @MapsId("profileId")
-    private Profile profile;
+    @MapsId("contributorId")
+    private Contributor contributor;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -24,26 +24,26 @@ public class PostProfile {
     @Column(nullable = false)
     private int priority;
 
-    private PostProfile() {
+    private PostContributor() {
     }
 
-    public PostProfile(Post post, Profile profile) {
+    public PostContributor(Post post, Contributor contributor) {
         this.post = post;
-        this.profile = profile;
+        this.contributor = contributor;
     }
 
-    public PostProfile(Post post, Profile profile, LocalDateTime createdAt, int priority) {
+    public PostContributor(Post post, Contributor contributor, LocalDateTime createdAt, int priority) {
         this.post = post;
-        this.profile = profile;
+        this.contributor = contributor;
         this.createdAt = createdAt;
         this.priority = priority;
     }
 
-    public PostProfileId getId() {
+    public PostContributorId getId() {
         return id;
     }
 
-    public void setId(PostProfileId id) {
+    public void setId(PostContributorId id) {
         this.id = id;
     }
 
@@ -55,12 +55,12 @@ public class PostProfile {
         this.post = post;
     }
 
-    public Profile getProfile() {
-        return profile;
+    public Contributor getContributor() {
+        return contributor;
     }
 
-    public void setProfile(Profile profile) {
-        this.profile = profile;
+    public void setContributor(Contributor contributor) {
+        this.contributor = contributor;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -81,7 +81,7 @@ public class PostProfile {
 
     @Override
     public int hashCode() {
-        return Objects.hash(post, profile);
+        return Objects.hash(post, contributor);
     }
 
     @Override
@@ -92,8 +92,8 @@ public class PostProfile {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        PostProfile that = (PostProfile) obj;
+        PostContributor that = (PostContributor) obj;
         return Objects.equals(post, that.post) &&
-                Objects.equals(profile, that.profile);
+                Objects.equals(contributor, that.contributor);
     }
 }

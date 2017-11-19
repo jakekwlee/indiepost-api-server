@@ -1,8 +1,6 @@
 package com.indiepost.task;
 
 import com.indiepost.config.AppConfig;
-import org.hibernate.search.jpa.FullTextEntityManager;
-import org.hibernate.search.jpa.Search;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -15,7 +13,7 @@ import javax.persistence.PersistenceContext;
  * Created by jake on 17. 3. 12.
  */
 @Component
-public class SearchIndexBuilder implements ApplicationListener<ApplicationReadyEvent> {
+public class ElasticsearchIndexBuilder implements ApplicationListener<ApplicationReadyEvent> {
 
     private final AppConfig appConfig;
 
@@ -23,7 +21,7 @@ public class SearchIndexBuilder implements ApplicationListener<ApplicationReadyE
     private EntityManager entityManager;
 
     @Autowired
-    public SearchIndexBuilder(AppConfig appConfig) {
+    public ElasticsearchIndexBuilder(AppConfig appConfig) {
         this.appConfig = appConfig;
     }
 
@@ -38,9 +36,8 @@ public class SearchIndexBuilder implements ApplicationListener<ApplicationReadyE
             return;
         }
         try {
-            FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
-            fullTextEntityManager.createIndexer().startAndWait();
-        } catch (InterruptedException e) {
+            // TODO build search index
+        } catch (Exception e) {
             System.out.println(
                     "An error occurred trying to build the search index: " +
                             e.toString());

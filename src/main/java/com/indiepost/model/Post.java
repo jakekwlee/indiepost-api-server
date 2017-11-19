@@ -3,16 +3,8 @@ package com.indiepost.model;
 import com.indiepost.enums.Types;
 import com.indiepost.model.analytics.Pageview;
 import com.indiepost.model.legacy.LegacyPost;
-import org.apache.lucene.analysis.charfilter.HTMLStripCharFilterFactory;
-import org.apache.lucene.analysis.core.LowerCaseFilterFactory;
-import org.apache.lucene.analysis.core.StopFilterFactory;
-import org.apache.lucene.analysis.ko.*;
-import org.apache.lucene.analysis.standard.ClassicFilterFactory;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.search.annotations.*;
-import org.hibernate.search.annotations.Parameter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -29,37 +21,11 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "Posts")
-@Indexed
-@AnalyzerDef(name = "koreanHtmlTextAnalyzer",
-        charFilters = {
-                @CharFilterDef(factory = HTMLStripCharFilterFactory.class),
-        },
-        tokenizer = @TokenizerDef(factory = KoreanTokenizerFactory.class),
-        filters = {
-                @TokenFilterDef(factory = LowerCaseFilterFactory.class),
-                @TokenFilterDef(factory = ClassicFilterFactory.class),
-                @TokenFilterDef(factory = KoreanFilterFactory.class, params = {
-                        @Parameter(name = "hasOrigin", value = "true"),
-                        @Parameter(name = "hasCNoun", value = "false"),
-                        @Parameter(name = "exactMatch", value = "true"),
-                        @Parameter(name = "bigrammable", value = "false")
-                }),
-                @TokenFilterDef(factory = HanjaMappingFilterFactory.class),
-                @TokenFilterDef(factory = PunctuationDelimitFilterFactory.class),
-                @TokenFilterDef(factory = StopFilterFactory.class, params = {
-                        @Parameter(name = "words", value = "org/apache/lucene/analysis/ko/stopwords.txt"),
-                        @Parameter(name = "ignoreCase", value = "true")
-                })
-        }
-
-)
 public class Post implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Field(name = "id_sortable", analyze = Analyze.NO)
-    @SortableField(forField = "id_sortable")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
@@ -88,25 +54,17 @@ public class Post implements Serializable {
 
     @Column(nullable = false)
     @Size(max = 100)
-    @Field(boost = @Boost(value = 3f))
-    @Analyzer(impl = KoreanAnalyzer.class)
     private String title = "No Title";
 
     @Column(nullable = false, columnDefinition = "LONGTEXT")
-    @Field
-    @Analyzer(definition = "koreanHtmlTextAnalyzer")
     private String content = "";
 
     @Column(nullable = false)
     @Size(max = 300)
-    @Field(boost = @Boost(value = 1.2f))
-    @Analyzer(impl = KoreanAnalyzer.class)
     private String excerpt = "No Excerpt";
 
     @Column(nullable = false)
     @Size(max = 30)
-    @Field(boost = @Boost(value = 2f))
-    @Analyzer(impl = StandardAnalyzer.class)
     private String displayName = "Indiepost";
 
     @Column(nullable = false)
@@ -157,7 +115,7 @@ public class Post implements Serializable {
             orphanRemoval = true
     )
     @OrderBy("priority")
-    private List<PostProfile> postProfiles = new ArrayList<>();
+    private List<PostContributor> postContributors = new ArrayList<>();
 
     @OneToMany(
             mappedBy = "post",
@@ -290,44 +248,44 @@ public class Post implements Serializable {
         this.category = category;
     }
 
-    public List<PostProfile> getPostProfiles() {
-        return postProfiles;
+    public List<PostContributor> getPostContributors() {
+        return postContributors;
     }
 
-    public void setPostProfiles(List<PostProfile> postProfiles) {
-        this.postProfiles = postProfiles;
+    public void setPostContributors(List<PostContributor> postContributors) {
+        this.postContributors = postContributors;
     }
 
-    public void addProfile(Profile profile) {
+    public void addContributor(Contributor contributor) {
         int priority = 1;
-        int size = this.postProfiles.size();
+        int size = this.postContributors.size();
         if (size > 0) {
-            PostProfile lastOne = this.postProfiles.get(size - 1);
+            PostContributor lastOne = this.postContributors.get(size - 1);
             priority = lastOne.getPriority() + 1;
         }
-        PostProfile postProfile = new PostProfile(this, profile, LocalDateTime.now(), priority);
-        this.postProfiles.add(postProfile);
-        profile.getPostProfiles().add(postProfile);
+        PostContributor postContributor = new PostContributor(this, contributor, LocalDateTime.now(), priority);
+        this.postContributors.add(postContributor);
+        contributor.getPostContributors().add(postContributor);
     }
 
-    public void removeProfile(Profile profile) {
-        for (Iterator<PostProfile> iterator = postProfiles.iterator();
+    public void removeContributor(Contributor contributor) {
+        for (Iterator<PostContributor> iterator = postContributors.iterator();
              iterator.hasNext(); ) {
-            PostProfile postProfile = iterator.next();
+            PostContributor postContributor = iterator.next();
 
-            if (postProfile.getPost().equals(this) &&
-                    postProfile.getProfile().equals(profile)) {
+            if (postContributor.getPost().equals(this) &&
+                    postContributor.getContributor().equals(contributor)) {
                 iterator.remove();
-                postProfile.getProfile().getPostProfiles().remove(postProfile);
-                postProfile.setPost(null);
-                postProfile.setProfile(null);
+                postContributor.getContributor().getPostContributors().remove(postContributor);
+                postContributor.setPost(null);
+                postContributor.setContributor(null);
             }
         }
     }
 
-    public List<Profile> getProfiles() {
-        return postProfiles.stream()
-                .map(postProfile -> postProfile.getProfile())
+    public List<Contributor> getContributors() {
+        return postContributors.stream()
+                .map(postContributor -> postContributor.getContributor())
                 .collect(Collectors.toList());
     }
 

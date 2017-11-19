@@ -37,5 +37,4 @@ public interface AdminPostService {
 
     List<String> findAllDisplayNames();
 
-    void publishScheduledPosts();
 }
