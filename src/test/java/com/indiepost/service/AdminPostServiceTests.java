@@ -93,7 +93,7 @@ public class AdminPostServiceTests {
                 isUnique = false;
             }
             assertNotNull("AdminPostSummaryDto should contain it's title", dto.getTitle());
-            assertNotNull("AdminPostSummaryDto should contain it's displayName", dto.getDisplayName());
+            assertNotNull("AdminPostSummaryDto should contain it's displayName", dto.getBylineName());
             assertNotNull("AdminPostSummaryDto should contain it's categoryName", dto.getCategoryName());
             assertNotNull("AdminPostSummaryDto should contain it's creatorName", dto.getCreatorName());
             assertNotNull("AdminPostSummaryDto should contain it's created time", dto.getCreatedAt());

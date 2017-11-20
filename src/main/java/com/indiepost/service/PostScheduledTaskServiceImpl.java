@@ -75,7 +75,7 @@ public class PostScheduledTaskServiceImpl implements PostScheduledTaskService {
         PostEs postEs = new PostEs();
         postEs.setId(post.getId());
         postEs.setTitle(post.getTitle());
-        postEs.setBylineName(post.getDisplayName());
+        postEs.setBylineName(post.getBylineName());
         postEs.setExcerpt(post.getExcerpt());
 
         List<String> contributors = post.getContributors().stream()

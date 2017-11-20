@@ -23,7 +23,7 @@ public class AdminPostRequestDto {
 
     private String excerpt;
 
-    private String displayName;
+    private String bylineName;
 
     private Long titleImageId;
 
@@ -85,12 +85,12 @@ public class AdminPostRequestDto {
         this.excerpt = excerpt;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getBylineName() {
+        return bylineName;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    public void setBylineName(String bylineName) {
+        this.bylineName = bylineName;
     }
 
     public Long getTitleImageId() {

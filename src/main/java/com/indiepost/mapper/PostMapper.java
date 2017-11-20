@@ -22,7 +22,7 @@ public class PostMapper {
         destPost.setTitle(srcPost.getTitle());
         destPost.setExcerpt(srcPost.getExcerpt());
         destPost.setContent(srcPost.getContent());
-        destPost.setDisplayName(srcPost.getDisplayName());
+        destPost.setBylineName(srcPost.getBylineName());
         destPost.setStatus(srcPost.getStatus());
         destPost.setCreator(srcPost.getCreator());
         destPost.setModifiedUser(srcPost.getModifiedUser());
@@ -45,11 +45,9 @@ public class PostMapper {
         postSummaryDto.setPicked(post.isPicked());
         postSummaryDto.setTitle(post.getTitle());
         postSummaryDto.setExcerpt(post.getExcerpt());
-        postSummaryDto.setCategoryId(post.getCategoryId());
         postSummaryDto.setBookmarkCount(post.getBookmarkCount());
         postSummaryDto.setLegacyPostId(post.getLegacyPostId());
-        postSummaryDto.setDisplayName(post.getDisplayName());
-        postSummaryDto.setTitleImageId(post.getTitleImageId());
+        postSummaryDto.setBylineName(post.getBylineName());
         return postSummaryDto;
     }
 
@@ -66,8 +64,8 @@ public class PostMapper {
         if (requestDto.getPublishedAt() != null) {
             post.setPublishedAt(requestDto.getPublishedAt());
         }
-        if (requestDto.getDisplayName() != null && requestDto.getDisplayName().length() > 0) {
-            post.setDisplayName(requestDto.getDisplayName());
+        if (requestDto.getBylineName() != null && requestDto.getBylineName().length() > 0) {
+            post.setBylineName(requestDto.getBylineName());
         }
         if (requestDto.getCategoryId() != null) {
             post.setCategoryId(requestDto.getCategoryId());
@@ -109,7 +107,7 @@ public class PostMapper {
         post.setPublishedAt(dto.getPublishedAt());
         post.setContent(dto.getContent());
         post.setExcerpt(dto.getExcerpt());
-        post.setDisplayName(dto.getDisplayName());
+        post.setBylineName(dto.getBylineName());
 
         post.setSplash(dto.isSplash());
         post.setFeatured(dto.isFeatured());

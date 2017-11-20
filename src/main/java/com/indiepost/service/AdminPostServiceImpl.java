@@ -143,8 +143,8 @@ public class AdminPostServiceImpl implements AdminPostService {
         if (StringUtils.isEmpty(post.getExcerpt())) {
             post.setExcerpt("");
         }
-        if (StringUtils.isEmpty(post.getDisplayName())) {
-            post.setDisplayName("Indiepost");
+        if (StringUtils.isEmpty(post.getBylineName())) {
+            post.setBylineName("Indiepost");
         }
         if (post.getPublishedAt() == null) {
             post.setPublishedAt(LocalDateTime.now().plusDays(7));
@@ -218,7 +218,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         responseDto.setTitle(post.getTitle());
         responseDto.setContent(post.getContent());
         responseDto.setExcerpt(post.getExcerpt());
-        responseDto.setDisplayName(post.getDisplayName());
+        responseDto.setBylineName(post.getBylineName());
         responseDto.setTitleImage(post.getTitleImage());
         responseDto.setTitleImageId(post.getTitleImageId());
         responseDto.setStatus(post.getStatus().toString());
@@ -269,7 +269,7 @@ public class AdminPostServiceImpl implements AdminPostService {
 
         postSummaryDto.setStatus(post.getStatus().toString());
         postSummaryDto.setTitle(post.getTitle());
-        postSummaryDto.setDisplayName(post.getDisplayName());
+        postSummaryDto.setBylineName(post.getBylineName());
         postSummaryDto.setCreatedAt(post.getCreatedAt());
         postSummaryDto.setPublishedAt(post.getPublishedAt());
         postSummaryDto.setModifiedAt(post.getModifiedAt());

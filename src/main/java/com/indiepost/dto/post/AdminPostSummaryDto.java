@@ -18,7 +18,7 @@ public class AdminPostSummaryDto {
 
     private String status;
 
-    private String displayName;
+    private String bylineName;
 
     private String categoryName;
 
@@ -123,12 +123,12 @@ public class AdminPostSummaryDto {
         this.bookmarkCount = bookmarkCount;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getBylineName() {
+        return bylineName;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    public void setBylineName(String bylineName) {
+        this.bylineName = bylineName;
     }
 
     public boolean isFeatured() {

@@ -1,5 +1,6 @@
 package com.indiepost.service;
 
+import com.indiepost.dto.ImageSetDto;
 import com.indiepost.dto.analytics.PostStatDto;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostQuery;
@@ -27,7 +28,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.indiepost.mapper.PostMapper.postToPostDto;
-import static com.indiepost.mapper.PostMapper.postToPostSummaryDto;
 
 /**
  * Created by jake on 7/30/16.
@@ -62,7 +62,7 @@ public class PostServiceImpl implements PostService {
         post.getContributors();
         ImageSet titleImage = post.getTitleImage();
         if (titleImage != null) {
-            titleImage.getOptimized();
+            titleImage.getImages();
         }
         return postToPostDto(post);
     }
@@ -75,7 +75,7 @@ public class PostServiceImpl implements PostService {
         post.getContributors();
         ImageSet titleImage = post.getTitleImage();
         if (titleImage != null) {
-            titleImage.getOptimized();
+            titleImage.getImages();
         }
         return postToPostDto(post);
     }
@@ -92,29 +92,29 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostSummaryDto> findByIds(List<Long> ids) {
-        List<PostSummaryDto> result = postRepository.findByIds(ids);
-        return setTitleImages(result);
+        List<Post> posts = postRepository.findByIds(ids);
+        return toPostSummaryDtoList(posts);
     }
 
     @Override
     public List<PostSummaryDto> find(int page, int maxResults, boolean isDesc) {
         Pageable pageable = getPageable(page, maxResults, isDesc);
-        List<PostSummaryDto> result = postRepository.findByStatus(PostStatus.PUBLISH, pageable);
-        return setTitleImages(result);
+        List<Post> posts = postRepository.findByStatus(PostStatus.PUBLISH, pageable);
+        return toPostSummaryDtoList(posts);
     }
 
     @Override
     public List<PostSummaryDto> findByQuery(PostQuery query, boolean isDesc) {
         Pageable pageable = getPageable(query.getPage(), query.getMaxResults(), isDesc);
-        List<PostSummaryDto> result = postRepository.findByQuery(query, pageable);
-        return setTitleImages(result);
+        List<Post> posts = postRepository.findByQuery(query, pageable);
+        return toPostSummaryDtoList(posts);
     }
 
     @Override
     public List<PostSummaryDto> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc) {
         Pageable pageable = getPageable(page, maxResults, isDesc);
-        List<PostSummaryDto> result = postRepository.findByCategoryId(categoryId, pageable);
-        return setTitleImages(result);
+        List<Post> posts = postRepository.findByCategoryId(categoryId, pageable);
+        return toPostSummaryDtoList(posts);
     }
 
     @Override
@@ -128,44 +128,44 @@ public class PostServiceImpl implements PostService {
             return null;
         }
         // TODO find better solution!
-        List<PostSummaryDto> dtoList = posts.stream()
+        return posts.stream()
                 .filter(post -> post.getStatus().equals(PostStatus.PUBLISH))
-                .map(post -> postToPostSummaryDto(post))
+                .map(post -> toPostSummaryDto(post))
                 .collect(Collectors.toList());
-        return setTitleImages(dtoList);
     }
 
     @Override
-    public List<RelatedPostResponse> getRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobile) {
-        List<PostSummaryDto> postSummaryDtoList = this.postRepository.findByIds(ids);
-        if (postSummaryDtoList == null) {
+    public List<RelatedPostResponse> getRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobileApp) {
+        List<Post> posts = this.postRepository.findByIds(ids);
+
+        if (posts == null) {
             return null;
         }
 
-        this.setTitleImages(postSummaryDtoList);
         String legacyPostMobileUrl = "http://www.indiepost.co.kr/indiepost/ContentView.do?no=";
         String legacyPostWebUrl = "http://www.indiepost.co.kr/ContentView.do?no=";
 
         List<RelatedPostResponse> relatedPostResponseList = new ArrayList<>();
-        for (PostSummaryDto postSummaryDto : postSummaryDtoList) {
+
+        for (Post post : posts) {
             RelatedPostResponse relatedPostResponse = new RelatedPostResponse();
-            relatedPostResponse.setId(postSummaryDto.getId());
-            relatedPostResponse.setTitle(postSummaryDto.getTitle());
-            relatedPostResponse.setExcerpt(postSummaryDto.getExcerpt());
-            if (postSummaryDto.getTitleImageId() != null) {
-                Image image = postSummaryDto.getTitleImage().getThumbnail();
+            relatedPostResponse.setId(post.getId());
+            relatedPostResponse.setTitle(post.getTitle());
+            relatedPostResponse.setExcerpt(post.getExcerpt());
+            if (post.getTitleImage() != null) {
+                Image image = post.getTitleImage().getThumbnail();
                 relatedPostResponse.setImageUrl(image.getFilePath());
                 relatedPostResponse.setImageWidth(image.getWidth());
                 relatedPostResponse.setImageHeight(image.getHeight());
             }
             if (isLegacy) {
-                if (isMobile) {
-                    relatedPostResponse.setUrl(legacyPostMobileUrl + postSummaryDto.getLegacyPostId());
+                if (isMobileApp) {
+                    relatedPostResponse.setUrl(legacyPostMobileUrl + post.getLegacyPostId());
                 } else {
-                    relatedPostResponse.setUrl(legacyPostWebUrl + postSummaryDto.getLegacyPostId());
+                    relatedPostResponse.setUrl(legacyPostWebUrl + post.getLegacyPostId());
                 }
             } else {
-                relatedPostResponse.setUrl("/posts/" + postSummaryDto.getId());
+                relatedPostResponse.setUrl("/posts/" + post.getId());
             }
             relatedPostResponseList.add(relatedPostResponse);
         }
@@ -179,16 +179,17 @@ public class PostServiceImpl implements PostService {
                 .map(postStat -> postStat.getId())
                 .collect(Collectors.toList());
 
-        List<PostSummaryDto> topRatedPosts = postRepository.findByIds(topPostIds);
+        List<Post> topRatedPosts = postRepository.findByIds(topPostIds);
         if (topRatedPosts == null) {
             return new ArrayList<>();
         }
-        return setTitleImages(topRatedPosts);
+        return toPostSummaryDtoList(topRatedPosts);
     }
 
     @Override
     public List<PostSummaryDto> getScheduledPosts() {
-        return postRepository.findScheduledPosts();
+        List<Post> posts = postRepository.findScheduledPosts();
+        return toPostSummaryDtoList(posts);
     }
 
     @Override
@@ -197,7 +198,11 @@ public class PostServiceImpl implements PostService {
             text = text.substring(0, 30);
         }
         Pageable pageable = getPageable(page, maxResults, true);
-        return postRepository.search(text, pageable);
+        List<Post> posts = postRepository.search(text, pageable);
+        if (posts == null) {
+            return new ArrayList<>();
+        }
+        return toPostSummaryDtoList(posts);
     }
 
     @Override
@@ -234,29 +239,48 @@ public class PostServiceImpl implements PostService {
         return findByQuery(query, true);
     }
 
-    private List<PostSummaryDto> setTitleImages(List<PostSummaryDto> postSummaryDtoList) {
-        List<Long> ids = postSummaryDtoList.stream()
-                .filter(postExcerpt -> postExcerpt.getTitleImageId() != null)
-                .map(PostSummaryDto::getTitleImageId)
+    private List<PostSummaryDto> toPostSummaryDtoList(List<Post> posts) {
+        return posts.stream()
+                .map(post -> toPostSummaryDto(post))
                 .collect(Collectors.toList());
+    }
 
-        if (ids.size() == 0) {
-            return postSummaryDtoList;
+    private PostSummaryDto toPostSummaryDto(Post post) {
+        PostSummaryDto dto = new PostSummaryDto();
+        dto.setId(post.getId());
+        dto.setLegacyPostId(post.getLegacyPostId());
+        dto.setTitle(post.getTitle());
+        dto.setBylineName(post.getBylineName());
+        dto.setBookmarkCount(post.getBookmarkCount());
+        dto.setPublishedAt(post.getPublishedAt());
+        dto.setSplash(post.isSplash());
+        dto.setFeatured(post.isFeatured());
+        dto.setPicked(post.isPicked());
+        if (post.getCategory() != null) {
+            dto.setCategory(post.getCategory().getSlug());
         }
-
-        List<ImageSet> imageSetList = imageRepository.findByIds(ids);
-
-        for (PostSummaryDto postSummaryDto : postSummaryDtoList) {
-            Long titleImageId = postSummaryDto.getTitleImageId();
-            for (ImageSet imageSet : imageSetList) {
-                if (imageSet.getId().equals(titleImageId)) {
-                    postSummaryDto.setTitleImage(imageSet);
-                    break;
-                }
+        ImageSet titleImage = post.getTitleImage();
+        if (titleImage != null) {
+            ImageSetDto titleImageDto = new ImageSetDto();
+            titleImageDto.setId(titleImage.getId());
+            titleImageDto.setId(titleImage.getId());
+            if (titleImage.getOriginal() != null) {
+                titleImageDto.setOriginal(titleImage.getOriginal().getFilePath());
+            }
+            if (titleImage.getLarge() != null) {
+                titleImageDto.setLarge(titleImage.getLarge().getFilePath());
+            }
+            if (titleImage.getOptimized() != null) {
+                titleImageDto.setOptimized(titleImage.getOptimized().getFilePath());
+            }
+            if (titleImage.getSmall() != null) {
+                titleImageDto.setSmall(titleImage.getSmall().getFilePath());
+            }
+            if (titleImage.getThumbnail() != null) {
+                titleImageDto.setThumbnail(titleImage.getThumbnail().getFilePath());
             }
         }
-
-        return postSummaryDtoList;
+        return dto;
     }
 
     private Pageable getPageable(int page, int maxResults, boolean isDesc) {

@@ -1,14 +1,12 @@
 package com.indiepost.repository;
 
-import com.github.fluent.hibernate.transformer.FluentHibernateResultTransformer;
 import com.indiepost.dto.post.PostQuery;
-import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Post;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
+import org.hibernate.sql.JoinType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -77,96 +75,85 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     @Override
-    public List<PostSummaryDto> find(Pageable pageable) {
+    public List<Post> find(Pageable pageable) {
         return findByQuery(new PostQuery(), pageable);
     }
 
 
     @Override
-    public List<PostSummaryDto> findByQuery(PostQuery query, Pageable pageable) {
-        Criteria criteria = getPagedCriteria(pageable);
-        ProjectionList projectionList = this.getProjectionList();
-
-        if (query != null && StringUtils.isNotEmpty(query.getCategorySlug())) {
-            criteria.createAlias("category", "category");
-            projectionList.add(Property.forName("category.slug"), "categoryName");
-        }
-
-        criteria.setProjection(projectionList);
+    public List<Post> findByQuery(PostQuery query, Pageable pageable) {
         Conjunction conjunction = buildConjunction(query);
+
+        // TODO
+        Criteria criteria = this.getPagedCriteria(pageable);
+        criteria.createAlias("category", "category");
+        criteria.createAlias("titleImage", "titleImage", JoinType.LEFT_OUTER_JOIN);
+        criteria.createAlias("titleImage.images", "titleImage.images");
+        ProjectionList projection = this.getSummaryProjection();
+        criteria.setProjection(projection);
 
         if (conjunction.conditions().iterator().hasNext()) {
             criteria.add(conjunction);
         }
-        criteria.setResultTransformer(new FluentHibernateResultTransformer(PostSummaryDto.class));
         return criteria.list();
     }
 
     @Override
-    public List<PostSummaryDto> findByCategoryId(Long categoryId, Pageable pageable) {
+    public List<Post> findByCategoryId(Long categoryId, Pageable pageable) {
         PostQuery query = new PostQuery();
-        if (categoryId != 0L) {
-            query.setCategoryId(categoryId);
-        }
+        query.setCategoryId(categoryId);
         return this.findByQuery(query, pageable);
     }
 
-    @SuppressWarnings("JpaQlInspection")
     @Override
-    public List<PostSummaryDto> findByIds(List<Long> ids) {
+    public List<Post> findByIds(List<Long> ids) {
         if (ids == null || ids.size() == 0) {
             return null;
         }
-        String[] stringArray = ids.stream()
-                .map(id -> id.toString())
-                .toArray(String[]::new);
-
-        String joinedIds = String.join(", ", stringArray);
-        String queryString = "select new com.indiepost.dto.post.PostSummaryDto(" +
-                "p.id, p.legacyPostId, p.featured, p.picked, p.splash, p.title, p.excerpt, " +
-                "p.displayName, p.publishedAt, p.titleImage, p.titleImageId, p.status, c.id, c.name, " +
-                "p.bookmarkCount) from Post p inner join p.category c where p.id in (:ids) ORDER BY field(p.id, " + joinedIds + ")";
-        org.hibernate.Query query = getSession().createQuery(queryString);
-        query.setParameterList("ids", ids);
-        return query.list();
+        Criteria criteria = getCriteria();
+        ProjectionList projection = this.getSummaryProjection();
+        criteria.setProjection(projection);
+        criteria.add(Restrictions.in("id", ids));
+        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+        return criteria.list();
     }
 
     @Override
-    public List<PostSummaryDto> findByStatus(PostStatus status, Pageable pageable) {
+    public List<Post> findByStatus(PostStatus status, Pageable pageable) {
         PostQuery query = new PostQuery();
         query.setStatus(status);
         return this.findByQuery(query, pageable);
     }
 
     @Override
-    public List<PostSummaryDto> findScheduledPosts() {
+    public List<Post> findScheduledPosts() {
         return getCriteria()
-                .setProjection(getProjectionList())
+                .setProjection(getSummaryProjection())
                 .add(Restrictions.eq("status", PostStatus.FUTURE))
                 .addOrder(Order.asc("publishedAt"))
-                .setResultTransformer(new FluentHibernateResultTransformer(PostSummaryDto.class))
+                .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
                 .list();
     }
 
     @Override
-    public List<PostSummaryDto> search(String text, Pageable pageable) {
+    public List<Post> search(String text, Pageable pageable) {
         return null;
     }
 
-    private ProjectionList getProjectionList() {
+    private ProjectionList getSummaryProjection() {
         return Projections.projectionList()
                 .add(Property.forName("id"), "id")
+                .add(Property.forName("legacyPostId"), "legacyPostId")
                 .add(Property.forName("title"), "title")
+                .add(Property.forName("excerpt"), "excerpt")
+                .add(Property.forName("bylineName"), "bylineName")
+                .add(Property.forName("category"), "category")
+                .add(Property.forName("category.slug"), "category.slug")
+                .add(Property.forName("publishedAt"), "publishedAt")
+                .add(Property.forName("bookmarkCount"), "bookmarkCount")
                 .add(Property.forName("featured"), "featured")
                 .add(Property.forName("picked"), "picked")
-                .add(Property.forName("excerpt"), "excerpt")
                 .add(Property.forName("splash"), "splash")
-                .add(Property.forName("publishedAt"), "publishedAt")
-                .add(Property.forName("displayName"), "displayName")
-                .add(Property.forName("bookmarkCount"), "bookmarkCount")
-                .add(Property.forName("categoryId"), "categoryId")
-                .add(Property.forName("status"), "status")
-                .add(Property.forName("titleImageId"), "titleImageId")
                 .add(Property.forName("titleImage"), "titleImage")
                 .add(Property.forName("titleImage.images"), "titleImage.images");
     }

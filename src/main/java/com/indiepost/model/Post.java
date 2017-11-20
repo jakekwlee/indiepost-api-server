@@ -65,7 +65,7 @@ public class Post implements Serializable {
 
     @Column(nullable = false)
     @Size(max = 30)
-    private String displayName = "Indiepost";
+    private String bylineName = "Indiepost";
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -192,12 +192,12 @@ public class Post implements Serializable {
         this.titleImageId = titleImageId;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getBylineName() {
+        return bylineName;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    public void setBylineName(String bylineName) {
+        this.bylineName = bylineName;
     }
 
     public LocalDateTime getModifiedAt() {
