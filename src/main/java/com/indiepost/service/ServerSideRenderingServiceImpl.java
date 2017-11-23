@@ -6,7 +6,7 @@ import com.indiepost.dto.PageDto;
 import com.indiepost.dto.ServerSideRenderingRequest;
 import com.indiepost.dto.ServerSideRenderingResponse;
 import com.indiepost.dto.post.PostDto;
-import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.PostSearch;
 import com.indiepost.dto.post.PostSummaryDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -71,11 +71,9 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
     @Override
     public void renderPostsByCategoryPage(String categorySlug, Model model, String servletPath) {
         InitialData initialData = initialDataService.getInitialData(false);
-        PostQuery query = new PostQuery();
+        PostSearch query = new PostSearch();
         query.setCategorySlug(categorySlug.toLowerCase());
-        query.setPage(0);
-        query.setMaxResults(config.getFetchCount());
-        List<PostSummaryDto> posts = postService.findByQuery(query, true);
+        List<PostSummaryDto> posts = postService.search(query, 0, config.getFetchCount(), true);
         ServerSideRenderingRequest rsRequest =
                 new ServerSideRenderingRequest(initialData, posts, servletPath);
         this.render(model, rsRequest);
@@ -84,7 +82,7 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
     @Override
     public void renderPostByTagPage(String tagName, Model model, String servletPath) {
         InitialData initialData = initialDataService.getInitialData(false);
-        List<PostSummaryDto> posts = postService.findByTagName(tagName);
+        List<PostSummaryDto> posts = postService.findByTagName(tagName, 0, config.getFetchCount(), true);
         ServerSideRenderingRequest rsRequest =
                 new ServerSideRenderingRequest(initialData, posts, servletPath);
         this.render(model, rsRequest);

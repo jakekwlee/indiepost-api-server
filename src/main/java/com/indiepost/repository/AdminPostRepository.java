@@ -1,6 +1,7 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.AdminPostSummaryDto;
+import com.indiepost.dto.post.PostSearch;
 import com.indiepost.model.Post;
 import com.indiepost.model.User;
 import org.springframework.data.domain.Pageable;
@@ -23,15 +24,15 @@ public interface AdminPostRepository {
 
     void deleteById(Long id);
 
-    List<Post> find(User user, Pageable pageable);
+    List<AdminPostSummaryDto> find(User currentUser, Pageable pageable);
 
-    List<Post> find(User user, PostQuery postQuery, Pageable pageable);
+    List<AdminPostSummaryDto> find(User currentUser, PostSearch postSearch, Pageable pageable);
 
     List<String> findAllDisplayNames();
 
     Long count();
 
-    Long count(PostQuery postQuery);
+    Long count(PostSearch postSearch);
 
     List<Post> findScheduledToBePublished();
 

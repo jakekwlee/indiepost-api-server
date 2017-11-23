@@ -13,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,24 +75,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User getCurrentUser() {
-        String username = getCurrentUsername();
-
-        // TODO for test purpose
-        if (username == null) {
-            username = "indiepost";
-        }
-        return findByUsername(username);
-    }
-
-    @Override
-    public String getCurrentUsername() {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        Authentication authentication = securityContext.getAuthentication();
-        if (authentication == null) {
-            return null;
-        }
-        return authentication.getName();
+    public User findCurrentUser() {
+        return userRepository.findCurrentUser();
     }
 
     @Override
@@ -146,7 +127,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getCurrentUserDto() {
-        User user = getCurrentUser();
+        User user = findCurrentUser();
         return getUserDto(user);
     }
 

@@ -13,6 +13,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.List;
 
+import static testHelper.JsonSerializer.printToJson;
+
 /**
  * Created by jake on 17. 4. 23.
  */
@@ -40,6 +42,7 @@ public class PostServiceTests {
             Assert.assertNotEquals(id, post.getId());
             id = post.getId();
         }
+        printToJson(posts);
     }
 
     @Test
@@ -52,6 +55,13 @@ public class PostServiceTests {
                 expectedResultLength,
                 posts.size()
         );
+        printToJson(posts);
+    }
 
+    @Test
+    public void testFindByTagName() {
+        List<PostSummaryDto> dtoList = postService.findByTagName("일러스트레이터", 0, 50, true);
+        Assert.assertEquals("Size of List<PostSummaryDto< should be 18", 18, dtoList.size());
+        printToJson(dtoList);
     }
 }

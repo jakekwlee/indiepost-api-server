@@ -1,7 +1,8 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.post.PostQuery;
-import com.indiepost.enums.Types;
+import com.indiepost.dto.post.PostSearch;
+import com.indiepost.dto.post.PostSummaryDto;
+import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Post;
 import org.springframework.data.domain.Pageable;
 
@@ -20,19 +21,21 @@ public interface PostRepository {
 
     Long count();
 
-    Long count(PostQuery query);
+    Long count(PostSearch search);
 
-    List<Post> find(Pageable pageable);
+    List<PostSummaryDto> findByIds(List<Long> ids);
 
-    List<Post> findByQuery(PostQuery query, Pageable pageable);
+    List<PostSummaryDto> findByCategoryId(Long categoryId, Pageable pageable);
 
-    List<Post> findByIds(List<Long> ids);
+    List<PostSummaryDto> findByCategorySlug(String slug, Pageable pageable);
 
-    List<Post> findByCategoryId(Long categoryId, Pageable pageable);
+    List<PostSummaryDto> findByTagName(String tagName, Pageable pageable);
 
-    List<Post> findByStatus(Types.PostStatus status, Pageable pageable);
+    List<PostSummaryDto> findByStatus(PostStatus status, Pageable pageable);
 
-    List<Post> findScheduledPosts();
+    List<PostSummaryDto> findScheduledPosts();
 
     List<Post> search(String text, Pageable pageable);
+
+    List<PostSummaryDto> search(PostSearch search, Pageable pageable);
 }

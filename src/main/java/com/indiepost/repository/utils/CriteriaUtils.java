@@ -4,14 +4,13 @@ import com.indiepost.dto.analytics.PostStatDto;
 import com.indiepost.dto.analytics.ShareStat;
 import com.indiepost.dto.analytics.TimeDomainDoubleStat;
 import com.indiepost.dto.analytics.TimeDomainStat;
-import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.PostSearch;
 import com.indiepost.enums.Types;
-import org.apache.commons.lang3.StringUtils;
+import com.indiepost.model.QPost;
+import com.querydsl.core.BooleanBuilder;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
-import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.ResultTransformer;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -44,32 +43,27 @@ public interface CriteriaUtils {
         return criteria;
     }
 
-    static Conjunction buildConjunction(PostQuery query) {
-        Conjunction conjunction = new Conjunction();
-        if (query == null) {
-            return conjunction;
+    static BooleanBuilder addSearchConjunction(PostSearch search, BooleanBuilder builder) {
+        QPost post = QPost.post;
+        if (search.getStatus() != null) {
+            builder.and(post.status.eq(search.getStatus()));
         }
-        if (query.getCreatorId() != null)
-            conjunction.add(Restrictions.eq("creatorId", query.getCreatorId()));
-        if (query.getModifiedUserId() != null)
-            conjunction.add(Restrictions.eq("modifiedUserId", query.getModifiedUserId()));
-        if (query.getCategoryId() != null)
-            conjunction.add(Restrictions.eq("categoryId", query.getCategoryId()));
-        if (StringUtils.isNotEmpty(query.getCategorySlug()))
-            conjunction.add(Restrictions.ilike("category.slug", query.getCategorySlug()));
-        if (query.getStatus() != null)
-            conjunction.add(Restrictions.eq("status", query.getStatus()));
-        if (query.getDateFrom() != null)
-            conjunction.add(Restrictions.ge("publishedAt", query.getDateFrom()));
-        if (query.getDateTo() != null)
-            conjunction.add(Restrictions.le("publishedAt", query.getDateTo()));
-        if (query.isSplash())
-            conjunction.add(Restrictions.eq("splash", query.isSplash()));
-        if (query.isFeatured())
-            conjunction.add(Restrictions.eq("featured", query.isFeatured()));
-        if (query.isPicked())
-            conjunction.add(Restrictions.eq("picked", query.isPicked()));
-        return conjunction;
+        if (search.getCreatorId() != null) {
+            builder.and(post.creatorId.eq(search.getCreatorId()));
+        }
+        if (search.getModifiedUserId() != null) {
+            builder.and(post.modifiedUserId.eq(search.getModifiedUserId()));
+        }
+        if (search.getCategoryId() != null) {
+            builder.and(post.categoryId.eq(search.getCategoryId()));
+        }
+        if (search.getCategorySlug() != null) {
+            builder.and(post.category.slug.eq(search.getCategorySlug()));
+        }
+        builder.and(post.splash.eq(search.isSplash()));
+        builder.and(post.featured.eq(search.isFeatured()));
+        builder.and(post.picked.eq(search.isPicked()));
+        return builder;
     }
 
     static List<TimeDomainStat> getTrend(Query query, Types.TimeDomainDuration duration, LocalDateTime since, LocalDateTime until) {

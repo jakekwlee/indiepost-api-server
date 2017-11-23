@@ -35,14 +35,9 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public AdminInitialData buildInitialResponse() {
-        User currentUser = userService.getCurrentUser();
-        AdminInitialData adminInitialData = new AdminInitialData();
-        adminInitialData.setCurrentUser(userToUserDto(currentUser));
-        adminInitialData.setCreators(getUserDtoList(UserRole.Author));
-        adminInitialData.setCategories(categoryService.getDtoList());
-        adminInitialData.setCreatorNames(adminPostService.findAllDisplayNames());
-        return adminInitialData;
+    public UserDto getCurrentUserDto() {
+        User currentUser = userService.findCurrentUser();
+        return userToUserDto(currentUser);
     }
 
     @Override
@@ -58,9 +53,14 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public UserDto getCurrentUserDto() {
-        User currentUser = userService.getCurrentUser();
-        return userToUserDto(currentUser);
+    public AdminInitialData buildInitialResponse() {
+        User currentUser = userService.findCurrentUser();
+        AdminInitialData adminInitialData = new AdminInitialData();
+        adminInitialData.setCurrentUser(userToUserDto(currentUser));
+        adminInitialData.setCreators(getUserDtoList(UserRole.Author));
+        adminInitialData.setCategories(categoryService.getDtoList());
+        adminInitialData.setCreatorNames(adminPostService.findAllVBylineNames());
+        return adminInitialData;
     }
 
     private List<UserDto> userListToUserDtoList(List<User> userList) {

@@ -20,9 +20,7 @@ public interface UserService {
 
     void updatePassword(String username, String oldPassword, String newPassword);
 
-    User getCurrentUser();
-
-    String getCurrentUsername();
+    User findCurrentUser();
 
     User findById(Long id);
 

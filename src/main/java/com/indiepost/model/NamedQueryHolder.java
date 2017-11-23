@@ -87,7 +87,7 @@ import javax.persistence.*;
 
 
         @NamedNativeQuery(name = "@GET_POST_STATS_ORDER_BY_PAGEVIEWS",
-                query = "SELECT p.id, p.title, p.displayName AS author, c.name AS category, " +
+                query = "SELECT p.id, p.title, p.bylineName AS author, c.name AS category, " +
                         "p.publishedAt, count(*) AS pageviews, count(DISTINCT v.id) AS uniquePageviews " +
                         "FROM Stats s " +
                         "INNER JOIN Visitors v ON s.visitorId = v.id " +
@@ -97,10 +97,10 @@ import javax.persistence.*;
                         "GROUP BY p.id ORDER BY pageviews DESC , p.id DESC LIMIT :limit"),
 
         @NamedNativeQuery(name = "@GET_PAGEVIEWS_ORDER_BY_AUTHOR",
-                query = "SELECT p.displayName AS statName, count(*) AS statValue " +
+                query = "SELECT p.bylineName AS statName, count(*) AS statValue " +
                         "FROM Stats s INNER JOIN Posts p ON s.postId = p.id " +
                         "WHERE s.timestamp BETWEEN :since AND :until " +
-                        "GROUP BY p.displayName ORDER BY statValue DESC LIMIT :limit"),
+                        "GROUP BY p.bylineName ORDER BY statValue DESC LIMIT :limit"),
 
         @NamedNativeQuery(name = "@GET_PAGEVIEWS_ORDER_BY_CATEGORY",
                 query = "SELECT c.name AS statName, count(*) AS statValue " +
@@ -284,7 +284,7 @@ import javax.persistence.*;
 
 
         @NamedNativeQuery(name = "@GET_ALL_POST_STATS",
-                query = "SELECT p.id, p.title, p.publishedAt, p.displayName author, c.name category, " +
+                query = "SELECT p.id, p.title, p.publishedAt, p.bylineName author, c.name category, " +
                         "count(*) AS pageviews, count(DISTINCT s.visitorId) AS uniquePageviews " +
                         "FROM Posts p " +
                         "LEFT JOIN Stats s ON s.postId = p.id " +
@@ -294,7 +294,7 @@ import javax.persistence.*;
                         "ORDER BY p.publishedAt DESC"),
 
         @NamedNativeQuery(name = "@GET_ALL_POST_STATS_FROM_CACHE",
-                query = "SELECT p.id, p.title, p.publishedAt, p.displayName author, c.name category, " +
+                query = "SELECT p.id, p.title, p.publishedAt, p.bylineName author, c.name category, " +
                         "s.pageviews, s.uniquePageviews " +
                         "FROM CachedPostStats s " +
                         "INNER JOIN Posts p ON s.postId = p.id " +

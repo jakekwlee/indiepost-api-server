@@ -149,4 +149,12 @@ public class PostSummaryDto implements Serializable {
                 .append(category)
                 .toHashCode();
     }
+
+    public ImageSetDto getTitleImage() {
+        return titleImage;
+    }
+
+    public void setTitleImage(ImageSetDto titleImage) {
+        this.titleImage = titleImage;
+    }
 }

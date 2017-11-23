@@ -1,6 +1,5 @@
 package com.indiepost.repository;
 
-import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -97,10 +96,6 @@ public class ImageRepositoryHibernate implements ImageRepository {
 
     private Criteria getCriteria() {
         return getSession().createCriteria(ImageSet.class);
-    }
-
-    private Criteria getCriteriaForSingleImage() {
-        return getSession().createCriteria(Image.class);
     }
 
     private Criteria getCriteria(Pageable pageable) {

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/new-indiepost.iml" filepath="$PROJECT_DIR$/.idea/modules/new-indiepost.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/new-indiepost_generated.iml" filepath="$PROJECT_DIR$/.idea/modules/new-indiepost_generated.iml" group="new-indiepost" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/new-indiepost_main.iml" filepath="$PROJECT_DIR$/.idea/modules/new-indiepost_main.iml" group="new-indiepost" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/new-indiepost_test.iml" filepath="$PROJECT_DIR$/.idea/modules/new-indiepost_test.iml" group="new-indiepost" />
     </modules>

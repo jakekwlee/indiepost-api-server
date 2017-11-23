@@ -3,18 +3,14 @@ package com.indiepost.service;
 import com.indiepost.dto.ImageSetDto;
 import com.indiepost.dto.analytics.PostStatDto;
 import com.indiepost.dto.post.PostDto;
-import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.PostSearch;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.dto.post.RelatedPostResponse;
 import com.indiepost.enums.Types.PostStatus;
-import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.model.Post;
-import com.indiepost.model.Tag;
-import com.indiepost.repository.ImageRepository;
 import com.indiepost.repository.PostRepository;
 import com.indiepost.repository.StatRepository;
-import com.indiepost.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,19 +34,11 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
 
-    private final ImageRepository imageRepository;
-
-    private final TagRepository tagRepository;
-
     private final StatRepository statRepository;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository, ImageRepository imageRepository,
-                           TagRepository tagRepository,
-                           StatRepository statRepository) {
+    public PostServiceImpl(PostRepository postRepository, StatRepository statRepository) {
         this.postRepository = postRepository;
-        this.imageRepository = imageRepository;
-        this.tagRepository = tagRepository;
         this.statRepository = statRepository;
     }
 
@@ -86,57 +74,35 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Long count(PostQuery query) {
-        return postRepository.count(query);
+    public Long count(PostSearch search) {
+        return postRepository.count(search);
     }
 
     @Override
     public List<PostSummaryDto> findByIds(List<Long> ids) {
-        List<Post> posts = postRepository.findByIds(ids);
-        return toPostSummaryDtoList(posts);
+        return postRepository.findByIds(ids);
     }
 
     @Override
     public List<PostSummaryDto> find(int page, int maxResults, boolean isDesc) {
         Pageable pageable = getPageable(page, maxResults, isDesc);
-        List<Post> posts = postRepository.findByStatus(PostStatus.PUBLISH, pageable);
-        return toPostSummaryDtoList(posts);
-    }
-
-    @Override
-    public List<PostSummaryDto> findByQuery(PostQuery query, boolean isDesc) {
-        Pageable pageable = getPageable(query.getPage(), query.getMaxResults(), isDesc);
-        List<Post> posts = postRepository.findByQuery(query, pageable);
-        return toPostSummaryDtoList(posts);
+        return postRepository.findByStatus(PostStatus.PUBLISH, pageable);
     }
 
     @Override
     public List<PostSummaryDto> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc) {
         Pageable pageable = getPageable(page, maxResults, isDesc);
-        List<Post> posts = postRepository.findByCategoryId(categoryId, pageable);
-        return toPostSummaryDtoList(posts);
+        return postRepository.findByCategoryId(categoryId, pageable);
     }
 
     @Override
-    public List<PostSummaryDto> findByTagName(String tagName) {
-        Tag tag = tagRepository.findByTagName(tagName);
-        if (tag == null) {
-            return null;
-        }
-        List<Post> posts = tag.getPosts();
-        if (posts == null || posts.size() == 0) {
-            return null;
-        }
-        // TODO find better solution!
-        return posts.stream()
-                .filter(post -> post.getStatus().equals(PostStatus.PUBLISH))
-                .map(post -> toPostSummaryDto(post))
-                .collect(Collectors.toList());
+    public List<PostSummaryDto> findByTagName(String tagName, int page, int maxResults, boolean isDesc) {
+        return postRepository.findByTagName(tagName, new PageRequest(page, maxResults));
     }
 
     @Override
-    public List<RelatedPostResponse> getRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobileApp) {
-        List<Post> posts = this.postRepository.findByIds(ids);
+    public List<RelatedPostResponse> findRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobileApp) {
+        List<PostSummaryDto> posts = this.postRepository.findByIds(ids);
 
         if (posts == null) {
             return null;
@@ -147,16 +113,13 @@ public class PostServiceImpl implements PostService {
 
         List<RelatedPostResponse> relatedPostResponseList = new ArrayList<>();
 
-        for (Post post : posts) {
+        for (PostSummaryDto post : posts) {
             RelatedPostResponse relatedPostResponse = new RelatedPostResponse();
             relatedPostResponse.setId(post.getId());
             relatedPostResponse.setTitle(post.getTitle());
             relatedPostResponse.setExcerpt(post.getExcerpt());
             if (post.getTitleImage() != null) {
-                Image image = post.getTitleImage().getThumbnail();
-                relatedPostResponse.setImageUrl(image.getFilePath());
-                relatedPostResponse.setImageWidth(image.getWidth());
-                relatedPostResponse.setImageHeight(image.getHeight());
+                relatedPostResponse.setImageUrl(post.getTitleImage().getThumbnail());
             }
             if (isLegacy) {
                 if (isMobileApp) {
@@ -173,23 +136,22 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostSummaryDto> getTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit) {
+    public List<PostSummaryDto> findTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit) {
         List<PostStatDto> topStats = statRepository.getPostStatsOrderByPageviews(since, until, limit);
         List<Long> topPostIds = topStats.stream()
                 .map(postStat -> postStat.getId())
                 .collect(Collectors.toList());
 
-        List<Post> topRatedPosts = postRepository.findByIds(topPostIds);
+        List<PostSummaryDto> topRatedPosts = postRepository.findByIds(topPostIds);
         if (topRatedPosts == null) {
             return new ArrayList<>();
         }
-        return toPostSummaryDtoList(topRatedPosts);
+        return topRatedPosts;
     }
 
     @Override
-    public List<PostSummaryDto> getScheduledPosts() {
-        List<Post> posts = postRepository.findScheduledPosts();
-        return toPostSummaryDtoList(posts);
+    public List<PostSummaryDto> findScheduledPosts() {
+        return postRepository.findScheduledPosts();
     }
 
     @Override
@@ -206,37 +168,37 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public List<PostSummaryDto> search(PostSearch query, int page, int maxResults, boolean isDesc) {
+        Pageable pageable = getPageable(page, maxResults, isDesc);
+        return postRepository.search(query, pageable);
+    }
+
+    @Override
     public Long findIdByLegacyId(Long legacyId) {
         return postRepository.findIdByLegacyId(legacyId);
     }
 
     @Override
+    public List<PostSummaryDto> findPickedPosts() {
+        PostSearch query = new PostSearch();
+        query.setPicked(true);
+        return search(query, 0, 8, true);
+    }
+
+    @Override
     public PostSummaryDto findSplashPost() {
-        PostQuery query = new PostQuery();
+        PostSearch query = new PostSearch();
         query.setSplash(true);
-        query.setPage(0);
-        query.setMaxResults(1);
-        List<PostSummaryDto> posts = findByQuery(query, true);
+        List<PostSummaryDto> posts = search(query, 0, 1, true);
         return posts == null ? null : posts.get(0);
     }
 
     @Override
     public PostSummaryDto findFeaturePost() {
-        PostQuery query = new PostQuery();
+        PostSearch query = new PostSearch();
         query.setFeatured(true);
-        query.setPage(0);
-        query.setMaxResults(1);
-        List<PostSummaryDto> posts = findByQuery(query, true);
+        List<PostSummaryDto> posts = search(query, 0, 1, true);
         return posts == null ? null : posts.get(0);
-    }
-
-    @Override
-    public List<PostSummaryDto> findPickedPosts() {
-        PostQuery query = new PostQuery();
-        query.setPicked(true);
-        query.setPage(0);
-        query.setMaxResults(8);
-        return findByQuery(query, true);
     }
 
     private List<PostSummaryDto> toPostSummaryDtoList(List<Post> posts) {

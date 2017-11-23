@@ -245,3 +245,6 @@ venv/
 
 migration/dist/*
 migration/dist/
+
+
+/src/main/generated/

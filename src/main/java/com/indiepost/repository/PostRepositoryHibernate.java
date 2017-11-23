@@ -1,23 +1,24 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.ImageSetDto;
+import com.indiepost.dto.post.PostSearch;
+import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
-import com.indiepost.model.Post;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.*;
-import org.hibernate.sql.JoinType;
+import com.indiepost.model.*;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import static com.indiepost.repository.utils.CriteriaUtils.buildConjunction;
-import static com.indiepost.repository.utils.CriteriaUtils.setPageToCriteria;
+import static com.indiepost.repository.utils.CriteriaUtils.addSearchConjunction;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 /**
  * Created by jake on 7/30/16.
@@ -31,108 +32,112 @@ public class PostRepositoryHibernate implements PostRepository {
 
     @Override
     public Post findById(Long id) {
-        return (Post) getCriteria()
-                .add(Restrictions.eq("id", id))
-                .uniqueResult();
+        return entityManager.find(Post.class, id);
     }
 
     @Override
     public Post findByLegacyId(Long id) {
-        return (Post) getCriteria()
-                .add(Restrictions.eq("legacyPostId", id))
-                .uniqueResult();
+        QPost post = QPost.post;
+        return getQueryFactory()
+                .selectFrom(post)
+                .where(post.legacyPostId.eq(id))
+                .fetchOne();
     }
 
     @Override
     public Long findIdByLegacyId(Long legacyId) {
-        Projection projection = Projections.projectionList()
-                .add(Property.forName("id"), "id")
-                .add(Property.forName("legacyPostId"), "legacyPostId");
-
-        Criteria criteria = getCriteria()
-                .setProjection(projection)
-                .add(Restrictions.eq("legacyPostId", legacyId))
-                .setResultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP);
-
-        Map post = (HashMap) criteria.uniqueResult();
-        return (Long) post.get("id");
+        QPost post = QPost.post;
+        Tuple tuple = getQueryFactory()
+                .select(post.id, post.legacyPostId)
+                .from(post)
+                .where(post.legacyPostId.eq(legacyId))
+                .fetchOne();
+        return tuple != null ? tuple.get(post.id) : null;
     }
 
     @Override
     public Long count() {
-        return (Long) getCriteria()
-                .setProjection(Projections.rowCount())
-                .uniqueResult();
+        return getQueryFactory()
+                .selectFrom(QPost.post)
+                .fetchCount();
     }
 
     @Override
-    public Long count(PostQuery query) {
-        Conjunction conjunction = buildConjunction(query);
-        return (Long) getCriteria()
-                .add(conjunction)
-                .setProjection(Projections.rowCount())
-                .uniqueResult();
+    public Long count(PostSearch search) {
+        BooleanBuilder builder = addSearchConjunction(search, new BooleanBuilder());
+        return getQueryFactory()
+                .selectFrom(QPost.post)
+                .where(builder)
+                .fetchCount();
     }
 
     @Override
-    public List<Post> find(Pageable pageable) {
-        return findByQuery(new PostQuery(), pageable);
-    }
-
-
-    @Override
-    public List<Post> findByQuery(PostQuery query, Pageable pageable) {
-        Conjunction conjunction = buildConjunction(query);
-
-        // TODO
-        Criteria criteria = this.getPagedCriteria(pageable);
-        criteria.createAlias("category", "category");
-        criteria.createAlias("titleImage", "titleImage", JoinType.LEFT_OUTER_JOIN);
-        criteria.createAlias("titleImage.images", "titleImage.images");
-        ProjectionList projection = this.getSummaryProjection();
-        criteria.setProjection(projection);
-
-        if (conjunction.conditions().iterator().hasNext()) {
-            criteria.add(conjunction);
+    public List<PostSummaryDto> findByIds(List<Long> ids) {
+        if (isNotEmpty(ids)) {
+            return new ArrayList<>();
         }
-        return criteria.list();
+        QPost post = QPost.post;
+        JPAQuery query = getQueryFactory().from(post);
+        addProjections(query)
+                .innerJoin(post.category, QCategory.category)
+                .leftJoin(post.titleImage, QImageSet.imageSet)
+                .where(post.id.in(ids))
+                .orderBy(post.publishedAt.desc())
+                .distinct();
+        List<Tuple> result = query.fetch();
+        return toDtoList(result);
     }
 
     @Override
-    public List<Post> findByCategoryId(Long categoryId, Pageable pageable) {
-        PostQuery query = new PostQuery();
+    public List<PostSummaryDto> findByCategoryId(Long categoryId, Pageable pageable) {
+        PostSearch query = new PostSearch();
         query.setCategoryId(categoryId);
-        return this.findByQuery(query, pageable);
+        return this.search(query, pageable);
     }
 
     @Override
-    public List<Post> findByIds(List<Long> ids) {
-        if (ids == null || ids.size() == 0) {
-            return null;
-        }
-        Criteria criteria = getCriteria();
-        ProjectionList projection = this.getSummaryProjection();
-        criteria.setProjection(projection);
-        criteria.add(Restrictions.in("id", ids));
-        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-        return criteria.list();
+    public List<PostSummaryDto> findByCategorySlug(String slug, Pageable pageable) {
+        PostSearch query = new PostSearch();
+        query.setCategorySlug(slug);
+        return this.search(query, pageable);
     }
 
     @Override
-    public List<Post> findByStatus(PostStatus status, Pageable pageable) {
-        PostQuery query = new PostQuery();
+    public List<PostSummaryDto> findByTagName(String tagName, Pageable pageable) {
+        QPost post = QPost.post;
+        QPostTag postTag = QPostTag.postTag;
+        JPAQuery query = getQueryFactory().from(post);
+        addProjections(query)
+                .innerJoin(post.category, QCategory.category)
+                .innerJoin(post.postTags, postTag)
+                .innerJoin(postTag.tag, QTag.tag)
+                .leftJoin(post.titleImage, QImageSet.imageSet)
+                .where(postTag.tag.name.eq(tagName), post.status.eq(PostStatus.PUBLISH))
+                .orderBy(post.publishedAt.desc())
+                .distinct();
+        List<Tuple> result = query.fetch();
+        return toDtoList(result);
+    }
+
+    @Override
+    public List<PostSummaryDto> findByStatus(PostStatus status, Pageable pageable) {
+        PostSearch query = new PostSearch();
         query.setStatus(status);
-        return this.findByQuery(query, pageable);
+        return this.search(query, pageable);
     }
 
     @Override
-    public List<Post> findScheduledPosts() {
-        return getCriteria()
-                .setProjection(getSummaryProjection())
-                .add(Restrictions.eq("status", PostStatus.FUTURE))
-                .addOrder(Order.asc("publishedAt"))
-                .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
-                .list();
+    public List<PostSummaryDto> findScheduledPosts() {
+        QPost post = QPost.post;
+        JPAQuery query = getQueryFactory().from(post);
+        addProjections(query)
+                .innerJoin(post.category, QCategory.category)
+                .leftJoin(post.titleImage, QImageSet.imageSet)
+                .where(post.status.eq(PostStatus.FUTURE))
+                .orderBy(post.publishedAt.asc())
+                .distinct();
+        List<Tuple> result = query.fetch();
+        return toDtoList(result);
     }
 
     @Override
@@ -140,33 +145,73 @@ public class PostRepositoryHibernate implements PostRepository {
         return null;
     }
 
-    private ProjectionList getSummaryProjection() {
-        return Projections.projectionList()
-                .add(Property.forName("id"), "id")
-                .add(Property.forName("legacyPostId"), "legacyPostId")
-                .add(Property.forName("title"), "title")
-                .add(Property.forName("excerpt"), "excerpt")
-                .add(Property.forName("bylineName"), "bylineName")
-                .add(Property.forName("category"), "category")
-                .add(Property.forName("category.slug"), "category.slug")
-                .add(Property.forName("publishedAt"), "publishedAt")
-                .add(Property.forName("bookmarkCount"), "bookmarkCount")
-                .add(Property.forName("featured"), "featured")
-                .add(Property.forName("picked"), "picked")
-                .add(Property.forName("splash"), "splash")
-                .add(Property.forName("titleImage"), "titleImage")
-                .add(Property.forName("titleImage.images"), "titleImage.images");
+    @Override
+    public List<PostSummaryDto> search(PostSearch search, Pageable pageable) {
+        QPost post = QPost.post;
+        JPAQuery query = getQueryFactory().from(post);
+        BooleanBuilder builder = addSearchConjunction(search, new BooleanBuilder());
+        addProjections(query)
+                .innerJoin(post.category, QCategory.category)
+                .leftJoin(post.titleImage, QImageSet.imageSet)
+                .where(builder)
+                .orderBy(post.publishedAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize()).distinct();
+        List<Tuple> result = query.fetch();
+        return toDtoList(result);
     }
 
-    private Session getSession() {
-        return entityManager.unwrap(Session.class);
+    private JPAQuery addProjections(JPAQuery query) {
+        QPost post = QPost.post;
+        return query.select(
+                post.id, post.legacyPostId, post.category.slug, post.splash, post.picked, post.featured,
+                post.bylineName, post.title, post.publishedAt, post.excerpt, post.titleImage,
+                post.bookmarkCount);
     }
 
-    private Criteria getCriteria() {
-        return getSession().createCriteria(Post.class);
+
+    private List<PostSummaryDto> toDtoList(List<Tuple> result) {
+        QPost post = QPost.post;
+        List<PostSummaryDto> dtoList = new ArrayList<>();
+        for (Tuple row : result) {
+            PostSummaryDto dto = new PostSummaryDto();
+            dto.setId(row.get(post.id));
+            dto.setLegacyPostId(row.get(post.legacyPostId));
+            dto.setTitle(row.get(post.title));
+            dto.setBylineName(row.get(post.bylineName));
+            dto.setPublishedAt(row.get(post.publishedAt));
+            dto.setExcerpt(row.get(post.excerpt));
+            dto.setSplash(row.get(post.splash));
+            dto.setFeatured(row.get(post.featured));
+            dto.setPicked(row.get(post.picked));
+            dto.setCategory(row.get(post.category.slug));
+            ImageSet titleImage = row.get(post.titleImage);
+            if (titleImage != null) {
+                ImageSetDto imageSet = new ImageSetDto();
+                imageSet.setId(titleImage.getId());
+                if (titleImage.getOriginal() != null) {
+                    imageSet.setOriginal(titleImage.getOriginal().getFilePath());
+                }
+                if (titleImage.getLarge() != null) {
+                    imageSet.setLarge(titleImage.getLarge().getFilePath());
+                }
+                if (titleImage.getOptimized() != null) {
+                    imageSet.setOptimized(titleImage.getOptimized().getFilePath());
+                }
+                if (titleImage.getSmall() != null) {
+                    imageSet.setSmall(titleImage.getSmall().getFilePath());
+                }
+                if (titleImage.getThumbnail() != null) {
+                    imageSet.setThumbnail(titleImage.getThumbnail().getFilePath());
+                }
+                dto.setTitleImage(imageSet);
+                dtoList.add(dto);
+            }
+        }
+        return dtoList;
     }
 
-    private Criteria getPagedCriteria(Pageable pageable) {
-        return setPageToCriteria(getCriteria(), pageable);
+    private JPAQueryFactory getQueryFactory() {
+        return new JPAQueryFactory(entityManager);
     }
 }

@@ -3,7 +3,7 @@ package com.indiepost.service;
 import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
 import com.indiepost.dto.post.AdminPostSummaryDto;
-import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.PostSearch;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,11 +19,11 @@ public interface AdminPostService {
 
     List<AdminPostSummaryDto> find(int page, int maxResults, boolean isDesc);
 
-    List<AdminPostSummaryDto> find(PostQuery query);
+    List<AdminPostSummaryDto> search(PostSearch search, int page, int maxResults, boolean isDesc);
 
     Long count();
 
-    Long count(PostQuery query);
+    Long count(PostSearch search);
 
     AdminPostResponseDto save(AdminPostRequestDto adminPostRequestDto);
 
@@ -33,8 +33,8 @@ public interface AdminPostService {
 
     AdminPostResponseDto update(Long id, AdminPostRequestDto adminPostRequestDto);
 
-    List<AdminPostSummaryDto> getLastUpdated(LocalDateTime dateFrom);
+    List<AdminPostSummaryDto> findLastUpdated(LocalDateTime dateFrom);
 
-    List<String> findAllDisplayNames();
+    List<String> findAllVBylineNames();
 
 }

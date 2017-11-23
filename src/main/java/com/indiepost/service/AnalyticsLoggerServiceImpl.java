@@ -135,7 +135,7 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
         }
         Long userId = null;
         if (principal != null) {
-            userId = userService.getCurrentUser().getId();
+            userId = userService.findCurrentUser().getId();
         }
         Long visitorId = getVisitorId(req, userId);
         if (visitorId == null) {

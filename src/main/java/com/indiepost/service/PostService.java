@@ -1,7 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.post.PostDto;
-import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.PostSearch;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.dto.post.RelatedPostResponse;
 
@@ -19,31 +19,31 @@ public interface PostService {
 
     Long count();
 
-    Long count(PostQuery query);
+    Long count(PostSearch search);
 
     List<PostSummaryDto> findByIds(List<Long> ids);
 
     List<PostSummaryDto> find(int page, int maxResults, boolean isDesc);
 
-    List<PostSummaryDto> findByQuery(PostQuery query, boolean isDesc);
-
     List<PostSummaryDto> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc);
 
-    List<PostSummaryDto> findByTagName(String tagName);
+    List<PostSummaryDto> findByTagName(String tagName, int page, int maxResults, boolean isDesc);
 
-    List<RelatedPostResponse> getRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobile);
+    List<RelatedPostResponse> findRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobile);
 
-    List<PostSummaryDto> getTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit);
+    List<PostSummaryDto> findTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit);
 
-    List<PostSummaryDto> getScheduledPosts();
+    List<PostSummaryDto> findScheduledPosts();
 
     List<PostSummaryDto> search(String text, int page, int maxResults);
 
+    List<PostSummaryDto> search(PostSearch query, int page, int maxResults, boolean isDesc);
+
     Long findIdByLegacyId(Long legacyId);
+
+    List<PostSummaryDto> findPickedPosts();
 
     PostSummaryDto findSplashPost();
 
     PostSummaryDto findFeaturePost();
-
-    List<PostSummaryDto> findPickedPosts();
 }

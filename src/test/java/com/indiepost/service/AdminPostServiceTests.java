@@ -3,17 +3,22 @@ package com.indiepost.service;
 import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.post.AdminPostResponseDto;
 import com.indiepost.dto.post.AdminPostSummaryDto;
-import com.indiepost.dto.post.PostQuery;
-import com.indiepost.enums.Types;
+import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.ImageSet;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.junit.Assert.*;
@@ -22,12 +27,14 @@ import static testHelper.JsonSerializer.printToJson;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
+@ContextConfiguration
 public class AdminPostServiceTests {
 
     @Autowired
     private AdminPostService adminPostService;
 
     @Test
+    @WithMockUser(username = "indiepost")
     public void findOneShouldWorkCorrectly() {
         // Example Post: <꿈과 현실 사이 경계의 시학, 데이빗 린치의 세계>
         AdminPostResponseDto responseDto = adminPostService.findOne(4557L);
@@ -67,24 +74,32 @@ public class AdminPostServiceTests {
     }
 
     @Test
+    @WithMockUser(username = "eunjechoi")
     public void findShouldReturnProperResultSet() {
         final int PAGE = 0;
-        final int MAX_RESULTS = 24;
-        final long CREATOR_ID = 10L;
-        final Types.PostStatus POST_STATUS = Types.PostStatus.PUBLISH;
+        final int MAX_RESULTS = 50;
 
-        PostQuery query = new PostQuery();
-        query.setPage(PAGE);
-        query.setMaxResults(MAX_RESULTS);
-        query.setStatus(POST_STATUS);
-        query.setCreatorId(CREATOR_ID);
-        List<AdminPostSummaryDto> results = adminPostService.find(query);
+        List<AdminPostSummaryDto> results = adminPostService.find(PAGE, MAX_RESULTS, true);
 
         assertEquals(
                 "Size of List<AdminPostSummaryDto> is exactly same as expected",
                 MAX_RESULTS,
                 results.size()
         );
+
+        List<String> draftStatusList =
+                Arrays.asList(PostStatus.AUTOSAVE.toString(), PostStatus.DRAFT.toString(), PostStatus.TRASH.toString());
+        List<AdminPostSummaryDto> drafts = results.stream()
+                .filter(post -> draftStatusList.contains(post.getStatus()))
+                .collect(Collectors.toList());
+
+        for (AdminPostSummaryDto dto : drafts) {
+            Assert.assertEquals(
+                    "List<AdminPostSummaryDto> should contain only creator's posts",
+                    "Eunje Choi",
+                    dto.getCreatorName()
+            );
+        }
 
         Long id = 0L;
         boolean isUnique = true;
@@ -93,16 +108,12 @@ public class AdminPostServiceTests {
                 isUnique = false;
             }
             assertNotNull("AdminPostSummaryDto should contain it's title", dto.getTitle());
-            assertNotNull("AdminPostSummaryDto should contain it's displayName", dto.getBylineName());
+            assertTrue("AdminPostSummaryDto should contain it's bylineName", StringUtils.isNotEmpty(dto.getBylineName()));
             assertNotNull("AdminPostSummaryDto should contain it's categoryName", dto.getCategoryName());
             assertNotNull("AdminPostSummaryDto should contain it's creatorName", dto.getCreatorName());
             assertNotNull("AdminPostSummaryDto should contain it's created time", dto.getCreatedAt());
             assertNotNull("AdminPostSummaryDto should contain it's modified time", dto.getModifiedAt());
             assertNotNull("AdminPostSummaryDto should contain it's modifiedUserName", dto.getModifiedUserName());
-            assertTrue(
-                    "Status of AdminPostSummaryDto should match with expected value",
-                    Types.PostStatus.valueOf(dto.getStatus()).equals(POST_STATUS)
-            );
         }
         assertTrue("All AdminPostSummaryDto should have unique id", isUnique);
         printToJson(results);

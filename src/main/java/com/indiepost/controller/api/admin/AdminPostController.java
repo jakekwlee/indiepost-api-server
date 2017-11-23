@@ -62,6 +62,6 @@ public class AdminPostController {
 
     @RequestMapping(value = "/lastUpdated", method = RequestMethod.GET)
     public List<AdminPostSummaryDto> getLastUpdated() {
-        return adminPostService.getLastUpdated(LocalDateTime.now().minusDays(1));
+        return adminPostService.findLastUpdated(LocalDateTime.now().minusDays(1));
     }
 }

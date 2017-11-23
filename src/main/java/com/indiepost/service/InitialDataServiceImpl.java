@@ -55,7 +55,7 @@ public class InitialDataServiceImpl implements InitialDataService {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        List<PostSummaryDto> topPosts = postService.getTopRatedPosts(now.minusDays(8L), now, 10L);
+        List<PostSummaryDto> topPosts = postService.findTopRatedPosts(now.minusDays(8L), now, 10L);
         initialData.setTopPosts(topPosts);
         return initialData;
     }

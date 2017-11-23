@@ -52,8 +52,10 @@ public class PostController {
 
     @GetMapping("/tag/{tagName}")
     public List<PostSummaryDto> getPostsByTagName(
-            @PathVariable String tagName) {
-        return postService.findByTagName(tagName);
+            @PathVariable String tagName,
+            @RequestParam("p") int page,
+            @RequestParam("m") int maxResults) {
+        return postService.findByTagName(tagName, page, maxResults, true);
     }
 
     @GetMapping("/search")
@@ -71,7 +73,7 @@ public class PostController {
 
     @PostMapping(value = "/relatedPosts")
     public List<RelatedPostResponse> getRelatedPosts(@RequestBody RelatedPostsRequest dto) {
-        return postService.getRelatedPosts(dto.getPostIds(), dto.isLegacy(), dto.isMobile());
+        return postService.findRelatedPosts(dto.getPostIds(), dto.isLegacy(), dto.isMobile());
     }
 
     @GetMapping(value = "/images/{id}")
@@ -81,6 +83,6 @@ public class PostController {
 
     @GetMapping(value = "/future")
     public List<PostSummaryDto> getScheduledPosts() {
-        return postService.getScheduledPosts();
+        return postService.findScheduledPosts();
     }
 }

@@ -7,13 +7,11 @@ import static com.indiepost.enums.Types.PostStatus;
 /**
  * Created by jake on 17. 1. 10.
  */
-public class PostQuery {
+public class PostSearch {
 
     private Long creatorId;
 
     private Long modifiedUserId;
-
-    private Long tagId;
 
     private Long categoryId;
 
@@ -22,10 +20,6 @@ public class PostQuery {
     private LocalDateTime dateFrom;
 
     private LocalDateTime dateTo;
-
-    private int page = 0;
-
-    private int maxResults = 24;
 
     private PostStatus status = PostStatus.PUBLISH;
 
@@ -49,14 +43,6 @@ public class PostQuery {
 
     public void setModifiedUserId(Long modifiedUserId) {
         this.modifiedUserId = modifiedUserId;
-    }
-
-    public Long getTagId() {
-        return tagId;
-    }
-
-    public void setTagId(Long tagId) {
-        this.tagId = tagId;
     }
 
     public Long getCategoryId() {
@@ -97,22 +83,6 @@ public class PostQuery {
 
     public void setDateTo(LocalDateTime dateTo) {
         this.dateTo = dateTo;
-    }
-
-    public int getPage() {
-        return page;
-    }
-
-    public void setPage(int page) {
-        this.page = page;
-    }
-
-    public int getMaxResults() {
-        return maxResults;
-    }
-
-    public void setMaxResults(int maxResults) {
-        this.maxResults = maxResults;
     }
 
     public boolean isFeatured() {
