@@ -82,11 +82,13 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
                 break;
             case EditorInChief:
             case Editor:
-                builder.and(getPrivacyConjunction(userId));
+                builder.or(post.creatorId.eq(userId))
+                        .or(post.status.eq(PostStatus.PUBLISH))
+                        .or(post.status.eq(PostStatus.FUTURE))
+                        .or(post.status.eq(PostStatus.PENDING));
                 break;
             default:
-                builder.and(getPrivacyConjunction(userId))
-                        .and(post.creatorId.eq(userId));
+                builder.and(post.creatorId.eq(userId));
                 break;
         }
         if (search != null) {
@@ -101,6 +103,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     public List<String> findAllDisplayNames() {
         QPost post = QPost.post;
         return getQueryFactory()
+                .from(post)
                 .select(post.bylineName)
                 .where(post.bylineName.isNotEmpty())
                 .distinct()
@@ -173,34 +176,6 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
                 post.createdAt, post.modifiedAt, post.publishedAt, post.bookmarkCount, post.status
         );
     }
-
-    private BooleanBuilder getPrivacyConjunction(Long userId) {
-        // TODO 2017-11-24
-        QPost post = QPost.post;
-        BooleanBuilder builder = new BooleanBuilder();
-        return builder.andNot(
-                (new BooleanBuilder())
-                        .and(post.modifiedUserId.ne(userId))
-                        .and(
-                                post.status.eq(PostStatus.TRASH)
-                                        .or(post.status.eq(PostStatus.DRAFT))
-                                        .or(post.status.eq(PostStatus.AUTOSAVE))
-                        )
-        );
-//    private Criterion getPrivacyCriterion(Long userId) {
-//        return Restrictions.not(
-//                Restrictions.and(
-//                        Restrictions.ne("modifiedUserId", userId),
-//                        Restrictions.or(
-//                                Restrictions.eq("status", PostStatus.TRASH),
-//                                Restrictions.eq("status", PostStatus.DRAFT),
-//                                Restrictions.eq("status", PostStatus.AUTOSAVE)
-//                        )
-//                )
-//        );
-
-    }
-
 
     private List<AdminPostSummaryDto> toDtoList(List<Tuple> result) {
         QPost post = QPost.post;

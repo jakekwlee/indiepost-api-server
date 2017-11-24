@@ -59,7 +59,7 @@ public class AdminServiceImpl implements AdminService {
         adminInitialData.setCurrentUser(userToUserDto(currentUser));
         adminInitialData.setCreators(getUserDtoList(UserRole.Author));
         adminInitialData.setCategories(categoryService.getDtoList());
-        adminInitialData.setCreatorNames(adminPostService.findAllVBylineNames());
+        adminInitialData.setCreatorNames(adminPostService.findAllBylineNames());
         return adminInitialData;
     }
 

@@ -7,10 +7,10 @@ import java.util.Objects;
 
 @Embeddable
 public class PostTagId implements Serializable {
-    @Column
+    @Column(name = "post_id")
     private Long postId;
 
-    @Column
+    @Column(name = "tag_id")
     private Long tagId;
 
     private PostTagId() {

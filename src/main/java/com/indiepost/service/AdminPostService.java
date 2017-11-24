@@ -35,6 +35,6 @@ public interface AdminPostService {
 
     List<AdminPostSummaryDto> findLastUpdated(LocalDateTime dateFrom);
 
-    List<String> findAllVBylineNames();
+    List<String> findAllBylineNames();
 
 }

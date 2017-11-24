@@ -1,28 +1,16 @@
 package com.indiepost.repository;
 
 import com.indiepost.model.Tag;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;
 
 /**
  * Created by jake on 9/17/16.
  */
-public interface TagRepository {
+public interface TagRepository extends PagingAndSortingRepository<Tag, Long> {
 
-    void save(Tag tag);
+    Tag findOneByName(String name);
 
-    Tag findByTagName(String name);
-
-    Tag findById(Long id);
-
-    List<Tag> findAll();
-
-    List<Tag> findAll(Pageable pageable);
-
-    List<Tag> findByIds(List<Long> ids);
-
-    void update(Tag tag);
-
-    void delete(Tag tag);
+    List<Tag> findByIdIn(List<Long> ids);
 }

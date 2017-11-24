@@ -26,7 +26,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.indiepost.mapper.PostMapper.*;
+import static com.indiepost.mapper.PostMapper.adminPostRequestDtoToPost;
+import static com.indiepost.mapper.PostMapper.postToPost;
 
 /**
  * Created by jake on 17. 1. 14.
@@ -61,6 +62,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         this.metadataRepository = metadataRepository;
         this.postEsRepository = postEsRepository;
     }
+
 
     @Override
     public AdminPostResponseDto findOne(Long id) {
@@ -112,11 +114,12 @@ public class AdminPostServiceImpl implements AdminPostService {
         post.setModifiedUser(currentUser);
 
         if (postRequestDto.getContributorIds() != null) {
-            List<Contributor> contributors = contributorRepository.findByIdIn(postRequestDto.getContributorIds());
+            List<Contributor> contributors =
+                    contributorRepository.findByIdIn(postRequestDto.getContributorIds());
             addContributorsToPost(post, contributors);
         }
         if (postRequestDto.getTagIds() != null) {
-            List<Tag> tags = tagRepository.findByIds(postRequestDto.getTagIds());
+            List<Tag> tags = tagRepository.findByIdIn(postRequestDto.getTagIds());
             addTagsToPost(post, tags);
         }
 
@@ -157,6 +160,17 @@ public class AdminPostServiceImpl implements AdminPostService {
         post.setModifiedAt(LocalDateTime.now());
         post.setStatus(PostStatus.AUTOSAVE);
         post.setCategoryId(2L);
+
+        if (postRequestDto.getContributorIds() != null) {
+            List<Contributor> contributors =
+                    contributorRepository.findByIdIn(postRequestDto.getContributorIds());
+            addContributorsToPost(post, contributors);
+        }
+        if (postRequestDto.getTagIds() != null) {
+            List<Tag> tags = tagRepository.findByIdIn(postRequestDto.getTagIds());
+            addTagsToPost(post, tags);
+        }
+
         adminPostRepository.save(post);
         return toAdminPostResponseDto(post);
     }
@@ -200,7 +214,7 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
-    public List<String> findAllVBylineNames() {
+    public List<String> findAllBylineNames() {
         return adminPostRepository.findAllDisplayNames();
     }
 
@@ -256,5 +270,19 @@ public class AdminPostServiceImpl implements AdminPostService {
             responseDto.setTitleImage(titleImageSet);
         }
         return responseDto;
+    }
+
+    private void addTagsToPost(Post post, List<Tag> tags) {
+        post.getPostTags().clear();
+        for (Tag tag : tags) {
+            post.addTag(tag);
+        }
+    }
+
+    private void addContributorsToPost(Post post, List<Contributor> contributors) {
+        post.getPostContributors().clear();
+        for (Contributor contributor : contributors) {
+            post.addContributor(contributor);
+        }
     }
 }
