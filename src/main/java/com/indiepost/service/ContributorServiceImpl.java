@@ -49,7 +49,7 @@ public class ContributorServiceImpl implements ContributorService {
 
     @Override
     public void deleteById(Long id) {
-        contributorRepository.delete(id);
+        contributorRepository.deleteById(id);
     }
 
     @Override

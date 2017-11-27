@@ -43,13 +43,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<Tag> findAll() {
-        return Lists.newArrayList(tagRepository.findAll());
-    }
-
-    @Override
     public List<String> findAllToStringList() {
-        List<Tag> tags = findAll();
+        List<Tag> tags = findAll(0, 999999);
         return tags.stream()
                 .map(tag -> tag.getName())
                 .collect(Collectors.toList());

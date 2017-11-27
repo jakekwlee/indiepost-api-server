@@ -33,14 +33,14 @@ public class Post implements Serializable {
     @JoinColumn(name = "originalId")
     private Post original;
 
-    @Column(name = "originalId", nullable = false, insertable = false, updatable = false)
+    @Column(name = "originalId", insertable = false, updatable = false)
     private Long originalId;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "legacyPostId")
     private LegacyPost legacyPost;
 
-    @Column(name = "legacyPostId", nullable = false, insertable = false, updatable = false)
+    @Column(name = "legacyPostId", insertable = false, updatable = false)
     private Long legacyPostId;
 
     @Column(nullable = false)
@@ -78,10 +78,10 @@ public class Post implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "titleImageId")
+    @JoinColumn(name = "titleImageId", insertable = false, updatable = false)
     private ImageSet titleImage;
 
-    @Column(name = "titleImageId", insertable = false, updatable = false)
+    @Column(name = "titleImageId")
     private Long titleImageId;
 
     @Column(nullable = false)
@@ -89,17 +89,17 @@ public class Post implements Serializable {
     private Types.PostStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "creatorId", nullable = false)
+    @JoinColumn(name = "creatorId", nullable = false, insertable = false, updatable = false)
     private User creator;
 
-    @Column(name = "creatorId", nullable = false, insertable = false, updatable = false)
+    @Column(name = "creatorId", nullable = false)
     private Long creatorId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "modifiedUserId", nullable = false)
+    @JoinColumn(name = "modifiedUserId", nullable = false, insertable = false, updatable = false)
     private User modifiedUser;
 
-    @Column(name = "modifiedUserId", nullable = false, insertable = false, updatable = false)
+    @Column(name = "modifiedUserId", nullable = false)
     private Long modifiedUserId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -256,14 +256,9 @@ public class Post implements Serializable {
         this.postContributors = postContributors;
     }
 
-    public void addContributor(Contributor contributor) {
-        int priority = 1;
-        int size = this.postContributors.size();
-        if (size > 0) {
-            PostContributor lastOne = this.postContributors.get(size - 1);
-            priority = lastOne.getPriority() + 1;
-        }
-        PostContributor postContributor = new PostContributor(this, contributor, LocalDateTime.now(), priority);
+    public void addContributor(Contributor contributor, int priority) {
+        PostContributor postContributor =
+                new PostContributor(this, contributor, LocalDateTime.now(), priority);
         this.postContributors.add(postContributor);
         contributor.getPostContributors().add(postContributor);
     }
@@ -289,13 +284,7 @@ public class Post implements Serializable {
                 .collect(Collectors.toList());
     }
 
-    public void addTag(Tag tag) {
-        int priority = 1;
-        int size = this.postTags.size();
-        if (size > 0) {
-            PostTag lastOne = this.postTags.get(size - 1);
-            priority = lastOne.getPriority() + 1;
-        }
+    public void addTag(Tag tag, int priority) {
         PostTag postTag = new PostTag(this, tag, LocalDateTime.now(), priority);
         this.postTags.add(postTag);
         tag.getPostTags().add(postTag);

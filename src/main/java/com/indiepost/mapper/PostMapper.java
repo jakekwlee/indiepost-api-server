@@ -83,15 +83,17 @@ public class PostMapper {
 
     public static void addTagsToPost(Post post, List<Tag> tags) {
         post.getPostTags().clear();
+        int priority = 0;
         for (Tag tag : tags) {
-            post.addTag(tag);
+            post.addTag(tag, priority++);
         }
     }
 
     public static void addContributorsToPost(Post post, List<Contributor> contributors) {
         post.getPostContributors().clear();
+        int priority = 0;
         for (Contributor contributor : contributors) {
-            post.addContributor(contributor);
+            post.addContributor(contributor, priority++);
         }
     }
 

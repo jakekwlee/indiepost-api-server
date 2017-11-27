@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.*;
 import static testHelper.JsonSerializer.printToJson;
 
@@ -39,6 +38,10 @@ public class AdminPostServiceTests {
 
     @Autowired
     private AdminPostService adminPostService;
+
+    protected static boolean areListContentsEqual(List a, List b) {
+        return a.containsAll(b) && b.containsAll(a);
+    }
 
     @Test
     @WithMockUser("indiepost")
@@ -136,13 +139,13 @@ public class AdminPostServiceTests {
     public void allRetrievedDtoShouldHaveFieldsProperly() {
         List<AdminPostSummaryDto> results = adminPostService.find(PAGE, MAX_RESULTS, true);
         for (AdminPostSummaryDto dto : results) {
-            assertNotNull("AdminPostSummaryDto should contain it's title", dto.getTitle());
-            assertTrue("AdminPostSummaryDto should contain it's bylineName", StringUtils.isNotEmpty(dto.getBylineName()));
-            assertNotNull("AdminPostSummaryDto should contain it's categoryName", dto.getCategoryName());
-            assertNotNull("AdminPostSummaryDto should contain it's creatorName", dto.getCreatorName());
-            assertNotNull("AdminPostSummaryDto should contain it's created time", dto.getCreatedAt());
-            assertNotNull("AdminPostSummaryDto should contain it's modified time", dto.getModifiedAt());
-            assertNotNull("AdminPostSummaryDto should contain it's modifiedUserName", dto.getModifiedUserName());
+            assertThat(dto.getTitle(), notNullValue());
+            assertTrue(StringUtils.isNotEmpty(dto.getBylineName()));
+            assertThat(dto.getCategoryName(), notNullValue());
+            assertThat(dto.getCreatorName(), notNullValue());
+            assertThat(dto.getCreatedAt(), notNullValue());
+            assertThat(dto.getModifiedAt(), notNullValue());
+            assertThat(dto.getModifiedUserName(), notNullValue());
         }
     }
 
@@ -163,6 +166,7 @@ public class AdminPostServiceTests {
         fromClient.setTitleImageId(2047L);
         AdminPostResponseDto savedPost = adminPostService.createAutosave(fromClient);
 
+        assertThat(savedPost.getStatus(), is("AUTOSAVE"));
         assertThat(savedPost.getId(), notNullValue());
         assertThat(savedPost.getTitle(), is(fromClient.getTitle()));
         assertThat(savedPost.getContent(), notNullValue());
@@ -173,13 +177,15 @@ public class AdminPostServiceTests {
         assertThat(savedPost.getCreatedAt(), notNullValue());
         assertThat(savedPost.getModifiedAt(), notNullValue());
         assertThat(savedPost.getCreatedAt(), notNullValue());
-        assertThat(savedPost.getTitleImage(), notNullValue());
-        assertThat(savedPost.getTitleImage().getId(), is(fromClient.getTitleImageId()));
-        assertThat(savedPost.getTagIds(), containsInAnyOrder(fromClient.getTagIds()));
-        assertThat(savedPost.getContributorIds(), containsInAnyOrder(fromClient.getContributorIds()));
+        assertThat(savedPost.getTitleImageId(), is(fromClient.getTitleImageId()));
+
+        assertTrue("Saved post should contain tag ids properly",
+                areListContentsEqual(savedPost.getTagIds(), fromClient.getTagIds()));
+        assertTrue("Saved post should contain contributor ids properly",
+                areListContentsEqual(savedPost.getContributorIds(), fromClient.getContributorIds()));
+
         assertThat(savedPost.getOriginalId(), nullValue());
 
-        createdPostIds.add(savedPost.getId());
         printToJson(savedPost);
     }
 

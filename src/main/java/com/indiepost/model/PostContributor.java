@@ -1,21 +1,24 @@
 package com.indiepost.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
 @Table(name = "Posts_Contributors")
-public class PostContributor {
-    @EmbeddedId
-    private PostContributorId id;
+public class PostContributor implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
+    @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("postId")
+    @JoinColumn(name = "post_id")
     private Post post;
 
+    @Id
     @ManyToOne(fetch = FetchType.EAGER)
-    @MapsId("contributorId")
+    @JoinColumn(name = "contributor_id")
     private Contributor contributor;
 
     @Column(nullable = false)
@@ -37,14 +40,6 @@ public class PostContributor {
         this.contributor = contributor;
         this.createdAt = createdAt;
         this.priority = priority;
-    }
-
-    public PostContributorId getId() {
-        return id;
-    }
-
-    public void setId(PostContributorId id) {
-        this.id = id;
     }
 
     public Post getPost() {

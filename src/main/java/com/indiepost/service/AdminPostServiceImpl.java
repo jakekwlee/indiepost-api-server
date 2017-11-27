@@ -26,8 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.indiepost.mapper.PostMapper.adminPostRequestDtoToPost;
-import static com.indiepost.mapper.PostMapper.postToPost;
+import static com.indiepost.mapper.PostMapper.*;
 
 /**
  * Created by jake on 17. 1. 14.
@@ -138,7 +137,7 @@ public class AdminPostServiceImpl implements AdminPostService {
             post.setOriginal(originalPost);
         } else {
             post = adminPostRequestDtoToPost(postRequestDto);
-            post.setCreator(currentUser);
+            post.setCreatorId(currentUser.getId());
             post.setCreatedAt(LocalDateTime.now());
         }
         if (StringUtils.isEmpty(post.getTitle())) {
@@ -156,7 +155,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         if (post.getPublishedAt() == null) {
             post.setPublishedAt(LocalDateTime.now().plusDays(7));
         }
-        post.setModifiedUser(currentUser);
+        post.setModifiedUserId(currentUser.getId());
         post.setModifiedAt(LocalDateTime.now());
         post.setStatus(PostStatus.AUTOSAVE);
         post.setCategoryId(2L);
@@ -254,13 +253,13 @@ public class AdminPostServiceImpl implements AdminPostService {
         }
         if (!post.getTags().isEmpty()) {
             List<Long> tagIds = post.getPostTags().stream()
-                    .map(postTag -> postTag.getId().getTagId())
+                    .map(postTag -> postTag.getTag().getId())
                     .collect(Collectors.toList());
             responseDto.setTagIds(tagIds);
         }
         if (!post.getPostContributors().isEmpty()) {
             List<Long> contributorIds = post.getPostContributors().stream()
-                    .map(postContributor -> postContributor.getId().getContributorId())
+                    .map(postContributor -> postContributor.getContributor().getId())
                     .collect(Collectors.toList());
             responseDto.setContributorIds(contributorIds);
         }
@@ -270,19 +269,5 @@ public class AdminPostServiceImpl implements AdminPostService {
             responseDto.setTitleImage(titleImageSet);
         }
         return responseDto;
-    }
-
-    private void addTagsToPost(Post post, List<Tag> tags) {
-        post.getPostTags().clear();
-        for (Tag tag : tags) {
-            post.addTag(tag);
-        }
-    }
-
-    private void addContributorsToPost(Post post, List<Contributor> contributors) {
-        post.getPostContributors().clear();
-        for (Contributor contributor : contributors) {
-            post.addContributor(contributor);
-        }
     }
 }

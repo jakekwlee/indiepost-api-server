@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by jake on 17. 11. 13.
@@ -161,18 +160,5 @@ public class Contributor implements Serializable {
 
     public void setPostContributors(List<PostContributor> postContributors) {
         this.postContributors = postContributors;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Contributor contributor = (Contributor) o;
-        return Objects.equals(name, contributor.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
     }
 }

@@ -1,21 +1,24 @@
 package com.indiepost.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
 @Table(name = "Posts_Tags_New")
-public class PostTag {
-    @EmbeddedId
-    private PostTagId id;
+public class PostTag implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
+    @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("postId")
+    @JoinColumn(name = "post_id")
     private Post post;
 
+    @Id
     @ManyToOne(fetch = FetchType.EAGER)
-    @MapsId("tagId")
+    @JoinColumn(name = "tag_id")
     private Tag tag;
 
     @Column(nullable = false)
@@ -37,14 +40,6 @@ public class PostTag {
         this.tag = tag;
         this.createdAt = createdAt;
         this.priority = priority;
-    }
-
-    public PostTagId getId() {
-        return id;
-    }
-
-    public void setId(PostTagId id) {
-        this.id = id;
     }
 
     public Post getPost() {
