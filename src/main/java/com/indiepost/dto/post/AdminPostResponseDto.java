@@ -1,8 +1,8 @@
 package com.indiepost.dto.post;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.indiepost.dto.ImageSetDto;
 import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
-import com.indiepost.model.ImageSet;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +17,7 @@ public class AdminPostResponseDto extends AdminPostRequestDto {
     @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     private LocalDateTime modifiedAt;
 
-    private ImageSet titleImage;
+    private ImageSetDto titleImage;
 
     private int bookmarkCount = 0;
 
@@ -41,11 +41,11 @@ public class AdminPostResponseDto extends AdminPostRequestDto {
         this.modifiedAt = modifiedAt;
     }
 
-    public ImageSet getTitleImage() {
+    public ImageSetDto getTitleImage() {
         return titleImage;
     }
 
-    public void setTitleImage(ImageSet titleImage) {
+    public void setTitleImage(ImageSetDto titleImage) {
         this.titleImage = titleImage;
     }
 

@@ -18,6 +18,8 @@ public interface TagService {
 
     List<Tag> findAll(int page, int maxResults);
 
+    List<Tag> findByIds(List<Long> ids);
+
     void update(Tag tag);
 
     void delete(Tag tag);

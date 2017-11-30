@@ -3,7 +3,6 @@ package com.indiepost.model;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Table(name = "Posts_Contributors")
@@ -76,19 +75,19 @@ public class PostContributor implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(post, contributor);
+        int result = post.hashCode();
+        result = 31 * result + contributor.hashCode();
+        return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        PostContributor that = (PostContributor) obj;
-        return Objects.equals(post, that.post) &&
-                Objects.equals(contributor, that.contributor);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PostContributor that = (PostContributor) o;
+
+        if (!post.equals(that.post)) return false;
+        return contributor.equals(that.contributor);
     }
 }

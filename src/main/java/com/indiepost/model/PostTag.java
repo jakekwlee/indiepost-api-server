@@ -3,10 +3,9 @@ package com.indiepost.model;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
-@Table(name = "Posts_Tags_New")
+@Table(name = "Posts_Tags")
 public class PostTag implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -76,19 +75,19 @@ public class PostTag implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(post, tag);
+        int result = post.hashCode();
+        result = 31 * result + tag.hashCode();
+        return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        PostTag that = (PostTag) obj;
-        return Objects.equals(post, that.post) &&
-                Objects.equals(tag, that.tag);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PostTag postTag = (PostTag) o;
+
+        if (!post.equals(postTag.post)) return false;
+        return tag.equals(postTag.tag);
     }
 }

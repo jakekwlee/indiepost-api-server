@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.indiepost.mapper.PostMapper.imageSetToDto;
 import static com.indiepost.mapper.PostMapper.postToPostDto;
 
 /**
@@ -221,26 +222,9 @@ public class PostServiceImpl implements PostService {
         if (post.getCategory() != null) {
             dto.setCategory(post.getCategory().getSlug());
         }
-        ImageSet titleImage = post.getTitleImage();
-        if (titleImage != null) {
-            ImageSetDto titleImageDto = new ImageSetDto();
-            titleImageDto.setId(titleImage.getId());
-            titleImageDto.setId(titleImage.getId());
-            if (titleImage.getOriginal() != null) {
-                titleImageDto.setOriginal(titleImage.getOriginal().getFilePath());
-            }
-            if (titleImage.getLarge() != null) {
-                titleImageDto.setLarge(titleImage.getLarge().getFilePath());
-            }
-            if (titleImage.getOptimized() != null) {
-                titleImageDto.setOptimized(titleImage.getOptimized().getFilePath());
-            }
-            if (titleImage.getSmall() != null) {
-                titleImageDto.setSmall(titleImage.getSmall().getFilePath());
-            }
-            if (titleImage.getThumbnail() != null) {
-                titleImageDto.setThumbnail(titleImage.getThumbnail().getFilePath());
-            }
+        if (post.getTitleImageId() != null) {
+            ImageSetDto titleImageDto = imageSetToDto(post.getTitleImage());
+            dto.setTitleImage(titleImageDto);
         }
         return dto;
     }

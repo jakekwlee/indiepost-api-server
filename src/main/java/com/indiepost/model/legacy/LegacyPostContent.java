@@ -10,7 +10,9 @@ public class LegacyPostContent {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long no;
 
-    private Long parent;
+    @ManyToOne
+    @JoinColumn(name = "parent")
+    private LegacyPost legacyPost;
 
     private Long iorder;
 
@@ -22,18 +24,6 @@ public class LegacyPostContent {
 
     public Long getNo() {
         return no;
-    }
-
-    public void setNo(Long no) {
-        this.no = no;
-    }
-
-    public Long getParent() {
-        return parent;
-    }
-
-    public void setParent(Long parent) {
-        this.parent = parent;
     }
 
     public Long getIorder() {
@@ -66,5 +56,13 @@ public class LegacyPostContent {
 
     public void setIspay(Long ispay) {
         this.ispay = ispay;
+    }
+
+    public LegacyPost getLegacyPost() {
+        return legacyPost;
+    }
+
+    public void setLegacyPost(LegacyPost legacyPost) {
+        this.legacyPost = legacyPost;
     }
 }

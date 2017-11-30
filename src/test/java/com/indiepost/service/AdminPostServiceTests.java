@@ -5,7 +5,8 @@ import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
 import com.indiepost.dto.post.AdminPostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
-import com.indiepost.model.ImageSet;
+import com.indiepost.model.Post;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Assert;
@@ -59,10 +60,9 @@ public class AdminPostServiceTests {
     @WithMockUser("indiepost")
     public void retrievedPostShouldContainProperTitleImage() {
         AdminPostResponseDto responseDto = adminPostService.findOne(4557L);
-        ImageSet imageSet = responseDto.getTitleImage();
-        assertTrue(
+        assertNotNull(
                 "Post titleImage should contain multiple image resolutions",
-                imageSet.getImages().size() > 0
+                responseDto.getTitleImage()
         );
     }
 
@@ -158,35 +158,86 @@ public class AdminPostServiceTests {
 
     @Test
     @WithMockUser(username = "eunjechoi")
-    public void createAutosaveFirstTimeShouldWorksProperly() {
-        AdminPostRequestDto fromClient = new AdminPostRequestDto();
-        fromClient.setTitle("Test Title");
-        fromClient.setContributorIds(Arrays.asList(1L, 2L));
-        fromClient.setTagIds(Arrays.asList(4280L, 4279L));
-        fromClient.setTitleImageId(2047L);
-        AdminPostResponseDto savedPost = adminPostService.createAutosave(fromClient);
+    public void createAutosaveWithNoParamShouldReturnAutosavedPostResponseDtoProperly() {
+        Post post = new Post();
+        AdminPostResponseDto autosave = adminPostService.createAutosave();
+        printToJson(autosave);
 
-        assertThat(savedPost.getStatus(), is("AUTOSAVE"));
-        assertThat(savedPost.getId(), notNullValue());
-        assertThat(savedPost.getTitle(), is(fromClient.getTitle()));
-        assertThat(savedPost.getContent(), notNullValue());
-        assertThat(savedPost.getExcerpt(), notNullValue());
-        assertThat(savedPost.getBylineName(), notNullValue());
-        assertThat(savedPost.getCreatorId(), notNullValue());
-        assertThat(savedPost.getModifiedUserId(), notNullValue());
-        assertThat(savedPost.getCreatedAt(), notNullValue());
-        assertThat(savedPost.getModifiedAt(), notNullValue());
-        assertThat(savedPost.getCreatedAt(), notNullValue());
-        assertThat(savedPost.getTitleImageId(), is(fromClient.getTitleImageId()));
+        assertThat(autosave, notNullValue());
+        assertThat(autosave.getId(), notNullValue());
+        assertThat(autosave.getOriginalId(), nullValue());
+        assertThat(autosave.getTitle(), is(post.getTitle()));
+        assertThat(autosave.getExcerpt(), is(post.getExcerpt()));
+        assertThat(autosave.getContent(), is(post.getContent()));
 
-        assertTrue("Saved post should contain tag ids properly",
-                areListContentsEqual(savedPost.getTagIds(), fromClient.getTagIds()));
-        assertTrue("Saved post should contain contributor ids properly",
-                areListContentsEqual(savedPost.getContributorIds(), fromClient.getContributorIds()));
+        createdPostIds.add(autosave.getId());
+    }
 
-        assertThat(savedPost.getOriginalId(), nullValue());
+    @Test
+    @WithMockUser(username = "eunjechoi")
+    public void createAutosaveWithExistPostIdWorksProperly() {
+        Long originalPostId = 4557L;
+        AdminPostResponseDto original = adminPostService.findOne(originalPostId);
+        AdminPostResponseDto autosave = adminPostService.createAutosave(originalPostId);
+        printToJson(autosave);
 
-        printToJson(savedPost);
+        assertThat(autosave, notNullValue());
+        assertThat(autosave.getId(), allOf(notNullValue(), not(original.getId())));
+        assertThat(autosave.getOriginalId(), allOf(notNullValue(), is(original.getId())));
+        assertThat(autosave.getTitle(), is(original.getTitle()));
+        assertThat(autosave.getExcerpt(), is(original.getExcerpt()));
+        assertThat(autosave.getContent(), is(original.getContent()));
+        assertThat(autosave.getBylineName(), is(original.getBylineName()));
+        assertThat(autosave.getTitleImageId(), is(original.getTitleImageId()));
+        assertThat(autosave.getTitleImage(), notNullValue());
+        assertThat(autosave.getTitleImage().getId(), is(original.getTitleImageId()));
+        assertTrue(areListContentsEqual(original.getContributorIds(), autosave.getContributorIds()));
+        assertTrue(areListContentsEqual(original.getTagIds(), autosave.getTagIds()));
+
+        createdPostIds.add(autosave.getId());
+    }
+
+    @Test
+    @WithMockUser(username = "eunjechoi")
+    public void updateAutosavedCopyToPublicStatusWorksProperly() {
+        Long originalPostId = 3943L;
+        AdminPostResponseDto autosave = adminPostService.createAutosave(originalPostId);
+
+        AdminPostRequestDto requestDto = new AdminPostRequestDto();
+
+        // Unchanged
+        requestDto.setId(autosave.getId());
+        requestDto.setOriginalId(autosave.getOriginalId());
+        requestDto.setCategoryId(autosave.getCategoryId());
+        requestDto.setTitleImageId(autosave.getTitleImageId());
+
+        // Changed
+        requestDto.setBylineName(RandomStringUtils.randomAlphabetic(10));
+        requestDto.setTitle(RandomStringUtils.randomAlphabetic(10));
+        requestDto.setExcerpt(RandomStringUtils.randomAlphabetic(10));
+        requestDto.setContent(RandomStringUtils.randomAlphabetic(10));
+        requestDto.setContributorIds(Arrays.asList(1L, 2L));
+        requestDto.setTagIds(Arrays.asList(4280L, 4279L));
+        requestDto.setStatus(PostStatus.PUBLISH.toString());
+        adminPostService.update(requestDto);
+
+        AdminPostResponseDto deleted = adminPostService.findOne(autosave.getId());
+        assertThat(deleted, nullValue());
+
+        AdminPostResponseDto updatedOriginal = adminPostService.findOne(originalPostId);
+        printToJson(updatedOriginal);
+
+        assertThat(updatedOriginal.getId(), is(requestDto.getOriginalId()));
+        assertThat(updatedOriginal.getOriginalId(), nullValue());
+        assertThat(updatedOriginal.getCategoryId(), is(requestDto.getCategoryId()));
+        assertThat(updatedOriginal.getTitleImageId(), is(requestDto.getTitleImageId()));
+        assertThat(updatedOriginal.getTitle(), is(requestDto.getTitle()));
+        assertThat(updatedOriginal.getExcerpt(), is(requestDto.getExcerpt()));
+        assertThat(updatedOriginal.getBylineName(), is(requestDto.getBylineName()));
+        assertThat(updatedOriginal.getContent(), is(requestDto.getContent()));
+        assertThat(updatedOriginal.getStatus(), is(requestDto.getStatus()));
+        assertTrue(areListContentsEqual(requestDto.getTagIds(), updatedOriginal.getTagIds()));
+        assertTrue(areListContentsEqual(requestDto.getContributorIds(), updatedOriginal.getContributorIds()));
     }
 
     @After

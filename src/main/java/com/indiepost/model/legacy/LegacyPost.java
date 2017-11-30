@@ -1,8 +1,16 @@
 package com.indiepost.model.legacy;
 
+import com.indiepost.enums.Types;
+import com.indiepost.model.ImageSet;
+import com.indiepost.model.Post;
+import com.indiepost.model.Tag;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.web.util.HtmlUtils;
 
 import javax.persistence.*;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "contentlist")
@@ -11,6 +19,9 @@ public class LegacyPost {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long no;
+
+    @OneToMany(mappedBy = "legacyPost", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LegacyPostContent> contents = new ArrayList<>();
 
     private String contentname;
 
@@ -298,5 +309,90 @@ public class LegacyPost {
 
     public void setSubs(Long subs) {
         this.subs = subs;
+    }
+
+    public List<LegacyPostContent> getContents() {
+        return contents;
+    }
+
+    public void setContents(List<LegacyPostContent> contents) {
+        this.contents = contents;
+    }
+
+    public void copyFromPost(Post post) {
+        Long status;
+
+        // TODO
+        if (post.getStatus() == Types.PostStatus.PENDING || post.getStatus() == Types.PostStatus.TRASH) {
+            status = 0L;
+        } else {
+            status = 1L;
+        }
+        String regDatePattern = "yyyyMMdd";
+        String modifyDatePattern = "yyyyMMddHH";
+
+        this.setRegdate(post.getCreatedAt().format(DateTimeFormatter.ofPattern(regDatePattern)));
+        this.setModifydate(post.getPublishedAt().format(DateTimeFormatter.ofPattern(modifyDatePattern)));
+        this.setMenuno(post.getCategory().getId());
+        this.setContentname(StringEscapeUtils.escapeHtml4(post.getTitle()));
+        this.setContenttext(post.getExcerpt());
+        this.setWriterid(post.getCreator().getUsername());
+        this.setWritername(post.getBylineName());
+        String imageUrl = "";
+        if (post.getTitleImage() != null) {
+            ImageSet titleImageSet = post.getTitleImage();
+            if (titleImageSet.getOptimized() != null) {
+                imageUrl = titleImageSet.getOptimized().getFilePath();
+            } else {
+                imageUrl = titleImageSet.getOriginal().getFilePath();
+            }
+        }
+        this.setImageurl(imageUrl);
+        this.setImageurl2("");
+        this.setDataurl("");
+        this.setSubs(0L);
+        this.setIsdisplay(status);
+        this.setIsmain(status);
+        this.setPrice(0L);
+        this.setDataurl("");
+        this.setIsarticleservice(0L);
+        this.setIsstreamingservice(0L);
+        this.setIsdownloadservice(0L);
+        this.setPrice(0L);
+        if (this.getHit() == null || this.getHit() == 0) {
+            this.setGoods(0L);
+            this.setUv(0L);
+            this.setJjim(0L);
+            this.setHit(0L);
+        }
+        this.setListseq(0L);
+        this.setListseqmain(0L);
+        this.setOs(0L);
+        this.setPlatform(0L);
+        this.setType1no(1L);
+        this.setType2no(1L);
+
+        List<Tag> tags = post.getTags();
+
+        if (tags != null) {
+            String[] tagNameArray = new String[tags.size()];
+            Tag[] tagArray = tags.toArray(new Tag[tags.size()]);
+            for (int i = 0; i < tagArray.length; ++i) {
+                tagNameArray[i] = tagArray[i].getName();
+            }
+            this.setKeyword(String.join(", ", tagNameArray));
+        }
+
+        if (!this.contents.isEmpty()) {
+            this.contents.clear();
+        }
+        LegacyPostContent content = new LegacyPostContent();
+        content.setIorder(1L);
+        content.setData(post.getContent());
+        content.setType(9L);
+        content.setIspay(0L);
+        content.setLegacyPost(this);
+        this.getContents().clear();
+        this.getContents().add(content);
     }
 }

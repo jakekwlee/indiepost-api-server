@@ -51,7 +51,7 @@ public class PostScheduledTaskServiceImpl implements PostScheduledTaskService {
                 adminPostRepository.disableFeaturedPosts();
             }
             post.setStatus(Types.PostStatus.PUBLISH);
-            adminPostRepository.update(post);
+            adminPostRepository.merge(post);
             log.info(String.format("[%s] %s", post.getId(), post.getTitle()));
         }
     }

@@ -9,7 +9,6 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.hibernate.Session;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -31,28 +30,30 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
     @Override
     public Long save(Post post) {
-        return (Long) getSession().save(post);
+        entityManager.persist(post);
+        entityManager.flush();
+        return post.getId();
     }
 
     @Override
-    public Post findById(Long id) {
+    public Post findOne(Long id) {
         // TODO reduce query
         return entityManager.find(Post.class, id);
     }
 
     @Override
-    public void update(Post post) {
-        getSession().update(post);
+    public Post merge(Post post) {
+        return entityManager.merge(post);
     }
 
     @Override
     public void delete(Post post) {
-        getSession().delete(post);
+        entityManager.remove(post);
     }
 
     @Override
     public void deleteById(Long id) {
-        Post post = findById(id);
+        Post post = findOne(id);
         delete(post);
     }
 
@@ -164,8 +165,14 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
                 .execute();
     }
 
-    private Session getSession() {
-        return entityManager.unwrap(Session.class);
+    @Override
+    public void flush() {
+        entityManager.flush();
+    }
+
+    @Override
+    public void detach(Post post) {
+        entityManager.detach(post);
     }
 
     private JPAQuery addProjections(JPAQuery query) {

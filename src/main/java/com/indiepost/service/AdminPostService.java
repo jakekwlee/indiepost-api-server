@@ -15,6 +15,12 @@ public interface AdminPostService {
 
     AdminPostResponseDto findOne(Long id);
 
+    AdminPostResponseDto createAutosave();
+
+    AdminPostResponseDto createAutosave(Long postId);
+
+    void update(AdminPostRequestDto adminPostRequestDto);
+
     void deleteById(Long id);
 
     List<AdminPostSummaryDto> find(int page, int maxResults, boolean isDesc);
@@ -24,14 +30,6 @@ public interface AdminPostService {
     Long count();
 
     Long count(PostSearch search);
-
-    AdminPostResponseDto save(AdminPostRequestDto adminPostRequestDto);
-
-    AdminPostResponseDto createAutosave(AdminPostRequestDto adminPostRequestDto);
-
-    void updateAutosave(Long postId, AdminPostRequestDto adminPostRequestDto);
-
-    AdminPostResponseDto update(Long id, AdminPostRequestDto adminPostRequestDto);
 
     List<AdminPostSummaryDto> findLastUpdated(LocalDateTime dateFrom);
 

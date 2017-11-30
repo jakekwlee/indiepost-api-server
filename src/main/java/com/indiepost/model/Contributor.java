@@ -20,7 +20,7 @@ import java.util.List;
 @Table(name = "Contributors")
 public class Contributor implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 12398123091L;
 
     @Id
     @GeneratedValue

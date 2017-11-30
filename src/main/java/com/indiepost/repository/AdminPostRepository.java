@@ -16,9 +16,9 @@ public interface AdminPostRepository {
 
     Long save(Post post);
 
-    Post findById(Long id);
+    Post findOne(Long id);
 
-    void update(Post post);
+    Post merge(Post post);
 
     void delete(Post post);
 
@@ -41,4 +41,8 @@ public interface AdminPostRepository {
     void disableSplashPosts();
 
     void disableFeaturedPosts();
+
+    void flush();
+
+    void detach(Post post);
 }

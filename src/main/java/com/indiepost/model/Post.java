@@ -30,10 +30,10 @@ public class Post implements Serializable {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "originalId")
+    @JoinColumn(name = "originalId", insertable = false, updatable = false)
     private Post original;
 
-    @Column(name = "originalId", insertable = false, updatable = false)
+    @Column(name = "originalId")
     private Long originalId;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -61,7 +61,7 @@ public class Post implements Serializable {
 
     @Column(nullable = false)
     @Size(max = 300)
-    private String excerpt = "No Excerpt";
+    private String excerpt = "";
 
     @Column(nullable = false)
     @Size(max = 30)
@@ -107,7 +107,7 @@ public class Post implements Serializable {
     private Category category;
 
     @Column(name = "categoryId", nullable = false)
-    private Long categoryId;
+    private Long categoryId = 2L;
 
     @OneToMany(
             mappedBy = "post",

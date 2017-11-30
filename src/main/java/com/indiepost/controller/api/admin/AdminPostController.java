@@ -25,34 +25,22 @@ public class AdminPostController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public AdminPostResponseDto get(@PathVariable Long id) {
+    public AdminPostResponseDto get(@PathVariable Long id, @RequestParam(defaultValue = "false") boolean edit) {
+        if (edit) {
+            return adminPostService.createAutosave(id);
+        }
         return adminPostService.findOne(id);
-    }
-
-    @RequestMapping(method = RequestMethod.POST)
-    public AdminPostResponseDto save(@RequestBody AdminPostRequestDto adminPostRequestDto) {
-        return adminPostService.save(adminPostRequestDto);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public void update(@RequestBody AdminPostRequestDto adminPostRequestDto, @PathVariable Long id) {
-        adminPostService.update(id, adminPostRequestDto);
+        adminPostService.update(adminPostRequestDto);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public Long delete(@PathVariable Long id) {
         adminPostService.deleteById(id);
         return id;
-    }
-
-    @RequestMapping(value = "/autosave", method = RequestMethod.POST)
-    public AdminPostResponseDto createAutosave(@RequestBody AdminPostRequestDto adminPostRequestDto) {
-        return adminPostService.createAutosave(adminPostRequestDto);
-    }
-
-    @RequestMapping(value = "/autosave/{id}", method = RequestMethod.PUT)
-    public void updateAutosave(@PathVariable Long id, @RequestBody AdminPostRequestDto adminPostRequestDto) {
-        adminPostService.updateAutosave(id, adminPostRequestDto);
     }
 
     @RequestMapping(method = RequestMethod.GET)
