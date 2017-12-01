@@ -112,7 +112,6 @@ public class AdminPostServiceImpl implements AdminPostService {
         Long postId = postRequestDto.getId();
         Long originalId = postRequestDto.getOriginalId();
         PostStatus status = PostStatus.valueOf(postRequestDto.getStatus());
-        User currentUser = userService.findCurrentUser();
         Post post;
 
         if (isPublicStatus(status) && originalId != null) {
@@ -122,19 +121,16 @@ public class AdminPostServiceImpl implements AdminPostService {
             post = adminPostRepository.findOne(postId);
         }
 
-        copyDtoToPost(postRequestDto, post);
+        User currentUser = userService.findCurrentUser();
         post.setModifiedUserId(currentUser.getId());
         post.setModifiedAt(LocalDateTime.now());
 
+        copyDtoToPost(postRequestDto, post);
 
         if (postRequestDto.getContributorIds() != null) {
-            List<Long> ids = post.getContributors()
-                    .stream()
-                    .map(contributor -> contributor.getId())
-                    .collect(Collectors.toList());
-
-            // TODO Fix this error.
-
+            List<Contributor> contributors =
+                    contributorRepository.findByIdIn(postRequestDto.getContributorIds());
+            addContributorsToPost(post, contributors);
         }
         if (postRequestDto.getTagIds() != null) {
             List<Tag> tags = tagRepository.findByIdIn(postRequestDto.getTagIds());

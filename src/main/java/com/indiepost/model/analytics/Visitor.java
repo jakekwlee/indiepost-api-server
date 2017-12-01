@@ -6,6 +6,7 @@ import com.indiepost.model.User;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -15,7 +16,9 @@ import java.time.LocalDateTime;
 @Table(name = "Visitors", indexes = {
         @Index(columnList = "timestamp", name = "v_timestamp_idx")
 })
-public class Visitor {
+public class Visitor implements Serializable {
+
+    private static final long serialVersionUID = -7650167348298591944L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

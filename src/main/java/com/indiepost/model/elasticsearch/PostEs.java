@@ -10,7 +10,7 @@ import java.util.List;
 @Document(indexName = "post")
 public class PostEs implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 6587432935142567307L;
 
     @Id
     private Long id;

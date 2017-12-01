@@ -11,6 +11,7 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -19,9 +20,9 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "ImageSets")
-public class ImageSet {
+public class ImageSet implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -6176638635434014551L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

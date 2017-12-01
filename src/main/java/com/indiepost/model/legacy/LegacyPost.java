@@ -1,20 +1,23 @@
 package com.indiepost.model.legacy;
 
-import com.indiepost.enums.Types;
+import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.ImageSet;
 import com.indiepost.model.Post;
-import com.indiepost.model.Tag;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.web.util.HtmlUtils;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "contentlist")
-public class LegacyPost {
+public class LegacyPost implements Serializable {
+
+    private static final long serialVersionUID = 836715242556222711L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -322,18 +325,22 @@ public class LegacyPost {
     public void copyFromPost(Post post) {
         Long status;
 
+        PostStatus postStatus = post.getStatus();
         // TODO
-        if (post.getStatus() == Types.PostStatus.PENDING || post.getStatus() == Types.PostStatus.TRASH) {
+        if (postStatus == PostStatus.PENDING ||
+                postStatus == PostStatus.DRAFT ||
+                postStatus == PostStatus.TRASH) {
             status = 0L;
         } else {
             status = 1L;
         }
+
         String regDatePattern = "yyyyMMdd";
         String modifyDatePattern = "yyyyMMddHH";
 
         this.setRegdate(post.getCreatedAt().format(DateTimeFormatter.ofPattern(regDatePattern)));
         this.setModifydate(post.getPublishedAt().format(DateTimeFormatter.ofPattern(modifyDatePattern)));
-        this.setMenuno(post.getCategory().getId());
+        this.setMenuno(post.getCategoryId());
         this.setContentname(StringEscapeUtils.escapeHtml4(post.getTitle()));
         this.setContenttext(post.getExcerpt());
         this.setWriterid(post.getCreator().getUsername());
@@ -372,27 +379,22 @@ public class LegacyPost {
         this.setType1no(1L);
         this.setType2no(1L);
 
-        List<Tag> tags = post.getTags();
-
-        if (tags != null) {
-            String[] tagNameArray = new String[tags.size()];
-            Tag[] tagArray = tags.toArray(new Tag[tags.size()]);
-            for (int i = 0; i < tagArray.length; ++i) {
-                tagNameArray[i] = tagArray[i].getName();
-            }
-            this.setKeyword(String.join(", ", tagNameArray));
+        if (post.getTags() != null) {
+            List<String> tags = post.getTags()
+                    .stream()
+                    .map(tag -> tag.getName())
+                    .collect(Collectors.toList());
+            String keyword = String.join(", ", tags.toArray(new String[tags.size()]));
+            this.setKeyword(keyword);
         }
 
-        if (!this.contents.isEmpty()) {
-            this.contents.clear();
-        }
         LegacyPostContent content = new LegacyPostContent();
         content.setIorder(1L);
         content.setData(post.getContent());
         content.setType(9L);
         content.setIspay(0L);
         content.setLegacyPost(this);
-        this.getContents().clear();
-        this.getContents().add(content);
+        this.contents.clear();
+        this.contents.add(content);
     }
 }

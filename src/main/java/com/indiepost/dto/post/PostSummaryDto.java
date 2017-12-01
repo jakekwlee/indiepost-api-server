@@ -6,14 +6,12 @@ import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * Created by jake on 17. 1. 21.
  */
-public class PostSummaryDto implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class PostSummaryDto {
 
     private Long id;
 
@@ -128,6 +126,13 @@ public class PostSummaryDto implements Serializable {
         this.category = category;
     }
 
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(id)
+                .append(category)
+                .toHashCode();
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -140,14 +145,6 @@ public class PostSummaryDto implements Serializable {
         return new EqualsBuilder()
                 .append(id, postSummaryDto.getId())
                 .isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(id)
-                .append(category)
-                .toHashCode();
     }
 
     public ImageSetDto getTitleImage() {

@@ -3,16 +3,13 @@ package com.indiepost.dto.post;
 import com.indiepost.model.Contributor;
 import com.indiepost.model.Tag;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by jake on 17. 1. 22.
  */
-public class PostDto extends PostSummaryDto implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class PostDto extends PostSummaryDto {
 
     private String content;
 

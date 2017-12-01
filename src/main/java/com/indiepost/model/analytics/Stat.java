@@ -3,6 +3,7 @@ package com.indiepost.model.analytics;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -15,7 +16,9 @@ import java.time.LocalDateTime;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "class", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("Stat")
-public class Stat {
+public class Stat implements Serializable {
+
+    private static final long serialVersionUID = 7119668551684081952L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

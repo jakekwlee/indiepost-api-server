@@ -2,6 +2,7 @@ package com.indiepost.model.analytics;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -10,8 +11,9 @@ import java.util.List;
  */
 @Entity
 @Table(name = "Campaigns")
-public class Campaign {
-    private static final long serialVersionUID = 1L;
+public class Campaign implements Serializable {
+
+    private static final long serialVersionUID = -7542047760338833150L;
 
     @Id
     @GeneratedValue

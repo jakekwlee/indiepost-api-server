@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Table(name = "Images")
 public class Image implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -6417761322329861824L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

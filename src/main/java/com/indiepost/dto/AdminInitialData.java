@@ -7,8 +7,6 @@ import java.util.List;
  */
 public class AdminInitialData {
 
-    private static final long serialVersionUID = 1L;
-
     private List<UserDto> creators;
 
     private List<String> creatorNames;

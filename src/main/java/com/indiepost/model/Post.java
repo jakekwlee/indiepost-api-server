@@ -1,7 +1,6 @@
 package com.indiepost.model;
 
 import com.indiepost.enums.Types;
-import com.indiepost.model.analytics.Pageview;
 import com.indiepost.model.legacy.LegacyPost;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -23,7 +22,7 @@ import java.util.stream.Collectors;
 @Table(name = "Posts")
 public class Post implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -1121960490475976481L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -114,7 +113,7 @@ public class Post implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @OrderBy("priority")
+    @OrderBy("id")
     private List<PostContributor> postContributors = new ArrayList<>();
 
     @OneToMany(
@@ -122,7 +121,7 @@ public class Post implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @OrderBy("priority asc, tag_id desc")
+    @OrderBy("id")
     private List<PostTag> postTags = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -133,23 +132,12 @@ public class Post implements Serializable {
     @Min(0)
     private int bookmarkCount = 0;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "post")
-    private List<Pageview> pageviews;
-
     public List<PostTag> getPostTags() {
         return postTags;
     }
 
     public void setPostTags(List<PostTag> postTags) {
         this.postTags = postTags;
-    }
-
-    public List<Pageview> getPageviews() {
-        return pageviews;
-    }
-
-    public void setPageviews(List<Pageview> pageviews) {
-        this.pageviews = pageviews;
     }
 
     public Long getId() {
@@ -256,9 +244,9 @@ public class Post implements Serializable {
         this.postContributors = postContributors;
     }
 
-    public void addContributor(Contributor contributor, int priority) {
+    public void addContributor(Contributor contributor) {
         PostContributor postContributor =
-                new PostContributor(this, contributor, LocalDateTime.now(), priority);
+                new PostContributor(this, contributor, LocalDateTime.now());
         this.postContributors.add(postContributor);
         contributor.getPostContributors().add(postContributor);
     }
@@ -284,8 +272,12 @@ public class Post implements Serializable {
                 .collect(Collectors.toList());
     }
 
-    public void addTag(Tag tag, int priority) {
-        PostTag postTag = new PostTag(this, tag, LocalDateTime.now(), priority);
+    public void clearContributors() {
+        this.postContributors.clear();
+    }
+
+    public void addTag(Tag tag) {
+        PostTag postTag = new PostTag(this, tag, LocalDateTime.now());
         this.postTags.add(postTag);
         tag.getPostTags().add(postTag);
     }
@@ -309,6 +301,10 @@ public class Post implements Serializable {
         return postTags.stream()
                 .map(postTag -> postTag.getTag())
                 .collect(Collectors.toList());
+    }
+
+    public void clearTags() {
+        this.postTags.clear();
     }
 
     public List<Bookmark> getBookmarks() {

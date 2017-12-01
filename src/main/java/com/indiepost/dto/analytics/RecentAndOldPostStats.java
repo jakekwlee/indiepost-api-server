@@ -6,6 +6,7 @@ import java.util.List;
  * Created by jake on 10/29/17.
  */
 public class RecentAndOldPostStats {
+
     private DoubleTrend trend;
 
     private List<ShareStat> topOldPosts;

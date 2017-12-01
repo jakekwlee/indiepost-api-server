@@ -1,10 +1,13 @@
 package com.indiepost.model.legacy;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "detaillist")
-public class LegacyPostContent {
+public class LegacyPostContent implements Serializable {
+
+    private static final long serialVersionUID = 4590136339034273671L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

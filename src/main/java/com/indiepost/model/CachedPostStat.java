@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Table(name = "CachedPostStats")
 public class CachedPostStat implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -8011193195679356884L;
 
     @Id
     @GeneratedValue

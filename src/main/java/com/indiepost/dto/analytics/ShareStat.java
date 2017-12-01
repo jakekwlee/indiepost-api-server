@@ -4,6 +4,7 @@ package com.indiepost.dto.analytics;
  * Created by jake on 17. 4. 26.
  */
 public class ShareStat {
+
     private String statName;
 
     private Long statValue;

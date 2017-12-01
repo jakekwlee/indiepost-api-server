@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "Metadata")
 public class Metadata implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 3184119725585457013L;
 
     @Id
     @GeneratedValue

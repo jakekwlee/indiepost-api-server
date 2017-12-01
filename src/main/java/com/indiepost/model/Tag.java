@@ -3,6 +3,7 @@ package com.indiepost.model;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 @Table(name = "Tags")
 public class Tag implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 4776718128460861941L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,7 +30,7 @@ public class Tag implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<PostTag> postTags;
+    private List<PostTag> postTags = new ArrayList<>();
 
     public Long getId() {
         return id;

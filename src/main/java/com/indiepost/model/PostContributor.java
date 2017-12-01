@@ -8,37 +8,30 @@ import java.time.LocalDateTime;
 @Table(name = "Posts_Contributors")
 public class PostContributor implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2705206298331958094L;
 
     @Id
-    @ManyToOne(fetch = FetchType.LAZY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @Id
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "contributor_id")
     private Contributor contributor;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private int priority;
-
     private PostContributor() {
     }
 
-    public PostContributor(Post post, Contributor contributor) {
-        this.post = post;
-        this.contributor = contributor;
-    }
-
-    public PostContributor(Post post, Contributor contributor, LocalDateTime createdAt, int priority) {
+    public PostContributor(Post post, Contributor contributor, LocalDateTime createdAt) {
         this.post = post;
         this.contributor = contributor;
         this.createdAt = createdAt;
-        this.priority = priority;
     }
 
     public Post getPost() {
@@ -65,29 +58,11 @@ public class PostContributor implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public int getPriority() {
-        return priority;
+    public Long getId() {
+        return id;
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = post.hashCode();
-        result = 31 * result + contributor.hashCode();
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        PostContributor that = (PostContributor) o;
-
-        if (!post.equals(that.post)) return false;
-        return contributor.equals(that.contributor);
+    public void setId(Long id) {
+        this.id = id;
     }
 }

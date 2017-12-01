@@ -20,7 +20,7 @@ import java.util.List;
 @Table(name = "Contributors")
 public class Contributor implements Serializable {
 
-    private static final long serialVersionUID = 12398123091L;
+    private static final long serialVersionUID = 7763721241430441486L;
 
     @Id
     @GeneratedValue
@@ -34,6 +34,7 @@ public class Contributor implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @OrderBy("id desc")
     private List<PostContributor> postContributors = new ArrayList<>();
 
     @NotNull

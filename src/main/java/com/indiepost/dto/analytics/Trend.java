@@ -8,6 +8,7 @@ import java.util.List;
  * Created by jake on 17. 5. 24.
  */
 public class Trend {
+
     private TimeDomainDuration duration;
 
     private List<TimeDomainStat> result;

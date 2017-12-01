@@ -12,6 +12,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -35,6 +37,7 @@ import static testHelper.JsonSerializer.printToJson;
 public class AdminPostServiceTests {
     private static final int PAGE = 0;
     private static final int MAX_RESULTS = 50;
+    private static final Logger log = LoggerFactory.getLogger(AdminPostServiceTests.class);
     private List<Long> createdPostIds = new ArrayList<>();
 
     @Autowired
@@ -199,19 +202,65 @@ public class AdminPostServiceTests {
 
     @Test
     @WithMockUser(username = "eunjechoi")
-    public void updateAutosavedCopyToPublicStatusWorksProperly() {
-        Long originalPostId = 3943L;
-        AdminPostResponseDto autosave = adminPostService.createAutosave(originalPostId);
-
+    public void updateAutosaveToAutosaveOrDraft() {
+        Long autosaveId = 5402L;
+        AdminPostResponseDto autosave = adminPostService.findOne(autosaveId);
         AdminPostRequestDto requestDto = new AdminPostRequestDto();
 
-        // Unchanged
+        // unchanged
         requestDto.setId(autosave.getId());
         requestDto.setOriginalId(autosave.getOriginalId());
         requestDto.setCategoryId(autosave.getCategoryId());
         requestDto.setTitleImageId(autosave.getTitleImageId());
 
-        // Changed
+        // changed
+        requestDto.setBylineName(RandomStringUtils.randomAlphabetic(10));
+        requestDto.setTitle(RandomStringUtils.randomAlphabetic(10));
+        requestDto.setExcerpt(RandomStringUtils.randomAlphabetic(10));
+        requestDto.setContent(RandomStringUtils.randomAlphabetic(10));
+        requestDto.setContributorIds(Arrays.asList(1L, 2L));
+        requestDto.setTagIds(Arrays.asList(4280L, 4279L));
+        requestDto.setStatus(PostStatus.AUTOSAVE.toString());
+
+        // update
+        log.info("Start updating autosave post: " + autosave.getId());
+        adminPostService.update(requestDto);
+
+        AdminPostResponseDto updated = adminPostService.findOne(autosave.getId());
+        assertThat(updated, notNullValue());
+
+        assertThat(updated.getId(), is(requestDto.getId()));
+        assertThat(updated.getOriginalId(), is(requestDto.getOriginalId()));
+        assertThat(updated.getCategoryId(), is(requestDto.getCategoryId()));
+        assertThat(updated.getTitleImageId(), is(requestDto.getTitleImageId()));
+        assertThat(updated.getTitle(), is(requestDto.getTitle()));
+        assertThat(updated.getExcerpt(), is(requestDto.getExcerpt()));
+        assertThat(updated.getBylineName(), is(requestDto.getBylineName()));
+        assertThat(updated.getContent(), is(requestDto.getContent()));
+        assertThat(updated.getStatus(), is(requestDto.getStatus()));
+        assertTrue(areListContentsEqual(requestDto.getTagIds(), updated.getTagIds()));
+        assertTrue(areListContentsEqual(requestDto.getContributorIds(), updated.getContributorIds()));
+
+        log.info("Serialization start: " + updated.getId());
+        printToJson(updated);
+
+    }
+
+    @Test
+    @WithMockUser(username = "eunjechoi")
+    public void mergeAutosaveIntoPublishedOriginalWorksProperly() {
+        Long originalPostId = 3943L;
+        AdminPostResponseDto autosave = adminPostService.createAutosave(originalPostId);
+        log.info("Autosave created: " + autosave.getId());
+        AdminPostRequestDto requestDto = new AdminPostRequestDto();
+
+        // unchanged
+        requestDto.setId(autosave.getId());
+        requestDto.setOriginalId(autosave.getOriginalId());
+        requestDto.setCategoryId(autosave.getCategoryId());
+        requestDto.setTitleImageId(autosave.getTitleImageId());
+
+        // changed
         requestDto.setBylineName(RandomStringUtils.randomAlphabetic(10));
         requestDto.setTitle(RandomStringUtils.randomAlphabetic(10));
         requestDto.setExcerpt(RandomStringUtils.randomAlphabetic(10));
@@ -219,13 +268,15 @@ public class AdminPostServiceTests {
         requestDto.setContributorIds(Arrays.asList(1L, 2L));
         requestDto.setTagIds(Arrays.asList(4280L, 4279L));
         requestDto.setStatus(PostStatus.PUBLISH.toString());
+
+        // update
+        log.info("Start updating original post: " + autosave.getOriginalId());
         adminPostService.update(requestDto);
 
         AdminPostResponseDto deleted = adminPostService.findOne(autosave.getId());
         assertThat(deleted, nullValue());
 
         AdminPostResponseDto updatedOriginal = adminPostService.findOne(originalPostId);
-        printToJson(updatedOriginal);
 
         assertThat(updatedOriginal.getId(), is(requestDto.getOriginalId()));
         assertThat(updatedOriginal.getOriginalId(), nullValue());
@@ -238,6 +289,9 @@ public class AdminPostServiceTests {
         assertThat(updatedOriginal.getStatus(), is(requestDto.getStatus()));
         assertTrue(areListContentsEqual(requestDto.getTagIds(), updatedOriginal.getTagIds()));
         assertTrue(areListContentsEqual(requestDto.getContributorIds(), updatedOriginal.getContributorIds()));
+
+        log.info("Serialization start: " + updatedOriginal.getId());
+        printToJson(updatedOriginal);
     }
 
     @After

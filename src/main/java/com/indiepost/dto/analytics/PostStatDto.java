@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
  * Created by jake on 17. 5. 10.
  */
 public class PostStatDto {
+
     private Long id;
 
     @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)

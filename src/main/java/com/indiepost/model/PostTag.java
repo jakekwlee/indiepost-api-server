@@ -8,14 +8,16 @@ import java.time.LocalDateTime;
 @Table(name = "Posts_Tags")
 public class PostTag implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 5610937158697175938L;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @Id
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "tag_id")
     private Tag tag;
@@ -23,22 +25,13 @@ public class PostTag implements Serializable {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private int priority;
-
     private PostTag() {
     }
 
-    public PostTag(Post post, Tag tag) {
-        this.post = post;
-        this.tag = tag;
-    }
-
-    public PostTag(Post post, Tag tag, LocalDateTime createdAt, int priority) {
+    public PostTag(Post post, Tag tag, LocalDateTime createdAt) {
         this.post = post;
         this.tag = tag;
         this.createdAt = createdAt;
-        this.priority = priority;
     }
 
     public Post getPost() {
@@ -65,29 +58,11 @@ public class PostTag implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public int getPriority() {
-        return priority;
+    public Long getId() {
+        return id;
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = post.hashCode();
-        result = 31 * result + tag.hashCode();
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        PostTag postTag = (PostTag) o;
-
-        if (!post.equals(postTag.post)) return false;
-        return tag.equals(postTag.tag);
+    public void setId(Long id) {
+        this.id = id;
     }
 }

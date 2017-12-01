@@ -8,6 +8,7 @@ import java.util.List;
  * Created by jake on 10/29/17.
  */
 public class DoubleTrend {
+
     private String statName;
 
     private TimeDomainDuration duration;

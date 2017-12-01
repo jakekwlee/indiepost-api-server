@@ -3,6 +3,7 @@ package com.indiepost.model;
 import com.indiepost.enums.Types;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -10,7 +11,9 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "Pages")
-public class Page {
+public class Page implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

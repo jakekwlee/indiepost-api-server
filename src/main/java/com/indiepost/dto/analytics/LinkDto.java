@@ -14,8 +14,6 @@ import java.time.LocalDateTime;
  */
 public class LinkDto {
 
-    private static final long serialVersionUID = 1L;
-
     private Long id;
 
     @NotNull

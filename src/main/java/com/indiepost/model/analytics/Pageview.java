@@ -4,13 +4,16 @@ import com.indiepost.model.Post;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * Created by jake on 8/9/17.
  */
 @Entity
 @DiscriminatorValue("Pageview")
-public class Pageview extends Stat {
+public class Pageview extends Stat implements Serializable {
+
+    private static final long serialVersionUID = -4875803542223940133L;
 
     @NotNull
     @Column(nullable = false, columnDefinition = "bit(1) default b'0'")

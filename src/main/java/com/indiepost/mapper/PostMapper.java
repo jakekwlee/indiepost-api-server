@@ -89,10 +89,9 @@ public class PostMapper {
         if (tags == null) {
             return;
         }
-        post.getPostTags().clear();
-        int priority = 0;
+        post.clearTags();
         for (Tag tag : tags) {
-            post.addTag(tag, priority++);
+            post.addTag(tag);
         }
     }
 
@@ -100,10 +99,9 @@ public class PostMapper {
         if (contributors == null) {
             return;
         }
-        post.getPostContributors().clear();
-        int priority = 0;
+        post.clearContributors();
         for (Contributor contributor : contributors) {
-            post.addContributor(contributor, priority++);
+            post.addContributor(contributor);
         }
     }
 

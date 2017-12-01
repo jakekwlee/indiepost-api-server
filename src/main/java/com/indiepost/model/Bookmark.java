@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "Bookmarks")
 public class Bookmark implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 5793341286387473902L;
 
     @Id
     @ManyToOne
