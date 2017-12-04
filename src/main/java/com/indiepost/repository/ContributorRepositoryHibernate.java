@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -41,10 +42,20 @@ public class ContributorRepositoryHibernate implements ContributorRepository {
     @Override
     public List<Contributor> findByIdIn(List<Long> ids) {
         QContributor contributor = QContributor.contributor;
-        return getQueryFactory()
+        List<Contributor> contributors = getQueryFactory()
                 .selectFrom(contributor)
                 .where(contributor.id.in(ids))
                 .fetch();
+        List<Contributor> result = new ArrayList<>();
+        for (Long id : ids) {
+            for (Contributor c : contributors) {
+                if (id.equals(c.getId())) {
+                    result.add(c);
+                    break;
+                }
+            }
+        }
+        return result;
     }
 
     @Override

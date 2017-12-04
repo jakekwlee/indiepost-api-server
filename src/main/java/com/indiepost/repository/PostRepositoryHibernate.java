@@ -17,8 +17,9 @@ import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.indiepost.model.QPost.post;
 import static com.indiepost.repository.utils.CriteriaUtils.addSearchConjunction;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 
 /**
  * Created by jake on 7/30/16.
@@ -37,7 +38,6 @@ public class PostRepositoryHibernate implements PostRepository {
 
     @Override
     public Post findByLegacyId(Long id) {
-        QPost post = QPost.post;
         return getQueryFactory()
                 .selectFrom(post)
                 .where(post.legacyPostId.eq(id))
@@ -46,7 +46,6 @@ public class PostRepositoryHibernate implements PostRepository {
 
     @Override
     public Long findIdByLegacyId(Long legacyId) {
-        QPost post = QPost.post;
         Tuple tuple = getQueryFactory()
                 .select(post.id, post.legacyPostId)
                 .from(post)
@@ -58,7 +57,7 @@ public class PostRepositoryHibernate implements PostRepository {
     @Override
     public Long count() {
         return getQueryFactory()
-                .selectFrom(QPost.post)
+                .selectFrom(post)
                 .fetchCount();
     }
 
@@ -66,25 +65,33 @@ public class PostRepositoryHibernate implements PostRepository {
     public Long count(PostSearch search) {
         BooleanBuilder builder = addSearchConjunction(search, new BooleanBuilder());
         return getQueryFactory()
-                .selectFrom(QPost.post)
+                .selectFrom(post)
                 .where(builder)
                 .fetchCount();
     }
 
     @Override
     public List<PostSummaryDto> findByIds(List<Long> ids) {
-        if (isNotEmpty(ids)) {
+        if (isEmpty(ids)) {
             return new ArrayList<>();
         }
-        QPost post = QPost.post;
         JPAQuery query = getQueryFactory().from(post);
         addProjections(query)
                 .innerJoin(post.category, QCategory.category)
                 .leftJoin(post.titleImage, QImageSet.imageSet)
                 .where(post.id.in(ids))
-                .orderBy(post.publishedAt.desc())
                 .distinct();
-        List<Tuple> result = query.fetch();
+        List<Tuple> rows = query.fetch();
+        List<Tuple> result = new ArrayList<>();
+        for (Long id : ids) {
+            for (Tuple row : rows) {
+                Long postId = row.get(post.id);
+                if (id.equals(postId)) {
+                    result.add(row);
+                    break;
+                }
+            }
+        }
         return toDtoList(result);
     }
 
@@ -95,6 +102,7 @@ public class PostRepositoryHibernate implements PostRepository {
         return this.search(query, pageable);
     }
 
+    @SuppressWarnings("JpaQlInspection")
     @Override
     public List<PostSummaryDto> findByCategorySlug(String slug, Pageable pageable) {
         PostSearch query = new PostSearch();
@@ -104,7 +112,6 @@ public class PostRepositoryHibernate implements PostRepository {
 
     @Override
     public List<PostSummaryDto> findByTagName(String tagName, Pageable pageable) {
-        QPost post = QPost.post;
         QPostTag postTag = QPostTag.postTag;
         JPAQuery query = getQueryFactory().from(post);
         addProjections(query)
@@ -128,7 +135,6 @@ public class PostRepositoryHibernate implements PostRepository {
 
     @Override
     public List<PostSummaryDto> findScheduledPosts() {
-        QPost post = QPost.post;
         JPAQuery query = getQueryFactory().from(post);
         addProjections(query)
                 .innerJoin(post.category, QCategory.category)
@@ -147,7 +153,6 @@ public class PostRepositoryHibernate implements PostRepository {
 
     @Override
     public List<PostSummaryDto> search(PostSearch search, Pageable pageable) {
-        QPost post = QPost.post;
         JPAQuery query = getQueryFactory().from(post);
         BooleanBuilder builder = addSearchConjunction(search, new BooleanBuilder());
         addProjections(query)
@@ -162,7 +167,6 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     private JPAQuery addProjections(JPAQuery query) {
-        QPost post = QPost.post;
         return query.select(
                 post.id, post.legacyPostId, post.category.slug, post.splash, post.picked, post.featured,
                 post.bylineName, post.title, post.publishedAt, post.excerpt, post.titleImage,
@@ -171,7 +175,6 @@ public class PostRepositoryHibernate implements PostRepository {
 
 
     private List<PostSummaryDto> toDtoList(List<Tuple> result) {
-        QPost post = QPost.post;
         List<PostSummaryDto> dtoList = new ArrayList<>();
         for (Tuple row : result) {
             PostSummaryDto dto = new PostSummaryDto();

@@ -60,6 +60,24 @@ public interface CriteriaUtils {
         if (search.getCategorySlug() != null) {
             builder.and(post.category.slug.eq(search.getCategorySlug()));
         }
+        if (search.getPublishedAfter() != null) {
+            builder.and(post.publishedAt.goe(search.getPublishedAfter()));
+        }
+        if (search.getPublishedBefore() != null) {
+            builder.and(post.publishedAt.loe(search.getPublishedBefore()));
+        }
+        if (search.getCreatedAfter() != null) {
+            builder.and(post.createdAt.goe(search.getCreatedAfter()));
+        }
+        if (search.getCreatedBefore() != null) {
+            builder.and(post.createdAt.loe(search.getCreatedBefore()));
+        }
+        if (search.getModifiedAfter() != null) {
+            builder.and(post.modifiedAt.goe(search.getModifiedAfter()));
+        }
+        if (search.getModifiedBefore() != null) {
+            builder.and(post.modifiedAt.loe(search.getModifiedBefore()));
+        }
         builder.and(post.splash.eq(search.isSplash()));
         builder.and(post.featured.eq(search.isFeatured()));
         builder.and(post.picked.eq(search.isPicked()));

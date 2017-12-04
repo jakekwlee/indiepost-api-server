@@ -17,9 +17,17 @@ public class PostSearch {
 
     private String categorySlug;
 
-    private LocalDateTime dateFrom;
+    private LocalDateTime createdAfter;
 
-    private LocalDateTime dateTo;
+    private LocalDateTime createdBefore;
+
+    private LocalDateTime modifiedAfter;
+
+    private LocalDateTime modifiedBefore;
+
+    private LocalDateTime publishedAfter;
+
+    private LocalDateTime publishedBefore;
 
     private PostStatus status = PostStatus.PUBLISH;
 
@@ -28,6 +36,54 @@ public class PostSearch {
     private boolean picked = false;
 
     private boolean splash = false;
+
+    public LocalDateTime getCreatedAfter() {
+        return createdAfter;
+    }
+
+    public void setCreatedAfter(LocalDateTime createdAfter) {
+        this.createdAfter = createdAfter;
+    }
+
+    public LocalDateTime getCreatedBefore() {
+        return createdBefore;
+    }
+
+    public void setCreatedBefore(LocalDateTime createdBefore) {
+        this.createdBefore = createdBefore;
+    }
+
+    public LocalDateTime getModifiedAfter() {
+        return modifiedAfter;
+    }
+
+    public void setModifiedAfter(LocalDateTime modifiedAfter) {
+        this.modifiedAfter = modifiedAfter;
+    }
+
+    public LocalDateTime getModifiedBefore() {
+        return modifiedBefore;
+    }
+
+    public void setModifiedBefore(LocalDateTime modifiedBefore) {
+        this.modifiedBefore = modifiedBefore;
+    }
+
+    public LocalDateTime getPublishedAfter() {
+        return publishedAfter;
+    }
+
+    public void setPublishedAfter(LocalDateTime publishedAfter) {
+        this.publishedAfter = publishedAfter;
+    }
+
+    public LocalDateTime getPublishedBefore() {
+        return publishedBefore;
+    }
+
+    public void setPublishedBefore(LocalDateTime publishedBefore) {
+        this.publishedBefore = publishedBefore;
+    }
 
     public Long getCreatorId() {
         return creatorId;
@@ -67,22 +123,6 @@ public class PostSearch {
 
     public void setStatus(PostStatus status) {
         this.status = status;
-    }
-
-    public LocalDateTime getDateFrom() {
-        return dateFrom;
-    }
-
-    public void setDateFrom(LocalDateTime dateFrom) {
-        this.dateFrom = dateFrom;
-    }
-
-    public LocalDateTime getDateTo() {
-        return dateTo;
-    }
-
-    public void setDateTo(LocalDateTime dateTo) {
-        this.dateTo = dateTo;
     }
 
     public boolean isFeatured() {

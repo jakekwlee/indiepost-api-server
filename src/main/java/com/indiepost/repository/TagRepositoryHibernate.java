@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -51,10 +52,20 @@ public class TagRepositoryHibernate implements TagRepository {
 
     @Override
     public List<Tag> findByIdIn(List<Long> ids) {
-        return getJpaQuery()
+        List<Tag> tags = getJpaQuery()
                 .selectFrom(qTag)
                 .where(qTag.id.in(ids))
                 .fetch();
+        List<Tag> result = new ArrayList<>();
+        for (Long id : ids) {
+            for (Tag tag : tags) {
+                if (id.equals(tag.getId())) {
+                    result.add(tag);
+                    break;
+                }
+            }
+        }
+        return result;
     }
 
     @Override
