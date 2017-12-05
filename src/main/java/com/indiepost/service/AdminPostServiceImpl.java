@@ -13,13 +13,13 @@ import com.indiepost.repository.ContributorRepository;
 import com.indiepost.repository.MetadataRepository;
 import com.indiepost.repository.TagRepository;
 import com.indiepost.repository.elasticsearch.PostEsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -44,7 +44,7 @@ public class AdminPostServiceImpl implements AdminPostService {
     private final MetadataRepository metadataRepository;
     private final PostEsRepository postEsRepository;
 
-    @Autowired
+    @Inject
     public AdminPostServiceImpl(UserService userService,
                                 AdminPostRepository adminPostRepository,
                                 ContributorRepository contributorRepository,

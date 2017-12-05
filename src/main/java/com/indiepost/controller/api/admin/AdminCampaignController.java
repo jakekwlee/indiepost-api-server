@@ -2,9 +2,9 @@ package com.indiepost.controller.api.admin;
 
 import com.indiepost.dto.analytics.CampaignDto;
 import com.indiepost.service.CampaignService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.util.List;
@@ -19,7 +19,7 @@ public class AdminCampaignController {
 
     private final CampaignService campaignService;
 
-    @Autowired
+    @Inject
     public AdminCampaignController(CampaignService campaignService) {
         this.campaignService = campaignService;
     }

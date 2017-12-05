@@ -151,27 +151,6 @@ public class StatRepositoryHibernate implements StatRepository {
         }
     }
 
-    private List<TimeDomainStat> getPageviewTrendHourly(LocalDateTime since, LocalDateTime until) {
-        Query query = getNamedQuery("@GET_PAGEVIEW_TREND_HOURLY");
-        List<TimeDomainStat> trend = getTrend(query, TimeDomainDuration.HOURLY, since, until);
-        return normalizeTimeDomainStats(trend, since.toLocalDate(), until.toLocalDate());
-    }
-
-    private List<TimeDomainStat> getPageviewTrendDaily(LocalDateTime since, LocalDateTime until) {
-        Query query = getNamedQuery("@GET_PAGEVIEW_TREND_DAILY");
-        return getTrend(query, TimeDomainDuration.DAILY, since, until);
-    }
-
-    private List<TimeDomainStat> getPageviewTrendMonthly(LocalDateTime since, LocalDateTime until) {
-        Query query = getNamedQuery("@GET_PAGEVIEW_TREND_MONTHLY");
-        return getTrend(query, TimeDomainDuration.MONTHLY, since, until);
-    }
-
-    private List<TimeDomainStat> getPageviewTrendYearly(LocalDateTime since, LocalDateTime until) {
-        Query query = getNamedQuery("@GET_PAGEVIEW_TREND_YEARLY");
-        return getTrend(query, TimeDomainDuration.YEARLY, since, until);
-    }
-
     @Override
     public List<TimeDomainDoubleStat> getRecentAndOldPageviewTrend(LocalDateTime since, LocalDateTime until, TimeDomainDuration duration) {
         switch (duration) {
@@ -186,26 +165,6 @@ public class StatRepositoryHibernate implements StatRepository {
             default:
                 return getOldAndNewPageviewTrendHourly(since, until);
         }
-    }
-
-    private List<TimeDomainDoubleStat> getOldAndNewPageviewTrendHourly(LocalDateTime since, LocalDateTime until) {
-        Query query = getNamedQuery("@GET_OLD_AND_NEW_PAGEVIEW_TREND_HOURLY");
-        return getDoubleTrend(query, TimeDomainDuration.HOURLY, since, until);
-    }
-
-    private List<TimeDomainDoubleStat> getOldAndNewPageviewTrendDaily(LocalDateTime since, LocalDateTime until) {
-        Query query = getNamedQuery("@GET_OLD_AND_NEW_PAGEVIEW_TREND_DAILY");
-        return getDoubleTrend(query, TimeDomainDuration.DAILY, since, until);
-    }
-
-    private List<TimeDomainDoubleStat> getOldAndNewPageviewTrendMonthly(LocalDateTime since, LocalDateTime until) {
-        Query query = getNamedQuery("@GET_OLD_AND_NEW_PAGEVIEW_TREND_MONTHLY");
-        return getDoubleTrend(query, TimeDomainDuration.MONTHLY, since, until);
-    }
-
-    private List<TimeDomainDoubleStat> getOldAndNewPageviewTrendYearly(LocalDateTime since, LocalDateTime until) {
-        Query query = getNamedQuery("@GET_OLD_AND_NEW_PAGEVIEW_TREND_YEARLY");
-        return getDoubleTrend(query, TimeDomainDuration.YEARLY, since, until);
     }
 
     @Override
@@ -310,6 +269,47 @@ public class StatRepositoryHibernate implements StatRepository {
     public void deleteAllPostStatsCache() {
         Query query = getNamedQuery("@DELETE_ALL_POST_STATS_CACHE");
         query.executeUpdate();
+    }
+
+    private List<TimeDomainStat> getPageviewTrendHourly(LocalDateTime since, LocalDateTime until) {
+        Query query = getNamedQuery("@GET_PAGEVIEW_TREND_HOURLY");
+        List<TimeDomainStat> trend = getTrend(query, TimeDomainDuration.HOURLY, since, until);
+        return normalizeTimeDomainStats(trend, since.toLocalDate(), until.toLocalDate());
+    }
+
+    private List<TimeDomainStat> getPageviewTrendDaily(LocalDateTime since, LocalDateTime until) {
+        Query query = getNamedQuery("@GET_PAGEVIEW_TREND_DAILY");
+        return getTrend(query, TimeDomainDuration.DAILY, since, until);
+    }
+
+    private List<TimeDomainStat> getPageviewTrendMonthly(LocalDateTime since, LocalDateTime until) {
+        Query query = getNamedQuery("@GET_PAGEVIEW_TREND_MONTHLY");
+        return getTrend(query, TimeDomainDuration.MONTHLY, since, until);
+    }
+
+    private List<TimeDomainStat> getPageviewTrendYearly(LocalDateTime since, LocalDateTime until) {
+        Query query = getNamedQuery("@GET_PAGEVIEW_TREND_YEARLY");
+        return getTrend(query, TimeDomainDuration.YEARLY, since, until);
+    }
+
+    private List<TimeDomainDoubleStat> getOldAndNewPageviewTrendHourly(LocalDateTime since, LocalDateTime until) {
+        Query query = getNamedQuery("@GET_OLD_AND_NEW_PAGEVIEW_TREND_HOURLY");
+        return getDoubleTrend(query, TimeDomainDuration.HOURLY, since, until);
+    }
+
+    private List<TimeDomainDoubleStat> getOldAndNewPageviewTrendDaily(LocalDateTime since, LocalDateTime until) {
+        Query query = getNamedQuery("@GET_OLD_AND_NEW_PAGEVIEW_TREND_DAILY");
+        return getDoubleTrend(query, TimeDomainDuration.DAILY, since, until);
+    }
+
+    private List<TimeDomainDoubleStat> getOldAndNewPageviewTrendMonthly(LocalDateTime since, LocalDateTime until) {
+        Query query = getNamedQuery("@GET_OLD_AND_NEW_PAGEVIEW_TREND_MONTHLY");
+        return getDoubleTrend(query, TimeDomainDuration.MONTHLY, since, until);
+    }
+
+    private List<TimeDomainDoubleStat> getOldAndNewPageviewTrendYearly(LocalDateTime since, LocalDateTime until) {
+        Query query = getNamedQuery("@GET_OLD_AND_NEW_PAGEVIEW_TREND_YEARLY");
+        return getDoubleTrend(query, TimeDomainDuration.YEARLY, since, until);
     }
 
     private Session getSession() {

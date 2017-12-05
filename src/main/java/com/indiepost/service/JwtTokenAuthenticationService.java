@@ -6,7 +6,6 @@ import com.indiepost.dto.UserDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,6 +16,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.Date;
@@ -34,7 +34,7 @@ public class JwtTokenAuthenticationService implements TokenAuthenticationService
     @Value("${jwt.token:ThisIsSecret}")
     private String secretKey;
 
-    @Autowired
+    @Inject
     public JwtTokenAuthenticationService(JwtConfig jwtConfig, AuthenticationManager authenticationManager, UserService userService) {
         this.jwtConfig = jwtConfig;
         this.authenticationManager = authenticationManager;

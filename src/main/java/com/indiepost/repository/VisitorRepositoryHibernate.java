@@ -84,27 +84,6 @@ public class VisitorRepositoryHibernate implements VisitorRepository {
         }
     }
 
-    private List<TimeDomainStat> getVisitorTrendHourly(LocalDateTime since, LocalDateTime until) {
-        Query query = getNamedQuery("@GET_VISITORS_TREND_HOURLY");
-        List<TimeDomainStat> trend = getTrend(query, TimeDomainDuration.HOURLY, since, until);
-        return normalizeTimeDomainStats(trend, since.toLocalDate(), until.toLocalDate());
-    }
-
-    private List<TimeDomainStat> getVisitorTrendDaily(LocalDateTime since, LocalDateTime until) {
-        Query query = getNamedQuery("@GET_VISITORS_TREND_DAILY");
-        return getTrend(query, TimeDomainDuration.DAILY, since, until);
-    }
-
-    private List<TimeDomainStat> getVisitorTrendMonthly(LocalDateTime since, LocalDateTime until) {
-        Query query = getNamedQuery("@GET_VISITORS_TREND_MONTHLY");
-        return getTrend(query, TimeDomainDuration.MONTHLY, since, until);
-    }
-
-    private List<TimeDomainStat> getVisitorTrendYearly(LocalDateTime since, LocalDateTime until) {
-        Query query = getNamedQuery("@GET_VISITORS_TREND_YEARLY");
-        return getTrend(query, TimeDomainDuration.YEARLY, since, until);
-    }
-
     @Override
     public List<ShareStat> getTopReferrers(LocalDateTime since, LocalDateTime until, Long limit) {
         Query query = getNamedQuery("@GET_TOP_REFERRERS");
@@ -151,6 +130,27 @@ public class VisitorRepositoryHibernate implements VisitorRepository {
     public List<ShareStat> getTopChannel(LocalDateTime since, LocalDateTime until, Long limit, String client) {
         Query query = getNamedQuery("@GET_TOP_CHANNELS_BY_CLIENT");
         return getShare(query, since, until, limit, client);
+    }
+
+    private List<TimeDomainStat> getVisitorTrendHourly(LocalDateTime since, LocalDateTime until) {
+        Query query = getNamedQuery("@GET_VISITORS_TREND_HOURLY");
+        List<TimeDomainStat> trend = getTrend(query, TimeDomainDuration.HOURLY, since, until);
+        return normalizeTimeDomainStats(trend, since.toLocalDate(), until.toLocalDate());
+    }
+
+    private List<TimeDomainStat> getVisitorTrendDaily(LocalDateTime since, LocalDateTime until) {
+        Query query = getNamedQuery("@GET_VISITORS_TREND_DAILY");
+        return getTrend(query, TimeDomainDuration.DAILY, since, until);
+    }
+
+    private List<TimeDomainStat> getVisitorTrendMonthly(LocalDateTime since, LocalDateTime until) {
+        Query query = getNamedQuery("@GET_VISITORS_TREND_MONTHLY");
+        return getTrend(query, TimeDomainDuration.MONTHLY, since, until);
+    }
+
+    private List<TimeDomainStat> getVisitorTrendYearly(LocalDateTime since, LocalDateTime until) {
+        Query query = getNamedQuery("@GET_VISITORS_TREND_YEARLY");
+        return getTrend(query, TimeDomainDuration.YEARLY, since, until);
     }
 
     private Session getSession() {

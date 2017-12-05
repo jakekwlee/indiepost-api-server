@@ -5,13 +5,13 @@ import com.indiepost.enums.Types;
 import com.indiepost.model.Page;
 import com.indiepost.model.User;
 import com.indiepost.repository.PageRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class PageServiceImpl implements PageService {
 
     private final UserService userService;
 
-    @Autowired
+    @Inject
     public PageServiceImpl(PageRepository pageRepository, UserService userService) {
         this.pageRepository = pageRepository;
         this.userService = userService;

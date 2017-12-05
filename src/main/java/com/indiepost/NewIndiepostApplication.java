@@ -26,15 +26,15 @@ public class NewIndiepostApplication extends SpringBootServletInitializer {
         return application.sources(NewIndiepostApplication.class);
     }
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new MySQLPasswordEncoder();
+    }
+
     @Configuration
     @ConditionalOnProperty(value = "scheduling.enabled", havingValue = "true", matchIfMissing = true)
     @EnableScheduling
     static class SchedulingConfiguration {
 
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new MySQLPasswordEncoder();
     }
 }

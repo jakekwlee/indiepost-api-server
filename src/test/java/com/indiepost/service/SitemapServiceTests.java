@@ -3,11 +3,11 @@ package com.indiepost.service;
 import com.indiepost.NewIndiepostApplication;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import javax.inject.Inject;
 import java.net.MalformedURLException;
 
 import static org.junit.Assert.assertTrue;
@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 @WebAppConfiguration
 public class SitemapServiceTests {
 
-    @Autowired
+    @Inject
     private SitemapService sitemapService;
 
     @Test

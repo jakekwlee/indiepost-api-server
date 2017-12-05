@@ -6,11 +6,11 @@ import com.indiepost.dto.post.PostSummaryDto;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static testHelper.JsonSerializer.printToJson;
@@ -23,7 +23,7 @@ import static testHelper.JsonSerializer.printToJson;
 @WebAppConfiguration
 public class PostServiceTests {
 
-    @Autowired
+    @Inject
     private PostService postService;
 
     @Test

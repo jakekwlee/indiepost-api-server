@@ -1,15 +1,15 @@
 package com.indiepost.service;
 
-import com.google.common.collect.Lists;
+import com.indiepost.dto.TagDto;
 import com.indiepost.model.Tag;
 import com.indiepost.repository.TagRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,54 +22,66 @@ public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
 
-    @Autowired
+    @Inject
     public TagServiceImpl(TagRepository tagRepository) {
         this.tagRepository = tagRepository;
     }
 
     @Override
-    public void save(Tag tag) {
+    public TagDto save(Tag tag) {
         tagRepository.save(tag);
+        return new TagDto(tag.getId(), tag.getName());
     }
 
     @Override
-    public Tag findById(Long id) {
-        return tagRepository.findOne(id);
+    public TagDto findById(Long id) {
+        Tag tag = tagRepository.findOne(id);
+        return new TagDto(tag.getId(), tag.getName());
     }
 
     @Override
-    public Tag findByName(String name) {
-        return tagRepository.findOneByName(name);
+    public TagDto findByName(String name) {
+        Tag tag = tagRepository.findOneByName(name);
+        return new TagDto(tag.getId(), tag.getName());
     }
 
     @Override
     public List<String> findAllToStringList() {
-        List<Tag> tags = findAll(0, 999999);
+        Pageable pageable = new PageRequest(0, 9999999, Sort.Direction.DESC, "id");
+        List<Tag> tags = tagRepository.findAll(pageable);
         return tags.stream()
                 .map(tag -> tag.getName())
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Tag> findAll(int page, int maxResults) {
+    public List<TagDto> findAll(int page, int maxResults) {
         Pageable pageable = new PageRequest(page, maxResults, Sort.Direction.DESC, "id");
-        return Lists.newArrayList(tagRepository.findAll(pageable));
+        List<Tag> tags = tagRepository.findAll(pageable);
+        return tags.stream()
+                .map(tag -> new TagDto(tag.getId(),
+                        tag.getName()))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Tag> findByIds(List<Long> ids) {
-        return tagRepository.findByIdIn(ids);
+    public List<TagDto> findByIds(List<Long> ids) {
+        List<Tag> tags = tagRepository.findByIdIn(ids);
+        return tags.stream()
+                .map(tag -> new TagDto(tag.getId(), tag.getName()))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void update(Tag tag) {
+    public void update(TagDto tagDto) {
+        Tag tag = tagRepository.findOne(tagDto.getId());
+        tag.setName(tagDto.getName());
         tagRepository.save(tag);
     }
 
+
     @Override
-    public void delete(Tag tag) {
-        tagRepository.delete(tag);
+    public void deleteById(Long id) {
+        tagRepository.deleteById(id);
     }
-
-
 }

@@ -4,10 +4,10 @@ import com.indiepost.config.AppConfig;
 import com.indiepost.dto.InitialData;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class InitialDataServiceImpl implements InitialDataService {
 
     private final AppConfig config;
 
-    @Autowired
+    @Inject
     public InitialDataServiceImpl(CategoryService categoryService, UserService userService,
                                   PostService postService, PageService pageService, AppConfig config) {
         this.categoryService = categoryService;

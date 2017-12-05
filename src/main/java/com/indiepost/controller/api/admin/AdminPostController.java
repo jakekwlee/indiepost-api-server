@@ -4,9 +4,9 @@ import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
 import com.indiepost.dto.post.AdminPostSummaryDto;
 import com.indiepost.service.AdminPostService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class AdminPostController {
 
     private final AdminPostService adminPostService;
 
-    @Autowired
+    @Inject
     public AdminPostController(AdminPostService adminPostService) {
         this.adminPostService = adminPostService;
     }

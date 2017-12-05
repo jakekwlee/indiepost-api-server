@@ -2,9 +2,9 @@ package com.indiepost.controller.api.admin;
 
 import com.indiepost.dto.PageDto;
 import com.indiepost.service.PageService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -16,7 +16,7 @@ public class AdminPageController {
 
     private final PageService pageService;
 
-    @Autowired
+    @Inject
     public AdminPageController(PageService pageService) {
         this.pageService = pageService;
     }

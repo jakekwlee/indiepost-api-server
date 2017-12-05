@@ -3,10 +3,10 @@ package com.indiepost.service;
 import com.indiepost.dto.analytics.CampaignDto;
 import com.indiepost.model.analytics.Campaign;
 import com.indiepost.repository.CampaignRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +22,7 @@ public class CampaignServiceImpl implements CampaignService {
 
     private final LinkService linkService;
 
-    @Autowired
+    @Inject
     public CampaignServiceImpl(CampaignRepository campaignRepository, LinkService linkService) {
         this.campaignRepository = campaignRepository;
         this.linkService = linkService;

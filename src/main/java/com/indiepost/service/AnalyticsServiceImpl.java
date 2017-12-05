@@ -7,10 +7,10 @@ import com.indiepost.model.Metadata;
 import com.indiepost.repository.MetadataRepository;
 import com.indiepost.repository.StatRepository;
 import com.indiepost.repository.VisitorRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,7 +28,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     private final VisitorRepository visitorRepository;
 
-    @Autowired
+    @Inject
     public AnalyticsServiceImpl(MetadataRepository metadataRepository,
                                 StatRepository statRepository,
                                 VisitorRepository visitorRepository) {
@@ -104,20 +104,20 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     }
 
     @Override
-    public PostStatsDto getAllPostStats() {
-        List<PostStatDto> statData = statRepository.getAllPostStatsFromCache();
-        Metadata metadata = metadataRepository.findOne(1L);
-        LocalDateTime lastUpdated = metadata.getPostStatsLastUpdated();
-        return new PostStatsDto(lastUpdated, statData);
-    }
-
-    @Override
     public List<PostStatDto> getPostStats(PeriodDto periodDto) {
         LocalDate startDate = periodDto.getStartDate();
         LocalDate endDate = periodDto.getEndDate();
         LocalDateTime since = startDate.atStartOfDay();
         LocalDateTime until = endDate.atTime(23, 59, 59);
         return statRepository.getPostStatsOrderByPageviews(since, until, 3000L);
+    }
+
+    @Override
+    public PostStatsDto getAllPostStats() {
+        List<PostStatDto> statData = statRepository.getAllPostStatsFromCache();
+        Metadata metadata = metadataRepository.findOne(1L);
+        LocalDateTime lastUpdated = metadata.getPostStatsLastUpdated();
+        return new PostStatsDto(lastUpdated, statData);
     }
 
     @Override

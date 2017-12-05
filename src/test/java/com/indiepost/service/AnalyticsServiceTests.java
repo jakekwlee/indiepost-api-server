@@ -6,10 +6,11 @@ import com.indiepost.dto.analytics.Overview;
 import com.indiepost.dto.analytics.RecentAndOldPostStats;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import javax.inject.Inject;
 
 import static testHelper.JsonSerializer.printToJson;
 import static testHelper.PeriodMaker.getDailyPeriod;
@@ -22,7 +23,7 @@ import static testHelper.PeriodMaker.getDailyPeriod;
 @WebAppConfiguration
 public class AnalyticsServiceTests {
 
-    @Autowired
+    @Inject
     private AnalyticsService analyticsService;
 
     @Test

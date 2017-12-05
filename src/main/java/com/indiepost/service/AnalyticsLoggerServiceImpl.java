@@ -8,13 +8,13 @@ import com.indiepost.model.analytics.*;
 import com.indiepost.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -45,7 +45,7 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
 
     private final UserService userService;
 
-    @Autowired
+    @Inject
     public AnalyticsLoggerServiceImpl(VisitorRepository visitorRepository, PageviewRepository pageviewRepository,
                                       PostRepository postRepository, ActionRepository actionRepository,
                                       UserService userService, LinkRepository linkRepository, ClickRepository clickRepository) {

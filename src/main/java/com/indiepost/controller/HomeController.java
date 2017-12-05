@@ -6,7 +6,6 @@ import com.indiepost.dto.post.PostDto;
 import com.indiepost.service.PostService;
 import com.indiepost.service.ServerSideRenderingService;
 import com.indiepost.service.SitemapService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -33,7 +33,7 @@ public class HomeController {
 
     private final SitemapService sitemapService;
 
-    @Autowired
+    @Inject
     public HomeController(ServerSideRenderingService serverSideRenderingService, PostService postService, AppConfig config, SitemapService sitemapService) {
         this.serverSideRenderingService = serverSideRenderingService;
         this.postService = postService;

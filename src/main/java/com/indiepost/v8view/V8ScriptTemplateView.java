@@ -76,6 +76,50 @@ public class V8ScriptTemplateView extends AbstractUrlBasedView {
         super.setContentType(contentType);
     }
 
+    @Override
+    protected void prepareResponse(HttpServletRequest request, HttpServletResponse response) {
+        super.prepareResponse(request, response);
+
+        setResponseContentType(request, response);
+        response.setCharacterEncoding(this.charset.name());
+    }
+
+    @Override
+    protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        V8 v8 = V8.createV8Runtime("window");
+
+        List<V8Value> runtimeObjects = new ArrayList<>();
+
+        List<V8Value> scriptResults = Arrays.stream(this.scripts)
+                .map(script -> {
+                    try {
+                        return v8.executeScript(getResourceAsString(script));
+                    } catch (Exception e) {
+                        throw new IllegalStateException(String.format("Failed to execute script %s", script), e);
+                    }
+                })
+                .filter(o -> o instanceof V8Value)
+                .map(o -> (V8Value) o)
+                .collect(toList());
+        runtimeObjects.addAll(scriptResults);
+
+        String template = getResourceAsString(getUrl());
+        V8Object modelAttributes = mapToV8Object(v8, runtimeObjects, model);
+        runtimeObjects.add(modelAttributes);
+
+        Locale requestLocale = getLocale(request);
+        MappingResourceBundleMessageSource messageSource = BeanFactoryUtils.beanOfTypeIncludingAncestors(getApplicationContext(), MappingResourceBundleMessageSource.class, false, false);
+        Map<String, Object> messageMap = messageSource.getMessageMap(this.resourceBundleBasename, requestLocale);
+        V8Object messages = mapToV8Object(v8, runtimeObjects, messageMap);
+        runtimeObjects.add(messages);
+
+        Object html = v8.executeJSFunction(this.renderFunction, template, modelAttributes, messages);
+        response.getWriter().write(String.valueOf(html));
+
+        runtimeObjects.forEach(V8Value::release);
+        v8.release();
+    }
+
     public void setCharset(Charset charset) {
         this.charset = charset;
     }
@@ -125,50 +169,6 @@ public class V8ScriptTemplateView extends AbstractUrlBasedView {
         if (this.resourceBundleBasename == null) {
             this.resourceBundleBasename = (viewConfig.getResourceBundleBasename() != null ? viewConfig.getResourceBundleBasename() : DEFAULT_RESOURCE_BUNDLE_BASENAME);
         }
-    }
-
-    @Override
-    protected void prepareResponse(HttpServletRequest request, HttpServletResponse response) {
-        super.prepareResponse(request, response);
-
-        setResponseContentType(request, response);
-        response.setCharacterEncoding(this.charset.name());
-    }
-
-    @Override
-    protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        V8 v8 = V8.createV8Runtime("window");
-
-        List<V8Value> runtimeObjects = new ArrayList<>();
-
-        List<V8Value> scriptResults = Arrays.stream(this.scripts)
-                .map(script -> {
-                    try {
-                        return v8.executeScript(getResourceAsString(script));
-                    } catch (Exception e) {
-                        throw new IllegalStateException(String.format("Failed to execute script %s", script), e);
-                    }
-                })
-                .filter(o -> o instanceof V8Value)
-                .map(o -> (V8Value) o)
-                .collect(toList());
-        runtimeObjects.addAll(scriptResults);
-
-        String template = getResourceAsString(getUrl());
-        V8Object modelAttributes = mapToV8Object(v8, runtimeObjects, model);
-        runtimeObjects.add(modelAttributes);
-
-        Locale requestLocale = getLocale(request);
-        MappingResourceBundleMessageSource messageSource = BeanFactoryUtils.beanOfTypeIncludingAncestors(getApplicationContext(), MappingResourceBundleMessageSource.class, false, false);
-        Map<String, Object> messageMap = messageSource.getMessageMap(this.resourceBundleBasename, requestLocale);
-        V8Object messages = mapToV8Object(v8, runtimeObjects, messageMap);
-        runtimeObjects.add(messages);
-
-        Object html = v8.executeJSFunction(this.renderFunction, template, modelAttributes, messages);
-        response.getWriter().write(String.valueOf(html));
-
-        runtimeObjects.forEach(V8Value::release);
-        v8.release();
     }
 
     private V8Object mapToV8Object(V8 v8, List<V8Value> runtimeObjects, Map<String, Object> model) {

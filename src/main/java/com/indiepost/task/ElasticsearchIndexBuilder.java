@@ -1,11 +1,11 @@
 package com.indiepost.task;
 
 import com.indiepost.config.AppConfig;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -20,7 +20,7 @@ public class ElasticsearchIndexBuilder implements ApplicationListener<Applicatio
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Autowired
+    @Inject
     public ElasticsearchIndexBuilder(AppConfig appConfig) {
         this.appConfig = appConfig;
     }

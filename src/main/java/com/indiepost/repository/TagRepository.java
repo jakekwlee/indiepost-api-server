@@ -23,4 +23,5 @@ public interface TagRepository {
     List<Tag> findByIdIn(List<Long> ids);
 
     List<Tag> findAll(Pageable pageable);
+
 }

@@ -4,10 +4,10 @@ import com.indiepost.dto.AdminInitialData;
 import com.indiepost.dto.UserDto;
 import com.indiepost.enums.Types.UserRole;
 import com.indiepost.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,18 +26,12 @@ public class AdminServiceImpl implements AdminService {
 
     private final UserService userService;
 
-    @Autowired
+    @Inject
     public AdminServiceImpl(AdminPostService adminPostService, CategoryService categoryService,
                             UserService userService) {
         this.adminPostService = adminPostService;
         this.categoryService = categoryService;
         this.userService = userService;
-    }
-
-    @Override
-    public UserDto getCurrentUserDto() {
-        User currentUser = userService.findCurrentUser();
-        return userToUserDto(currentUser);
     }
 
     @Override
@@ -50,6 +44,12 @@ public class AdminServiceImpl implements AdminService {
     public List<UserDto> getUserDtoList(int page, int maxResults, boolean isDesc) {
         List<User> userList = userService.findAllUsers(page, maxResults, isDesc);
         return userListToUserDtoList(userList);
+    }
+
+    @Override
+    public UserDto getCurrentUserDto() {
+        User currentUser = userService.findCurrentUser();
+        return userToUserDto(currentUser);
     }
 
     @Override

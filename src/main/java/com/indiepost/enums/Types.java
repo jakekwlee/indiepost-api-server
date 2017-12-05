@@ -11,7 +11,7 @@ public interface Types {
     }
 
     enum PostStatus {
-        AUTOSAVE, DRAFT, PENDING, FUTURE, PUBLISH, TRASH
+        AUTOSAVE, DRAFT, TRASH, DELETED, PENDING, FUTURE, PUBLISH
     }
 
     enum UserGender {

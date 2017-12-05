@@ -1,4 +1,5 @@
 package com.indiepost.v8view;
+
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
 /**

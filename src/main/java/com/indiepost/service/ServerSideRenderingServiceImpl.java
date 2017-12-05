@@ -8,12 +8,12 @@ import com.indiepost.dto.ServerSideRenderingResponse;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostSearch;
 import com.indiepost.dto.post.PostSummaryDto;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -32,7 +32,7 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
 
     private final AppConfig config;
 
-    @Autowired
+    @Inject
     public ServerSideRenderingServiceImpl(InitialDataService initialDataService, PostService postService, PageService pageService, RestTemplate restTemplate, AppConfig config) {
         this.initialDataService = initialDataService;
         this.postService = postService;

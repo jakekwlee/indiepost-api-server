@@ -12,13 +12,13 @@ import com.indiepost.utils.DomUtil;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.imgscalr.Scalr;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import javax.inject.Inject;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -39,7 +39,7 @@ abstract class AbstractImageService implements ImageService {
 
     private final PostRepository postRepository;
 
-    @Autowired
+    @Inject
     public AbstractImageService(ImageRepository imageRepository, PostRepository postRepository, AppConfig config) {
         this.imageRepository = imageRepository;
         this.config = config;
@@ -47,9 +47,6 @@ abstract class AbstractImageService implements ImageService {
     }
 
     abstract protected void saveUploadedImage(BufferedImage bufferedImage, Image image, String contentType) throws IOException;
-
-    @Override
-    abstract public void delete(ImageSet imageSet) throws IOException;
 
     @Override
     public void save(ImageSet imageSet) {
@@ -117,21 +114,6 @@ abstract class AbstractImageService implements ImageService {
         return imageSetList;
     }
 
-    private Image createImageObject(String filenamePrefix, int width, int height, String contentType, ImageSize sizeType) {
-        DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("/yyyy/MM/dd/");
-        String subPath = config.getImageUploadPath() + LocalDateTime.now().format(dtFormat);
-        String fileExtension = contentType.split("/")[1];
-        String filename = String.format(config.getImageFilenameFormat(), filenamePrefix, width, height, fileExtension);
-
-        Image image = new Image();
-        image.setFileName(filename);
-        image.setFilePath(subPath + filename);
-        image.setWidth(width);
-        image.setHeight(height);
-        image.setSizeType(sizeType);
-        return image;
-    }
-
     @Override
     public ImageSet findById(Long id) {
         return imageRepository.findById(id);
@@ -171,10 +153,28 @@ abstract class AbstractImageService implements ImageService {
     }
 
     @Override
+    abstract public void delete(ImageSet imageSet) throws IOException;
+
+    @Override
     public Long deleteById(Long id) throws IOException {
         ImageSet imageSet = findById(id);
         delete(imageSet);
         return id;
+    }
+
+    private Image createImageObject(String filenamePrefix, int width, int height, String contentType, ImageSize sizeType) {
+        DateTimeFormatter dtFormat = DateTimeFormatter.ofPattern("/yyyy/MM/dd/");
+        String subPath = config.getImageUploadPath() + LocalDateTime.now().format(dtFormat);
+        String fileExtension = contentType.split("/")[1];
+        String filename = String.format(config.getImageFilenameFormat(), filenamePrefix, width, height, fileExtension);
+
+        Image image = new Image();
+        image.setFileName(filename);
+        image.setFilePath(subPath + filename);
+        image.setWidth(width);
+        image.setHeight(height);
+        image.setSizeType(sizeType);
+        return image;
     }
 
     private BufferedImage resizeImage(BufferedImage sourceImage, int definition) {

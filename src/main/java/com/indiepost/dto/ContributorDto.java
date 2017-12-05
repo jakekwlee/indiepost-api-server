@@ -14,6 +14,7 @@ public class ContributorDto {
     private String about;
     private String description;
     private String picture;
+    private String role;
 
     @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     private LocalDateTime createdAt;
@@ -99,5 +100,13 @@ public class ContributorDto {
 
     public void setModifiedAt(LocalDateTime modifiedAt) {
         this.modifiedAt = modifiedAt;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

@@ -4,10 +4,10 @@ import com.indiepost.service.AnalyticsService;
 import com.indiepost.service.PostScheduledTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -23,7 +23,7 @@ public class ScheduledTasksRunner {
 
     private final AnalyticsService analyticsService;
 
-    @Autowired
+    @Inject
     public ScheduledTasksRunner(PostScheduledTaskService postScheduledTaskService, AnalyticsService analyticsService) {
         this.postScheduledTaskService = postScheduledTaskService;
         this.analyticsService = analyticsService;

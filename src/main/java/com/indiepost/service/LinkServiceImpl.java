@@ -5,10 +5,10 @@ import com.indiepost.model.analytics.Link;
 import com.indiepost.repository.ClickRepository;
 import com.indiepost.repository.LinkRepository;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +24,7 @@ public class LinkServiceImpl implements LinkService {
 
     private final ClickRepository clickRepository;
 
-    @Autowired
+    @Inject
     public LinkServiceImpl(LinkRepository linkRepository, ClickRepository clickRepository) {
         this.linkRepository = linkRepository;
         this.clickRepository = clickRepository;

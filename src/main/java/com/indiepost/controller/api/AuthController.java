@@ -3,9 +3,9 @@ package com.indiepost.controller.api;
 import com.indiepost.dto.AccountCredentials;
 import com.indiepost.dto.UserDto;
 import com.indiepost.service.TokenAuthenticationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 public class AuthController {
     private final TokenAuthenticationService tokenAuthenticationService;
 
-    @Autowired
+    @Inject
     public AuthController(TokenAuthenticationService tokenAuthenticationService) {
         this.tokenAuthenticationService = tokenAuthenticationService;
     }

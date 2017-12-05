@@ -11,13 +11,13 @@ import com.indiepost.model.ImageSet;
 import com.indiepost.model.Post;
 import com.indiepost.repository.PostRepository;
 import com.indiepost.repository.StatRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ public class PostServiceImpl implements PostService {
 
     private final StatRepository statRepository;
 
-    @Autowired
+    @Inject
     public PostServiceImpl(PostRepository postRepository, StatRepository statRepository) {
         this.postRepository = postRepository;
         this.statRepository = statRepository;

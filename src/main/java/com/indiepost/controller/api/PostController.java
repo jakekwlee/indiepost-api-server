@@ -7,9 +7,9 @@ import com.indiepost.dto.post.RelatedPostResponse;
 import com.indiepost.dto.post.RelatedPostsRequest;
 import com.indiepost.service.ImageService;
 import com.indiepost.service.PostService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -23,7 +23,7 @@ public class PostController {
 
     private final ImageService imageService;
 
-    @Autowired
+    @Inject
     public PostController(PostService postService, ImageService imageService) {
         this.postService = postService;
         this.imageService = imageService;

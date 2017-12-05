@@ -32,6 +32,13 @@ public class Tag implements Serializable {
     )
     private List<PostTag> postTags = new ArrayList<>();
 
+    public Tag() {
+    }
+
+    public Tag(String name) {
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }

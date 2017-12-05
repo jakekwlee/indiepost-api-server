@@ -3,10 +3,10 @@ package com.indiepost.controller.api.admin;
 import com.indiepost.model.ImageSet;
 import com.indiepost.service.ImageService;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class ImageController {
 
     private final ImageService imageService;
 
-    @Autowired
+    @Inject
     public ImageController(ImageService imageService) {
         this.imageService = imageService;
     }

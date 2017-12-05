@@ -9,7 +9,6 @@ import com.indiepost.model.User;
 import com.indiepost.repository.RoleRepository;
 import com.indiepost.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    @Autowired
+    @Inject
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -67,16 +67,14 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Override
+    public User findCurrentUser() {
+        return userRepository.findCurrentUser();
+    }
 
     @Override
     public User findById(Long id) {
         return userRepository.findById(id);
-    }
-
-
-    @Override
-    public User findCurrentUser() {
-        return userRepository.findCurrentUser();
     }
 
     @Override
@@ -132,28 +130,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getDtoList(List<User> userList) {
-        return userList
-                .stream()
-                .map(user -> {
-                    UserDto userDto = new UserDto();
-                    BeanUtils.copyProperties(user, userDto);
-                    return userDto;
-                })
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<UserDto> getDtoList(int page, int maxResults, boolean isDesc) {
-        return getDtoList(this.findAllUsers(page, maxResults, isDesc));
-    }
-
-    @Override
-    public List<UserDto> getDtoList(UserRole role, int page, int maxResults, boolean isDesc) {
-        return getDtoList(this.findByRolesEnum(role, page, maxResults, isDesc));
-    }
-
-    @Override
     public UserDto getUserDto(User user) {
         if (user == null) {
             return null;
@@ -177,6 +153,28 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserDto(String username) {
         User user = this.findByUsername(username);
         return getUserDto(user);
+    }
+
+    @Override
+    public List<UserDto> getDtoList(List<User> userList) {
+        return userList
+                .stream()
+                .map(user -> {
+                    UserDto userDto = new UserDto();
+                    BeanUtils.copyProperties(user, userDto);
+                    return userDto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserDto> getDtoList(int page, int maxResults, boolean isDesc) {
+        return getDtoList(this.findAllUsers(page, maxResults, isDesc));
+    }
+
+    @Override
+    public List<UserDto> getDtoList(UserRole role, int page, int maxResults, boolean isDesc) {
+        return getDtoList(this.findByRolesEnum(role, page, maxResults, isDesc));
     }
 
     private Pageable getPageable(int page, int maxResults, boolean isDesc) {

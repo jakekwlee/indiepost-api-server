@@ -6,13 +6,13 @@ import com.indiepost.enums.Types;
 import com.indiepost.model.Setting;
 import com.indiepost.model.User;
 import com.indiepost.repository.SettingRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -35,7 +35,7 @@ public class MailServiceImpl implements MailService {
 
     private final String INQUIRY_REPLY_SUBJECT_TEMPLATE = "%s (%s) 님의 문의 사항";
 
-    @Autowired
+    @Inject
     public MailServiceImpl(SettingRepository settingRepository, UserService userService) {
         this.settingRepository = settingRepository;
         this.userService = userService;
