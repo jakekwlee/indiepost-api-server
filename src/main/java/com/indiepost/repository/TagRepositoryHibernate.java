@@ -33,15 +33,10 @@ public class TagRepositoryHibernate implements TagRepository {
     }
 
     @Override
-    public Long save(Tag tag) {
+    public Tag save(Tag tag) {
         entityManager.persist(tag);
         entityManager.flush();
-        return tag.getId();
-    }
-
-    @Override
-    public void delete(Tag tag) {
-        entityManager.remove(tag);
+        return tag;
     }
 
     @Override

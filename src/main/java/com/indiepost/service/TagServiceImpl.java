@@ -28,8 +28,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagDto save(Tag tag) {
-        tagRepository.save(tag);
+    public TagDto save(TagDto tagDto) {
+        Tag tag = tagRepository.save(new Tag(tagDto.getName()));
         return new TagDto(tag.getId(), tag.getName());
     }
 

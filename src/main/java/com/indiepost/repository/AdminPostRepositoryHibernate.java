@@ -37,7 +37,6 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
     @Override
     public Post findOne(Long id) {
-        // TODO reduce query
         return entityManager.find(Post.class, id);
     }
 
@@ -96,7 +95,6 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
             CriteriaUtils.addSearchConjunction(search, builder);
         }
         query.where(builder);
-
         return toDtoList(query.fetch());
     }
 

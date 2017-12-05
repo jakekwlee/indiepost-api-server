@@ -322,14 +322,11 @@ public class LegacyPost implements Serializable {
         this.contents = contents;
     }
 
-    public void copyFromPost(Post post) {
+    public void setProperties(Post post) {
         Long status;
 
         PostStatus postStatus = post.getStatus();
-        // TODO
-        if (postStatus == PostStatus.PENDING ||
-                postStatus == PostStatus.DRAFT ||
-                postStatus == PostStatus.TRASH) {
+        if (postStatus == PostStatus.PENDING) {
             status = 0L;
         } else {
             status = 1L;

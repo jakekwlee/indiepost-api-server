@@ -14,9 +14,7 @@ public interface TagRepository {
 
     Tag findOneByName(String name);
 
-    Long save(Tag tag);
-
-    void delete(Tag tag);
+    Tag save(Tag tag);
 
     void deleteById(Long id);
 

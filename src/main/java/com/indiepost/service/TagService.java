@@ -1,7 +1,6 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.TagDto;
-import com.indiepost.model.Tag;
 
 import java.util.List;
 
@@ -9,7 +8,7 @@ import java.util.List;
  * Created by jake on 9/17/16.
  */
 public interface TagService {
-    TagDto save(Tag tag);
+    TagDto save(TagDto tagDto);
 
     TagDto findById(Long id);
 
@@ -21,7 +20,7 @@ public interface TagService {
 
     List<TagDto> findByIds(List<Long> ids);
 
-    void update(TagDto tag);
+    void update(TagDto tagDto);
 
     void deleteById(Long id);
 }

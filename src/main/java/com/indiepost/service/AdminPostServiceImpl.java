@@ -137,9 +137,18 @@ public class AdminPostServiceImpl implements AdminPostService {
             addTagsToPost(post, tags);
         }
 
-        if (status.equals(PostStatus.FUTURE) || status.equals(PostStatus.PUBLISH)) {
-            LegacyPost legacyPost = post.getLegacyPost();
-            legacyPost.copyFromPost(post);
+        LegacyPost legacyPost = post.getLegacyPost();
+        if (isPublicStatus(post.getStatus())) {
+            if (legacyPost == null) {
+                legacyPost = new LegacyPost();
+                post.setLegacyPost(legacyPost);
+            }
+            legacyPost.setProperties(post);
+        } else {
+            if (legacyPost == null) {
+                return;
+            }
+            post.setLegacyPost(null);
         }
     }
 

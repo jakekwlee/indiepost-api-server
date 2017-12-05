@@ -1,17 +1,32 @@
 package com.indiepost.controller.api.admin;
 
+import com.indiepost.dto.TagDto;
 import com.indiepost.service.TagService;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
-@RequestMapping("/admin/tag")
+@RequestMapping(value = "/api/admin/tag", produces = {"application/json; charset=UTF-8"})
 public class AdminTagController {
 
+    private final TagService tagService;
+
     @Inject
-    private TagService tagService;
+    public AdminTagController(TagService tagService) {
+        this.tagService = tagService;
+    }
 
+    @PostMapping
+    public TagDto createNewTag(@RequestBody TagDto tagDto) {
+        return tagService.save(tagDto);
+    }
 
+    @GetMapping
+    public List<TagDto> searchTags(@RequestParam String tagName) {
+        // TODO  2017-12-06 Search Tag Logic
+        return new ArrayList<>();
+    }
 }

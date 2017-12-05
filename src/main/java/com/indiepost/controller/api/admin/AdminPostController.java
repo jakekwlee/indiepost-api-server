@@ -38,9 +38,8 @@ public class AdminPostController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public Long delete(@PathVariable Long id) {
+    public void delete(@PathVariable Long id) {
         adminPostService.deleteById(id);
-        return id;
     }
 
     @RequestMapping(method = RequestMethod.GET)

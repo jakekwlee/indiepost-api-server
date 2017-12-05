@@ -59,7 +59,6 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDto findOneByLegacyId(Long id) {
         Post post = postRepository.findByLegacyId(id);
-        // TODO same above
         post.getTags();
         post.getContributors();
         ImageSet titleImage = post.getTitleImage();
