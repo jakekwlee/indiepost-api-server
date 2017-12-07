@@ -302,21 +302,21 @@ import javax.persistence.*;
                         "ORDER BY p.publishedAt DESC"),
 
         @NamedNativeQuery(name = "@UPDATE_ALL_POST_STATS_CACHE",
-                query = "INSERT INTO CachedPostStats  (postId, pageviews, uniquePageviews) " +
-                        "SELECT p.id postId, count(*) AS pageviews, count(DISTINCT s.visitorId) AS uniquePageviews " +
+                query = "INSERT INTO CachedPostStats  " +
+                        "(postId, pageviews, uniquePageviews, legacyPageviews, legacyUniquePageviews) " +
+                        "SELECT p.id postId, count(*) AS pageviews, count(DISTINCT s.visitorId) AS uniquePageviews, " +
+                        "ifnull(l.pageviews, 0) AS legacyPageviews, ifnull(l.uniquePageviews, 0) AS legacyUniquePageviews " +
                         "FROM Posts p " +
-                        "LEFT JOIN Stats s ON s.postId = p.id " +
+                        "LEFT OUTER JOIN LegacyStats l ON p.id = l.postId " +
+                        "LEFT OUTER JOIN Stats s ON s.postId = p.id " +
                         "INNER JOIN Categories c ON p.categoryId = c.id " +
                         "AND p.status = 'PUBLISH' " +
                         "GROUP BY p.id " +
                         "ORDER BY p.publishedAt DESC"
-        ),
-
-        @NamedNativeQuery(name = "@DELETE_ALL_POST_STATS_CACHE",
-                query = "DELETE FROM CachedPostStats WHERE id > 0"
         )
 })
 public class NamedQueryHolder {
+
     @Id
     @GeneratedValue
     private int id;

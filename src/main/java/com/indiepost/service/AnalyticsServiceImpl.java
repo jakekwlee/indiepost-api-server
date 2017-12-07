@@ -73,7 +73,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         stats.setTopTags(statRepository.getTopTags(since, until, 10L));
 
         stats.setTotalVisitor(visitorRepository.getTotalVisitors(since, until));
-        stats.setTotalAppVisitor(visitorRepository.getTotalVisitors(since, until, ClientType.INDIEPOST_LEGACY_MOBILE_APP.toString()));
+        stats.setTotalAppVisitor(visitorRepository.getTotalVisitors(
+                since, until, ClientType.INDIEPOST_LEGACY_MOBILE_APP.toString())
+        );
         stats.setTopBrowser(visitorRepository.getTopWebBrowsers(since, until, 10L));
         stats.setTopChannel(visitorRepository.getTopChannel(since, until, 10L));
         stats.setTopReferrer(visitorRepository.getTopReferrers(since, until, 10L));
@@ -118,20 +120,5 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         Metadata metadata = metadataRepository.findOne(1L);
         LocalDateTime lastUpdated = metadata.getPostStatsLastUpdated();
         return new PostStatsDto(lastUpdated, statData);
-    }
-
-    @Override
-    public void updateCachedPostStats() {
-        // TODO move to PostScheduledTaskService
-        statRepository.deleteAllPostStatsCache();
-        statRepository.updatePostStatsCache();
-
-        Metadata metadata = metadataRepository.findOne(1L);
-        if (metadata == null) {
-            metadata = new Metadata();
-        }
-        LocalDateTime now = LocalDateTime.now();
-        metadata.setPostStatsLastUpdated(now);
-        metadataRepository.save(metadata);
     }
 }

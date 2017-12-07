@@ -27,6 +27,7 @@ import static com.indiepost.utils.DateUtil.localDateTimeToDate;
  * Created by jake on 17. 1. 14.
  */
 public interface CriteriaUtils {
+
     static Criteria setPageToCriteria(Criteria criteria, Pageable pageable) {
         Sort sort = pageable.getSort();
         if (sort != null) {

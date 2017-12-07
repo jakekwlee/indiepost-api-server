@@ -10,6 +10,7 @@ import java.util.List;
  * Created by jake on 10/24/17.
  */
 public class ShareStatResultTransformer implements ResultTransformer {
+
     @Override
     public Object transformTuple(Object[] tuple, String[] aliases) {
         return new ShareStat(

@@ -13,7 +13,9 @@ import java.time.format.DateTimeFormatter;
  * Created by jake on 17. 5. 21.
  */
 public class LocalDateTimeToUtcStringSerializer extends LocalDateTimeSerializer {
+
     public static final LocalDateTimeToUtcStringSerializer INSTANCE = new LocalDateTimeToUtcStringSerializer();
+
     private static final long serialVersionUID = 1L;
 
     protected LocalDateTimeToUtcStringSerializer() {

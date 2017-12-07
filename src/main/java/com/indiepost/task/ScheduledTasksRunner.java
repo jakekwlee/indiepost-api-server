@@ -21,12 +21,9 @@ public class ScheduledTasksRunner {
 
     private final PostScheduledTaskService postScheduledTaskService;
 
-    private final AnalyticsService analyticsService;
-
     @Inject
     public ScheduledTasksRunner(PostScheduledTaskService postScheduledTaskService, AnalyticsService analyticsService) {
         this.postScheduledTaskService = postScheduledTaskService;
-        this.analyticsService = analyticsService;
     }
 
     @Scheduled(fixedRate = 600000)
@@ -35,9 +32,9 @@ public class ScheduledTasksRunner {
         log.info(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ": Publish Scheduled Posts:");
     }
 
-    @Scheduled(cron = "0 0/30 * * * ?")
+    @Scheduled(cron = "0 0 * * * ?")
     public void updateCachedPostStats() {
-        analyticsService.updateCachedPostStats();
+        postScheduledTaskService.updateCachedPostStats();
         log.info(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ": Update cached post stats.");
     }
 }

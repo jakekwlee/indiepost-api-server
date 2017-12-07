@@ -4,10 +4,16 @@ import com.indiepost.dto.analytics.PostStatDto;
 import com.indiepost.dto.analytics.ShareStat;
 import com.indiepost.dto.analytics.TimeDomainDoubleStat;
 import com.indiepost.dto.analytics.TimeDomainStat;
+import com.indiepost.enums.Types;
 import com.indiepost.enums.Types.ClientType;
 import com.indiepost.enums.Types.TimeDomainDuration;
+import com.indiepost.model.QCachedPostStat;
+import com.indiepost.model.QCategory;
+import com.indiepost.model.QPost;
 import com.indiepost.model.analytics.Stat;
 import com.indiepost.repository.utils.PostStatsResultTransformer;
+import com.querydsl.core.Tuple;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -20,6 +26,7 @@ import javax.persistence.PersistenceContext;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.indiepost.repository.utils.CriteriaUtils.*;
 import static com.indiepost.utils.DateUtil.localDateTimeToDate;
@@ -28,7 +35,7 @@ import static com.indiepost.utils.DateUtil.normalizeTimeDomainStats;
 /**
  * Created by jake on 8/9/17.
  */
-@SuppressWarnings("JpaQueryApiInspection")
+@SuppressWarnings("unchecked")
 @Repository
 public class StatRepositoryHibernate implements StatRepository {
 
@@ -182,9 +189,33 @@ public class StatRepositoryHibernate implements StatRepository {
 
     @Override
     public List<PostStatDto> getAllPostStatsFromCache() {
-        Query query = getNamedQuery("@GET_ALL_POST_STATS_FROM_CACHE");
-        query.setResultTransformer(new PostStatsResultTransformer());
-        return query.list();
+        QCachedPostStat stat = QCachedPostStat.cachedPostStat;
+        List<Tuple> rows = getQueryFactory()
+                .from(stat)
+                .select(stat.post.id, stat.post.title, stat.post.bylineName,
+                        stat.post.category.name, stat.post.publishedAt,
+                        stat.pageviews, stat.uniquePageviews,
+                        stat.legacyPageviews, stat.legacyUniquePageviews)
+                .innerJoin(stat.post, QPost.post)
+                .innerJoin(stat.post.category, QCategory.category)
+                .where(stat.post.status.eq(Types.PostStatus.PUBLISH))
+                .distinct()
+                .orderBy(stat.post.publishedAt.desc())
+                .fetch();
+
+        return rows.stream().map(tuple -> {
+            PostStatDto dto = new PostStatDto();
+            dto.setId(tuple.get(stat.post.id));
+            dto.setTitle(tuple.get(stat.post.title));
+            dto.setAuthor(tuple.get(stat.post.bylineName));
+            dto.setCategory(tuple.get(stat.post.category.name));
+            dto.setPublishedAt(tuple.get(stat.post.publishedAt));
+            dto.setPageviews(tuple.get(stat.pageviews));
+            dto.setUniquePageviews(tuple.get(stat.uniquePageviews));
+            dto.setLegacyPageviews(tuple.get(stat.legacyPageviews));
+            dto.setLegacyUniquePageviews(tuple.get(stat.legacyUniquePageviews));
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -267,8 +298,11 @@ public class StatRepositoryHibernate implements StatRepository {
 
     @Override
     public void deleteAllPostStatsCache() {
-        Query query = getNamedQuery("@DELETE_ALL_POST_STATS_CACHE");
-        query.executeUpdate();
+        QCachedPostStat stat = QCachedPostStat.cachedPostStat;
+        getQueryFactory()
+                .delete(stat)
+                .where(stat.id.goe(0L))
+                .execute();
     }
 
     private List<TimeDomainStat> getPageviewTrendHourly(LocalDateTime since, LocalDateTime until) {
@@ -322,5 +356,9 @@ public class StatRepositoryHibernate implements StatRepository {
 
     private Criteria createCriteria() {
         return getSession().createCriteria(Stat.class, "s");
+    }
+
+    private JPAQueryFactory getQueryFactory() {
+        return new JPAQueryFactory(entityManager);
     }
 }

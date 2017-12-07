@@ -4,10 +4,15 @@ package com.indiepost.dto;
  * Created by jake on 17. 2. 25.
  */
 public class ServerSideRenderingResponse {
+
     private String title;
+
     private String meta;
+
     private String link;
+
     private String state = "{}";
+
     private String markup = "";
 
     public String getLink() {

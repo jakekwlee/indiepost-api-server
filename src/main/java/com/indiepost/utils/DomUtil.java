@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
  * Created by jake on 10/12/17.
  */
 public class DomUtil {
+
     public static String htmlToText(String html) {
         Document document = Jsoup.parseBodyFragment(html);
         return document.text();

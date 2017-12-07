@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  * Created by jake on 17. 4. 13.
  */
 public interface Types {
+
     enum ImageSize {
         THUMBNAIL, SMALL, OPTIMIZED, LARGE, ORIGINAL
     }

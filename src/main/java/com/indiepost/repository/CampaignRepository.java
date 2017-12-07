@@ -11,6 +11,7 @@ import java.util.List;
  * Created by jake on 8/10/17.
  */
 public interface CampaignRepository extends CrudRepository<Campaign, Long> {
+
     @Query(nativeQuery = true,
             value = "SELECT count(DISTINCT v.id) FROM Campaigns c " +
                     "INNER JOIN Links l ON c.id = l.campaignId " +

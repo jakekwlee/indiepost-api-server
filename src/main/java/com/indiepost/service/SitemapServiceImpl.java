@@ -23,8 +23,11 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public class SitemapServiceImpl implements SitemapService {
+
     private final PostRepository postRepository;
+
     private final CategoryRepository categoryRepository;
+
     private final PageRepository pageRepository;
 
     @Inject

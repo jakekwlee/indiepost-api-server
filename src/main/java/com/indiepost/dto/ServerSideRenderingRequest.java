@@ -11,10 +11,15 @@ import java.util.List;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ServerSideRenderingRequest {
+
     private InitialData initialData;
+
     private List<PostSummaryDto> posts;
+
     private PostDto post;
+
     private PageDto page;
+
     private String path;
 
     public ServerSideRenderingRequest() {

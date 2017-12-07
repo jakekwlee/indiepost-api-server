@@ -37,11 +37,17 @@ public class AdminPostServiceImpl implements AdminPostService {
     private static final List<PostStatus> PUBLIC_STATUS = Arrays.asList(
             PostStatus.PUBLISH, PostStatus.FUTURE, PostStatus.PENDING
     );
+
     private final UserService userService;
+
     private final AdminPostRepository adminPostRepository;
+
     private final ContributorRepository contributorRepository;
+
     private final TagRepository tagRepository;
+
     private final MetadataRepository metadataRepository;
+
     private final PostEsRepository postEsRepository;
 
     @Inject
@@ -192,6 +198,25 @@ public class AdminPostServiceImpl implements AdminPostService {
     @Override
     public List<String> findAllBylineNames() {
         return adminPostRepository.findAllDisplayNames();
+    }
+
+    @Override
+    public void emptyTrash() {
+        // TODO
+        User currentUser = userService.findCurrentUser();
+        PostSearch search = new PostSearch();
+        search.setStatus(PostStatus.TRASH);
+        List<AdminPostSummaryDto> posts = adminPostRepository.find(currentUser, search, new PageRequest(0, 1000000));
+        for (AdminPostSummaryDto post : posts) {
+            adminPostRepository.deleteById(post.getId());
+        }
+    }
+
+    @Override
+    public void discardAutosave() {
+        // TODO
+        User currentUser = userService.findCurrentUser();
+        adminPostRepository.discardAutosave(currentUser);
     }
 
     private Pageable getPageable(int page, int maxResults, boolean isDesc) {

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
  * Created by jake on 17. 1. 14.
  */
 public class UserMapper {
+
     public static User userDtoToUser(UserDto userDto) {
         return null;
     }

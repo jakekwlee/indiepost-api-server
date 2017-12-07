@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ContributorMapper {
+
     public static ContributorDto contributorToContributorDto(Contributor contributor) {
         ContributorDto dto = new ContributorDto();
         BeanUtils.copyProperties(contributor, dto);

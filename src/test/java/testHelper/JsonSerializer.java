@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 
 public interface JsonSerializer {
+
     static void printToJson(Object object) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Hibernate5Module());

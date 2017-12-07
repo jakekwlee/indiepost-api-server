@@ -2,10 +2,7 @@ package com.indiepost.repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.dto.analytics.PeriodDto;
-import com.indiepost.dto.analytics.ShareStat;
-import com.indiepost.dto.analytics.TimeDomainDoubleStat;
-import com.indiepost.dto.analytics.TimeDomainStat;
+import com.indiepost.dto.analytics.*;
 import com.indiepost.enums.Types.ClientType;
 import com.indiepost.enums.Types.TimeDomainDuration;
 import org.junit.Assert;
@@ -20,6 +17,7 @@ import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static testHelper.JsonSerializer.printToJson;
 import static testHelper.PeriodMaker.*;
 
@@ -34,6 +32,24 @@ public class StatRepositoryTests {
 
     @Inject
     private StatRepository statRepository;
+
+    @Test
+    public void testGetAllPostStatsFromCache() {
+        List<PostStatDto> dtoList = statRepository.getAllPostStatsFromCache();
+        assertThat(dtoList).isNotNull().size().isBetween(100, 100000);
+        printToJson(dtoList);
+        for (PostStatDto dto : dtoList) {
+            assertThat(dto.getId()).isNotNull();
+            assertThat(dto.getTitle()).isNotEmpty();
+            assertThat(dto.getAuthor()).isNotEmpty();
+            assertThat(dto.getCategory()).isNotEmpty();
+            assertThat(dto.getPublishedAt()).isNotNull();
+            assertThat(dto.getPageviews()).isNotNull().isBetween(1L, 100000L);
+            assertThat(dto.getUniquePageviews()).isNotNull().isBetween(1L, 100000L);
+            assertThat(dto.getLegacyPageviews()).isNotNull().isBetween(0L, 100000L);
+            assertThat(dto.getLegacyUniquePageviews()).isNotNull().isBetween(0L, 100000L);
+        }
+    }
 
     @Test
     public void testRetrieveYearlyPageviewTrend() throws JsonProcessingException {

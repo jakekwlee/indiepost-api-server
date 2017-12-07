@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
  * Created by jake on 8/9/17.
  */
 public interface ClickRepository extends CrudRepository<Click, Long> {
+
     Long countByLinkId(Long linkId);
 
     @Query(nativeQuery = true,

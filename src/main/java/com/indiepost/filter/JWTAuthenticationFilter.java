@@ -24,7 +24,9 @@ import java.util.stream.Collectors;
 
 @Component
 public class JWTAuthenticationFilter extends GenericFilterBean {
+
     private final JwtConfig jwtConfig;
+
     @Value("${jwt.token:ThisIsSecret}")
     private String secretKey;
 

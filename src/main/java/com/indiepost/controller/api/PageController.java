@@ -15,6 +15,7 @@ import javax.inject.Inject;
 @RestController
 @RequestMapping("/api/pages")
 public class PageController {
+
     private final PageService pageService;
 
     @Inject

@@ -173,6 +173,26 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
         entityManager.detach(post);
     }
 
+    @Override
+    public void emptyTrash(User currentUser) {
+        QPost post = QPost.post;
+        getQueryFactory()
+                .delete(post)
+                .where(post.status.eq(PostStatus.TRASH).and(
+                        post.modifiedUserId.eq(currentUser.getId())))
+                .execute();
+    }
+
+    @Override
+    public void discardAutosave(User currentUser) {
+        QPost post = QPost.post;
+        getQueryFactory()
+                .delete(post)
+                .where(post.status.eq(PostStatus.AUTOSAVE).and(
+                        post.modifiedUserId.eq(currentUser.getId())))
+                .execute();
+    }
+
     private JPAQuery addProjections(JPAQuery query) {
         QPost post = QPost.post;
         return query.select(

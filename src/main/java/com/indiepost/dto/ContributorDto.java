@@ -6,14 +6,23 @@ import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
 import java.time.LocalDateTime;
 
 public class ContributorDto {
+
     private Long id;
+
     private String name;
+
     private String email;
+
     private String subEmail;
+
     private String phone;
+
     private String about;
+
     private String description;
+
     private String picture;
+
     private String role;
 
     @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)

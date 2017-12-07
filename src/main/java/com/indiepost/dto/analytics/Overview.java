@@ -6,25 +6,45 @@ import java.util.List;
  * Created by jake on 17. 4. 27.
  */
 public class Overview {
+
     private Long totalPageview;
+
     private Long totalUniquePageview;
+
     private Long totalUniquePostview;
+
     private Long totalPostview;
+
     private Long totalVisitor;
+
     private Long totalAppVisitor;
+
     private Trend pageviewTrend;
+
     private Trend visitorTrend;
+
     private List<ShareStat> pageviewByCategory;
+
     private List<ShareStat> pageviewByAuthor;
+
     private List<ShareStat> topPagesWebapp;
+
     private List<ShareStat> topPagesMobile;
+
     private List<ShareStat> topPosts;
+
     private List<ShareStat> topPostsMobile;
+
     private List<ShareStat> topPostsWebapp;
+
     private List<ShareStat> topReferrer;
+
     private List<ShareStat> topBrowser;
+
     private List<ShareStat> topOs;
+
     private List<ShareStat> topTags;
+
     private List<ShareStat> topChannel;
 
     public Long getTotalUniquePostview() {

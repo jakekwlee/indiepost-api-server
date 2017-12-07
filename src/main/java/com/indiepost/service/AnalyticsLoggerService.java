@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.security.Principal;
 
 public interface AnalyticsLoggerService {
+
     Visitor findVisitorById(Long id);
 
     void logPageview(HttpServletRequest req, HttpServletResponse res, PageviewDto pageviewDto) throws IOException;

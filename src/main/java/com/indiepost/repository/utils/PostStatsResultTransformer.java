@@ -11,6 +11,7 @@ import java.util.List;
  * Created by jake on 10/24/17.
  */
 public class PostStatsResultTransformer implements ResultTransformer {
+
     @Override
     public Object transformTuple(Object[] tuple, String[] aliases) {
         PostStatDto postStatDto = new PostStatDto();

@@ -12,6 +12,7 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
  * @author Patrick
  */
 public class V8ScriptTemplateViewResolver extends UrlBasedViewResolver {
+
     public V8ScriptTemplateViewResolver() {
         setViewClass(requiredViewClass());
     }

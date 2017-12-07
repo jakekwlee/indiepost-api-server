@@ -11,6 +11,7 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:webapp-${spring.profiles.active}.properties")
 @ConfigurationProperties(prefix = "webapp.jwt")
 public class JwtConfig {
+
     private String tokenPrefix;
 
     private String httpHeaderName;

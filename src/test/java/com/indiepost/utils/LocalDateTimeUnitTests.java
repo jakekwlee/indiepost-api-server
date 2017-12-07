@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
  * Created by jake on 17. 5. 22.
  */
 public class LocalDateTimeUnitTests {
+
     @Test
     public void iso8601DateStringDeserializationTest() {
         String iso8601 = "2017-05-25T22:00:55.000Z";

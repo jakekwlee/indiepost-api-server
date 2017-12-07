@@ -25,6 +25,7 @@ import static testHelper.JsonSerializer.printToJson;
 @WebAppConfiguration
 @Transactional
 public class ContributorRepositoryTests {
+
     @Inject
     private ContributorRepository contributorRepository;
 

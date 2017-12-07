@@ -18,6 +18,7 @@ import java.security.Principal;
 @Controller
 @RequestMapping("/link")
 public class LinkController {
+
     private final AnalyticsLoggerService analyticsLoggerService;
 
     @Inject

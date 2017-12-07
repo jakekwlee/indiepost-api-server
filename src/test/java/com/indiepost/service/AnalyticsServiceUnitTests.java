@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
  * Created by jake on 17. 4. 28.
  */
 public class AnalyticsServiceUnitTests {
+
     @Test
     public void normalizeTimeDomainStatsWorksCorrectly() throws JsonProcessingException {
 

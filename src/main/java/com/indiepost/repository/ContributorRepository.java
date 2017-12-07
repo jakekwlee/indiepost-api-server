@@ -5,6 +5,7 @@ import com.indiepost.model.Contributor;
 import java.util.List;
 
 public interface ContributorRepository {
+
     Contributor findOne(Long id);
 
     Long save(Contributor contributor);

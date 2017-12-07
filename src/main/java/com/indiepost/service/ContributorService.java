@@ -5,6 +5,7 @@ import com.indiepost.dto.ContributorDto;
 import java.util.List;
 
 public interface ContributorService {
+
     ContributorDto save(ContributorDto contributorDto);
 
     ContributorDto findById(Long id);

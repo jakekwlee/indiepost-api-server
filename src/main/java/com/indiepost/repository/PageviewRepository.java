@@ -7,4 +7,5 @@ import org.springframework.data.repository.CrudRepository;
  * Created by jake on 17. 4. 17.
  */
 public interface PageviewRepository extends CrudRepository<Pageview, Long> {
+
 }

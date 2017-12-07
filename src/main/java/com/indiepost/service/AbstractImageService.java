@@ -35,6 +35,7 @@ import java.util.Set;
 abstract class AbstractImageService implements ImageService {
 
     protected final AppConfig config;
+
     final ImageRepository imageRepository;
 
     private final PostRepository postRepository;

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
     private final TokenAuthenticationService tokenAuthenticationService;
 
     @Inject

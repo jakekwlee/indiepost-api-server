@@ -17,10 +17,13 @@ import java.util.*;
  */
 public class AliasToBeanNestedResultTransformer extends
         AliasedTupleSubsetResultTransformer {
+
     private static final long serialVersionUID = -8047276133980128266L;
 
     private static final int TUPE_INDEX = 0;
+
     private static final int ALISES_INDEX = 1;
+
     private static final int FIELDNAME_INDEX = 2;
 
     private static final PropertyAccessStrategy accessor = PropertyAccessStrategyFieldImpl.INSTANCE;
@@ -28,11 +31,15 @@ public class AliasToBeanNestedResultTransformer extends
     private final Class<?> resultClass;
 
     private Object[] entityTuples;
+
     private String[] entityAliases;
 
     private Map<String, Class<?>> fieldToClass = new HashMap<>();
+
     private Map<String, List<?>> subEntities = new HashMap<>();
+
     private List<String> nestedAliases = new ArrayList<>();
+
     private Map<String, Class<?>> listFields = new HashMap<>();
 
     public AliasToBeanNestedResultTransformer(Class<?> resultClass) {

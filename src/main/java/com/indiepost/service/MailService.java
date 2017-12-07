@@ -12,6 +12,7 @@ import org.springframework.mail.SimpleMailMessage;
  * Created by jake on 8/31/17.
  */
 public interface MailService {
+
     static String formatAddress(String mailSenderName, String mailAddress) {
         return mailSenderName.concat(" <").concat(mailAddress).concat(">");
     }

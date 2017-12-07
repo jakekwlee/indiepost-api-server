@@ -37,8 +37,11 @@ import static testHelper.JsonSerializer.printToJson;
 @WebAppConfiguration
 @ContextConfiguration
 public class AdminPostServiceTests {
+
     private static final int PAGE = 0;
+
     private static final int MAX_RESULTS = 50;
+
     private static final Logger log = LoggerFactory.getLogger(AdminPostServiceTests.class);
 
     @Inject
@@ -286,6 +289,18 @@ public class AdminPostServiceTests {
         printToJson(updatedOriginal);
     }
 
+    @Test
+    @WithMockUser(username = "indiepost")
+    public void emptyTrashShouldDeleteAllThePostsInTrash() {
+        adminPostService.emptyTrash();
+        List<AdminPostSummaryDto> posts = adminPostService.find(0, 1000, true);
+        for (AdminPostSummaryDto post : posts) {
+            assertThat(post.getStatus())
+                    .isNotEqualToIgnoringCase(PostStatus.TRASH.toString());
+        }
+
+    }
+
     @After
     public void deleteAllCreatedTestPosts() {
         PostSearch search = new PostSearch();
@@ -296,6 +311,5 @@ public class AdminPostServiceTests {
             adminPostService.deleteById(post.getId());
             log.info("Test post deleted: " + post.getId());
         }
-
     }
 }

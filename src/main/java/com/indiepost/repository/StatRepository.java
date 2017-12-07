@@ -14,6 +14,7 @@ import java.util.List;
  * Created by jake on 8/9/17.
  */
 public interface StatRepository {
+
     Long save(Stat stat);
 
     void update(Stat stat);

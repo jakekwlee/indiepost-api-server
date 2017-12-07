@@ -10,6 +10,7 @@ import java.io.UnsupportedEncodingException;
  */
 
 public class MySQLPasswordEncoder implements PasswordEncoder {
+
     @Override
     public String encode(CharSequence rawPassword) {
         try {

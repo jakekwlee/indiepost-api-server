@@ -19,6 +19,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/stat")
 public class AnalyticsLoggingApiController {
+
     private final AnalyticsLoggerService analyticsLoggerService;
 
     @Inject

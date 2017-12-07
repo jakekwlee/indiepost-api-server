@@ -35,6 +35,7 @@ public class AppConfig {
     private List<String> acceptedImageTypes;
 
     private boolean buildSearchIndex;
+
     private int fetchCount;
 
     public boolean isBuildSearchIndex() {

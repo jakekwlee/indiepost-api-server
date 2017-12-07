@@ -9,6 +9,7 @@ import java.util.List;
  * Created by jake on 8/4/16.
  */
 public interface CategoryService {
+
     void save(Category category);
 
     void update(Category category);

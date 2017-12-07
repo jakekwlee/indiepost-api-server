@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
  * Created by jake on 10/12/17.
  */
 public class DomUtilUnitTests {
+
     private static final String content = "<p>인디포스트는 동영상 스트리밍 서비스 옥수수(oksusu)와 함께 작품성 있는 영화를 선별해 추천하는 무료영화 이벤트를 진행합니다. 10월 14일 토요일부터 16일 월요일까지, 3일 동안 통신사 관계없이 누구나 옥수수에서 무료로 영화를 감상할 수 있습니다. 모바일 앱과 웹사이트에서 모두 볼 수 있으며, 중단 후에는 언제든지 &lsquo;이어보기&rsquo;로 다시 감상할 수 있습니다.</p>\n" +
             "<p>이번에 추천할 영화는 바로 &lt;데이빗 린치: 아트 라이프&gt;입니다.</p>\n" +
             "<figure class=\"image ad-video-player\"><a href=\"http://www.indiepost.co.kr/link/b374da5b\" target=\"_target\" rel=\"noopener\"><img src=\"https://cdn.indiepost.co.kr/uploads/images/2017/10/13/hJVwPo-665x425.png\" width=\"665px\" height=\"425px\" /><span class=\"play-btn\">&nbsp;</span> <span class=\"video-title\">데이빗 린치: 아트 라이프(2017)</span> <span class=\"video-logo\">&nbsp;</span> </a>\n" +

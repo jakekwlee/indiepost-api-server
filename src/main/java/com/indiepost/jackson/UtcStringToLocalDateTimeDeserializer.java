@@ -14,6 +14,7 @@ import java.time.ZoneId;
  * Created by jake on 17. 5. 28.
  */
 public class UtcStringToLocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
+
     @Override
     public LocalDateTime deserialize(JsonParser arg0, DeserializationContext arg1) throws JsonProcessingException, IOException {
         return Instant.parse(arg0.getValueAsString()).atZone(ZoneId.systemDefault()).toLocalDateTime();

@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 public class ImageServiceAws extends AbstractImageService implements ImageService {
 
     private static final Logger log = LoggerFactory.getLogger(ImageServiceAws.class);
+
     private final AwsConfig awsConfig;
 
     @Inject

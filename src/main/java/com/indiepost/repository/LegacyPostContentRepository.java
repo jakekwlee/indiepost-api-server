@@ -8,6 +8,7 @@ import java.util.List;
  * Created by jake on 11/22/16.
  */
 public interface LegacyPostContentRepository {
+
     Long save(LegacyPostContent legacyPostContent);
 
     void update(LegacyPostContent legacyPostContent);

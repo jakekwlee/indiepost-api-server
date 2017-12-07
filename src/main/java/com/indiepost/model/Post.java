@@ -35,7 +35,7 @@ public class Post implements Serializable {
     @Column(name = "originalId")
     private Long originalId;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "legacyPostId")
     private LegacyPost legacyPost;
 

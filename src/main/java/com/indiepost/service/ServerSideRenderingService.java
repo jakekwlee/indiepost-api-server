@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
  * Created by jake on 17. 5. 13.
  */
 public interface ServerSideRenderingService {
+
     void renderHome(Model model, String servletPath);
 
     void renderPost(Long postId, Model model, String servletPath);

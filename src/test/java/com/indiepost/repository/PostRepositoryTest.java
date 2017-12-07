@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @WebAppConfiguration
 @Transactional
 public class PostRepositoryTest {
+
     @Inject
     private PostRepository repository;
 

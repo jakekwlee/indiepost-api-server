@@ -28,9 +28,13 @@ import java.util.stream.Collectors;
  */
 @Service
 public class JwtTokenAuthenticationService implements TokenAuthenticationService {
+
     private final JwtConfig jwtConfig;
+
     private final AuthenticationManager authenticationManager;
+
     private final UserService userService;
+
     @Value("${jwt.token:ThisIsSecret}")
     private String secretKey;
 

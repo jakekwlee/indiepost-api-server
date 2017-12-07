@@ -45,4 +45,8 @@ public interface AdminPostRepository {
     void flush();
 
     void detach(Post post);
+
+    void emptyTrash(User currentUser);
+
+    void discardAutosave(User currentUser);
 }

@@ -35,4 +35,7 @@ public interface AdminPostService {
 
     List<String> findAllBylineNames();
 
+    void emptyTrash();
+
+    void discardAutosave();
 }
