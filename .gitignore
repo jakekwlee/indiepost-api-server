@@ -246,5 +246,5 @@ venv/
 migration/dist/*
 migration/dist/
 
-
+/src/main/resources/data.sql
 /src/main/generated/

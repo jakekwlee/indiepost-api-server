@@ -21,6 +21,7 @@ public class LegacyPostContent implements Serializable {
 
     private Long type;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String data;
 
     private Long ispay;

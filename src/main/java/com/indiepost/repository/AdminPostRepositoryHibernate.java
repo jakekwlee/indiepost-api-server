@@ -2,8 +2,12 @@ package com.indiepost.repository;
 
 import com.indiepost.dto.post.AdminPostSummaryDto;
 import com.indiepost.dto.post.PostSearch;
+import com.indiepost.enums.Types;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.*;
+import com.indiepost.model.analytics.QPageview;
+import com.indiepost.model.legacy.QLegacyPost;
+import com.indiepost.model.legacy.QLegacyPostContent;
 import com.indiepost.repository.utils.CriteriaUtils;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
@@ -17,6 +21,9 @@ import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.indiepost.enums.Types.isPublicStatus;
+import static com.indiepost.model.QPost.post;
 
 /**
  * Created by jake on 17. 1. 11.
@@ -41,11 +48,6 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     }
 
     @Override
-    public Post merge(Post post) {
-        return entityManager.merge(post);
-    }
-
-    @Override
     public void delete(Post post) {
         entityManager.remove(post);
     }
@@ -57,13 +59,69 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     }
 
     @Override
+    public void bulkDeleteByUserAndStatus(User currentUser, PostStatus status) {
+        if (isPublicStatus(status)) {
+            // Directly bulk delete public status post is prohibited. PUBLIC -> TRASH -> DELETED -> gone
+            return;
+        }
+
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(post.status.eq(status));
+        Types.UserRole highestRole = currentUser.getHighestRole();
+
+        if (!highestRole.equals(Types.UserRole.Administrator)) {
+            builder.and(post.modifiedUserId.eq(currentUser.getId()));
+        }
+
+        JPAQueryFactory queryFactory = getQueryFactory();
+        List<Long> postIds = queryFactory
+                .select(post.id)
+                .where(builder)
+                .fetch();
+
+        if (postIds == null || postIds.isEmpty()) {
+            // if no matched posts, do nothing
+            return;
+        }
+        QPageview pageview = QPageview.pageview;
+
+        // if statistics data exist, set ref key to null
+        queryFactory
+                .update(pageview)
+                .where(pageview.postId.in(postIds))
+                .setNull(pageview.postId)
+                .execute();
+
+        List<Long> legacyPostIds = queryFactory.select(post.legacyPostId).where(builder).fetch();
+        QLegacyPost legacyPost = QLegacyPost.legacyPost;
+        QLegacyPostContent legacyPostContent = QLegacyPostContent.legacyPostContent;
+
+        queryFactory.delete(legacyPostContent).where(legacyPostContent.legacyPost.no.in(legacyPostIds)).execute();
+        queryFactory.delete(legacyPost).where(legacyPost.no.in(legacyPostIds)).execute();
+
+        QCachedPostStat cachedPostStat = QCachedPostStat.cachedPostStat;
+        QLegacyStats legacyStats = QLegacyStats.legacyStats;
+        QPostTag postTag = QPostTag.postTag;
+        QPostContributor postContributor = QPostContributor.postContributor;
+        QBookmark bookmark = QBookmark.bookmark;
+
+        queryFactory.delete(cachedPostStat).where(cachedPostStat.post.id.in(postIds)).execute();
+        queryFactory.delete(legacyStats).where(legacyStats.post.id.in(postIds)).execute();
+        queryFactory.delete(postTag).where(postTag.post.id.in(postIds)).execute();
+        queryFactory.delete(postContributor).where(postContributor.post.id.in(postIds)).execute();
+        queryFactory.delete(bookmark).where(bookmark.post.id.in(postIds)).execute();
+
+        // delete posts finally!
+        queryFactory.delete(post).where(post.id.in(postIds)).execute();
+    }
+
+    @Override
     public List<AdminPostSummaryDto> find(User currentUser, Pageable pageable) {
         return this.find(currentUser, null, pageable);
     }
 
     @Override
     public List<AdminPostSummaryDto> find(User currentUser, PostSearch search, Pageable pageable) {
-        QPost post = QPost.post;
         JPAQuery query = getQueryFactory().from(post);
 
         addProjections(query)
@@ -82,7 +140,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
                 break;
             case EditorInChief:
             case Editor:
-                builder.or(post.creatorId.eq(userId))
+                builder.or(post.modifiedUserId.eq(userId))
                         .or(post.status.eq(PostStatus.PUBLISH))
                         .or(post.status.eq(PostStatus.FUTURE))
                         .or(post.status.eq(PostStatus.PENDING));
@@ -100,7 +158,6 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
     @Override
     public List<String> findAllDisplayNames() {
-        QPost post = QPost.post;
         return getQueryFactory()
                 .from(post)
                 .select(post.bylineName)
@@ -112,13 +169,13 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     @Override
     public Long count() {
         return getQueryFactory()
-                .selectFrom(QPost.post)
+                .selectFrom(post)
                 .fetchCount();
     }
 
     @Override
     public Long count(PostSearch search) {
-        JPAQuery query = getQueryFactory().selectFrom(QPost.post);
+        JPAQuery query = getQueryFactory().selectFrom(post);
         BooleanBuilder builder = CriteriaUtils.addSearchConjunction(search, new BooleanBuilder());
         query.where(builder);
         return query.fetchCount();
@@ -126,7 +183,6 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
     @Override
     public List<Post> findScheduledToBePublished() {
-        QPost post = QPost.post;
         return getQueryFactory()
                 .selectFrom(post)
                 .where(post.status.eq(PostStatus.FUTURE), post.publishedAt.before(LocalDateTime.now()))
@@ -135,7 +191,6 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
     @Override
     public List<Post> findScheduledToBeIndexed(LocalDateTime indicesLastUpdated) {
-        QPost post = QPost.post;
         return getQueryFactory()
                 .selectFrom(post)
                 .where(post.status.eq(PostStatus.PUBLISH), post.modifiedAt.after(indicesLastUpdated))
@@ -145,7 +200,6 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
     @Override
     public void disableSplashPosts() {
-        QPost post = QPost.post;
         getQueryFactory()
                 .update(post)
                 .set(post.splash, false)
@@ -155,7 +209,6 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
     @Override
     public void disableFeaturedPosts() {
-        QPost post = QPost.post;
         getQueryFactory()
                 .update(post)
                 .set(post.featured, false)
@@ -168,33 +221,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
         entityManager.flush();
     }
 
-    @Override
-    public void detach(Post post) {
-        entityManager.detach(post);
-    }
-
-    @Override
-    public void emptyTrash(User currentUser) {
-        QPost post = QPost.post;
-        getQueryFactory()
-                .delete(post)
-                .where(post.status.eq(PostStatus.TRASH).and(
-                        post.modifiedUserId.eq(currentUser.getId())))
-                .execute();
-    }
-
-    @Override
-    public void discardAutosave(User currentUser) {
-        QPost post = QPost.post;
-        getQueryFactory()
-                .delete(post)
-                .where(post.status.eq(PostStatus.AUTOSAVE).and(
-                        post.modifiedUserId.eq(currentUser.getId())))
-                .execute();
-    }
-
     private JPAQuery addProjections(JPAQuery query) {
-        QPost post = QPost.post;
         return query.select(
                 post.id, post.title, post.bylineName, post.splash, post.featured, post.picked,
                 post.category.name, post.creator.displayName, post.modifiedUser.displayName,
@@ -203,7 +230,6 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     }
 
     private List<AdminPostSummaryDto> toDtoList(List<Tuple> result) {
-        QPost post = QPost.post;
         List<AdminPostSummaryDto> dtoList = new ArrayList<>();
         for (Tuple row : result) {
             AdminPostSummaryDto dto = new AdminPostSummaryDto();

@@ -7,6 +7,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 public interface Types {
 
+    static boolean isPublicStatus(PostStatus status) {
+        return status.equals(PostStatus.PUBLISH)
+                || status.equals(PostStatus.FUTURE)
+                || status.equals(PostStatus.PENDING);
+    }
+
     enum ImageSize {
         THUMBNAIL, SMALL, OPTIMIZED, LARGE, ORIGINAL
     }
@@ -34,7 +40,7 @@ public interface Types {
     }
 
     enum StatType {
-        ACTION, POST, PAGE, HOME, SEARCH, TAG, CATEGORY, NOTICE
+        ACTION, POST, PAGE, HOME, SEARCH, TAG, CATEGORY, NOTICE, DELETED_POST
     }
 
     enum ActionType {

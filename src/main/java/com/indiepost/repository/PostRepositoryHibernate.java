@@ -112,18 +112,55 @@ public class PostRepositoryHibernate implements PostRepository {
 
     @Override
     public List<PostSummaryDto> findByTagName(String tagName, Pageable pageable) {
+//        QPostTag postTag = QPostTag.postTag;
+//
+//        JPAQuery query = getQueryFactory()
+//                .select(
+//                        postTag.post.id,
+//                        postTag.post.legacyPostId,
+//                        postTag.post.category.slug,
+//                        postTag.post.splash,
+//                        postTag.post.picked,
+//                        postTag.post.featured,
+//                        postTag.post.bylineName,
+//                        postTag.post.title,
+//                        postTag.post.publishedAt,
+//                        postTag.post.excerpt,
+//                        postTag.post.titleImage,
+//                        postTag.post.bookmarkCount
+//                )
+//                .from(postTag)
+//                .innerJoin(postTag.post, post)
+//                .innerJoin(postTag.post.category, QCategory.category)
+//                .leftJoin(postTag.post.titleImage, QImageSet.imageSet)
+//                .where(
+//                        postTag.tag.name.eq(tagName),
+//                        postTag.post.status.eq(PostStatus.PUBLISH)
+//                )
+//                .orderBy(postTag.post.publishedAt.desc())
+//                .distinct();
+//
+//        List<Tuple> result = query.fetch();
+//        if (result == null) {
+//            return new ArrayList<>();
+//        }
+
+//        return toDtoList(query.fetch());
         QPostTag postTag = QPostTag.postTag;
-        JPAQuery query = getQueryFactory().from(post);
-        addProjections(query)
-                .innerJoin(post.category, QCategory.category)
-                .innerJoin(post.postTags, postTag)
+
+        List<Long> ids = getQueryFactory()
+                .select(postTag.post.id)
+                .from(postTag)
                 .innerJoin(postTag.tag, QTag.tag)
-                .leftJoin(post.titleImage, QImageSet.imageSet)
-                .where(postTag.tag.name.eq(tagName), post.status.eq(PostStatus.PUBLISH))
-                .orderBy(post.publishedAt.desc())
-                .distinct();
-        List<Tuple> result = query.fetch();
-        return toDtoList(result);
+                .innerJoin(postTag.post, QPost.post)
+                .where(postTag.tag.name.eq(tagName), postTag.post.status.eq(PostStatus.PUBLISH))
+                .orderBy(postTag.post.publishedAt.desc()).fetch();
+
+        if (ids == null) {
+            return new ArrayList<>();
+        }
+
+        return findByIds(ids);
     }
 
     @Override
@@ -164,6 +201,15 @@ public class PostRepositoryHibernate implements PostRepository {
                 .limit(pageable.getPageSize()).distinct();
         List<Tuple> result = query.fetch();
         return toDtoList(result);
+    }
+
+    @Override
+    public PostStatus getStatusById(Long postId) {
+        return getQueryFactory()
+                .select(post.status)
+                .from(post)
+                .where(post.id.eq(postId))
+                .fetchOne();
     }
 
     private JPAQuery addProjections(JPAQuery query) {

@@ -4,6 +4,7 @@ import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
 import com.indiepost.dto.post.AdminPostSummaryDto;
 import com.indiepost.dto.post.PostSearch;
+import com.indiepost.enums.Types;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +36,5 @@ public interface AdminPostService {
 
     List<String> findAllBylineNames();
 
-    void emptyTrash();
-
-    void discardAutosave();
+    void bulkDeleteByStatus(Types.PostStatus status);
 }

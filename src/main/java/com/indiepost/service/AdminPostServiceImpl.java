@@ -1,5 +1,6 @@
 package com.indiepost.service;
 
+import com.amazonaws.services.pinpoint.model.BadRequestException;
 import com.indiepost.dto.ImageSetDto;
 import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
@@ -21,10 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.indiepost.enums.Types.isPublicStatus;
 import static com.indiepost.mapper.PostMapper.*;
 
 /**
@@ -33,10 +34,6 @@ import static com.indiepost.mapper.PostMapper.*;
 @Service
 @Transactional
 public class AdminPostServiceImpl implements AdminPostService {
-
-    private static final List<PostStatus> PUBLIC_STATUS = Arrays.asList(
-            PostStatus.PUBLISH, PostStatus.FUTURE, PostStatus.PENDING
-    );
 
     private final UserService userService;
 
@@ -201,22 +198,13 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
-    public void emptyTrash() {
-        // TODO
+    public void bulkDeleteByStatus(PostStatus status) {
         User currentUser = userService.findCurrentUser();
-        PostSearch search = new PostSearch();
-        search.setStatus(PostStatus.TRASH);
-        List<AdminPostSummaryDto> posts = adminPostRepository.find(currentUser, search, new PageRequest(0, 1000000));
-        for (AdminPostSummaryDto post : posts) {
-            adminPostRepository.deleteById(post.getId());
+        if (isPublicStatus(status)) {
+            throw new BadRequestException(
+                    "It's prohibited directly bulk delete public status posts(PUBLIC|FUTURE|PENDING).");
         }
-    }
-
-    @Override
-    public void discardAutosave() {
-        // TODO
-        User currentUser = userService.findCurrentUser();
-        adminPostRepository.discardAutosave(currentUser);
+        adminPostRepository.bulkDeleteByUserAndStatus(currentUser, status);
     }
 
     private Pageable getPageable(int page, int maxResults, boolean isDesc) {
@@ -269,9 +257,5 @@ public class AdminPostServiceImpl implements AdminPostService {
             responseDto.setContributorIds(contributorIds);
         }
         return responseDto;
-    }
-
-    private boolean isPublicStatus(PostStatus status) {
-        return PUBLIC_STATUS.contains(status);
     }
 }

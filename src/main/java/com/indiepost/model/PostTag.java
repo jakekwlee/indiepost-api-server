@@ -18,9 +18,15 @@ public class PostTag implements Serializable {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    @JoinColumn(name = "post_id", updatable = false, insertable = false)
+    private Long postId;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "tag_id")
     private Tag tag;
+
+    @JoinColumn(name = "tag_id", updatable = false, insertable = false)
+    private Long tagId;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -32,6 +38,22 @@ public class PostTag implements Serializable {
         this.post = post;
         this.tag = tag;
         this.createdAt = createdAt;
+    }
+
+    public Long getPostId() {
+        return postId;
+    }
+
+    public void setPostId(Long postId) {
+        this.postId = postId;
+    }
+
+    public Long getTagId() {
+        return tagId;
+    }
+
+    public void setTagId(Long tagId) {
+        this.tagId = tagId;
     }
 
     public Post getPost() {

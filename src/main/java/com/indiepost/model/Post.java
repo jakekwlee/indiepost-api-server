@@ -59,7 +59,7 @@ public class Post implements Serializable {
     private String content = "";
 
     @Column(nullable = false)
-    @Size(max = 300)
+    @Size(max = 400)
     private String excerpt = "";
 
     @Column(nullable = false)

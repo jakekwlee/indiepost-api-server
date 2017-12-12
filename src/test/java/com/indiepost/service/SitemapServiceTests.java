@@ -10,7 +10,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import javax.inject.Inject;
 import java.net.MalformedURLException;
 
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 /**
  * Created by jake on 17. 3. 21.
@@ -27,7 +27,7 @@ public class SitemapServiceTests {
     @Test
     public void sitemapShouldCreateCorrectly() throws MalformedURLException {
         String sitemap = sitemapService.buildSitemap();
-        assertTrue("Sitemap should create correctly", sitemap.length() > 120000);
+        assertThat(sitemap).isNotEmpty();
         System.out.println(sitemap);
     }
 }

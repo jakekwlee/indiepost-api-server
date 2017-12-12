@@ -1,5 +1,6 @@
 package com.indiepost.utils;
 
+import com.indiepost.dto.analytics.TimeDomainDoubleStat;
 import com.indiepost.dto.analytics.TimeDomainStat;
 
 import java.time.*;
@@ -54,6 +55,48 @@ public class DateUtil {
     public static Date newDate(int year, int month, int day, int hour, int minute, int second) {
         LocalDateTime localDateTime = LocalDateTime.of(year, month, day, hour, minute, second);
         return localDateTimeToDate(localDateTime);
+    }
+
+    public static List<TimeDomainDoubleStat> normalizeTimeDomainDoubleStats(List<TimeDomainDoubleStat> list, LocalDate startDate, LocalDate endDate) {
+        if (startDate.getYear() != endDate.getYear() || startDate.getMonthValue() != endDate.getMonthValue()) {
+            return list;
+        }
+        LocalDateTime since = startDate.atStartOfDay();
+        LocalDateTime until = endDate.atTime(23, 59, 59);
+        Duration duration = Duration.between(since, until);
+        long hours = duration.toHours();
+        if (hours > 48 || hours == list.size()) {
+            return list;
+        }
+
+        int expectedHours = 24;
+        if (!startDate.isEqual(endDate)) {
+            expectedHours = 48;
+        }
+
+        int year = startDate.getYear();
+        Month month = startDate.getMonth();
+        int day = startDate.getDayOfMonth();
+        LocalDate localDate = LocalDate.of(year, month, day);
+
+        List<TimeDomainDoubleStat> results = new ArrayList<>();
+        for (long h = 0; h < expectedHours; ++h) {
+            LocalDateTime ldt = localDate.atStartOfDay().plusHours(h);
+            TimeDomainDoubleStat doubleStat = new TimeDomainDoubleStat(ldt, 0L, 0L);
+            results.add(doubleStat);
+        }
+
+        for (TimeDomainDoubleStat stat : list) {
+            LocalDateTime statDateTime = stat.getDateTime();
+            LocalDate statDate = statDateTime.toLocalDate();
+            int h = statDateTime.getHour();
+            if (!statDate.isEqual(localDate)) {
+                h = statDateTime.getHour() + 24;
+            }
+            results.get(h).setValue1(stat.getValue1());
+            results.get(h).setValue2(stat.getValue2());
+        }
+        return results;
     }
 
     public static List<TimeDomainStat> normalizeTimeDomainStats(List<TimeDomainStat> list, LocalDate startDate, LocalDate endDate) {

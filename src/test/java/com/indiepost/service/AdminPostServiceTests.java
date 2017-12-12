@@ -73,7 +73,7 @@ public class AdminPostServiceTests {
     @Test
     @WithMockUser("indiepost")
     public void retrievedPostShouldContainListOfContributorIds() {
-        AdminPostResponseDto responseDto = adminPostService.findOne(4557L);
+        AdminPostResponseDto responseDto = adminPostService.findOne(1679L);
         List<Long> expectedContributorIds = Arrays.asList(1L, 2L);
         assertThat(responseDto.getContributorIds())
                 .isEqualTo(expectedContributorIds);
@@ -82,7 +82,7 @@ public class AdminPostServiceTests {
     @Test
     @WithMockUser(username = "indiepost")
     public void findOneShouldReturnAnAdminPostResponseDtoProperly() {
-        AdminPostResponseDto responseDto = adminPostService.findOne(4557L);
+        AdminPostResponseDto responseDto = adminPostService.findOne(5891L);
         printToJson(responseDto);
         assertThat(responseDto)
                 .isNotNull();
@@ -290,15 +290,14 @@ public class AdminPostServiceTests {
     }
 
     @Test
-    @WithMockUser(username = "indiepost")
+    @WithMockUser(username = "eunjechoi")
     public void emptyTrashShouldDeleteAllThePostsInTrash() {
-        adminPostService.emptyTrash();
+        adminPostService.bulkDeleteByStatus(PostStatus.TRASH);
         List<AdminPostSummaryDto> posts = adminPostService.find(0, 1000, true);
         for (AdminPostSummaryDto post : posts) {
             assertThat(post.getStatus())
                     .isNotEqualToIgnoringCase(PostStatus.TRASH.toString());
         }
-
     }
 
     @After

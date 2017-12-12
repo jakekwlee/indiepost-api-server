@@ -2,6 +2,7 @@ package com.indiepost.repository;
 
 import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.post.PostSummaryDto;
+import com.indiepost.enums.Types;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,11 +28,18 @@ public class PostRepositoryTest {
 
     @Test
     public void findByIdsShouldReturnPostsInRequestedOrder() {
-        List<Long> postIds = Arrays.asList(220L, 3424L, 864L, 86L, 53L);
+        List<Long> postIds = Arrays.asList(5891L, 1679L, 5897L, 5303L, 5929L);
         List<PostSummaryDto> posts = repository.findByIds(postIds);
         List<Long> resultIds = posts.stream()
                 .map(p -> p.getId())
                 .collect(Collectors.toList());
         assertThat(postIds).isEqualTo(resultIds);
+    }
+
+    @Test
+    public void getStatusByIdShouldReturnPostStatusCorrectly() {
+        Long postId = 5929L;
+        Types.PostStatus status = repository.getStatusById(postId);
+        assertThat(status).isEqualTo(Types.PostStatus.PUBLISH);
     }
 }

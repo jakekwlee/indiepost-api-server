@@ -38,4 +38,6 @@ public interface PostRepository {
     List<Post> search(String text, Pageable pageable);
 
     List<PostSummaryDto> search(PostSearch search, Pageable pageable);
+
+    PostStatus getStatusById(Long postId);
 }

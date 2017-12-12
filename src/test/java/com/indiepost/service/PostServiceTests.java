@@ -13,6 +13,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import javax.inject.Inject;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static testHelper.JsonSerializer.printToJson;
 
 /**
@@ -60,8 +61,8 @@ public class PostServiceTests {
 
     @Test
     public void testFindByTagName() {
-        List<PostSummaryDto> dtoList = postService.findByTagName("일러스트레이터", 0, 50, true);
-        Assert.assertEquals("Size of List<PostSummaryDto< should be 18", 18, dtoList.size());
+        List<PostSummaryDto> dtoList = postService.findByTagName("일러스트", 0, 50, true);
+        assertThat(dtoList.size()).isEqualTo(4);
         printToJson(dtoList);
     }
 }

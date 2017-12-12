@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.web.util.HtmlUtils;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -60,6 +61,7 @@ public class LegacyPost implements Serializable {
 
     private String imageurl;
 
+    @Size(max = 400)
     private String contenttext;
 
     private Long isdisplay;

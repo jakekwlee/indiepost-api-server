@@ -138,15 +138,14 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<PostSummaryDto> findTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit) {
         List<PostStatDto> topStats = statRepository.getPostStatsOrderByPageviews(since, until, limit);
+        if (topStats == null || topStats.isEmpty()) {
+            return new ArrayList<>();
+        }
         List<Long> topPostIds = topStats.stream()
                 .map(postStat -> postStat.getId())
                 .collect(Collectors.toList());
 
-        List<PostSummaryDto> topRatedPosts = postRepository.findByIds(topPostIds);
-        if (topRatedPosts == null) {
-            return new ArrayList<>();
-        }
-        return topRatedPosts;
+        return postRepository.findByIds(topPostIds);
     }
 
     @Override

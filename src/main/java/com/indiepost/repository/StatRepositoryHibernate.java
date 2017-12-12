@@ -29,8 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.indiepost.repository.utils.CriteriaUtils.*;
-import static com.indiepost.utils.DateUtil.localDateTimeToDate;
-import static com.indiepost.utils.DateUtil.normalizeTimeDomainStats;
+import static com.indiepost.utils.DateUtil.*;
 
 /**
  * Created by jake on 8/9/17.
@@ -328,7 +327,8 @@ public class StatRepositoryHibernate implements StatRepository {
 
     private List<TimeDomainDoubleStat> getOldAndNewPageviewTrendHourly(LocalDateTime since, LocalDateTime until) {
         Query query = getNamedQuery("@GET_OLD_AND_NEW_PAGEVIEW_TREND_HOURLY");
-        return getDoubleTrend(query, TimeDomainDuration.HOURLY, since, until);
+        List<TimeDomainDoubleStat> doubleStats = getDoubleTrend(query, TimeDomainDuration.HOURLY, since, until);
+        return normalizeTimeDomainDoubleStats(doubleStats, since.toLocalDate(), until.toLocalDate());
     }
 
     private List<TimeDomainDoubleStat> getOldAndNewPageviewTrendDaily(LocalDateTime since, LocalDateTime until) {

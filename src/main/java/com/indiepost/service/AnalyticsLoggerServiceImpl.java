@@ -2,6 +2,7 @@ package com.indiepost.service;
 
 import com.indiepost.dto.analytics.ActionDto;
 import com.indiepost.dto.analytics.PageviewDto;
+import com.indiepost.enums.Types;
 import com.indiepost.enums.Types.Channel;
 import com.indiepost.enums.Types.ClientType;
 import com.indiepost.model.analytics.*;
@@ -65,6 +66,15 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
 
     @Override
     public void logPageview(HttpServletRequest req, HttpServletResponse res, PageviewDto pageviewDto) throws IOException {
+        Long postId = pageviewDto.getPostId();
+        if (postId != null) {
+            Types.PostStatus status = postRepository.getStatusById(postId);
+            if (!status.equals(Types.PostStatus.PUBLISH)) {
+                logger.info("User is viewing an unpublished post, skip DB insert: {}",
+                        pageviewDto.getPath());
+            }
+        }
+
         Long visitorId = getVisitorId(req, pageviewDto.getUserId());
         Pageview pageview = new Pageview();
 
@@ -89,11 +99,11 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
         pageview.setVisitorId(visitorId);
         pageview.setPath(pageviewDto.getPath());
         if (pageviewDto.getPostId() != null) {
-            if (!pageviewDto.getAppName().contains("LEGACY")) {
-                pageview.setPostId(pageviewDto.getPostId());
-            } else {
+            if (pageviewDto.getAppName().contains("LEGACY")) {
                 Long id = postRepository.findIdByLegacyId(pageviewDto.getPostId());
                 pageview.setPostId(id);
+            } else {
+                pageview.setPostId(pageviewDto.getPostId());
             }
         }
         pageview.setTimestamp(LocalDateTime.now());

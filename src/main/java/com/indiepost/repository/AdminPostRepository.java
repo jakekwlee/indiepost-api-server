@@ -2,6 +2,7 @@ package com.indiepost.repository;
 
 import com.indiepost.dto.post.AdminPostSummaryDto;
 import com.indiepost.dto.post.PostSearch;
+import com.indiepost.enums.Types;
 import com.indiepost.model.Post;
 import com.indiepost.model.User;
 import org.springframework.data.domain.Pageable;
@@ -18,11 +19,11 @@ public interface AdminPostRepository {
 
     Post findOne(Long id);
 
-    Post merge(Post post);
-
     void delete(Post post);
 
     void deleteById(Long id);
+
+    void bulkDeleteByUserAndStatus(User currentUser, Types.PostStatus postStatus);
 
     List<AdminPostSummaryDto> find(User currentUser, Pageable pageable);
 
@@ -43,10 +44,4 @@ public interface AdminPostRepository {
     void disableFeaturedPosts();
 
     void flush();
-
-    void detach(Post post);
-
-    void emptyTrash(User currentUser);
-
-    void discardAutosave(User currentUser);
 }

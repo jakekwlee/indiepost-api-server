@@ -2,7 +2,6 @@ package com.indiepost.service;
 
 import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.TagDto;
-import com.indiepost.model.Tag;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,15 +47,15 @@ public class TagServiceTests {
     @Test
     public void saveTagWorksCorrectly() {
         String tagName = StringUtils.randomAlphanumeric(10);
-        Tag tag = new Tag(tagName);
+        TagDto tagIn = new TagDto(tagName);
 
-        TagDto tagDto = tagService.save(tag);
-        printToJson(tagDto);
-        insertedIds.add(tagDto.getId());
+        TagDto tagOut = tagService.save(tagIn);
+        printToJson(tagOut);
+        insertedIds.add(tagOut.getId());
 
-        assertThat(tagDto).isNotNull();
-        assertThat(tagDto.getId()).isNotNull();
-        assertThat(tagDto.getName()).isEqualTo(tagName);
+        assertThat(tagOut).isNotNull();
+        assertThat(tagOut.getId()).isNotNull();
+        assertThat(tagOut.getName()).isEqualTo(tagName);
     }
 
     @After

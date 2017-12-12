@@ -159,7 +159,7 @@ public class StatRepositoryTests {
 
     @Test
     public void testRetrieveYearlyTotalPageview() throws JsonProcessingException {
-        Long expected = 306747L;
+        Long expected = 7475L;
         PeriodDto dto = getYearlyPeriod();
         Long result = testRetrieveTotals(dto);
         Assert.assertEquals(expected, result);
@@ -167,7 +167,7 @@ public class StatRepositoryTests {
 
     @Test
     public void testRetrieveMonthlyTotalPageview() throws JsonProcessingException {
-        Long expected = 234267L;
+        Long expected = 5862L;
         PeriodDto dto = getMonthlyPeriod();
         Long result = testRetrieveTotals(dto);
         Assert.assertEquals(expected, result);
@@ -175,7 +175,7 @@ public class StatRepositoryTests {
 
     @Test
     public void testRetrieveDailyTotalPageview() throws JsonProcessingException {
-        Long expected = 13405L;
+        Long expected = 417L;
         PeriodDto dto = getDailyPeriod();
         Long result = testRetrieveTotals(dto);
         Assert.assertEquals(expected, result);
@@ -183,7 +183,7 @@ public class StatRepositoryTests {
 
     @Test
     public void testRetrieveOneDayTotalPageview() throws JsonProcessingException {
-        Long expected = 2184L;
+        Long expected = 80L;
         PeriodDto dto = getOneDayPeriod();
         Long result = testRetrieveTotals(dto);
         Assert.assertEquals(expected, result);
