@@ -30,4 +30,18 @@ public class PostScheduledTaskServiceTests {
         log.info("Running time: " + (end - start) * Math.pow(10, 9));
     }
 
+    @Test
+    public void updateElasticsearchIndicesUpdatesIndicesProperly() {
+        long start = System.nanoTime();
+//        postScheduledTaskService.rebuildElasticsearchIndices();
+        long end = System.nanoTime();
+        log.info("Running time: " + (end - start) * Math.pow(10, 9));
+
+    }
+
+    @Test
+    public void searchWorksCorrectly() {
+//        List<PostEs> posts = postEsService.search("일상 무지갯빛", Types.PostStatus.PUBLISH, 0, 10);
+    }
+
 }

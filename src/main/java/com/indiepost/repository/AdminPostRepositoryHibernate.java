@@ -4,7 +4,8 @@ import com.indiepost.dto.post.AdminPostSummaryDto;
 import com.indiepost.dto.post.PostSearch;
 import com.indiepost.enums.Types;
 import com.indiepost.enums.Types.PostStatus;
-import com.indiepost.model.*;
+import com.indiepost.model.Post;
+import com.indiepost.model.User;
 import com.indiepost.model.analytics.QPageview;
 import com.indiepost.model.legacy.QLegacyPost;
 import com.indiepost.model.legacy.QLegacyPostContent;
@@ -64,7 +65,6 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
             // Directly bulk delete public status post is prohibited. PUBLIC -> TRASH -> DELETED -> gone
             return;
         }
-
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(post.status.eq(status));
         Types.UserRole highestRole = currentUser.getHighestRole();
@@ -76,6 +76,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
         JPAQueryFactory queryFactory = getQueryFactory();
         List<Long> postIds = queryFactory
                 .select(post.id)
+                .from(post)
                 .where(builder)
                 .fetch();
 
@@ -92,12 +93,8 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
                 .setNull(pageview.postId)
                 .execute();
 
-        List<Long> legacyPostIds = queryFactory.select(post.legacyPostId).where(builder).fetch();
-        QLegacyPost legacyPost = QLegacyPost.legacyPost;
-        QLegacyPostContent legacyPostContent = QLegacyPostContent.legacyPostContent;
-
-        queryFactory.delete(legacyPostContent).where(legacyPostContent.legacyPost.no.in(legacyPostIds)).execute();
-        queryFactory.delete(legacyPost).where(legacyPost.no.in(legacyPostIds)).execute();
+        builder.and(post.legacyPostId.isNotNull());
+        List<Long> legacyPostIds = queryFactory.select(post.legacyPostId).from(post).where(builder).fetch();
 
         QCachedPostStat cachedPostStat = QCachedPostStat.cachedPostStat;
         QLegacyStats legacyStats = QLegacyStats.legacyStats;
@@ -113,6 +110,13 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
         // delete posts finally!
         queryFactory.delete(post).where(post.id.in(postIds)).execute();
+
+        if (legacyPostIds != null && !legacyPostIds.isEmpty()) {
+            QLegacyPost legacyPost = QLegacyPost.legacyPost;
+            QLegacyPostContent legacyPostContent = QLegacyPostContent.legacyPostContent;
+            queryFactory.delete(legacyPostContent).where(legacyPostContent.legacyPost.no.in(legacyPostIds)).execute();
+            queryFactory.delete(legacyPost).where(legacyPost.no.in(legacyPostIds)).execute();
+        }
     }
 
     @Override
@@ -230,6 +234,9 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     }
 
     private List<AdminPostSummaryDto> toDtoList(List<Tuple> result) {
+        if (result == null) {
+            return new ArrayList<>();
+        }
         List<AdminPostSummaryDto> dtoList = new ArrayList<>();
         for (Tuple row : result) {
             AdminPostSummaryDto dto = new AdminPostSummaryDto();

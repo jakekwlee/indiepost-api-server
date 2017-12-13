@@ -1,37 +1,27 @@
 package com.indiepost.model.elasticsearch;
 
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-
-import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.List;
 
-@Document(indexName = "post")
 public class PostEs implements Serializable {
 
     private static final long serialVersionUID = 6587432935142567307L;
 
-    @Id
     private Long id;
 
-    @Field(analyzer = "korean_index", searchAnalyzer = "korean_query", store = true)
     private String title;
 
-    @Field(analyzer = "korean_index", searchAnalyzer = "korean_query", store = true)
     private String excerpt;
 
-    @Field(analyzer = "korean_index", searchAnalyzer = "korean_query", store = true)
     private String content;
 
-    @Field(store = true)
     private String bylineName;
 
-    @Field(analyzer = "korean_index", searchAnalyzer = "korean_query", store = true)
     private List<String> contributors;
 
-    @Field(analyzer = "korean_index", searchAnalyzer = "korean_query", store = true)
     private List<String> tags;
+
+    private String status;
 
     public Long getId() {
         return id;
@@ -87,5 +77,13 @@ public class PostEs implements Serializable {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

@@ -1,6 +1,5 @@
 package com.indiepost.repository;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.analytics.*;
 import com.indiepost.enums.Types.ClientType;
@@ -36,7 +35,7 @@ public class StatRepositoryTests {
     @Test
     public void testGetAllPostStatsFromCache() {
         List<PostStatDto> dtoList = statRepository.getAllPostStatsFromCache();
-        assertThat(dtoList).isNotNull().size().isBetween(100, 100000);
+        assertThat(dtoList).isNotNull();
         printToJson(dtoList);
         for (PostStatDto dto : dtoList) {
             assertThat(dto.getId()).isNotNull();
@@ -52,7 +51,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testRetrieveYearlyPageviewTrend() throws JsonProcessingException {
+    public void testRetrieveYearlyPageviewTrend() {
         PeriodDto dto = getYearlyPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
@@ -62,7 +61,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testRetrieveMonthlyPageviewTrend() throws JsonProcessingException {
+    public void testRetrieveMonthlyPageviewTrend() {
         PeriodDto dto = getMonthlyPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
@@ -72,7 +71,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testRetrieveDailyPageviewTrend() throws JsonProcessingException {
+    public void testRetrieveDailyPageviewTrend() {
         PeriodDto dto = getDailyPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
@@ -83,7 +82,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testRetrieveOneDayPageviewTrend() throws JsonProcessingException {
+    public void testRetrieveOneDayPageviewTrend() {
         PeriodDto dto = getOneDayPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
@@ -94,7 +93,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testRetrieveYearlyOldAndNewPageviewTrend() throws JsonProcessingException {
+    public void testRetrieveYearlyOldAndNewPageviewTrend() {
         PeriodDto dto = getYearlyPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
@@ -109,7 +108,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testRetrieveMonthlyOldAndNewPageviewTrend() throws JsonProcessingException {
+    public void testRetrieveMonthlyOldAndNewPageviewTrend() {
         PeriodDto dto = getMonthlyPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
@@ -125,7 +124,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testRetrieveDailyOldAndNewPageviewTrend() throws JsonProcessingException {
+    public void testRetrieveDailyOldAndNewPageviewTrend() {
         PeriodDto dto = getDailyPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
@@ -142,7 +141,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testRetrieveOneDayOldAndNewPageviewTrend() throws JsonProcessingException {
+    public void testRetrieveOneDayOldAndNewPageviewTrend() {
         PeriodDto dto = getOneDayPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
@@ -158,7 +157,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testRetrieveYearlyTotalPageview() throws JsonProcessingException {
+    public void testRetrieveYearlyTotalPageview() {
         Long expected = 7475L;
         PeriodDto dto = getYearlyPeriod();
         Long result = testRetrieveTotals(dto);
@@ -166,7 +165,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testRetrieveMonthlyTotalPageview() throws JsonProcessingException {
+    public void testRetrieveMonthlyTotalPageview() {
         Long expected = 5862L;
         PeriodDto dto = getMonthlyPeriod();
         Long result = testRetrieveTotals(dto);
@@ -174,7 +173,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testRetrieveDailyTotalPageview() throws JsonProcessingException {
+    public void testRetrieveDailyTotalPageview() {
         Long expected = 417L;
         PeriodDto dto = getDailyPeriod();
         Long result = testRetrieveTotals(dto);
@@ -182,7 +181,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testRetrieveOneDayTotalPageview() throws JsonProcessingException {
+    public void testRetrieveOneDayTotalPageview() {
         Long expected = 80L;
         PeriodDto dto = getOneDayPeriod();
         Long result = testRetrieveTotals(dto);
@@ -190,7 +189,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testRetrieveTotalPostview() throws JsonProcessingException {
+    public void testRetrieveTotalPostview() {
         PeriodDto dto = getOneDayPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
@@ -202,7 +201,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testGetPageviewsByCategory() throws JsonProcessingException {
+    public void testGetPageviewsByCategory() {
         PeriodDto dto = getOneDayPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
@@ -212,7 +211,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testGetPageviewsByAuthor() throws JsonProcessingException {
+    public void testGetPageviewsByAuthor() {
         PeriodDto dto = getOneDayPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
@@ -222,7 +221,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testGetTopPagesWebapp() throws JsonProcessingException {
+    public void testGetTopPagesWebapp() {
         PeriodDto dto = getOneDayPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
@@ -232,7 +231,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testGetTopPagesMobile() throws JsonProcessingException {
+    public void testGetTopPagesMobile() {
         PeriodDto dto = getOneDayPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
@@ -242,7 +241,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testGetTopPostWebapp() throws JsonProcessingException {
+    public void testGetTopPostWebapp() {
         PeriodDto dto = getOneDayPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
@@ -252,7 +251,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testGetTopPostMobile() throws JsonProcessingException {
+    public void testGetTopPostMobile() {
         PeriodDto dto = getOneDayPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
@@ -262,7 +261,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testGetTopLadingPagesWebapp() throws JsonProcessingException {
+    public void testGetTopLadingPagesWebapp() {
         PeriodDto dto = getOneDayPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
@@ -272,7 +271,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testGetTopLadingPagesMobile() throws JsonProcessingException {
+    public void testGetTopLadingPagesMobile() {
         PeriodDto dto = getOneDayPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
@@ -292,7 +291,7 @@ public class StatRepositoryTests {
     }
 
     @Test
-    public void testGetTopTags() throws JsonProcessingException {
+    public void testGetTopTags() {
         PeriodDto dto = getOneDayPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);

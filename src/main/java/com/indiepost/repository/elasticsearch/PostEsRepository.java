@@ -1,10 +1,10 @@
 package com.indiepost.repository.elasticsearch;
 
 import com.indiepost.model.elasticsearch.PostEs;
-import org.springframework.data.elasticsearch.repository.ElasticsearchCrudRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Pageable;
 
-@Repository
-public interface PostEsRepository extends ElasticsearchCrudRepository<PostEs, Long> {
+import java.util.List;
 
+public interface PostEsRepository {
+    List<PostEs> search(String text, String status, Pageable pageable);
 }

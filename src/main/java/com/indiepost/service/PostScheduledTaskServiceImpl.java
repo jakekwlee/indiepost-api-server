@@ -61,9 +61,13 @@ public class PostScheduledTaskServiceImpl implements PostScheduledTaskService {
     }
 
     @Override
-    public void updateElasticsearchIndices() {
+    public void rebuildElasticsearchIndices() {
         LocalDateTime indicesLastUpdated = metadataRepository.findOne(1L)
                 .getSearchIndexLastUpdated();
+        if (indicesLastUpdated == null) {
+            indicesLastUpdated = LocalDateTime.MIN;
+        }
+//        postEsRepository.deleteAll();
         List<Post> posts = adminPostRepository.findScheduledToBeIndexed(indicesLastUpdated);
         if (posts.size() == 0) {
             return;
@@ -71,7 +75,7 @@ public class PostScheduledTaskServiceImpl implements PostScheduledTaskService {
         List<PostEs> postEsList = posts.stream()
                 .map(post -> toPostEs(post))
                 .collect(Collectors.toList());
-        postEsRepository.save(postEsList);
+//        postEsRepository.save(postEsList);
         log.info(String.format("%d posts are indexed", posts.size()));
     }
 
@@ -95,6 +99,7 @@ public class PostScheduledTaskServiceImpl implements PostScheduledTaskService {
         postEs.setTitle(post.getTitle());
         postEs.setBylineName(post.getBylineName());
         postEs.setExcerpt(post.getExcerpt());
+        postEs.setStatus(post.getStatus().toString());
 
         List<String> contributors = post.getContributors().stream()
                 .map(c -> c.getName())

@@ -33,7 +33,13 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
     private final AppConfig config;
 
     @Inject
-    public ServerSideRenderingServiceImpl(InitialDataService initialDataService, PostService postService, PageService pageService, RestTemplate restTemplate, AppConfig config) {
+    public ServerSideRenderingServiceImpl(
+            InitialDataService initialDataService,
+            PostService postService,
+            PageService pageService,
+            RestTemplate restTemplate,
+            AppConfig config
+    ) {
         this.initialDataService = initialDataService;
         this.postService = postService;
         this.pageService = pageService;
@@ -46,7 +52,6 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
         InitialData initialData = initialDataService.getInitialData(true);
         ServerSideRenderingRequest rsRequest =
                 new ServerSideRenderingRequest(initialData, servletPath);
-
         render(model, rsRequest);
     }
 
@@ -56,7 +61,7 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
         PostDto postDto = postService.findOne(postId);
         ServerSideRenderingRequest rsRequest =
                 new ServerSideRenderingRequest(initialData, postDto, servletPath);
-        this.render(model, rsRequest);
+        render(model, rsRequest);
     }
 
     @Override
@@ -65,7 +70,7 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
         PageDto pageDto = pageService.findBySlug(pageSlug);
         ServerSideRenderingRequest rsRequest =
                 new ServerSideRenderingRequest(initialData, pageDto, servletPath);
-        this.render(model, rsRequest);
+        render(model, rsRequest);
     }
 
     @Override
@@ -76,7 +81,7 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
         List<PostSummaryDto> posts = postService.search(query, 0, config.getFetchCount(), true);
         ServerSideRenderingRequest rsRequest =
                 new ServerSideRenderingRequest(initialData, posts, servletPath);
-        this.render(model, rsRequest);
+        render(model, rsRequest);
     }
 
     @Override
@@ -85,7 +90,7 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
         List<PostSummaryDto> posts = postService.findByTagName(tagName, 0, config.getFetchCount(), true);
         ServerSideRenderingRequest rsRequest =
                 new ServerSideRenderingRequest(initialData, posts, servletPath);
-        this.render(model, rsRequest);
+        render(model, rsRequest);
     }
 
     @Override
@@ -94,7 +99,7 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
         List<PostSummaryDto> posts = postService.search(keyword, 0, config.getFetchCount());
         ServerSideRenderingRequest rsRequest =
                 new ServerSideRenderingRequest(initialData, posts, servletPath);
-        this.render(model, rsRequest);
+        render(model, rsRequest);
     }
 
     private void render(Model model, ServerSideRenderingRequest requestDto) {

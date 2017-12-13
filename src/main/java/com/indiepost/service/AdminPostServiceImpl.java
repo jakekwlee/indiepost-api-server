@@ -11,9 +11,7 @@ import com.indiepost.model.*;
 import com.indiepost.model.legacy.LegacyPost;
 import com.indiepost.repository.AdminPostRepository;
 import com.indiepost.repository.ContributorRepository;
-import com.indiepost.repository.MetadataRepository;
 import com.indiepost.repository.TagRepository;
-import com.indiepost.repository.elasticsearch.PostEsRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -43,32 +41,21 @@ public class AdminPostServiceImpl implements AdminPostService {
 
     private final TagRepository tagRepository;
 
-    private final MetadataRepository metadataRepository;
-
-    private final PostEsRepository postEsRepository;
-
     @Inject
     public AdminPostServiceImpl(UserService userService,
                                 AdminPostRepository adminPostRepository,
                                 ContributorRepository contributorRepository,
-                                TagRepository tagRepository,
-                                MetadataRepository metadataRepository,
-                                PostEsRepository postEsRepository) {
+                                TagRepository tagRepository) {
         this.userService = userService;
         this.adminPostRepository = adminPostRepository;
         this.contributorRepository = contributorRepository;
         this.tagRepository = tagRepository;
-        this.metadataRepository = metadataRepository;
-        this.postEsRepository = postEsRepository;
     }
 
 
     @Override
     public AdminPostResponseDto findOne(Long id) {
         Post post = adminPostRepository.findOne(id);
-        if (post == null) {
-            return null;
-        }
         return toAdminPostResponseDto(post);
     }
 
@@ -89,6 +76,9 @@ public class AdminPostServiceImpl implements AdminPostService {
     @Override
     public AdminPostResponseDto createAutosave(Long postId) {
         Post originalPost = adminPostRepository.findOne(postId);
+        if (postId == null) {
+            throw new BadRequestException("No original post with id:" + postId);
+        }
         Post autosave = duplicate(originalPost);
         autosave.setOriginalId(postId);
         autosave.setStatus(PostStatus.AUTOSAVE);
@@ -214,6 +204,9 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     private AdminPostResponseDto toAdminPostResponseDto(Post post) {
+        if (post == null) {
+            return null;
+        }
         AdminPostResponseDto responseDto = new AdminPostResponseDto();
         responseDto.setId(post.getId());
         responseDto.setTitle(post.getTitle());

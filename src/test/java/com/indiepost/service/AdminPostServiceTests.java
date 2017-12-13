@@ -4,12 +4,10 @@ import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
 import com.indiepost.dto.post.AdminPostSummaryDto;
-import com.indiepost.dto.post.PostSearch;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Post;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +20,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,10 +51,11 @@ public class AdminPostServiceTests {
     @Test
     @WithMockUser("indiepost")
     public void retrievedPostShouldContainListOfTagIds() {
-        // Example Post: <꿈과 현실 사이 경계의 시학, 데이빗 린치의 세계>
-        AdminPostResponseDto responseDto = adminPostService.findOne(4557L);
+        // Example Post: <세 가지 연기와 사랑: 쥘리에트 비노슈의 연기상 수상작들>
+        AdminPostResponseDto responseDto = adminPostService.findOne(5789L);
         printToJson(responseDto);
-        List<Long> expectedTags = Arrays.asList(1198L, 1206L, 1544L, 2062L, 4032L);
+        List<Long> expectedTags = Arrays.asList(1660L, 4518L, 4519L, 4520L, 4521L, 4522L, 4523L);
+
         assertThat(responseDto.getTagIds())
                 .isEqualTo(expectedTags);
     }
@@ -65,7 +63,7 @@ public class AdminPostServiceTests {
     @Test
     @WithMockUser("indiepost")
     public void retrievedPostShouldContainProperTitleImage() {
-        AdminPostResponseDto responseDto = adminPostService.findOne(4557L);
+        AdminPostResponseDto responseDto = adminPostService.findOne(1945L);
         assertThat(responseDto.getTitleImage())
                 .isNotNull();
     }
@@ -73,7 +71,7 @@ public class AdminPostServiceTests {
     @Test
     @WithMockUser("indiepost")
     public void retrievedPostShouldContainListOfContributorIds() {
-        AdminPostResponseDto responseDto = adminPostService.findOne(1679L);
+        AdminPostResponseDto responseDto = adminPostService.findOne(5495L);
         List<Long> expectedContributorIds = Arrays.asList(1L, 2L);
         assertThat(responseDto.getContributorIds())
                 .isEqualTo(expectedContributorIds);
@@ -176,7 +174,7 @@ public class AdminPostServiceTests {
     @Test
     @WithMockUser(username = "eunjechoi")
     public void createAutosaveWithExistPostIdWorksProperly() {
-        Long originalPostId = 4557L;
+        Long originalPostId = 5791L;
         AdminPostResponseDto original = adminPostService.findOne(originalPostId);
         AdminPostResponseDto autosave = adminPostService.createAutosave(originalPostId);
         printToJson(autosave);
@@ -198,8 +196,8 @@ public class AdminPostServiceTests {
     @Test
     @WithMockUser(username = "eunjechoi")
     public void updateAutosaveToAutosaveOrDraft() {
-        Long autosaveId = 5402L;
-        AdminPostResponseDto autosave = adminPostService.findOne(autosaveId);
+        Long originalPostId = 5791L;
+        AdminPostResponseDto autosave = adminPostService.createAutosave(originalPostId);
         AdminPostRequestDto requestDto = new AdminPostRequestDto();
 
         // unchanged
@@ -290,25 +288,13 @@ public class AdminPostServiceTests {
     }
 
     @Test
-    @WithMockUser(username = "eunjechoi")
+    @WithMockUser(username = "indiepost")
     public void emptyTrashShouldDeleteAllThePostsInTrash() {
         adminPostService.bulkDeleteByStatus(PostStatus.TRASH);
         List<AdminPostSummaryDto> posts = adminPostService.find(0, 1000, true);
         for (AdminPostSummaryDto post : posts) {
             assertThat(post.getStatus())
                     .isNotEqualToIgnoringCase(PostStatus.TRASH.toString());
-        }
-    }
-
-    @After
-    public void deleteAllCreatedTestPosts() {
-        PostSearch search = new PostSearch();
-        search.setStatus(null);
-        search.setCreatedAfter(LocalDateTime.of(2017, 11, 21, 0, 0));
-        List<AdminPostSummaryDto> posts = adminPostService.search(search, 0, 1000, true);
-        for (AdminPostSummaryDto post : posts) {
-            adminPostService.deleteById(post.getId());
-            log.info("Test post deleted: " + post.getId());
         }
     }
 }

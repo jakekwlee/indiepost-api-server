@@ -4,7 +4,7 @@ public interface PostScheduledTaskService {
 
     void publishScheduledPosts();
 
-    void updateElasticsearchIndices();
+    void rebuildElasticsearchIndices();
 
     void updateCachedPostStats();
 }
