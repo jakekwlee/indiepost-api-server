@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.indiepost.utils.DomUtil.htmlToText;
+import static com.indiepost.mapper.PostMapper.toPostEs;
 
 @Service
 @Transactional
@@ -67,7 +67,7 @@ public class PostScheduledTaskServiceImpl implements PostScheduledTaskService {
         if (indicesLastUpdated == null) {
             indicesLastUpdated = LocalDateTime.MIN;
         }
-//        postEsRepository.deleteAll();
+//        postEsRepository.deleteIndex();
         List<Post> posts = adminPostRepository.findScheduledToBeIndexed(indicesLastUpdated);
         if (posts.size() == 0) {
             return;
@@ -91,26 +91,5 @@ public class PostScheduledTaskServiceImpl implements PostScheduledTaskService {
         LocalDateTime now = LocalDateTime.now();
         metadata.setPostStatsLastUpdated(now);
         metadataRepository.save(metadata);
-    }
-
-    private PostEs toPostEs(Post post) {
-        PostEs postEs = new PostEs();
-        postEs.setId(post.getId());
-        postEs.setTitle(post.getTitle());
-        postEs.setBylineName(post.getBylineName());
-        postEs.setExcerpt(post.getExcerpt());
-        postEs.setStatus(post.getStatus().toString());
-
-        List<String> contributors = post.getContributors().stream()
-                .map(c -> c.getName())
-                .collect(Collectors.toList());
-        postEs.setContributors(contributors);
-
-        List<String> tags = post.getTags().stream()
-                .map(t -> t.getName())
-                .collect(Collectors.toList());
-        postEs.setTags(tags);
-        postEs.setContent(htmlToText(post.getContent()));
-        return postEs;
     }
 }

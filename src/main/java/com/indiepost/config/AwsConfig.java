@@ -12,8 +12,6 @@ import org.springframework.context.annotation.PropertySource;
 @ConfigurationProperties(prefix = "webapp.aws")
 public class AwsConfig {
 
-    ;
-
     private String s3BucketName;
 
     private boolean usingS3;

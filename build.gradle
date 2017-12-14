@@ -41,6 +41,7 @@ dependencies {
     compile("com.querydsl:querydsl-core:${querydslVersion}")
     compile("com.querydsl:querydsl-apt:${querydslVersion}")
     compile("com.querydsl:querydsl-jpa:${querydslVersion}")
+    compile group: 'org.elasticsearch', name: 'elasticsearch', version: '6.0.1'
     compile group: 'io.searchbox', name: 'jest', version: '5.3.3'
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.7.0'
     compile group: 'net.sourceforge.nekohtml', name: 'nekohtml', version: '1.9.22'

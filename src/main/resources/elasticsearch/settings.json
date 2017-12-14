@@ -1,0 +1,20 @@
+{
+  "settings": {
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "korean": {
+            "type": "custom",
+            "tokenizer": "seunjeon_default_tokenizer"
+          }
+        },
+        "tokenizer": {
+          "seunjeon_default_tokenizer": {
+            "type": "seunjeon_tokenizer",
+            "index_eojeol": false
+          }
+        }
+      }
+    }
+  }
+}

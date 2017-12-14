@@ -9,10 +9,13 @@ import com.indiepost.model.Contributor;
 import com.indiepost.model.ImageSet;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
+import com.indiepost.model.elasticsearch.PostEs;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static com.indiepost.utils.DomUtil.htmlToText;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 /**
@@ -126,6 +129,27 @@ public class PostMapper {
         post.setTitleImageId(dto.getTitleImageId());
         post.setCategoryId(dto.getCategoryId());
         return post;
+    }
+
+    public static PostEs toPostEs(Post post) {
+        PostEs postEs = new PostEs();
+        postEs.setId(post.getId());
+        postEs.setTitle(post.getTitle());
+        postEs.setBylineName(post.getBylineName());
+        postEs.setExcerpt(post.getExcerpt());
+        postEs.setStatus(post.getStatus().toString());
+
+        List<String> contributors = post.getContributors().stream()
+                .map(c -> c.getName())
+                .collect(Collectors.toList());
+        postEs.setContributors(contributors);
+
+        List<String> tags = post.getTags().stream()
+                .map(t -> t.getName())
+                .collect(Collectors.toList());
+        postEs.setTags(tags);
+        postEs.setContent(htmlToText(post.getContent()));
+        return postEs;
     }
 
     public static ImageSetDto imageSetToDto(ImageSet imageSet) {

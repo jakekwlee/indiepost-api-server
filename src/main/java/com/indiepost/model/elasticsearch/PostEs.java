@@ -1,12 +1,16 @@
 package com.indiepost.model.elasticsearch;
 
+import io.searchbox.annotations.JestId;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PostEs implements Serializable {
 
     private static final long serialVersionUID = 6587432935142567307L;
 
+    @JestId
     private Long id;
 
     private String title;
@@ -17,9 +21,9 @@ public class PostEs implements Serializable {
 
     private String bylineName;
 
-    private List<String> contributors;
+    private List<String> contributors = new ArrayList<>();
 
-    private List<String> tags;
+    private List<String> tags = new ArrayList<>();
 
     private String status;
 
@@ -85,5 +89,21 @@ public class PostEs implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public void addTag(String tag) {
+        tags.add(tag);
+    }
+
+    public void removeTag(String tag) {
+        tags.remove(tag);
+    }
+
+    public void addContributor(String contributor) {
+        contributors.add(contributor);
+    }
+
+    public void removeContributor(String contributor) {
+        contributors.remove(contributor);
     }
 }
