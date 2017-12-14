@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
@@ -113,31 +114,13 @@ public class PostEsRepositoryJest implements PostEsRepository {
 
     @Override
     public boolean createIndex() {
-        String settings = "{\n" +
-                "  \"settings\": {\n" +
-                "    \"index\": {\n" +
-                "      \"analysis\": {\n" +
-                "        \"analyzer\": {\n" +
-                "          \"korean\": {\n" +
-                "            \"type\": \"custom\",\n" +
-                "            \"tokenizer\": \"seunjeon_default_tokenizer\"\n" +
-                "          }\n" +
-                "        },\n" +
-                "        \"tokenizer\": {\n" +
-                "          \"seunjeon_default_tokenizer\": {\n" +
-                "            \"type\": \"seunjeon_tokenizer\",\n" +
-                "            \"index_eojeol\": false\n" +
-                "          }\n" +
-                "        }\n" +
-                "      }\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
-        CreateIndex createIndex = new CreateIndex.Builder(INDEX_NAME).settings(
-                Settings.builder()
-                        .loadFromSource(settings)
-                        .build()
-                        .getAsMap())
+        Map test = Settings.builder()
+                .loadFromSource(indexSettings)
+                .build()
+                .getAsMap();
+        System.out.println("test = " + test);
+
+        CreateIndex createIndex = new CreateIndex.Builder(INDEX_NAME).settings(test)
                 .build();
         try {
             JestResult result = getClient().execute(createIndex);

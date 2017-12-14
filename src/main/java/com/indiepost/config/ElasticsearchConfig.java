@@ -3,6 +3,7 @@ package com.indiepost.config;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -77,8 +78,10 @@ public class ElasticsearchConfig {
     private String getStringFromResource(Resource resource) {
         try {
             InputStream inputStream = resource.getInputStream();
-            String jsonString = IOUtils.toString(inputStream);
-            return jsonString.replaceAll("\\s", "");
+            String jsonString = IOUtils.toString(inputStream)
+                    .replaceAll("\\s", "");
+            jsonString = StringUtils.removeStart(jsonString, "{");
+            return StringUtils.removeEnd(jsonString, "}");
         } catch (IOException e) {
             e.printStackTrace();
         }
