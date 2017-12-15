@@ -7,8 +7,6 @@ import io.searchbox.client.JestResult;
 import io.searchbox.core.*;
 import io.searchbox.indices.CreateIndex;
 import io.searchbox.indices.DeleteIndex;
-import io.searchbox.indices.mapping.PutMapping;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +17,6 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
@@ -38,13 +35,9 @@ public class PostEsRepositoryJest implements PostEsRepository {
     @Inject
     private String indexSettings;
 
-    @Inject
-    private String indexMappings;
-
-    public PostEsRepositoryJest(JestClientFactory clientFactory, String indexSettings, String indexMappings) {
+    public PostEsRepositoryJest(JestClientFactory clientFactory, String indexSettings) {
         this.clientFactory = clientFactory;
         this.indexSettings = indexSettings;
-        this.indexMappings = indexMappings;
     }
 
     @Override
@@ -54,83 +47,13 @@ public class PostEsRepositoryJest implements PostEsRepository {
     }
 
     @Override
-    public PostEs findById(Long id) {
-        Get get = new Get.Builder(INDEX_NAME, id.toString())
-                .type(TYPE_NAME)
-                .build();
-        try {
-            JestResult result = getClient().execute(get);
-            return result.getSourceAsObject(PostEs.class);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }
-        return null;
-    }
-
-    @Override
-    public void save(List<PostEs> posts) {
-        if (posts.isEmpty()) {
-            return;
-        }
-        Bulk.Builder bulkBuilder = new Bulk.Builder()
-                .defaultIndex(INDEX_NAME)
-                .defaultType(TYPE_NAME);
-        try {
-            List<Index> indices = new ArrayList<>();
-            for (PostEs post : posts) {
-                indices.add(prepareIndex(post));
-            }
-            bulkBuilder.addAction(indices);
-            Bulk bulk = bulkBuilder.build();
-            getClient().execute(bulk);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public void save(PostEs post) {
-        try {
-            Index index = prepareIndex(post);
-            getClient().execute(index);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public void update(PostEs post) {
-        try {
-            Update update = new Update
-                    .Builder(buildContent(post))
-                    .index(INDEX_NAME)
-                    .type(TYPE_NAME)
-                    .build();
-            getClient().execute(update);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }
-    }
-
-    @Override
     public boolean createIndex() {
-        Map test = Settings.builder()
-                .loadFromSource(indexSettings)
-                .build()
-                .getAsMap();
-        System.out.println("test = " + test);
-
-        CreateIndex createIndex = new CreateIndex.Builder(INDEX_NAME).settings(test)
+        CreateIndex createIndex = new CreateIndex.Builder(INDEX_NAME).settings(indexSettings)
                 .build();
         try {
             JestResult result = getClient().execute(createIndex);
             if (result.isSucceeded()) {
-                PutMapping putMapping = new PutMapping
-                        .Builder(INDEX_NAME, TYPE_NAME, indexMappings).build();
-                result = getClient().execute(putMapping);
-                if (result.isSucceeded()) {
-                    return true;
-                }
+                return true;
             }
             log.error(result.getErrorMessage());
         } catch (IOException e) {
@@ -156,6 +79,73 @@ public class PostEsRepositoryJest implements PostEsRepository {
         deleteIndex();
         if (createIndex()) {
             save(posts);
+        }
+    }
+
+    @Override
+    public List<PostEs> search(String text, String status, Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public PostEs findById(Long id) {
+        Get get = new Get.Builder(INDEX_NAME, id.toString())
+                .type(TYPE_NAME)
+                .build();
+        try {
+            JestResult result = getClient().execute(get);
+            return result.getSourceAsObject(PostEs.class);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    @Override
+    public void save(List<PostEs> posts) {
+        if (posts.isEmpty()) {
+            return;
+        }
+        Bulk.Builder bulkBuilder = new Bulk.Builder()
+                .defaultIndex(INDEX_NAME)
+                .defaultType(TYPE_NAME);
+        try {
+            for (PostEs post : posts) {
+                bulkBuilder.addAction(prepareIndex(post));
+            }
+            Bulk bulk = bulkBuilder.build();
+            JestResult result = getClient().execute(bulk);
+            if (!result.isSucceeded()) {
+                log.error(result.getJsonString());
+            } else {
+                log.info(result.getJsonString());
+            }
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void save(PostEs post) {
+        try {
+            Index index = prepareIndex(post);
+            getClient().execute(index);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void update(PostEs post) {
+        try {
+            Update update = new Update
+                    .Builder(serializeToJson(post))
+                    .index(INDEX_NAME)
+                    .type(TYPE_NAME)
+                    .build();
+            getClient().execute(update);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -194,14 +184,9 @@ public class PostEsRepositoryJest implements PostEsRepository {
         deleteById(postEs.getId());
     }
 
-    @Override
-    public List<PostEs> search(String text, String status, Pageable pageable) {
-        return null;
-    }
-
     private Index prepareIndex(PostEs post) throws IOException {
         return new Index
-                .Builder(buildContent(post))
+                .Builder(post)
                 .index(INDEX_NAME)
                 .type(TYPE_NAME)
                 .build();
@@ -213,7 +198,7 @@ public class PostEsRepositoryJest implements PostEsRepository {
                 .build();
     }
 
-    private XContentBuilder buildContent(PostEs post) throws IOException {
+    private String serializeToJson(PostEs post) throws IOException {
         XContentBuilder builder = jsonBuilder().startObject()
                 .field("title", post.getTitle())
                 .field("excerpt", post.getExcerpt())
@@ -225,7 +210,8 @@ public class PostEsRepositoryJest implements PostEsRepository {
         if (!post.getContributors().isEmpty()) {
             builder.field("contributors", post.getContributors());
         }
-        return builder.endObject();
+        return builder.endObject().toString();
+
     }
 
     private JestClient getClient() {

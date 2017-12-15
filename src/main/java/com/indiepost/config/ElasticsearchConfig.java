@@ -3,7 +3,6 @@ package com.indiepost.config;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -27,9 +26,6 @@ public class ElasticsearchConfig {
 
     @Value("classpath:elasticsearch/settings.json")
     private Resource indexSettings;
-
-    @Value("classpath:elasticsearch/mappings.json")
-    private Resource indexMappings;
 
     public String getHost() {
         return host;
@@ -60,6 +56,7 @@ public class ElasticsearchConfig {
         JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig
                 .Builder("http://" + host + ":" + port)
+                .readTimeout(60000)
                 .multiThreaded(true)
                 .build());
         return factory;
@@ -70,18 +67,12 @@ public class ElasticsearchConfig {
         return getStringFromResource(indexSettings);
     }
 
-    @Bean
-    public String indexMappings() {
-        return getStringFromResource(indexMappings);
-    }
 
     private String getStringFromResource(Resource resource) {
         try {
             InputStream inputStream = resource.getInputStream();
-            String jsonString = IOUtils.toString(inputStream)
+            return IOUtils.toString(inputStream)
                     .replaceAll("\\s", "");
-            jsonString = StringUtils.removeStart(jsonString, "{");
-            return StringUtils.removeEnd(jsonString, "}");
         } catch (IOException e) {
             e.printStackTrace();
         }
