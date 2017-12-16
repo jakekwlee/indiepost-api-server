@@ -1,0 +1,87 @@
+{
+  "_source": [
+    "title",
+    "excerpt"
+  ],
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "dis_max": {
+            "queries": [
+              {
+                "match": {
+                  "title": {
+                    "query": "%1$s",
+                    "analyzer": "korean",
+                    "boost": 3,
+                    "minimum_should_match": "4<75%"
+                  }
+                }
+              },
+              {
+                "match": {
+                  "excerpt": {
+                    "query": "%1$s",
+                    "analyzer": "korean",
+                    "boost": 2,
+                    "minimum_should_match": "4<75%"
+                  }
+                }
+              },
+              {
+                "match": {
+                  "content": {
+                    "query": "%1$s",
+                    "analyzer": "korean",
+                    "boost": 0.8,
+                    "minimum_should_match": "4<75%"
+                  }
+                }
+              },
+              {
+                "match": {
+                  "bylineName": {
+                    "query": "%1$s",
+                    "minimum_should_match": "4<75%"
+                  }
+                }
+              },
+              {
+                "match": {
+                  "contributors": {
+                    "query": "%1$s",
+                    "analyzer": "korean",
+                    "boost": 1.5,
+                    "minimum_should_match": "4<75%"
+                  }
+                }
+              },
+              {
+                "match": {
+                  "tags": {
+                    "query": "%1$s",
+                    "boost": 1.5,
+                    "minimum_should_match": "4<75%"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "filter": {
+        "match": {
+          "status": "%2$s"
+        }
+      }
+    }
+  },
+  "highlight": {
+    "fields": {
+      "title": {},
+      "excerpt": {}
+    }
+  }
+}
+

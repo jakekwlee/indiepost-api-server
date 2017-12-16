@@ -27,6 +27,16 @@ public class PostEs implements Serializable {
 
     private String status;
 
+    public PostEs(Long id, String title, String excerpt) {
+        this.id = id;
+        this.title = title;
+        this.excerpt = excerpt;
+    }
+
+    public PostEs() {
+
+    }
+
     public Long getId() {
         return id;
     }

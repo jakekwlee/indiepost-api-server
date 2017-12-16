@@ -4,9 +4,11 @@ import com.indiepost.model.elasticsearch.PostEs;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.JestResult;
+import io.searchbox.cluster.Health;
 import io.searchbox.core.*;
 import io.searchbox.indices.CreateIndex;
 import io.searchbox.indices.DeleteIndex;
+import io.searchbox.indices.IndicesExists;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
@@ -35,27 +38,59 @@ public class PostEsRepositoryJest implements PostEsRepository {
     @Inject
     private String indexSettings;
 
-    public PostEsRepositoryJest(JestClientFactory clientFactory, String indexSettings) {
+    @Inject
+    private String searchSettings;
+
+    public PostEsRepositoryJest(JestClientFactory clientFactory, String indexSettings, String searchSettings) {
         this.clientFactory = clientFactory;
         this.indexSettings = indexSettings;
+        this.searchSettings = searchSettings;
     }
 
     @Override
     public boolean testConnection() {
-        JestClient client = getClient();
-        return client != null;
+        try {
+            JestClient client = getClient();
+            Health health = new Health.Builder().build();
+            JestResult result = client.execute(health);
+            if (result.isSucceeded()) {
+                log.info("Elasticsearch: Connection established successful.");
+                return true;
+            }
+            log.error("Elasticsearch: Connection failed.");
+            log.error(result.getJsonString());
+            return false;
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean indexExist() {
+        try {
+            IndicesExists indicesExists = new IndicesExists.Builder(INDEX_NAME).build();
+            return getClient().execute(indicesExists).isSucceeded();
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+        return false;
     }
 
     @Override
     public boolean createIndex() {
-        CreateIndex createIndex = new CreateIndex.Builder(INDEX_NAME).settings(indexSettings)
-                .build();
         try {
+            CreateIndex createIndex = new CreateIndex
+                    .Builder(INDEX_NAME)
+                    .settings(indexSettings)
+                    .build();
             JestResult result = getClient().execute(createIndex);
             if (result.isSucceeded()) {
+                log.info("Elasticsearch: Index <posts> is created successful.");
                 return true;
             }
-            log.error(result.getErrorMessage());
+            log.error("Elasticsearch: Failed index <posts> creation.");
+            log.error(result.getJsonString());
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }
@@ -64,27 +99,69 @@ public class PostEsRepositoryJest implements PostEsRepository {
 
     @Override
     public boolean deleteIndex() {
-        DeleteIndex deleteIndex = new DeleteIndex.Builder(INDEX_NAME).build();
         try {
+            DeleteIndex deleteIndex = new DeleteIndex
+                    .Builder(INDEX_NAME)
+                    .build();
             JestResult result = getClient().execute(deleteIndex);
-            return result.isSucceeded();
+            if (result.isSucceeded()) {
+                log.info("Elasticsearch: Index <posts> is deleted successful.");
+                return true;
+            }
+            log.error("Elasticsearch: Failed index delete <posts>.");
+            log.error(result.getJsonString());
+            return false;
         } catch (IOException e) {
+            log.error("Elasticsearch: Failed index delete <posts>.");
             log.error(e.getMessage(), e);
         }
         return false;
     }
 
     @Override
-    public void rebuildIndices(List<PostEs> posts) {
-        deleteIndex();
+    public void buildIndex(List<PostEs> posts) {
         if (createIndex()) {
-            save(posts);
+            log.info("Elasticsearch: Start building index <posts>.");
+            bulkIndex(posts);
+        }
+    }
+
+    @Override
+    public void rebuildIndices(List<PostEs> posts) {
+        if (!indexExist()) {
+            buildIndex(posts);
+            return;
+        }
+        if (deleteIndex()) {
+            buildIndex(posts);
         }
     }
 
     @Override
     public List<PostEs> search(String text, String status, Pageable pageable) {
-        return null;
+        try {
+            String query = searchSettings
+                    .replaceAll("%1\\$s", text)
+                    .replaceAll("%2\\$s", status);
+            Search search = new Search.Builder(query)
+                    .addIndex(INDEX_NAME)
+                    .addType(TYPE_NAME)
+                    .build();
+            SearchResult result = getClient().execute(search);
+            if (result.isSucceeded()) {
+                List<SearchResult.Hit<PostEs, Void>> hits = result.getHits(PostEs.class);
+                return hits.stream()
+                        .map(hit -> mapHitToPostES(hit))
+                        .collect(Collectors.toList());
+            }
+            log.error(String.format("Elasticsearch: Failed search for: <%s>", text));
+            log.error(result.getJsonString());
+
+        } catch (IOException e) {
+            log.error(String.format("Elasticsearch: Failed search for: <%s>", text));
+            log.error(e.getMessage(), e);
+        }
+        return new ArrayList<>();
     }
 
     @Override
@@ -94,7 +171,11 @@ public class PostEsRepositoryJest implements PostEsRepository {
                 .build();
         try {
             JestResult result = getClient().execute(get);
-            return result.getSourceAsObject(PostEs.class);
+            if (result.isSucceeded()) {
+                return result.getSourceAsObject(PostEs.class);
+            }
+            log.error(String.format("Elasticsearch: Retrieve post<%d> is failed.", id));
+            log.error(result.getJsonString());
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }
@@ -102,7 +183,7 @@ public class PostEsRepositoryJest implements PostEsRepository {
     }
 
     @Override
-    public void save(List<PostEs> posts) {
+    public void bulkIndex(List<PostEs> posts) {
         if (posts.isEmpty()) {
             return;
         }
@@ -115,18 +196,20 @@ public class PostEsRepositoryJest implements PostEsRepository {
             }
             Bulk bulk = bulkBuilder.build();
             JestResult result = getClient().execute(bulk);
-            if (!result.isSucceeded()) {
-                log.error(result.getJsonString());
+            if (result.isSucceeded()) {
+                log.info("Elasticsearch: Bulk index action successful.");
             } else {
-                log.info(result.getJsonString());
+                log.error("Elasticsearch: Failed bulk index action.");
+                log.error(result.getJsonString());
             }
         } catch (IOException e) {
+            log.error("Elasticsearch: Failed bulk index action.");
             log.error(e.getMessage(), e);
         }
     }
 
     @Override
-    public void save(PostEs post) {
+    public void index(PostEs post) {
         try {
             Index index = prepareIndex(post);
             getClient().execute(index);
@@ -153,14 +236,20 @@ public class PostEsRepositoryJest implements PostEsRepository {
     public void deleteById(Long id) {
         Delete delete = prepareDelete(id);
         try {
-            getClient().execute(delete);
+            JestResult result = getClient().execute(delete);
+            if (result.isSucceeded()) {
+                log.info(String.format("Elasticsearch: Delete post<%d> successful.", id));
+                return;
+            }
+            log.error(String.format("Elasticsearch: Delete post<%d> failed.", id));
+            log.error(result.getJsonString());
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }
     }
 
     @Override
-    public void deleteByIdIn(List<Long> ids) {
+    public void bulkDelete(List<Long> ids) {
         if (ids.isEmpty()) {
             return;
         }
@@ -173,7 +262,13 @@ public class PostEsRepositoryJest implements PostEsRepository {
             }
             bulkBuilder.addAction(deletes);
             Bulk bulk = bulkBuilder.build();
-            getClient().execute(bulk);
+            JestResult result = getClient().execute(bulk);
+            if (result.isSucceeded()) {
+                log.info("Elasticsearch: Bulk delete is successful.");
+                return;
+            }
+            log.error("Elasticsearch: Bulk delete is failed.");
+            log.error(result.getJsonString());
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }
@@ -184,7 +279,7 @@ public class PostEsRepositoryJest implements PostEsRepository {
         deleteById(postEs.getId());
     }
 
-    private Index prepareIndex(PostEs post) throws IOException {
+    private Index prepareIndex(PostEs post) {
         return new Index
                 .Builder(post)
                 .index(INDEX_NAME)
@@ -195,7 +290,15 @@ public class PostEsRepositoryJest implements PostEsRepository {
     private Delete prepareDelete(Long id) {
         return new Delete.Builder(id.toString())
                 .index(INDEX_NAME)
+                .type(TYPE_NAME)
                 .build();
+    }
+
+    private PostEs mapHitToPostES(SearchResult.Hit<PostEs, Void> hit) {
+        Long id = Long.parseLong(hit.id);
+        String title = hit.highlight.get("title").get(0);
+        String excerpt = hit.highlight.get("excerpt").get(0);
+        return new PostEs(id, title, excerpt);
     }
 
     private String serializeToJson(PostEs post) throws IOException {

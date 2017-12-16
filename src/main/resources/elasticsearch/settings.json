@@ -1,6 +1,7 @@
 {
   "settings": {
     "index": {
+      "number_of_replicas": 2,
       "analysis": {
         "analyzer": {
           "korean": {
@@ -22,30 +23,37 @@
       "properties": {
         "title": {
           "type": "text",
-          "analyzer": "korean"
+          "analyzer": "korean",
+          "search_analyzer": "korean",
+          "search_quote_analyzer": "korean"
         },
         "excerpt": {
           "type": "text",
-          "analyzer": "korean"
+          "analyzer": "korean",
+          "search_analyzer": "korean",
+          "search_quote_analyzer": "korean"
         },
         "content": {
           "type": "text",
-          "analyzer": "korean"
+          "analyzer": "korean",
+          "search_analyzer": "korean",
+          "search_quote_analyzer": "korean"
         },
         "bylineName": {
           "type": "text"
         },
         "status": {
-          "type": "text",
-          "analyzer": "korean"
+          "type": "text"
         },
         "tags": {
           "type": "text",
-          "analyzer": "korean"
+          "analyzer": "korean",
+          "search_analyzer": "korean"
         },
         "contributors": {
           "type": "text",
-          "analyzer": "korean"
+          "analyzer": "korean",
+          "search_analyzer": "korean"
         }
       }
     }

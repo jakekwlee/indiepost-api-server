@@ -75,7 +75,7 @@ public class PostScheduledTaskServiceImpl implements PostScheduledTaskService {
         List<PostEs> postEsList = posts.stream()
                 .map(post -> toPostEs(post))
                 .collect(Collectors.toList());
-//        postEsRepository.save(postEsList);
+//        postEsRepository.bulkIndex(postEsList);
         log.info(String.format("%d posts are indexed", posts.size()));
     }
 

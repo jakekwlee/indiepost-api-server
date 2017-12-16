@@ -27,6 +27,9 @@ public class ElasticsearchConfig {
     @Value("classpath:elasticsearch/settings.json")
     private Resource indexSettings;
 
+    @Value("classpath:elasticsearch/search.json")
+    private Resource searchSettings;
+
     public String getHost() {
         return host;
     }
@@ -56,7 +59,7 @@ public class ElasticsearchConfig {
         JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig
                 .Builder("http://" + host + ":" + port)
-                .readTimeout(60000)
+                .readTimeout(30000)
                 .multiThreaded(true)
                 .build());
         return factory;
@@ -67,6 +70,10 @@ public class ElasticsearchConfig {
         return getStringFromResource(indexSettings);
     }
 
+    @Bean
+    public String searchSettings() {
+        return getStringFromResource(searchSettings);
+    }
 
     private String getStringFromResource(Resource resource) {
         try {

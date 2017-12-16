@@ -26,7 +26,7 @@ public class ElasticsearchIndexBuilder implements ApplicationListener<Applicatio
     }
 
     /**
-     * Create an initial Lucene index for the data already present in the
+     * Create an initial Lucene bulkIndex for the data already present in the
      * database.
      * This method is called when Spring's startup.
      */
@@ -36,7 +36,7 @@ public class ElasticsearchIndexBuilder implements ApplicationListener<Applicatio
             return;
         }
         try {
-            // TODO build search index
+            // TODO build search bulkIndex
         } catch (Exception e) {
             System.out.println(
                     "An error occurred trying to build the search index: " +

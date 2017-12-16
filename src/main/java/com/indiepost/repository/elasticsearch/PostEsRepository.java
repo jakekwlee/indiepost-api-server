@@ -9,9 +9,13 @@ public interface PostEsRepository {
 
     boolean testConnection();
 
+    boolean indexExist();
+
     boolean createIndex();
 
     boolean deleteIndex();
+
+    void buildIndex(List<PostEs> posts);
 
     void rebuildIndices(List<PostEs> posts);
 
@@ -19,15 +23,15 @@ public interface PostEsRepository {
 
     PostEs findById(Long id);
 
-    void save(List<PostEs> posts);
+    void index(PostEs post);
 
-    void save(PostEs post);
+    void bulkIndex(List<PostEs> posts);
 
     void update(PostEs post);
 
     void deleteById(Long id);
 
-    void deleteByIdIn(List<Long> ids);
-
     void delete(PostEs postEs);
+
+    void bulkDelete(List<Long> ids);
 }
