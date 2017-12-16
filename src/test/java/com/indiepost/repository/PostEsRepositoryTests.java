@@ -1,5 +1,6 @@
 package com.indiepost.repository;
 
+import com.indiepost.NewIndiepostApplication;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Post;
 import com.indiepost.model.elasticsearch.PostEs;
