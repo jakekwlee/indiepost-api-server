@@ -26,6 +26,7 @@ public class ScheduledTasksRunner {
         this.postScheduledTaskService = postScheduledTaskService;
     }
 
+    // once per 10 min
     @Scheduled(fixedRate = 600000)
     public void publishScheduledPosts() {
         postScheduledTaskService.publishScheduledPosts();
@@ -36,5 +37,11 @@ public class ScheduledTasksRunner {
     public void updateCachedPostStats() {
         postScheduledTaskService.updateCachedPostStats();
         log.info(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ": Update cached post stats.");
+    }
+
+    // once per a day
+    @Scheduled(fixedRate = 86400000)
+    public void rebuildElasticsearchIndices() {
+        postScheduledTaskService.rebuildElasticsearchIndices();
     }
 }

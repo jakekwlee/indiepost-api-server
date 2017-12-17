@@ -1,5 +1,6 @@
 package com.indiepost.repository;
 
+import com.indiepost.dto.TagDto;
 import com.indiepost.model.Tag;
 import org.springframework.data.domain.Pageable;
 
@@ -14,12 +15,14 @@ public interface TagRepository {
 
     Tag findOneByName(String name);
 
+    List<TagDto> search(String text, Pageable pageable);
+
     Tag save(Tag tag);
 
     void deleteById(Long id);
 
     List<Tag> findByIdIn(List<Long> ids);
 
-    List<Tag> findAll(Pageable pageable);
+    List<TagDto> findAll(Pageable pageable);
 
 }

@@ -1,7 +1,7 @@
 package com.indiepost.repository;
 
 import com.indiepost.dto.post.AdminPostSummaryDto;
-import com.indiepost.dto.post.PostSearch;
+import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Post;
 import com.indiepost.model.User;
@@ -25,15 +25,17 @@ public interface AdminPostRepository {
 
     void bulkDeleteByUserAndStatus(User currentUser, Types.PostStatus postStatus);
 
+    List<AdminPostSummaryDto> findByIdIn(List<Long> id);
+
     List<AdminPostSummaryDto> find(User currentUser, Pageable pageable);
 
-    List<AdminPostSummaryDto> find(User currentUser, PostSearch postSearch, Pageable pageable);
+    List<AdminPostSummaryDto> find(User currentUser, PostQuery postQuery, Pageable pageable);
 
     List<String> findAllDisplayNames();
 
     Long count();
 
-    Long count(PostSearch postSearch);
+    Long count(PostQuery postQuery);
 
     List<Post> findScheduledToBePublished();
 

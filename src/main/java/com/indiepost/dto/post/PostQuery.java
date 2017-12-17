@@ -7,7 +7,11 @@ import static com.indiepost.enums.Types.PostStatus;
 /**
  * Created by jake on 17. 1. 10.
  */
-public class PostSearch {
+public class PostQuery {
+
+    private int page;
+
+    private int maxResults;
 
     private Long creatorId;
 
@@ -36,6 +40,22 @@ public class PostSearch {
     private boolean picked = false;
 
     private boolean splash = false;
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    public int getMaxResults() {
+        return maxResults;
+    }
+
+    public void setMaxResults(int maxResults) {
+        this.maxResults = maxResults;
+    }
 
     public LocalDateTime getCreatedAfter() {
         return createdAfter;

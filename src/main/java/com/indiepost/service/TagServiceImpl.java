@@ -48,7 +48,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public List<String> findAllToStringList() {
         Pageable pageable = new PageRequest(0, 9999999, Sort.Direction.DESC, "id");
-        List<Tag> tags = tagRepository.findAll(pageable);
+        List<TagDto> tags = tagRepository.findAll(pageable);
         return tags.stream()
                 .map(tag -> tag.getName())
                 .collect(Collectors.toList());
@@ -57,11 +57,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public List<TagDto> findAll(int page, int maxResults) {
         Pageable pageable = new PageRequest(page, maxResults, Sort.Direction.DESC, "id");
-        List<Tag> tags = tagRepository.findAll(pageable);
-        return tags.stream()
-                .map(tag -> new TagDto(tag.getId(),
-                        tag.getName()))
-                .collect(Collectors.toList());
+        return tagRepository.findAll(pageable);
     }
 
     @Override

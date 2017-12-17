@@ -62,12 +62,13 @@ public class PostScheduledTaskServiceImpl implements PostScheduledTaskService {
 
     @Override
     public void rebuildElasticsearchIndices() {
+        // metadata id 1 must be set
         LocalDateTime indicesLastUpdated = metadataRepository.findOne(1L)
                 .getSearchIndexLastUpdated();
+
         if (indicesLastUpdated == null) {
             indicesLastUpdated = LocalDateTime.MIN;
         }
-//        postEsRepository.deleteIndex();
         List<Post> posts = adminPostRepository.findScheduledToBeIndexed(indicesLastUpdated);
         if (posts.size() == 0) {
             return;
@@ -75,7 +76,7 @@ public class PostScheduledTaskServiceImpl implements PostScheduledTaskService {
         List<PostEs> postEsList = posts.stream()
                 .map(post -> toPostEs(post))
                 .collect(Collectors.toList());
-//        postEsRepository.bulkIndex(postEsList);
+        postEsRepository.rebuildIndices(postEsList);
         log.info(String.format("%d posts are indexed", posts.size()));
     }
 

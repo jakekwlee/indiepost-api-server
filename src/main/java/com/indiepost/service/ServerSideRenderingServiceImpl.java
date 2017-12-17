@@ -5,9 +5,11 @@ import com.indiepost.dto.InitialData;
 import com.indiepost.dto.PageDto;
 import com.indiepost.dto.ServerSideRenderingRequest;
 import com.indiepost.dto.ServerSideRenderingResponse;
+import com.indiepost.dto.post.FullTextSearchQuery;
 import com.indiepost.dto.post.PostDto;
-import com.indiepost.dto.post.PostSearch;
+import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
+import com.indiepost.enums.Types;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.client.RestClientException;
@@ -76,7 +78,7 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
     @Override
     public void renderPostsByCategoryPage(String categorySlug, Model model, String servletPath) {
         InitialData initialData = initialDataService.getInitialData(false);
-        PostSearch query = new PostSearch();
+        PostQuery query = new PostQuery();
         query.setCategorySlug(categorySlug.toLowerCase());
         List<PostSummaryDto> posts = postService.search(query, 0, config.getFetchCount(), true);
         ServerSideRenderingRequest rsRequest =
@@ -96,7 +98,14 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
     @Override
     public void renderPostSearchResultsPage(String keyword, Model model, String servletPath) {
         InitialData initialData = initialDataService.getInitialData(false);
-        List<PostSummaryDto> posts = postService.search(keyword, 0, config.getFetchCount());
+
+        FullTextSearchQuery query = new FullTextSearchQuery(
+                keyword,
+                Types.PostStatus.PUBLISH.toString(),
+                0,
+                config.getFetchCount()
+        );
+        List<PostSummaryDto> posts = postService.fullTextSearch(query);
         ServerSideRenderingRequest rsRequest =
                 new ServerSideRenderingRequest(initialData, posts, servletPath);
         render(model, rsRequest);

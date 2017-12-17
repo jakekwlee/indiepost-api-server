@@ -1,9 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.post.PostDto;
-import com.indiepost.dto.post.PostSearch;
-import com.indiepost.dto.post.PostSummaryDto;
-import com.indiepost.dto.post.RelatedPostResponse;
+import com.indiepost.dto.post.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,7 +16,7 @@ public interface PostService {
 
     Long count();
 
-    Long count(PostSearch search);
+    Long count(PostQuery search);
 
     List<PostSummaryDto> findByIds(List<Long> ids);
 
@@ -35,9 +32,9 @@ public interface PostService {
 
     List<PostSummaryDto> findScheduledPosts();
 
-    List<PostSummaryDto> search(String text, int page, int maxResults);
+    List<PostSummaryDto> search(PostQuery query, int page, int maxResults, boolean isDesc);
 
-    List<PostSummaryDto> search(PostSearch query, int page, int maxResults, boolean isDesc);
+    List<PostSummaryDto> fullTextSearch(FullTextSearchQuery query);
 
     Long findIdByLegacyId(Long legacyId);
 
@@ -46,4 +43,5 @@ public interface PostService {
     PostSummaryDto findSplashPost();
 
     PostSummaryDto findFeaturePost();
+
 }

@@ -1,7 +1,6 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.ImageSetDto;
-import com.indiepost.dto.post.PostSearch;
+import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.*;
@@ -62,7 +61,7 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     @Override
-    public Long count(PostSearch search) {
+    public Long count(PostQuery search) {
         BooleanBuilder builder = addSearchConjunction(search, new BooleanBuilder());
         return getQueryFactory()
                 .selectFrom(post)
@@ -97,7 +96,7 @@ public class PostRepositoryHibernate implements PostRepository {
 
     @Override
     public List<PostSummaryDto> findByCategoryId(Long categoryId, Pageable pageable) {
-        PostSearch query = new PostSearch();
+        PostQuery query = new PostQuery();
         query.setCategoryId(categoryId);
         return this.search(query, pageable);
     }
@@ -105,7 +104,7 @@ public class PostRepositoryHibernate implements PostRepository {
     @SuppressWarnings("JpaQlInspection")
     @Override
     public List<PostSummaryDto> findByCategorySlug(String slug, Pageable pageable) {
-        PostSearch query = new PostSearch();
+        PostQuery query = new PostQuery();
         query.setCategorySlug(slug);
         return this.search(query, pageable);
     }
@@ -165,7 +164,7 @@ public class PostRepositoryHibernate implements PostRepository {
 
     @Override
     public List<PostSummaryDto> findByStatus(PostStatus status, Pageable pageable) {
-        PostSearch query = new PostSearch();
+        PostQuery query = new PostQuery();
         query.setStatus(status);
         return this.search(query, pageable);
     }
@@ -189,7 +188,7 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     @Override
-    public List<PostSummaryDto> search(PostSearch search, Pageable pageable) {
+    public List<PostSummaryDto> search(PostQuery search, Pageable pageable) {
         JPAQuery query = getQueryFactory().from(post);
         BooleanBuilder builder = addSearchConjunction(search, new BooleanBuilder());
         addProjections(query)
@@ -236,26 +235,9 @@ public class PostRepositoryHibernate implements PostRepository {
             dto.setCategory(row.get(post.category.slug));
             ImageSet titleImage = row.get(post.titleImage);
             if (titleImage != null) {
-                ImageSetDto imageSet = new ImageSetDto();
-                imageSet.setId(titleImage.getId());
-                if (titleImage.getOriginal() != null) {
-                    imageSet.setOriginal(titleImage.getOriginal().getFilePath());
-                }
-                if (titleImage.getLarge() != null) {
-                    imageSet.setLarge(titleImage.getLarge().getFilePath());
-                }
-                if (titleImage.getOptimized() != null) {
-                    imageSet.setOptimized(titleImage.getOptimized().getFilePath());
-                }
-                if (titleImage.getSmall() != null) {
-                    imageSet.setSmall(titleImage.getSmall().getFilePath());
-                }
-                if (titleImage.getThumbnail() != null) {
-                    imageSet.setThumbnail(titleImage.getThumbnail().getFilePath());
-                }
-                dto.setTitleImage(imageSet);
-                dtoList.add(dto);
+                dto.setTitleImage(titleImage);
             }
+            dtoList.add(dto);
         }
         return dtoList;
     }

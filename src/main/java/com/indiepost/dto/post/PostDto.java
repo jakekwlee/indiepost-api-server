@@ -1,7 +1,7 @@
 package com.indiepost.dto.post;
 
-import com.indiepost.model.Contributor;
-import com.indiepost.model.Tag;
+import com.indiepost.dto.ContributorDto;
+import com.indiepost.dto.TagDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +13,17 @@ public class PostDto extends PostSummaryDto {
 
     private String content;
 
-    private List<Tag> tags = new ArrayList<>();
+    private List<TagDto> tags = new ArrayList<>();
 
-    private List<Contributor> contributors = new ArrayList<>();
+    private List<ContributorDto> contributors = new ArrayList<>();
+
+    public List<ContributorDto> getContributors() {
+        return contributors;
+    }
+
+    public void setContributors(List<ContributorDto> contributors) {
+        this.contributors = contributors;
+    }
 
     public String getContent() {
         return content;
@@ -25,19 +33,12 @@ public class PostDto extends PostSummaryDto {
         this.content = content;
     }
 
-    public List<Tag> getTags() {
+    public List<TagDto> getTags() {
         return tags;
     }
 
-    public void setTags(List<Tag> tags) {
+    public void setTags(List<TagDto> tags) {
         this.tags = tags;
     }
 
-    public List<Contributor> getContributors() {
-        return contributors;
-    }
-
-    public void setContributors(List<Contributor> contributors) {
-        this.contributors = contributors;
-    }
 }

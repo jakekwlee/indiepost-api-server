@@ -3,7 +3,7 @@ package com.indiepost.service;
 import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
 import com.indiepost.dto.post.AdminPostSummaryDto;
-import com.indiepost.dto.post.PostSearch;
+import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types;
 
 import java.time.LocalDateTime;
@@ -26,11 +26,11 @@ public interface AdminPostService {
 
     List<AdminPostSummaryDto> find(int page, int maxResults, boolean isDesc);
 
-    List<AdminPostSummaryDto> search(PostSearch search, int page, int maxResults, boolean isDesc);
+    List<AdminPostSummaryDto> findByQuery(PostQuery query, int page, int maxResults, boolean isDesc);
 
     Long count();
 
-    Long count(PostSearch search);
+    Long count(PostQuery query);
 
     List<AdminPostSummaryDto> findLastUpdated(LocalDateTime dateFrom);
 

@@ -11,6 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -57,6 +58,19 @@ public class PostServiceTests {
                 posts.size()
         );
         printToJson(posts);
+    }
+
+    @Test
+    public void fullTextSearchWorksAsExpected() {
+        String text = "단편 영화";
+        List<PostSummaryDto> posts = postService.fullTextSearch(text, 0, 5);
+        assertThat(posts).isNotNull().hasSize(5);
+        for (PostSummaryDto dto : posts) {
+            String titleAndExcerpt = dto.getTitle() + dto.getExcerpt();
+            assertThat(titleAndExcerpt).contains(Arrays.asList("em", "단편", "영화"));
+        }
+        printToJson(posts);
+
     }
 
     @Test

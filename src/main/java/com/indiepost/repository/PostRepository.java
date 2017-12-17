@@ -1,6 +1,6 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.post.PostSearch;
+import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Post;
@@ -21,7 +21,7 @@ public interface PostRepository {
 
     Long count();
 
-    Long count(PostSearch search);
+    Long count(PostQuery search);
 
     List<PostSummaryDto> findByIds(List<Long> ids);
 
@@ -37,7 +37,7 @@ public interface PostRepository {
 
     List<Post> search(String text, Pageable pageable);
 
-    List<PostSummaryDto> search(PostSearch search, Pageable pageable);
+    List<PostSummaryDto> search(PostQuery search, Pageable pageable);
 
     PostStatus getStatusById(Long postId);
 }

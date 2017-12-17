@@ -3,6 +3,8 @@
     "title",
     "excerpt"
   ],
+  "from": 20646201,
+  "size": 44653877,
   "query": {
     "bool": {
       "must": [

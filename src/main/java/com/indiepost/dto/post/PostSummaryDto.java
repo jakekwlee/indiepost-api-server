@@ -1,8 +1,8 @@
 package com.indiepost.dto.post;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.indiepost.dto.ImageSetDto;
 import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
+import com.indiepost.model.ImageSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -28,7 +28,7 @@ public class PostSummaryDto {
     @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     private LocalDateTime publishedAt;
 
-    private ImageSetDto titleImage;
+    private ImageSet titleImage;
 
     private int bookmarkCount;
 
@@ -37,6 +37,14 @@ public class PostSummaryDto {
     private boolean picked;
 
     private boolean splash;
+
+    public ImageSet getTitleImage() {
+        return titleImage;
+    }
+
+    public void setTitleImage(ImageSet titleImage) {
+        this.titleImage = titleImage;
+    }
 
     public Long getId() {
         return id;
@@ -145,13 +153,5 @@ public class PostSummaryDto {
         return new EqualsBuilder()
                 .append(id, postSummaryDto.getId())
                 .isEquals();
-    }
-
-    public ImageSetDto getTitleImage() {
-        return titleImage;
-    }
-
-    public void setTitleImage(ImageSetDto titleImage) {
-        this.titleImage = titleImage;
     }
 }

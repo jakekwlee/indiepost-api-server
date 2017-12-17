@@ -1,7 +1,7 @@
 package com.indiepost.repository;
 
 import com.indiepost.dto.post.AdminPostSummaryDto;
-import com.indiepost.dto.post.PostSearch;
+import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.*;
@@ -119,12 +119,17 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     }
 
     @Override
+    public List<AdminPostSummaryDto> findByIdIn(List<Long> id) {
+        return null;
+    }
+
+    @Override
     public List<AdminPostSummaryDto> find(User currentUser, Pageable pageable) {
         return this.find(currentUser, null, pageable);
     }
 
     @Override
-    public List<AdminPostSummaryDto> find(User currentUser, PostSearch search, Pageable pageable) {
+    public List<AdminPostSummaryDto> find(User currentUser, PostQuery search, Pageable pageable) {
         JPAQuery query = getQueryFactory().from(post);
 
         addProjections(query)
@@ -177,7 +182,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     }
 
     @Override
-    public Long count(PostSearch search) {
+    public Long count(PostQuery search) {
         JPAQuery query = getQueryFactory().selectFrom(post);
         BooleanBuilder builder = CriteriaUtils.addSearchConjunction(search, new BooleanBuilder());
         query.where(builder);
@@ -196,8 +201,8 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     public List<Post> findScheduledToBeIndexed(LocalDateTime indicesLastUpdated) {
         return getQueryFactory()
                 .selectFrom(post)
-                .where(post.status.eq(PostStatus.PUBLISH), post.modifiedAt.after(indicesLastUpdated))
-                .orderBy(post.publishedAt.asc())
+                .where(post.modifiedAt.after(indicesLastUpdated))
+                .orderBy(post.id.asc())
                 .fetch();
     }
 

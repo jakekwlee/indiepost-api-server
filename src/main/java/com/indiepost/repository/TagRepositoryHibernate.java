@@ -1,7 +1,9 @@
 package com.indiepost.repository;
 
+import com.indiepost.dto.TagDto;
 import com.indiepost.model.QTag;
 import com.indiepost.model.Tag;
+import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -10,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class TagRepositoryHibernate implements TagRepository {
@@ -30,6 +33,24 @@ public class TagRepositoryHibernate implements TagRepository {
                 .selectFrom(qTag)
                 .where(qTag.name.eq(name))
                 .fetchOne();
+    }
+
+    @Override
+    public List<TagDto> search(String text, Pageable pageable) {
+        List<Tuple> tupleList = getJpaQuery()
+                .select(qTag.id, qTag.name)
+                .from(qTag)
+                .where(qTag.name.likeIgnoreCase(text + "%"))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+        if (tupleList == null) {
+            new ArrayList<>();
+        }
+        return tupleList.stream()
+                .map(tuple -> new TagDto(tuple.get(qTag.id), tuple.get(qTag.name)))
+                .collect(Collectors.toList());
+
     }
 
     @Override
@@ -64,13 +85,19 @@ public class TagRepositoryHibernate implements TagRepository {
     }
 
     @Override
-    public List<Tag> findAll(Pageable pageable) {
-        return getJpaQuery()
-                .selectFrom(qTag)
+    public List<TagDto> findAll(Pageable pageable) {
+        List<Tuple> tupleList = getJpaQuery()
+                .select(qTag.id, qTag.name)
                 .orderBy(qTag.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+        if (tupleList == null) {
+            return new ArrayList<>();
+        }
+        return tupleList.stream()
+                .map(tuple -> new TagDto(tuple.get(qTag.id), tuple.get(qTag.name)))
+                .collect(Collectors.toList());
     }
 
     private JPAQueryFactory getJpaQuery() {

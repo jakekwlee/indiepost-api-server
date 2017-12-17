@@ -5,13 +5,15 @@ import com.indiepost.dto.ImageSetDto;
 import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
 import com.indiepost.dto.post.AdminPostSummaryDto;
-import com.indiepost.dto.post.PostSearch;
+import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.*;
+import com.indiepost.model.elasticsearch.PostEs;
 import com.indiepost.model.legacy.LegacyPost;
 import com.indiepost.repository.AdminPostRepository;
 import com.indiepost.repository.ContributorRepository;
 import com.indiepost.repository.TagRepository;
+import com.indiepost.repository.elasticsearch.PostEsRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,14 +44,17 @@ public class AdminPostServiceImpl implements AdminPostService {
 
     private final TagRepository tagRepository;
 
+    private final PostEsRepository postEsRepository;
+
     @Inject
     public AdminPostServiceImpl(UserService userService,
                                 AdminPostRepository adminPostRepository,
                                 ContributorRepository contributorRepository,
-                                TagRepository tagRepository) {
+                                PostEsRepository postEsRepository, TagRepository tagRepository) {
         this.userService = userService;
         this.adminPostRepository = adminPostRepository;
         this.contributorRepository = contributorRepository;
+        this.postEsRepository = postEsRepository;
         this.tagRepository = tagRepository;
     }
 
@@ -161,10 +167,28 @@ public class AdminPostServiceImpl implements AdminPostService {
 
     // no usage
     @Override
-    public List<AdminPostSummaryDto> search(PostSearch search, int page, int maxResults, boolean isDesc) {
+    public List<AdminPostSummaryDto> findByQuery(PostQuery query, int page, int maxResults, boolean isDesc) {
         User currentUser = userService.findCurrentUser();
         Pageable pageable = getPageable(page, maxResults, isDesc);
-        return adminPostRepository.find(currentUser, search, pageable);
+        return adminPostRepository.find(currentUser, query, pageable);
+    }
+
+    public List<AdminPostResponseDto> fullTextSearch(String text, PostStatus status,
+                                                     int page, int maxResults, boolean isDesc) {
+        Pageable pageable = new PageRequest(page, maxResults);
+        List<PostEs> postEsList = postEsRepository.search(text, status.toString(), pageable);
+
+        if (postEsList.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Long> ids = postEsList.stream()
+                .map(p -> p.getId())
+                .collect(Collectors.toList());
+
+        List<AdminPostSummaryDto> dtoList = null;
+        // TODO
+        return null;
     }
 
     @Override
@@ -173,8 +197,8 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
-    public Long count(PostSearch search) {
-        return adminPostRepository.count(search);
+    public Long count(PostQuery query) {
+        return adminPostRepository.count(query);
     }
 
     @Override

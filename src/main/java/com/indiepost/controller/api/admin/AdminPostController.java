@@ -3,6 +3,7 @@ package com.indiepost.controller.api.admin;
 import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
 import com.indiepost.dto.post.AdminPostSummaryDto;
+import com.indiepost.dto.post.FullTextSearchQuery;
 import com.indiepost.service.AdminPostService;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ public class AdminPostController {
         this.adminPostService = adminPostService;
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/{id}")
     public AdminPostResponseDto get(@PathVariable Long id, @RequestParam(defaultValue = "false") boolean edit) {
         if (edit) {
             return adminPostService.createAutosave(id);
@@ -32,22 +33,28 @@ public class AdminPostController {
         return adminPostService.findOne(id);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    @PutMapping(value = "/{id}")
     public void update(@RequestBody AdminPostRequestDto adminPostRequestDto, @PathVariable Long id) {
         adminPostService.update(adminPostRequestDto);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @PostMapping(value = "/search")
+    public List<AdminPostSummaryDto> search(@RequestBody FullTextSearchQuery query) {
+        return null;
+
+    }
+
+    @DeleteMapping(value = "/{id}")
     public void delete(@PathVariable Long id) {
         adminPostService.deleteById(id);
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public List<AdminPostSummaryDto> getPosts() {
         return adminPostService.find(0, 1000000, true);
     }
 
-    @RequestMapping(value = "/lastUpdated", method = RequestMethod.GET)
+    @GetMapping(value = "/lastUpdated")
     public List<AdminPostSummaryDto> getLastUpdated() {
         return adminPostService.findLastUpdated(LocalDateTime.now().minusDays(1));
     }

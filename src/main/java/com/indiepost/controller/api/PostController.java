@@ -1,10 +1,7 @@
 package com.indiepost.controller.api;
 
 import com.indiepost.dto.PostImageSetDto;
-import com.indiepost.dto.post.PostDto;
-import com.indiepost.dto.post.PostSummaryDto;
-import com.indiepost.dto.post.RelatedPostResponse;
-import com.indiepost.dto.post.RelatedPostsRequest;
+import com.indiepost.dto.post.*;
 import com.indiepost.service.ImageService;
 import com.indiepost.service.PostService;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +39,11 @@ public class PostController {
         return postService.find(page, maxResults, true);
     }
 
+    @PostMapping
+    public List<PostSummaryDto> getPosts(@RequestBody PostQuery query) {
+        return postService.search(query, query.getPage(), query.getMaxResults(), false);
+    }
+
     @GetMapping("/category/{id}")
     public List<PostSummaryDto> getPostsByCategoryId(
             @PathVariable Long id,
@@ -58,12 +60,9 @@ public class PostController {
         return postService.findByTagName(tagName, page, maxResults, true);
     }
 
-    @GetMapping("/search")
-    public List<PostSummaryDto> getPosts(
-            @RequestParam("q") String text,
-            @RequestParam("p") int page,
-            @RequestParam("m") int maxResults) {
-        return postService.search(text, page, maxResults);
+    @PostMapping("/search")
+    public List<PostSummaryDto> fullTextSearch(@RequestBody FullTextSearchQuery query) {
+        return postService.fullTextSearch(query);
     }
 
     @PostMapping("/related")

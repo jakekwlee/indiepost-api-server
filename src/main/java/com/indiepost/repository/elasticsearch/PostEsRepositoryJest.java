@@ -9,7 +9,6 @@ import io.searchbox.core.*;
 import io.searchbox.indices.CreateIndex;
 import io.searchbox.indices.DeleteIndex;
 import io.searchbox.indices.IndicesExists;
-import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +19,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 @Repository
 public class PostEsRepositoryJest implements PostEsRepository {
@@ -142,7 +139,9 @@ public class PostEsRepositoryJest implements PostEsRepository {
         try {
             String query = searchSettings
                     .replaceAll("%1\\$s", text)
-                    .replaceAll("%2\\$s", status);
+                    .replaceAll("%2\\$s", status)
+                    .replaceAll("20646201", String.valueOf(pageable.getOffset()))
+                    .replaceAll("44653877", String.valueOf(pageable.getPageSize()));
             Search search = new Search.Builder(query)
                     .addIndex(INDEX_NAME)
                     .addType(TYPE_NAME)
@@ -222,7 +221,7 @@ public class PostEsRepositoryJest implements PostEsRepository {
     public void update(PostEs post) {
         try {
             Update update = new Update
-                    .Builder(serializeToJson(post))
+                    .Builder(post)
                     .index(INDEX_NAME)
                     .type(TYPE_NAME)
                     .build();
@@ -296,25 +295,22 @@ public class PostEsRepositoryJest implements PostEsRepository {
 
     private PostEs mapHitToPostES(SearchResult.Hit<PostEs, Void> hit) {
         Long id = Long.parseLong(hit.id);
-        String title = hit.highlight.get("title").get(0);
-        String excerpt = hit.highlight.get("excerpt").get(0);
-        return new PostEs(id, title, excerpt);
-    }
+        PostEs postEs = new PostEs(id);
 
-    private String serializeToJson(PostEs post) throws IOException {
-        XContentBuilder builder = jsonBuilder().startObject()
-                .field("title", post.getTitle())
-                .field("excerpt", post.getExcerpt())
-                .field("content", post.getContent())
-                .field("bylineName", post.getBylineName());
-        if (!post.getTags().isEmpty()) {
-            builder.field("tags", post.getTags());
+        if (hit.highlight == null) {
+            return postEs;
         }
-        if (!post.getContributors().isEmpty()) {
-            builder.field("contributors", post.getContributors());
-        }
-        return builder.endObject().toString();
 
+        if (hit.highlight.get("title") != null) {
+            String title = hit.highlight.get("title").get(0);
+            postEs.setTitle(title);
+        }
+        if (hit.highlight.get("excerpt") != null) {
+            String excerpt = hit.highlight.get("excerpt").get(0);
+            postEs.setExcerpt(excerpt);
+        }
+
+        return postEs;
     }
 
     private JestClient getClient() {

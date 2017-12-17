@@ -12,6 +12,7 @@ import com.indiepost.model.Tag;
 import com.indiepost.model.elasticsearch.PostEs;
 import org.springframework.beans.BeanUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -145,10 +146,19 @@ public class PostMapper {
         postEs.setContributors(contributors);
 
         List<String> tags = post.getTags().stream()
-                .map(t -> t.getName())
+                .map(t -> t.getName().replaceAll("_", " "))
                 .collect(Collectors.toList());
         postEs.setTags(tags);
         postEs.setContent(htmlToText(post.getContent()));
+        List<String> suggests = new ArrayList<>();
+        suggests.add(post.getBylineName());
+        if (!tags.isEmpty()) {
+            suggests.addAll(tags);
+        }
+        if (!contributors.isEmpty()) {
+            suggests.addAll(contributors);
+        }
+        postEs.setSuggests(suggests);
         return postEs;
     }
 
@@ -157,6 +167,11 @@ public class PostMapper {
         imageSetDto.setId(imageSet.getId());
         if (imageSet.getOriginal() != null) {
             imageSetDto.setOriginal(imageSet.getOriginal().getFilePath());
+            imageSetDto.setWidth(imageSet.getOriginal().getWidth());
+            imageSetDto.setHeight(imageSet.getOriginal().getHeight());
+        } else {
+            imageSetDto.setWidth(700);
+            imageSetDto.setHeight(400);
         }
         if (imageSet.getLarge() != null) {
             imageSetDto.setLarge(imageSet.getLarge().getFilePath());

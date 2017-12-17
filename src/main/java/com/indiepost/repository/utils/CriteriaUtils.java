@@ -4,7 +4,7 @@ import com.indiepost.dto.analytics.PostStatDto;
 import com.indiepost.dto.analytics.ShareStat;
 import com.indiepost.dto.analytics.TimeDomainDoubleStat;
 import com.indiepost.dto.analytics.TimeDomainStat;
-import com.indiepost.dto.post.PostSearch;
+import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types;
 import com.indiepost.model.QPost;
 import com.querydsl.core.BooleanBuilder;
@@ -44,7 +44,7 @@ public interface CriteriaUtils {
         return criteria;
     }
 
-    static BooleanBuilder addSearchConjunction(PostSearch search, BooleanBuilder builder) {
+    static BooleanBuilder addSearchConjunction(PostQuery search, BooleanBuilder builder) {
         QPost post = QPost.post;
         if (search.getStatus() != null) {
             builder.and(post.status.eq(search.getStatus()));

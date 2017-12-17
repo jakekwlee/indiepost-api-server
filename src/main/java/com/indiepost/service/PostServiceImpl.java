@@ -1,16 +1,18 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.ImageSetDto;
+import com.indiepost.dto.ContributorDto;
+import com.indiepost.dto.TagDto;
 import com.indiepost.dto.analytics.PostStatDto;
-import com.indiepost.dto.post.PostDto;
-import com.indiepost.dto.post.PostSearch;
-import com.indiepost.dto.post.PostSummaryDto;
-import com.indiepost.dto.post.RelatedPostResponse;
+import com.indiepost.dto.post.*;
 import com.indiepost.enums.Types.PostStatus;
+import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.model.Post;
+import com.indiepost.model.elasticsearch.PostEs;
 import com.indiepost.repository.PostRepository;
 import com.indiepost.repository.StatRepository;
+import com.indiepost.repository.elasticsearch.PostEsRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -23,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.indiepost.mapper.PostMapper.imageSetToDto;
 import static com.indiepost.mapper.PostMapper.postToPostDto;
 
 /**
@@ -38,8 +39,14 @@ public class PostServiceImpl implements PostService {
     private final StatRepository statRepository;
 
     @Inject
-    public PostServiceImpl(PostRepository postRepository, StatRepository statRepository) {
+    private PostEsRepository postEsRepository;
+
+    @Inject
+    public PostServiceImpl(PostRepository postRepository,
+                           PostEsRepository postEsRepository,
+                           StatRepository statRepository) {
         this.postRepository = postRepository;
+        this.postEsRepository = postEsRepository;
         this.statRepository = statRepository;
     }
 
@@ -53,7 +60,24 @@ public class PostServiceImpl implements PostService {
         if (titleImage != null) {
             titleImage.getImages();
         }
-        return postToPostDto(post);
+        PostDto dto = postToPostDto(post);
+        if (!post.getPostTags().isEmpty()) {
+            List<TagDto> tags = post.getTags().stream()
+                    .map(t -> new TagDto(t.getId(), t.getName()))
+                    .collect(Collectors.toList());
+            dto.setTags(tags);
+        }
+        if (!post.getContributors().isEmpty()) {
+            List<ContributorDto> contributors = post.getContributors().stream()
+                    .map(c -> {
+                        ContributorDto contributorDto = new ContributorDto();
+                        BeanUtils.copyProperties(c, contributorDto);
+                        return contributorDto;
+                    })
+                    .collect(Collectors.toList());
+            dto.setContributors(contributors);
+        }
+        return dto;
     }
 
     @Override
@@ -74,7 +98,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Long count(PostSearch search) {
+    public Long count(PostQuery search) {
         return postRepository.count(search);
     }
 
@@ -119,7 +143,10 @@ public class PostServiceImpl implements PostService {
             relatedPostResponse.setTitle(post.getTitle());
             relatedPostResponse.setExcerpt(post.getExcerpt());
             if (post.getTitleImage() != null) {
-                relatedPostResponse.setImageUrl(post.getTitleImage().getThumbnail());
+                Image thumbnail = post.getTitleImage().getThumbnail();
+                if (thumbnail != null) {
+                    relatedPostResponse.setImageUrl(thumbnail.getFilePath());
+                }
             }
             if (isLegacy) {
                 if (isMobileApp) {
@@ -154,22 +181,39 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostSummaryDto> search(String text, int page, int maxResults) {
-        if (text.length() > 30) {
-            text = text.substring(0, 30);
-        }
-        Pageable pageable = getPageable(page, maxResults, true);
-        List<Post> posts = postRepository.search(text, pageable);
-        if (posts == null) {
-            return new ArrayList<>();
-        }
-        return toPostSummaryDtoList(posts);
+    public List<PostSummaryDto> search(PostQuery query, int page, int maxResults, boolean isDesc) {
+        Pageable pageable = getPageable(page, maxResults, isDesc);
+        return postRepository.search(query, pageable);
     }
 
     @Override
-    public List<PostSummaryDto> search(PostSearch query, int page, int maxResults, boolean isDesc) {
-        Pageable pageable = getPageable(page, maxResults, isDesc);
-        return postRepository.search(query, pageable);
+    public List<PostSummaryDto> fullTextSearch(FullTextSearchQuery query) {
+        String text = query.getText();
+        if (text.length() > 30) {
+            text = text.substring(0, 30);
+        }
+        Pageable pageable = getPageable(query.getPage(), query.getMaxResults(), true);
+        List<PostEs> postEsList = postEsRepository.search(text, PostStatus.PUBLISH.toString(), pageable);
+        if (postEsList.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Long> ids = postEsList.stream()
+                .map(p -> p.getId())
+                .collect(Collectors.toList());
+        List<PostSummaryDto> posts = postRepository.findByIds(ids);
+
+        int index = 0;
+        for (PostSummaryDto dto : posts) {
+            PostEs postEs = postEsList.get(index);
+            if (postEs.getTitle() != null) {
+                dto.setTitle(postEs.getTitle());
+            }
+            if (postEs.getExcerpt() != null) {
+                dto.setExcerpt(postEs.getExcerpt());
+            }
+            index = index + 1;
+        }
+        return posts;
     }
 
     @Override
@@ -179,25 +223,25 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostSummaryDto> findPickedPosts() {
-        PostSearch query = new PostSearch();
+        PostQuery query = new PostQuery();
         query.setPicked(true);
         return search(query, 0, 8, true);
     }
 
     @Override
     public PostSummaryDto findSplashPost() {
-        PostSearch query = new PostSearch();
+        PostQuery query = new PostQuery();
         query.setSplash(true);
         List<PostSummaryDto> posts = search(query, 0, 1, true);
-        return posts == null ? null : posts.get(0);
+        return posts.isEmpty() ? null : posts.get(0);
     }
 
     @Override
     public PostSummaryDto findFeaturePost() {
-        PostSearch query = new PostSearch();
+        PostQuery query = new PostQuery();
         query.setFeatured(true);
         List<PostSummaryDto> posts = search(query, 0, 1, true);
-        return posts == null ? null : posts.get(0);
+        return posts.isEmpty() ? null : posts.get(0);
     }
 
     private List<PostSummaryDto> toPostSummaryDtoList(List<Post> posts) {
@@ -221,8 +265,7 @@ public class PostServiceImpl implements PostService {
             dto.setCategory(post.getCategory().getSlug());
         }
         if (post.getTitleImageId() != null) {
-            ImageSetDto titleImageDto = imageSetToDto(post.getTitleImage());
-            dto.setTitleImage(titleImageDto);
+            dto.setTitleImage(post.getTitleImage());
         }
         return dto;
     }

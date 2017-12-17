@@ -12,7 +12,12 @@
         "tokenizer": {
           "seunjeon_default_tokenizer": {
             "type": "seunjeon_tokenizer",
-            "index_eojeol": false
+            "index_eojeol": false,
+            "user_words": [
+              "인디",
+              "인디포스트",
+              "밥장"
+            ]
           }
         }
       }
@@ -54,6 +59,12 @@
           "type": "text",
           "analyzer": "korean",
           "search_analyzer": "korean"
+        },
+        "suggests": {
+          "type": "completion",
+          "analyzer": "korean",
+          "search_analyzer": "korean",
+          "preserve_separators": false
         }
       }
     }
