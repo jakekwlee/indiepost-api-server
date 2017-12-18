@@ -1,8 +1,11 @@
 package com.indiepost.service;
 
 import com.indiepost.NewIndiepostApplication;
+import com.indiepost.dto.Highlight;
+import com.indiepost.dto.post.FullTextSearchQuery;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostSummaryDto;
+import com.indiepost.enums.Types;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,10 +66,12 @@ public class PostServiceTests {
     @Test
     public void fullTextSearchWorksAsExpected() {
         String text = "단편 영화";
-        List<PostSummaryDto> posts = postService.fullTextSearch(text, 0, 5);
+        FullTextSearchQuery query = new FullTextSearchQuery(text, Types.PostStatus.PUBLISH.toString(), 0, 5);
+        List<PostSummaryDto> posts = postService.fullTextSearch(query);
         assertThat(posts).isNotNull().hasSize(5);
         for (PostSummaryDto dto : posts) {
-            String titleAndExcerpt = dto.getTitle() + dto.getExcerpt();
+            Highlight highlight = dto.getHighlight();
+            String titleAndExcerpt = highlight.getTitle() + highlight.getExcerpt();
             assertThat(titleAndExcerpt).contains(Arrays.asList("em", "단편", "영화"));
         }
         printToJson(posts);

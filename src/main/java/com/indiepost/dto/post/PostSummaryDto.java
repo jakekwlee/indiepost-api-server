@@ -1,6 +1,7 @@
 package com.indiepost.dto.post;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.indiepost.dto.Highlight;
 import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
 import com.indiepost.model.ImageSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -19,11 +20,11 @@ public class PostSummaryDto {
 
     private String title;
 
+    private String excerpt;
+
     private String bylineName;
 
     private String category;
-
-    private String excerpt;
 
     @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     private LocalDateTime publishedAt;
@@ -37,6 +38,16 @@ public class PostSummaryDto {
     private boolean picked;
 
     private boolean splash;
+
+    private Highlight highlight;
+
+    public Highlight getHighlight() {
+        return highlight;
+    }
+
+    public void setHighlight(Highlight highlight) {
+        this.highlight = highlight;
+    }
 
     public ImageSet getTitleImage() {
         return titleImage;

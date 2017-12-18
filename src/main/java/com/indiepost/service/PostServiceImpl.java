@@ -1,6 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.ContributorDto;
+import com.indiepost.dto.Highlight;
 import com.indiepost.dto.TagDto;
 import com.indiepost.dto.analytics.PostStatDto;
 import com.indiepost.dto.post.*;
@@ -205,12 +206,13 @@ public class PostServiceImpl implements PostService {
         int index = 0;
         for (PostSummaryDto dto : posts) {
             PostEs postEs = postEsList.get(index);
-            if (postEs.getTitle() != null) {
-                dto.setTitle(postEs.getTitle());
+            String title = postEs.getTitle();
+            String excerpt = postEs.getExcerpt();
+            if (title == null && excerpt == null) {
+                continue;
             }
-            if (postEs.getExcerpt() != null) {
-                dto.setExcerpt(postEs.getExcerpt());
-            }
+            Highlight highlight = new Highlight(title, excerpt);
+            dto.setHighlight(highlight);
             index = index + 1;
         }
         return posts;

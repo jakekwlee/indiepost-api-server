@@ -16,7 +16,7 @@
                   "title": {
                     "query": "%1$s",
                     "analyzer": "korean",
-                    "boost": 3,
+                    "boost": 4,
                     "minimum_should_match": "4<75%"
                   }
                 }
@@ -26,7 +26,7 @@
                   "excerpt": {
                     "query": "%1$s",
                     "analyzer": "korean",
-                    "boost": 2,
+                    "boost": 3,
                     "minimum_should_match": "4<75%"
                   }
                 }
@@ -36,7 +36,7 @@
                   "content": {
                     "query": "%1$s",
                     "analyzer": "korean",
-                    "boost": 0.8,
+                    "boost": 0.6,
                     "minimum_should_match": "4<75%"
                   }
                 }
@@ -54,7 +54,6 @@
                   "contributors": {
                     "query": "%1$s",
                     "analyzer": "korean",
-                    "boost": 1.5,
                     "minimum_should_match": "4<75%"
                   }
                 }
@@ -63,7 +62,6 @@
                 "match": {
                   "tags": {
                     "query": "%1$s",
-                    "boost": 1.5,
                     "minimum_should_match": "4<75%"
                   }
                 }

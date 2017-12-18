@@ -12,9 +12,21 @@
         "tokenizer": {
           "seunjeon_default_tokenizer": {
             "type": "seunjeon_tokenizer",
-            "index_eojeol": false,
+            "index_poses": [
+              "N",
+              "SL",
+              "SH",
+              "SN",
+              "XR",
+              "V",
+              "UNK",
+              "M"
+            ],
             "user_words": [
-              "인디",
+              "인디,-100",
+              "언더,-100",
+              "일러스트,-100",
+              "일러스트레이터",
               "인디포스트",
               "밥장"
             ]
