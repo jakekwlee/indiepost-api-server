@@ -5,7 +5,6 @@ import com.indiepost.service.TagService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -26,7 +25,6 @@ public class AdminTagController {
 
     @GetMapping
     public List<TagDto> searchTags(@RequestParam String tagName) {
-        // TODO  2017-12-06 Search Tag Logic
-        return new ArrayList<>();
+        return tagService.findByNameLike(tagName);
     }
 }

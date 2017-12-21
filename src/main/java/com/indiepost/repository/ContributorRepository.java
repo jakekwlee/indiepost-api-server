@@ -19,4 +19,6 @@ public interface ContributorRepository {
     List<Contributor> findAllByOrderByCreatedAtAsc();
 
     List<Contributor> findAllByOrderByCreatedAtDesc();
+
+    List<Contributor> findByNameIn(List<String> contributorNames);
 }

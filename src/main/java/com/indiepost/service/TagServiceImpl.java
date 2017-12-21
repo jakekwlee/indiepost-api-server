@@ -80,4 +80,20 @@ public class TagServiceImpl implements TagService {
     public void deleteById(Long id) {
         tagRepository.deleteById(id);
     }
+
+    @Override
+    public List<TagDto> findByNameIn(List<String> tagNames) {
+        List<Tag> tags = tagRepository.findByNameIn(tagNames);
+        return tags.stream()
+                .map(tag -> new TagDto(tag.getId(), tag.getName()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TagDto> findByNameLike(String tagName) {
+        List<Tag> tags = tagRepository.findOneByNameLike(tagName);
+        return tags.stream()
+                .map(tag -> new TagDto(tag.getId(), tag.getName()))
+                .collect(Collectors.toList());
+    }
 }

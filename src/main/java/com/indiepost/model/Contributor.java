@@ -67,6 +67,17 @@ public class Contributor implements Serializable {
     @Column(nullable = false)
     private LocalDateTime modifiedAt;
 
+    public Contributor() {
+    }
+
+    public Contributor(String name) {
+        this.name = name;
+        LocalDateTime now = LocalDateTime.now();
+        this.setCreatedAt(now);
+        this.setModifiedAt(now);
+        this.role = ContributorRole.FeatureEditor;
+    }
+
     public Long getId() {
         return id;
     }

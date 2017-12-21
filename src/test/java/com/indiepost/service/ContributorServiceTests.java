@@ -52,6 +52,22 @@ public class ContributorServiceTests {
     }
 
     @Test
+    public void findByNamesShouldReturnContributorsWithRequestedOrder() {
+        List<String> contributorNames = Arrays.asList("이사민", "최은제", "김유영");
+        List<ContributorDto> contributors = contributorService.findByNameIn(contributorNames);
+        List<String> actualNames = contributors.stream()
+                .map(tag -> tag.getName())
+                .collect(Collectors.toList());
+
+        assertThat(contributors).isNotNull();
+        assertThat(actualNames).isEqualTo(contributorNames);
+        contributors.forEach(contributorDto ->
+                AssertionsForClassTypes.assertThat(contributorDto.getName()).isNotNull()
+        );
+        printToJson(contributors);
+    }
+
+    @Test
     public void saveContributorWorksCorrectly() {
         ContributorDto dto = new ContributorDto();
         String name = "test name";

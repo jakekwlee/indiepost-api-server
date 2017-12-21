@@ -14,6 +14,7 @@ import com.indiepost.repository.AdminPostRepository;
 import com.indiepost.repository.ContributorRepository;
 import com.indiepost.repository.TagRepository;
 import com.indiepost.repository.elasticsearch.PostEsRepository;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -126,13 +127,34 @@ public class AdminPostServiceImpl implements AdminPostService {
 
         copyDtoToPost(postRequestDto, post);
 
-        if (postRequestDto.getContributorIds() != null) {
+        if (postRequestDto.getContributors() != null) {
             List<Contributor> contributors =
-                    contributorRepository.findByIdIn(postRequestDto.getContributorIds());
+                    contributorRepository.findByNameIn(postRequestDto.getContributors());
+            List<String> contributorNames = contributors.stream().map(c -> c.getName()).collect(Collectors.toList());
+            List<String> subList = (List<String>) CollectionUtils.subtract(
+                    postRequestDto.getContributors(), contributorNames
+            );
+            if (!subList.isEmpty()) {
+                for (String name : subList) {
+                    contributorRepository.save(new Contributor(name));
+                }
+                contributors = contributorRepository.findByNameIn(postRequestDto.getContributors());
+
+            }
             addContributorsToPost(post, contributors);
         }
-        if (postRequestDto.getTagIds() != null) {
-            List<Tag> tags = tagRepository.findByIdIn(postRequestDto.getTagIds());
+        if (postRequestDto.getTags() != null) {
+            List<Tag> tags = tagRepository.findByNameIn(postRequestDto.getTags());
+            List<String> tagNames = tags.stream().map(t -> t.getName()).collect(Collectors.toList());
+            List<String> subList = (List<String>) CollectionUtils.subtract(
+                    postRequestDto.getTags(), tagNames
+            );
+            if (!subList.isEmpty()) {
+                for (String name : subList) {
+                    tagRepository.save(new Tag(name));
+                }
+                tags = tagRepository.findByNameIn(postRequestDto.getTags());
+            }
             addTagsToPost(post, tags);
         }
 
@@ -262,16 +284,16 @@ public class AdminPostServiceImpl implements AdminPostService {
             responseDto.setTitleImage(imageSetDto);
         }
         if (!post.getPostTags().isEmpty()) {
-            List<Long> tagIds = post.getPostTags().stream()
-                    .map(postTag -> postTag.getTag().getId())
+            List<String> tags = post.getPostTags().stream()
+                    .map(postTag -> postTag.getTag().getName())
                     .collect(Collectors.toList());
-            responseDto.setTagIds(tagIds);
+            responseDto.setTags(tags);
         }
         if (!post.getPostContributors().isEmpty()) {
-            List<Long> contributorIds = post.getPostContributors().stream()
-                    .map(postContributor -> postContributor.getContributor().getId())
+            List<String> contributors = post.getPostContributors().stream()
+                    .map(postContributor -> postContributor.getContributor().getName())
                     .collect(Collectors.toList());
-            responseDto.setContributorIds(contributorIds);
+            responseDto.setContributors(contributors);
         }
         return responseDto;
     }

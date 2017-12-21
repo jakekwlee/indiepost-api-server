@@ -1,5 +1,7 @@
 package com.indiepost.dto;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Created by jake on 10/8/16.
  */
@@ -7,6 +9,7 @@ public class TagDto {
 
     private Long id;
 
+    @NotNull
     private String name;
 
     public TagDto() {

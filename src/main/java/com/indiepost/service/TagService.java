@@ -23,4 +23,8 @@ public interface TagService {
     void update(TagDto tagDto);
 
     void deleteById(Long id);
+
+    List<TagDto> findByNameIn(List<String> tagNames);
+
+    List<TagDto> findByNameLike(String tagName);
 }

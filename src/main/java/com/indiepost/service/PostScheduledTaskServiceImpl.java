@@ -63,8 +63,10 @@ public class PostScheduledTaskServiceImpl implements PostScheduledTaskService {
     @Override
     public void rebuildElasticsearchIndices() {
         // metadata id 1 must be set
-        LocalDateTime indicesLastUpdated = metadataRepository.findOne(1L)
-                .getSearchIndexLastUpdated();
+        Metadata metadata = metadataRepository.findOne(1L);
+        LocalDateTime indicesLastUpdated = metadata != null ?
+                metadata.getSearchIndexLastUpdated() :
+                LocalDateTime.MIN;
 
         if (indicesLastUpdated == null) {
             indicesLastUpdated = LocalDateTime.MIN;

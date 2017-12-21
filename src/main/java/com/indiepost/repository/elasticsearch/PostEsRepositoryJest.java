@@ -345,7 +345,7 @@ public class PostEsRepositoryJest implements PostEsRepository {
                         )
                 );
 
-        String root = new JSONObject()
+        return new JSONObject()
                 .put("_source", new JSONArray()
                         .put("title")
                         .put("excerpt")
@@ -360,8 +360,6 @@ public class PostEsRepositoryJest implements PostEsRepository {
                         )
                 ).put("query", queryObject)
                 .toString();
-        System.out.println(root);
-        return root;
     }
 
     private Index prepareIndex(PostEs post) {

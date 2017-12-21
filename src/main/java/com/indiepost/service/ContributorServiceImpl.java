@@ -69,4 +69,10 @@ public class ContributorServiceImpl implements ContributorService {
     public void deleteById(Long id) {
         contributorRepository.deleteById(id);
     }
+
+    @Override
+    public List<ContributorDto> findByNameIn(List<String> contributorNames) {
+        List<Contributor> contributors = contributorRepository.findByNameIn(contributorNames);
+        return contributorsToContributorDtos(contributors);
+    }
 }

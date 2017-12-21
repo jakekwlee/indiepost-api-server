@@ -25,4 +25,7 @@ public interface TagRepository {
 
     List<TagDto> findAll(Pageable pageable);
 
+    List<Tag> findByNameIn(List<String> tagNames);
+
+    List<Tag> findOneByNameLike(String tagName);
 }

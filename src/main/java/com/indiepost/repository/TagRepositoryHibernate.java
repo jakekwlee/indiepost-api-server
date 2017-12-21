@@ -100,6 +100,32 @@ public class TagRepositoryHibernate implements TagRepository {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<Tag> findByNameIn(List<String> tagNames) {
+        List<Tag> tags = getJpaQuery()
+                .selectFrom(qTag)
+                .where(qTag.name.in(tagNames))
+                .fetch();
+        List<Tag> result = new ArrayList<>();
+        for (String name : tagNames) {
+            for (Tag tag : tags) {
+                if (name.equals(tag.getName())) {
+                    result.add(tag);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<Tag> findOneByNameLike(String tagName) {
+        return getJpaQuery()
+                .select(qTag)
+                .where(qTag.name.likeIgnoreCase(tagName))
+                .fetch();
+    }
+
     private JPAQueryFactory getJpaQuery() {
         return new JPAQueryFactory(entityManager);
     }

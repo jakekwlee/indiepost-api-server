@@ -17,4 +17,6 @@ public interface ContributorService {
     void update(ContributorDto dto);
 
     void deleteById(Long id);
+
+    List<ContributorDto> findByNameIn(List<String> contributorNames);
 }

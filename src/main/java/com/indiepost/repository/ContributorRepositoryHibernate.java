@@ -76,6 +76,25 @@ public class ContributorRepositoryHibernate implements ContributorRepository {
                 .fetch();
     }
 
+    @Override
+    public List<Contributor> findByNameIn(List<String> contributorNames) {
+        QContributor contributor = QContributor.contributor;
+        List<Contributor> contributors = getQueryFactory()
+                .selectFrom(contributor)
+                .where(contributor.name.in(contributorNames))
+                .fetch();
+        List<Contributor> result = new ArrayList<>();
+        for (String name : contributorNames) {
+            for (Contributor c : contributors) {
+                if (name.equals(c.getName())) {
+                    result.add(c);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
     private JPAQueryFactory getQueryFactory() {
         return new JPAQueryFactory(entityManager);
     }

@@ -24,4 +24,5 @@ public class AdminContributorController {
     public ContributorDto createNewContributor(@RequestBody ContributorDto contributorDto) {
         return contributorService.save(contributorDto);
     }
+    //TODO GET contributor list
 }

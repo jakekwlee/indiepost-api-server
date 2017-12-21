@@ -7,8 +7,6 @@ import com.indiepost.dto.post.AdminPostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Post;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -25,8 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 import static testHelper.JsonSerializer.printToJson;
 
 @RunWith(SpringRunner.class)
@@ -44,19 +41,17 @@ public class AdminPostServiceTests {
     @Inject
     private AdminPostService adminPostService;
 
-    protected static boolean areListContentsEqual(List a, List b) {
-        return a.containsAll(b) && b.containsAll(a);
-    }
-
     @Test
     @WithMockUser("indiepost")
     public void retrievedPostShouldContainListOfTagIds() {
         // Example Post: <세 가지 연기와 사랑: 쥘리에트 비노슈의 연기상 수상작들>
         AdminPostResponseDto responseDto = adminPostService.findOne(5789L);
         printToJson(responseDto);
-        List<Long> expectedTags = Arrays.asList(1660L, 4518L, 4519L, 4520L, 4521L, 4522L, 4523L);
+        List<String> expectedTags = Arrays.asList(
+                "프랑스", "줄리엣비노쉬", "쥘리에트비노슈", "세가지색블루", "잉글리쉬페이션트", "사랑을카피하다", "러브앤아트"
+        );
 
-        assertThat(responseDto.getTagIds())
+        assertThat(responseDto.getTags())
                 .isEqualTo(expectedTags);
     }
 
@@ -72,9 +67,9 @@ public class AdminPostServiceTests {
     @WithMockUser("indiepost")
     public void retrievedPostShouldContainListOfContributorIds() {
         AdminPostResponseDto responseDto = adminPostService.findOne(5495L);
-        List<Long> expectedContributorIds = Arrays.asList(1L, 2L);
-        assertThat(responseDto.getContributorIds())
-                .isEqualTo(expectedContributorIds);
+        List<String> expectedContributorNames = Arrays.asList("최은제", "김유영");
+        assertThat(responseDto.getContributors())
+                .isEqualTo(expectedContributorNames);
     }
 
     @Test
@@ -138,13 +133,13 @@ public class AdminPostServiceTests {
     public void allRetrievedDtoShouldHaveFieldsProperly() {
         List<AdminPostSummaryDto> results = adminPostService.find(PAGE, MAX_RESULTS, true);
         for (AdminPostSummaryDto dto : results) {
-            Assert.assertThat(dto.getTitle(), notNullValue());
-            assertTrue(StringUtils.isNotEmpty(dto.getBylineName()));
-            Assert.assertThat(dto.getCategoryName(), notNullValue());
-            Assert.assertThat(dto.getCreatorName(), notNullValue());
-            Assert.assertThat(dto.getCreatedAt(), notNullValue());
-            Assert.assertThat(dto.getModifiedAt(), notNullValue());
-            Assert.assertThat(dto.getModifiedUserName(), notNullValue());
+            assertThat(dto.getTitle()).isNotNull();
+            assertThat(dto.getBylineName()).isNotNull();
+            assertThat(dto.getCategoryName()).isNotNull();
+            assertThat(dto.getCreatorName()).isNotNull();
+            assertThat(dto.getCreatedAt()).isNotNull();
+            assertThat(dto.getModifiedAt()).isNotNull();
+            assertThat(dto.getModifiedUserName()).isNotNull();
         }
     }
 
@@ -163,12 +158,12 @@ public class AdminPostServiceTests {
         AdminPostResponseDto autosave = adminPostService.createAutosave();
         printToJson(autosave);
 
-        Assert.assertThat(autosave, notNullValue());
-        Assert.assertThat(autosave.getId(), notNullValue());
-        Assert.assertThat(autosave.getOriginalId(), nullValue());
-        Assert.assertThat(autosave.getTitle(), is(post.getTitle()));
-        Assert.assertThat(autosave.getExcerpt(), is(post.getExcerpt()));
-        Assert.assertThat(autosave.getContent(), is(post.getContent()));
+        assertThat(autosave).isNotNull();
+        assertThat(autosave.getId()).isNotNull();
+        assertThat(autosave.getOriginalId()).isNull();
+        assertThat(autosave.getTitle()).isEqualTo(post.getTitle());
+        assertThat(autosave.getExcerpt()).isEqualTo(post.getExcerpt());
+        assertThat(autosave.getContent()).isEqualTo(post.getContent());
     }
 
     @Test
@@ -179,18 +174,23 @@ public class AdminPostServiceTests {
         AdminPostResponseDto autosave = adminPostService.createAutosave(originalPostId);
         printToJson(autosave);
 
-        Assert.assertThat(autosave, notNullValue());
-        Assert.assertThat(autosave.getId(), allOf(notNullValue(), not(original.getId())));
-        Assert.assertThat(autosave.getOriginalId(), allOf(notNullValue(), is(original.getId())));
-        Assert.assertThat(autosave.getTitle(), is(original.getTitle()));
-        Assert.assertThat(autosave.getExcerpt(), is(original.getExcerpt()));
-        Assert.assertThat(autosave.getContent(), is(original.getContent()));
-        Assert.assertThat(autosave.getBylineName(), is(original.getBylineName()));
-        Assert.assertThat(autosave.getTitleImageId(), is(original.getTitleImageId()));
-        Assert.assertThat(autosave.getTitleImage(), notNullValue());
-        Assert.assertThat(autosave.getTitleImage().getId(), is(original.getTitleImageId()));
-        assertTrue(areListContentsEqual(original.getContributorIds(), autosave.getContributorIds()));
-        assertTrue(areListContentsEqual(original.getTagIds(), autosave.getTagIds()));
+        assertThat(autosave).isNotNull();
+        assertThat(autosave.getId())
+                .isNotNull()
+                .isNotEqualTo(original.getId());
+        assertThat(autosave.getOriginalId())
+                .isNotNull()
+                .isEqualTo(original.getId());
+        assertThat(autosave.getTitle()).isEqualTo(original.getTitle());
+
+        assertThat(autosave.getExcerpt()).isEqualTo(original.getExcerpt());
+        assertThat(autosave.getContent()).isEqualTo(original.getContent());
+        assertThat(autosave.getBylineName()).isEqualTo(original.getBylineName());
+        assertThat(autosave.getTitleImageId()).isEqualTo(original.getTitleImageId());
+        assertThat(autosave.getTitleImage()).isNotNull();
+        assertThat(autosave.getTitleImage().getId()).isEqualTo(original.getTitleImageId());
+        assertThat(original.getContributors()).isEqualTo(autosave.getContributors());
+        assertThat(original.getTags()).isEqualTo(autosave.getTags());
     }
 
     @Test
@@ -211,8 +211,8 @@ public class AdminPostServiceTests {
         requestDto.setTitle(RandomStringUtils.randomAlphabetic(10));
         requestDto.setExcerpt(RandomStringUtils.randomAlphabetic(10));
         requestDto.setContent(RandomStringUtils.randomAlphabetic(10));
-        requestDto.setContributorIds(Arrays.asList(1L, 2L));
-        requestDto.setTagIds(Arrays.asList(4280L, 4279L));
+        requestDto.setContributors(Arrays.asList("최은제", "김유영"));
+        requestDto.setTags(Arrays.asList("레오까락스", "미셀공드리", "단편영화"));
         requestDto.setStatus(PostStatus.AUTOSAVE.toString());
 
         // update
@@ -220,23 +220,22 @@ public class AdminPostServiceTests {
         adminPostService.update(requestDto);
 
         AdminPostResponseDto updated = adminPostService.findOne(autosave.getId());
-        Assert.assertThat(updated, notNullValue());
+        printToJson(updated);
+        assertThat(updated).isNotNull();
+        assertThat(updated.getId()).isEqualTo(requestDto.getId());
+        assertThat(updated.getOriginalId()).isEqualTo(requestDto.getOriginalId());
+        assertThat(updated.getCategoryId()).isEqualTo(requestDto.getCategoryId());
+        assertThat(updated.getTitleImageId()).isEqualTo(requestDto.getTitleImageId());
+        assertThat(updated.getTitle()).isEqualTo(requestDto.getTitle());
 
-        Assert.assertThat(updated.getId(), is(requestDto.getId()));
-        Assert.assertThat(updated.getOriginalId(), is(requestDto.getOriginalId()));
-        Assert.assertThat(updated.getCategoryId(), is(requestDto.getCategoryId()));
-        Assert.assertThat(updated.getTitleImageId(), is(requestDto.getTitleImageId()));
-        Assert.assertThat(updated.getTitle(), is(requestDto.getTitle()));
-        Assert.assertThat(updated.getExcerpt(), is(requestDto.getExcerpt()));
-        Assert.assertThat(updated.getBylineName(), is(requestDto.getBylineName()));
-        Assert.assertThat(updated.getContent(), is(requestDto.getContent()));
-        Assert.assertThat(updated.getStatus(), is(requestDto.getStatus()));
-        assertTrue(areListContentsEqual(requestDto.getTagIds(), updated.getTagIds()));
-        assertTrue(areListContentsEqual(requestDto.getContributorIds(), updated.getContributorIds()));
+        assertThat(updated.getExcerpt()).isEqualTo(requestDto.getExcerpt());
+        assertThat(updated.getBylineName()).isEqualTo(requestDto.getBylineName());
+        assertThat(updated.getContent()).isEqualTo(requestDto.getContent());
+        assertThat(updated.getStatus()).isEqualTo(requestDto.getStatus());
+        assertThat(requestDto.getTags()).isEqualTo(updated.getTags());
+        assertThat(requestDto.getContributors()).isEqualTo(updated.getContributors());
 
         log.info("Serialization start: " + updated.getId());
-        printToJson(updated);
-
     }
 
     @Test
@@ -258,8 +257,8 @@ public class AdminPostServiceTests {
         requestDto.setTitle(RandomStringUtils.randomAlphabetic(10));
         requestDto.setExcerpt(RandomStringUtils.randomAlphabetic(10));
         requestDto.setContent(RandomStringUtils.randomAlphabetic(10));
-        requestDto.setContributorIds(Arrays.asList(2L, 1L));
-        requestDto.setTagIds(Arrays.asList(3173L, 3163L, 4178L, 2287L, 2115L, 28L, 604L));
+        requestDto.setContributors(Arrays.asList("김유영", "최은제"));
+        requestDto.setTags(Arrays.asList("vaporwave", "개봉예정작", "토요일", "DJ미소시루토MC고항", "Antal", "두경"));
         requestDto.setStatus(PostStatus.PUBLISH.toString());
 
         // update
@@ -267,34 +266,24 @@ public class AdminPostServiceTests {
         adminPostService.update(requestDto);
 
         AdminPostResponseDto deleted = adminPostService.findOne(autosave.getId());
-        Assert.assertThat(deleted, nullValue());
+        assertThat(deleted).isNull();
 
         AdminPostResponseDto updatedOriginal = adminPostService.findOne(originalPostId);
 
-        Assert.assertThat(updatedOriginal.getId(), is(requestDto.getOriginalId()));
-        Assert.assertThat(updatedOriginal.getOriginalId(), nullValue());
-        Assert.assertThat(updatedOriginal.getCategoryId(), is(requestDto.getCategoryId()));
-        Assert.assertThat(updatedOriginal.getTitleImageId(), is(requestDto.getTitleImageId()));
-        Assert.assertThat(updatedOriginal.getTitle(), is(requestDto.getTitle()));
-        Assert.assertThat(updatedOriginal.getExcerpt(), is(requestDto.getExcerpt()));
-        Assert.assertThat(updatedOriginal.getBylineName(), is(requestDto.getBylineName()));
-        Assert.assertThat(updatedOriginal.getContent(), is(requestDto.getContent()));
-        Assert.assertThat(updatedOriginal.getStatus(), is(requestDto.getStatus()));
-        assertEquals(requestDto.getTagIds(), updatedOriginal.getTagIds());
-        assertTrue(areListContentsEqual(requestDto.getContributorIds(), updatedOriginal.getContributorIds()));
+        assertThat(updatedOriginal.getId()).isEqualTo(requestDto.getOriginalId());
+        assertThat(updatedOriginal.getOriginalId()).isNull();
+        assertThat(updatedOriginal.getCategoryId()).isEqualTo(requestDto.getCategoryId());
+        assertThat(updatedOriginal.getTitleImageId()).isEqualTo(requestDto.getTitleImageId());
+        assertThat(updatedOriginal.getTitle()).isEqualTo(requestDto.getTitle());
+        assertThat(updatedOriginal.getExcerpt()).isEqualTo(requestDto.getExcerpt());
+        assertThat(updatedOriginal.getBylineName()).isEqualTo(requestDto.getBylineName());
+
+        assertThat(updatedOriginal.getContent()).isEqualTo(requestDto.getContent());
+        assertThat(updatedOriginal.getStatus()).isEqualTo(requestDto.getStatus());
+        assertThat(requestDto.getTags()).isEqualTo(updatedOriginal.getTags());
+        assertThat(requestDto.getContributors()).isEqualTo(updatedOriginal.getContributors());
 
         log.info("Serialization start: " + updatedOriginal.getId());
         printToJson(updatedOriginal);
-    }
-
-    @Test
-    @WithMockUser(username = "indiepost")
-    public void emptyTrashShouldDeleteAllThePostsInTrash() {
-        adminPostService.bulkDeleteByStatus(PostStatus.TRASH);
-        List<AdminPostSummaryDto> posts = adminPostService.find(0, 1000, true);
-        for (AdminPostSummaryDto post : posts) {
-            assertThat(post.getStatus())
-                    .isNotEqualToIgnoringCase(PostStatus.TRASH.toString());
-        }
     }
 }

@@ -51,7 +51,7 @@ spring:
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:
@@ -90,4 +90,4 @@ logging:
       springframework:
         web: info
 scheduling:
-  enabled: true
+  enabled: false

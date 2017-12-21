@@ -3,12 +3,14 @@ package com.indiepost.dto;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public class ContributorDto {
 
     private Long id;
 
+    @NotNull
     private String name;
 
     private String email;
