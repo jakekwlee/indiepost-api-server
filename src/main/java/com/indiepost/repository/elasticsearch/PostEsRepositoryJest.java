@@ -9,6 +9,8 @@ import io.searchbox.core.*;
 import io.searchbox.indices.CreateIndex;
 import io.searchbox.indices.DeleteIndex;
 import io.searchbox.indices.IndicesExists;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -35,13 +37,9 @@ public class PostEsRepositoryJest implements PostEsRepository {
     @Inject
     private String indexSettings;
 
-    @Inject
-    private String searchSettings;
-
-    public PostEsRepositoryJest(JestClientFactory clientFactory, String indexSettings, String searchSettings) {
+    public PostEsRepositoryJest(JestClientFactory clientFactory, String indexSettings) {
         this.clientFactory = clientFactory;
         this.indexSettings = indexSettings;
-        this.searchSettings = searchSettings;
     }
 
     @Override
@@ -137,12 +135,8 @@ public class PostEsRepositoryJest implements PostEsRepository {
     @Override
     public List<PostEs> search(String text, String status, Pageable pageable) {
         try {
-            String query = searchSettings
-                    .replaceAll("%1\\$s", text)
-                    .replaceAll("%2\\$s", status)
-                    .replaceAll("20646201", String.valueOf(pageable.getOffset()))
-                    .replaceAll("44653877", String.valueOf(pageable.getPageSize()));
-            Search search = new Search.Builder(query)
+            String searchJSON = buildSearch(text, status, pageable);
+            Search search = new Search.Builder(searchJSON)
                     .addIndex(INDEX_NAME)
                     .addType(TYPE_NAME)
                     .build();
@@ -182,6 +176,16 @@ public class PostEsRepositoryJest implements PostEsRepository {
     }
 
     @Override
+    public void index(PostEs post) {
+        try {
+            Index index = prepareIndex(post);
+            getClient().execute(index);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    @Override
     public void bulkIndex(List<PostEs> posts) {
         if (posts.isEmpty()) {
             return;
@@ -203,16 +207,6 @@ public class PostEsRepositoryJest implements PostEsRepository {
             }
         } catch (IOException e) {
             log.error("Elasticsearch: Failed bulk index action.");
-            log.error(e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public void index(PostEs post) {
-        try {
-            Index index = prepareIndex(post);
-            getClient().execute(index);
-        } catch (IOException e) {
             log.error(e.getMessage(), e);
         }
     }
@@ -248,6 +242,11 @@ public class PostEsRepositoryJest implements PostEsRepository {
     }
 
     @Override
+    public void delete(PostEs postEs) {
+        deleteById(postEs.getId());
+    }
+
+    @Override
     public void bulkDelete(List<Long> ids) {
         if (ids.isEmpty()) {
             return;
@@ -273,9 +272,96 @@ public class PostEsRepositoryJest implements PostEsRepository {
         }
     }
 
-    @Override
-    public void delete(PostEs postEs) {
-        deleteById(postEs.getId());
+    private String buildSearch(String text, String status, Pageable pageable) {
+        JSONObject queryObject = new JSONObject()
+                .put("bool", new JSONObject()
+                        .put("filter", new JSONObject()
+                                .put("match", new JSONObject()
+                                        .put("status", status)
+                                )
+                        ).put("must", new JSONArray()
+                                .put(new JSONObject()
+                                        .put("dis_max", new JSONObject()
+                                                .put("queries", new JSONArray()
+                                                        .put(new JSONObject()
+                                                                .put("match", new JSONObject()
+                                                                        .put("title", new JSONObject()
+                                                                                .put("query", text)
+                                                                                .put("analyzer", "korean")
+                                                                                .put("boost", 4)
+                                                                                .put("minimum_should_match", "4<75%")
+                                                                        )
+                                                                )
+                                                        )
+                                                        .put(new JSONObject()
+                                                                .put("match", new JSONObject()
+                                                                        .put("excerpt", new JSONObject()
+                                                                                .put("query", text)
+                                                                                .put("analyzer", "korean")
+                                                                                .put("boost", 3)
+                                                                                .put("minimum_should_match", "4<75%")
+                                                                        )
+                                                                )
+                                                        )
+                                                        .put(new JSONObject()
+                                                                .put("match", new JSONObject()
+                                                                        .put("content", new JSONObject()
+                                                                                .put("query", text)
+                                                                                .put("analyzer", "korean")
+                                                                                .put("boost", 0.6)
+                                                                                .put("minimum_should_match", "4<75%")
+                                                                        )
+                                                                )
+                                                        )
+                                                        .put(new JSONObject()
+                                                                .put("match", new JSONObject()
+                                                                        .put("bylineName", new JSONObject()
+                                                                                .put("query", text)
+                                                                                .put("minimum_should_match", "4<75%")
+                                                                        )
+                                                                )
+                                                        )
+                                                        .put(new JSONObject()
+                                                                .put("match", new JSONObject()
+                                                                        .put("contributors", new JSONObject()
+                                                                                .put("query", text)
+                                                                                .put("analyzer", "korean")
+                                                                                .put("minimum_should_match", "4<75%")
+                                                                        )
+                                                                )
+                                                        )
+                                                        .put(new JSONObject()
+                                                                .put("match", new JSONObject()
+                                                                        .put("tags", new JSONObject()
+                                                                                .put("query", text)
+                                                                                .put("analyzer", "korean")
+                                                                                .put("minimum_should_match", "4<75%")
+                                                                        )
+                                                                )
+                                                        )
+                                                )
+                                        )
+                                )
+                        )
+                );
+
+        String root = new JSONObject()
+                .put("_source", new JSONArray()
+                        .put("title")
+                        .put("excerpt")
+                )
+                .put("from", pageable.getOffset())
+                .put("size", pageable.getPageSize())
+                .put("highlight", new JSONObject()
+                        .put("require_field_match", false)
+                        .put("fields", new JSONObject()
+                                .put("title", new JSONObject())
+                                .put("excerpt", new JSONObject())
+                        )
+                ).put("query", queryObject)
+                .toString();
+        System.out.println(root);
+        return root;
     }
 
     private Index prepareIndex(PostEs post) {

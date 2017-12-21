@@ -27,9 +27,6 @@ public class ElasticsearchConfig {
     @Value("classpath:elasticsearch/settings.json")
     private Resource indexSettings;
 
-    @Value("classpath:elasticsearch/search.json")
-    private Resource searchSettings;
-
     public String getHost() {
         return host;
     }
@@ -68,11 +65,6 @@ public class ElasticsearchConfig {
     @Bean
     public String indexSettings() {
         return getStringFromResource(indexSettings);
-    }
-
-    @Bean
-    public String searchSettings() {
-        return getStringFromResource(searchSettings);
     }
 
     private String getStringFromResource(Resource resource) {

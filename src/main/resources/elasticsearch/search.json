@@ -78,6 +78,7 @@
     }
   },
   "highlight": {
+    "require_field_match": false,
     "fields": {
       "title": {},
       "excerpt": {}
