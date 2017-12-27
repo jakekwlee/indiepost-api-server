@@ -4,7 +4,10 @@ import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
 import com.indiepost.dto.post.AdminPostSummaryDto;
 import com.indiepost.dto.post.FullTextSearchQuery;
+import com.indiepost.enums.Types;
 import com.indiepost.service.AdminPostService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -39,8 +42,9 @@ public class AdminPostController {
     }
 
     @PostMapping(value = "/search")
-    public List<AdminPostSummaryDto> search(@RequestBody FullTextSearchQuery query) {
-        return null;
+    public Page<AdminPostSummaryDto> search(@RequestBody FullTextSearchQuery query, Pageable pageable) {
+        return adminPostService.find(Types.PostStatus.valueOf(query.getStatus()), pageable);
+
 
     }
 
@@ -50,8 +54,8 @@ public class AdminPostController {
     }
 
     @GetMapping
-    public List<AdminPostSummaryDto> getPosts() {
-        return adminPostService.find(0, 1000000, true);
+    public Page<AdminPostSummaryDto> getPosts(@RequestParam("s") String status, Pageable pageable) {
+        return adminPostService.find(Types.PostStatus.valueOf(status), pageable);
     }
 
     @GetMapping(value = "/lastUpdated")

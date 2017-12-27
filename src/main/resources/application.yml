@@ -64,7 +64,7 @@ logging:
       springframework:
         web: debug
 scheduling:
-  enabled: true
+  enabled: false
 
 ---
 

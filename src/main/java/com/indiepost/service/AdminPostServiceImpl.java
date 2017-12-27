@@ -1,6 +1,7 @@
 package com.indiepost.service;
 
 import com.amazonaws.services.pinpoint.model.BadRequestException;
+import com.indiepost.dto.Highlight;
 import com.indiepost.dto.ImageSetDto;
 import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
@@ -15,9 +16,8 @@ import com.indiepost.repository.ContributorRepository;
 import com.indiepost.repository.TagRepository;
 import com.indiepost.repository.elasticsearch.PostEsRepository;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -181,36 +181,44 @@ public class AdminPostServiceImpl implements AdminPostService {
 
     // using
     @Override
-    public List<AdminPostSummaryDto> find(int page, int maxResults, boolean isDesc) {
+    public Page<AdminPostSummaryDto> find(PostStatus status, Pageable pageable) {
         User currentUser = userService.findCurrentUser();
-        Pageable pageable = getPageable(page, maxResults, isDesc);
-        return adminPostRepository.find(currentUser, pageable);
+        Pageable pageRequest = getPageable(pageable.getPageNumber(), pageable.getPageSize(), true);
+        List<AdminPostSummaryDto> result = adminPostRepository.find(currentUser, status, pageRequest);
+        Long count = adminPostRepository.count(status, currentUser);
+        if (result.isEmpty()) {
+            return new PageImpl<>(result, pageRequest, count);
+        }
+        return new PageImpl<>(result, pageRequest, count);
     }
 
-    // no usage
     @Override
-    public List<AdminPostSummaryDto> findByQuery(PostQuery query, int page, int maxResults, boolean isDesc) {
+    public Page<AdminPostSummaryDto> fullTextSearch(String text, PostStatus status,
+                                                    Pageable pageable) {
         User currentUser = userService.findCurrentUser();
-        Pageable pageable = getPageable(page, maxResults, isDesc);
-        return adminPostRepository.find(currentUser, query, pageable);
-    }
-
-    public List<AdminPostResponseDto> fullTextSearch(String text, PostStatus status,
-                                                     int page, int maxResults, boolean isDesc) {
-        Pageable pageable = new PageRequest(page, maxResults);
-        List<PostEs> postEsList = postEsRepository.search(text, status.toString(), pageable);
+        Pageable pageRequest = getPageable(pageable.getPageNumber(), pageable.getPageSize(), true);
+        List<PostEs> postEsList = postEsRepository.search(text, status, currentUser, pageRequest);
+        Integer count = postEsRepository.count(text, status, currentUser);
 
         if (postEsList.isEmpty()) {
-            return new ArrayList<>();
+            return new PageImpl<>(new ArrayList<>(), pageRequest, count);
         }
 
         List<Long> ids = postEsList.stream()
                 .map(p -> p.getId())
                 .collect(Collectors.toList());
 
-        List<AdminPostSummaryDto> dtoList = null;
-        // TODO
-        return null;
+        List<AdminPostSummaryDto> dtoList = adminPostRepository.findByIdIn(ids);
+        int index = 0;
+        for (AdminPostSummaryDto dto : dtoList) {
+            PostEs postEs = postEsList.get(index);
+            if (postEs.getTitle() == null) {
+                continue;
+            }
+            dto.setHighlight(new Highlight(postEs.getTitle()));
+            index++;
+        }
+        return new PageImpl<>(dtoList, pageRequest, count);
     }
 
     @Override

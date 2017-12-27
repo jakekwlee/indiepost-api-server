@@ -1,6 +1,7 @@
 package com.indiepost.dto.post;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.indiepost.dto.Highlight;
 import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,8 @@ public class AdminPostSummaryDto {
 
     private String modifiedUserName;
 
+    private Highlight highlight;
+
     @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     private LocalDateTime createdAt;
 
@@ -40,6 +43,14 @@ public class AdminPostSummaryDto {
     private boolean splash;
 
     private int bookmarkCount;
+
+    public Highlight getHighlight() {
+        return highlight;
+    }
+
+    public void setHighlight(Highlight highlight) {
+        this.highlight = highlight;
+    }
 
     public Long getId() {
         return id;

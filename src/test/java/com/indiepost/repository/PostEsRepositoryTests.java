@@ -3,6 +3,7 @@ package com.indiepost.repository;
 import com.indiepost.NewIndiepostApplication;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Post;
+import com.indiepost.model.User;
 import com.indiepost.model.elasticsearch.PostEs;
 import com.indiepost.repository.elasticsearch.PostEsRepository;
 import org.junit.FixMethodOrder;
@@ -31,11 +32,15 @@ import static testHelper.JsonSerializer.printToJson;
 @Transactional
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class PostEsRepositoryTests {
+
     @Inject
     private PostEsRepository postEsRepository;
 
     @Inject
     private AdminPostRepository adminPostRepository;
+
+    @Inject
+    private UserRepository userRepository;
 
     @Test
     public void connectionShouldEstablishProperly() {
@@ -109,7 +114,7 @@ public class PostEsRepositoryTests {
         String text = "무지갯빛 영화";
         List<PostEs> postEsList = postEsRepository.search(
                 text,
-                Types.PostStatus.PUBLISH.toString(),
+                Types.PostStatus.PUBLISH,
                 new PageRequest(0, 24)
         );
         assertThat(postEsList).isNotNull().hasSize(1);
@@ -127,5 +132,42 @@ public class PostEsRepositoryTests {
                 .isNotEmpty()
                 .contains("em", "영화");
         printToJson(postEsList);
+    }
+
+    @Test
+    public void searchForAdminUserWorksCorrectly() {
+        String text = "반 고흐";
+        Long userId = 12L;
+        User currentUser = userRepository.findById(userId);
+        List<PostEs> postEsList = postEsRepository.search(
+                text,
+                Types.PostStatus.AUTOSAVE,
+                currentUser,
+                new PageRequest(0, 20)
+        );
+        printToJson(postEsList);
+        assertThat(postEsList).hasSize(2);
+        for (PostEs post : postEsList) {
+            assertThat(post.getId()).isNotNull();
+            assertThat(post.getContent()).isNull();
+            assertThat(post.getStatus()).isNull();
+            assertThat(post.getTags()).hasSize(0);
+            assertThat(post.getContributors()).hasSize(0);
+            assertThat(post.getExcerpt()).isNull();
+            assertThat(post.getTitle())
+                    .isNotEmpty()
+                    .contains("em", "반", "고흐");
+        }
+    }
+
+    @Test
+    public void countShouldReturnValueExactly() {
+        User currentUser = userRepository.findById(7L);
+        Types.PostStatus status = Types.PostStatus.PUBLISH;
+        String text = "인디 음악";
+        Integer count = postEsRepository.count(text, status, currentUser);
+        List<PostEs> posts = postEsRepository.search(text, status, currentUser, new PageRequest(0, 10000));
+        assertThat(count).isNotZero().isEqualTo(posts.size());
+        printToJson(count);
     }
 }

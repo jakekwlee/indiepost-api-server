@@ -1,5 +1,7 @@
 package com.indiepost.repository.elasticsearch;
 
+import com.indiepost.enums.Types;
+import com.indiepost.model.User;
 import com.indiepost.model.elasticsearch.PostEs;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
@@ -133,7 +135,7 @@ public class PostEsRepositoryJest implements PostEsRepository {
     }
 
     @Override
-    public List<PostEs> search(String text, String status, Pageable pageable) {
+    public List<PostEs> search(String text, Types.PostStatus status, Pageable pageable) {
         try {
             String searchJSON = buildSearch(text, status, pageable);
             Search search = new Search.Builder(searchJSON)
@@ -155,6 +157,52 @@ public class PostEsRepositoryJest implements PostEsRepository {
             log.error(e.getMessage(), e);
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    public List<PostEs> search(String text, Types.PostStatus status, User currentUser, Pageable pageable) {
+        try {
+            String searchJSON = buildSearch(text, status, currentUser, pageable);
+            Search search = new Search.Builder(searchJSON)
+                    .addIndex(INDEX_NAME)
+                    .addType(TYPE_NAME)
+                    .build();
+            SearchResult result = getClient().execute(search);
+            if (result.isSucceeded()) {
+                List<SearchResult.Hit<PostEs, Void>> hits = result.getHits(PostEs.class);
+                return hits.stream()
+                        .map(hit -> mapHitToPostES(hit))
+                        .collect(Collectors.toList());
+            }
+            log.error(String.format("Elasticsearch: Failed search for: <%s>", text));
+            log.error(result.getJsonString());
+        } catch (IOException e) {
+            log.error(String.format("Elasticsearch: Failed search for: <%s>", text));
+            log.error(e.getMessage(), e);
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public Integer count(String text, Types.PostStatus status, User currentUser) {
+        try {
+            String countJSON = buildCount(text, status, currentUser);
+            Count count = new Count.Builder()
+                    .query(countJSON)
+                    .addIndex(INDEX_NAME)
+                    .addType(TYPE_NAME)
+                    .build();
+            CountResult result = getClient().execute(count);
+            if (result.isSucceeded()) {
+                return result.getCount().intValue();
+            }
+            log.error(String.format("Elasticsearch: Failed count for: <%s>", text));
+            log.error(result.getJsonString());
+        } catch (IOException e) {
+            log.error(String.format("Elasticsearch: Failed count for: <%s>", text));
+            log.error(e.getMessage(), e);
+        }
+        return 0;
     }
 
     @Override
@@ -272,80 +320,122 @@ public class PostEsRepositoryJest implements PostEsRepository {
         }
     }
 
-    private String buildSearch(String text, String status, Pageable pageable) {
-        JSONObject queryObject = new JSONObject()
-                .put("bool", new JSONObject()
-                        .put("filter", new JSONObject()
-                                .put("match", new JSONObject()
-                                        .put("status", status)
-                                )
-                        ).put("must", new JSONArray()
-                                .put(new JSONObject()
-                                        .put("dis_max", new JSONObject()
-                                                .put("queries", new JSONArray()
-                                                        .put(new JSONObject()
-                                                                .put("match", new JSONObject()
-                                                                        .put("title", new JSONObject()
-                                                                                .put("query", text)
-                                                                                .put("analyzer", "korean")
-                                                                                .put("boost", 4)
-                                                                                .put("minimum_should_match", "4<75%")
-                                                                        )
-                                                                )
+    private JSONArray getFilterContext(Types.PostStatus status) {
+        return new JSONArray()
+                .put(new JSONObject()
+                        .put("term", new JSONObject()
+                                .put("status", status.toString())
+                        )
+                );
+    }
+
+    private JSONArray getFilterContext(Types.PostStatus status, User user) {
+        JSONArray filterContext = getFilterContext(status);
+        Types.UserRole role = user.getHighestRole();
+        switch (role) {
+            case Administrator:
+                return filterContext;
+            case EditorInChief:
+            case Editor:
+                if (status.equals(Types.PostStatus.PUBLISH) ||
+                        status.equals(Types.PostStatus.FUTURE) ||
+                        status.equals(Types.PostStatus.PENDING)) {
+                    return filterContext;
+                }
+                filterContext.put(new JSONObject()
+                        .put("term", new JSONObject()
+                                .put("modifiedUserId", user.getId())
+                        )
+                );
+                return filterContext;
+            default:
+                filterContext.put(new JSONObject()
+                        .put("term", new JSONObject()
+                                .put("creatorId", user.getId())
+                        )
+                );
+                return filterContext;
+        }
+
+    }
+
+    private JSONArray getQueryContext(String text) {
+        return new JSONArray()
+                .put(new JSONObject()
+                        .put("dis_max", new JSONObject()
+                                .put("queries", new JSONArray()
+                                        .put(new JSONObject()
+                                                .put("match", new JSONObject()
+                                                        .put("title", new JSONObject()
+                                                                .put("query", text)
+                                                                .put("analyzer", "korean")
+                                                                .put("boost", 4)
+                                                                .put("minimum_should_match", "4<75%")
                                                         )
-                                                        .put(new JSONObject()
-                                                                .put("match", new JSONObject()
-                                                                        .put("excerpt", new JSONObject()
-                                                                                .put("query", text)
-                                                                                .put("analyzer", "korean")
-                                                                                .put("boost", 3)
-                                                                                .put("minimum_should_match", "4<75%")
-                                                                        )
-                                                                )
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("match", new JSONObject()
+                                                        .put("excerpt", new JSONObject()
+                                                                .put("query", text)
+                                                                .put("analyzer", "korean")
+                                                                .put("boost", 3)
+                                                                .put("minimum_should_match", "4<75%")
                                                         )
-                                                        .put(new JSONObject()
-                                                                .put("match", new JSONObject()
-                                                                        .put("content", new JSONObject()
-                                                                                .put("query", text)
-                                                                                .put("analyzer", "korean")
-                                                                                .put("boost", 0.6)
-                                                                                .put("minimum_should_match", "4<75%")
-                                                                        )
-                                                                )
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("match", new JSONObject()
+                                                        .put("content", new JSONObject()
+                                                                .put("query", text)
+                                                                .put("analyzer", "korean")
+                                                                .put("boost", 0.6)
+                                                                .put("minimum_should_match", "4<75%")
                                                         )
-                                                        .put(new JSONObject()
-                                                                .put("match", new JSONObject()
-                                                                        .put("bylineName", new JSONObject()
-                                                                                .put("query", text)
-                                                                                .put("minimum_should_match", "4<75%")
-                                                                        )
-                                                                )
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("match", new JSONObject()
+                                                        .put("bylineName", new JSONObject()
+                                                                .put("query", text)
+                                                                .put("minimum_should_match", "4<75%")
                                                         )
-                                                        .put(new JSONObject()
-                                                                .put("match", new JSONObject()
-                                                                        .put("contributors", new JSONObject()
-                                                                                .put("query", text)
-                                                                                .put("analyzer", "korean")
-                                                                                .put("minimum_should_match", "4<75%")
-                                                                        )
-                                                                )
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("match", new JSONObject()
+                                                        .put("contributors", new JSONObject()
+                                                                .put("query", text)
+                                                                .put("analyzer", "korean")
+                                                                .put("minimum_should_match", "4<75%")
                                                         )
-                                                        .put(new JSONObject()
-                                                                .put("match", new JSONObject()
-                                                                        .put("tags", new JSONObject()
-                                                                                .put("query", text)
-                                                                                .put("analyzer", "korean")
-                                                                                .put("minimum_should_match", "4<75%")
-                                                                        )
-                                                                )
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("match", new JSONObject()
+                                                        .put("tags", new JSONObject()
+                                                                .put("query", text)
+                                                                .put("analyzer", "korean")
+                                                                .put("minimum_should_match", "4<75%")
                                                         )
                                                 )
                                         )
                                 )
                         )
                 );
+    }
+
+    private String buildSearch(String text, Types.PostStatus status, Pageable pageable) {
+        JSONArray filterContext = getFilterContext(status);
+        JSONArray queryContext = getQueryContext(text);
 
         return new JSONObject()
+                .put("query", new JSONObject()
+                        .put("bool", new JSONObject()
+                                .put("filter", filterContext)
+                                .put("must", queryContext)
+                        )
+                )
                 .put("_source", new JSONArray()
                         .put("title")
                         .put("excerpt")
@@ -358,7 +448,46 @@ public class PostEsRepositoryJest implements PostEsRepository {
                                 .put("title", new JSONObject())
                                 .put("excerpt", new JSONObject())
                         )
-                ).put("query", queryObject)
+                )
+                .toString();
+    }
+
+    private String buildSearch(String text, Types.PostStatus status, User currentUser, Pageable pageable) {
+        JSONArray filterContext = getFilterContext(status, currentUser);
+        JSONArray queryContext = getQueryContext(text);
+
+        return new JSONObject()
+                .put("query", new JSONObject()
+                        .put("bool", new JSONObject()
+                                .put("filter", filterContext)
+                                .put("must", queryContext)
+                        )
+                )
+                .put("_source", new JSONArray()
+                        .put("title")
+                )
+                .put("from", pageable.getOffset())
+                .put("size", pageable.getPageSize())
+                .put("highlight", new JSONObject()
+                        .put("require_field_match", false)
+                        .put("fields", new JSONObject()
+                                .put("title", new JSONObject())
+                        )
+                )
+                .toString();
+    }
+
+    private String buildCount(String text, Types.PostStatus status, User currentUser) {
+        JSONArray filterContext = getFilterContext(status, currentUser);
+        JSONArray queryContext = getQueryContext(text);
+
+        return new JSONObject()
+                .put("query", new JSONObject()
+                        .put("bool", new JSONObject()
+                                .put("filter", filterContext)
+                                .put("must", queryContext)
+                        )
+                )
                 .toString();
     }
 
@@ -389,6 +518,7 @@ public class PostEsRepositoryJest implements PostEsRepository {
             String title = hit.highlight.get("title").get(0);
             postEs.setTitle(title);
         }
+
         if (hit.highlight.get("excerpt") != null) {
             String excerpt = hit.highlight.get("excerpt").get(0);
             postEs.setExcerpt(excerpt);

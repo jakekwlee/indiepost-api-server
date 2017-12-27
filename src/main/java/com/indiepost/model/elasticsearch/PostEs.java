@@ -27,13 +27,31 @@ public class PostEs implements Serializable {
 
     private String status;
 
-    private List<String> suggests;
+    private Long creatorId;
+
+    private Long modifiedUserId;
 
     public PostEs() {
     }
 
     public PostEs(Long id) {
         this.id = id;
+    }
+
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    public Long getModifiedUserId() {
+        return modifiedUserId;
+    }
+
+    public void setModifiedUserId(Long modifiedUserId) {
+        this.modifiedUserId = modifiedUserId;
     }
 
     public Long getId() {
@@ -114,21 +132,5 @@ public class PostEs implements Serializable {
 
     public void removeContributor(String contributor) {
         contributors.remove(contributor);
-    }
-
-    public List<String> getSuggests() {
-        return suggests;
-    }
-
-    public void setSuggests(List<String> suggests) {
-        this.suggests = suggests;
-    }
-
-    public void addSuggest(String suggest) {
-        suggests.add(suggest);
-    }
-
-    public void removeSuggest(String suggest) {
-        suggests.remove(suggest);
     }
 }

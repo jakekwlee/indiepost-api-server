@@ -29,13 +29,15 @@ public interface AdminPostRepository {
 
     List<AdminPostSummaryDto> find(User currentUser, Pageable pageable);
 
-    List<AdminPostSummaryDto> find(User currentUser, PostQuery postQuery, Pageable pageable);
+    List<AdminPostSummaryDto> find(User currentUser, Types.PostStatus status, Pageable pageable);
 
     List<String> findAllDisplayNames();
 
     Long count();
 
     Long count(PostQuery postQuery);
+
+    Long count(Types.PostStatus status, User currentUser);
 
     List<Post> findScheduledToBePublished();
 

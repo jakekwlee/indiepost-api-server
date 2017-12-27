@@ -1,5 +1,7 @@
 package com.indiepost.repository.elasticsearch;
 
+import com.indiepost.enums.Types;
+import com.indiepost.model.User;
 import com.indiepost.model.elasticsearch.PostEs;
 import org.springframework.data.domain.Pageable;
 
@@ -19,7 +21,11 @@ public interface PostEsRepository {
 
     void rebuildIndices(List<PostEs> posts);
 
-    List<PostEs> search(String text, String status, Pageable pageable);
+    List<PostEs> search(String text, Types.PostStatus status, Pageable pageable);
+
+    List<PostEs> search(String text, Types.PostStatus status, User currentUser, Pageable pageable);
+
+    Integer count(String text, Types.PostStatus status, User currentUser);
 
     PostEs findById(Long id);
 

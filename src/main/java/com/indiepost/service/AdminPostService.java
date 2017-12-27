@@ -5,6 +5,8 @@ import com.indiepost.dto.post.AdminPostResponseDto;
 import com.indiepost.dto.post.AdminPostSummaryDto;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,9 +26,10 @@ public interface AdminPostService {
 
     void deleteById(Long id);
 
-    List<AdminPostSummaryDto> find(int page, int maxResults, boolean isDesc);
+    Page<AdminPostSummaryDto> find(Types.PostStatus status, Pageable pageable);
 
-    List<AdminPostSummaryDto> findByQuery(PostQuery query, int page, int maxResults, boolean isDesc);
+    Page<AdminPostSummaryDto> fullTextSearch(String text, Types.PostStatus status,
+                                             Pageable pageable);
 
     Long count();
 

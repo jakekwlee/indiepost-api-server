@@ -12,6 +12,8 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -84,13 +86,17 @@ public class AdminPostServiceTests {
     @Test
     @WithMockUser(username = "eunjechoi")
     public void resultSetRetrievedByUserHasEditorRoleShouldNotContainOtherUsersDraftPosts() {
-        List<AdminPostSummaryDto> results = adminPostService.find(PAGE, MAX_RESULTS, true);
+        Page<AdminPostSummaryDto> results = adminPostService.find(
+                PostStatus.AUTOSAVE,
+                new PageRequest(PAGE, MAX_RESULTS)
+        );
+        printToJson(results);
         List<String> draftStatusList = Arrays.asList(
                 PostStatus.AUTOSAVE.toString(),
                 PostStatus.DRAFT.toString(),
                 PostStatus.TRASH.toString()
         );
-        List<AdminPostSummaryDto> drafts = results.stream()
+        List<AdminPostSummaryDto> drafts = results.getContent().stream()
                 .filter(post -> draftStatusList.contains(post.getStatus()))
                 .collect(Collectors.toList());
         assertThat(drafts)
@@ -108,18 +114,25 @@ public class AdminPostServiceTests {
     @Test
     @WithMockUser(username = "indiepost")
     public void retrievedResultSetShouldHaveExactlySameSizeAsExpected() {
-        List<AdminPostSummaryDto> results = adminPostService.find(PAGE, MAX_RESULTS, true);
-        assertThat(results.size())
+        Page<AdminPostSummaryDto> results = adminPostService.find(
+                PostStatus.PUBLISH, new PageRequest(PAGE, MAX_RESULTS)
+        );
+        printToJson(results);
+        assertThat(results.getContent().size())
                 .isEqualTo(MAX_RESULTS);
     }
 
     @Test
     @WithMockUser(username = "indiepost")
     public void allRetrievedDtoShouldHaveUniqueId() {
-        List<AdminPostSummaryDto> results = adminPostService.find(PAGE, MAX_RESULTS, true);
+        Page<AdminPostSummaryDto> results = adminPostService.find(
+                PostStatus.PUBLISH,
+                new PageRequest(PAGE, MAX_RESULTS)
+        );
+        printToJson(results);
         Long id = 0L;
         boolean isUnique = true;
-        for (AdminPostSummaryDto dto : results) {
+        for (AdminPostSummaryDto dto : results.getContent()) {
             if (dto.getId().equals(id)) {
                 isUnique = false;
             }
@@ -131,8 +144,12 @@ public class AdminPostServiceTests {
     @Test
     @WithMockUser(username = "eunjechoi")
     public void allRetrievedDtoShouldHaveFieldsProperly() {
-        List<AdminPostSummaryDto> results = adminPostService.find(PAGE, MAX_RESULTS, true);
-        for (AdminPostSummaryDto dto : results) {
+        Page<AdminPostSummaryDto> results = adminPostService.find(
+                PostStatus.PUBLISH,
+                new PageRequest(PAGE, MAX_RESULTS)
+        );
+        printToJson(results);
+        for (AdminPostSummaryDto dto : results.getContent()) {
             assertThat(dto.getTitle()).isNotNull();
             assertThat(dto.getBylineName()).isNotNull();
             assertThat(dto.getCategoryName()).isNotNull();

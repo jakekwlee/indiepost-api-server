@@ -194,7 +194,7 @@ public class PostServiceImpl implements PostService {
             text = text.substring(0, 30);
         }
         Pageable pageable = getPageable(query.getPage(), query.getMaxResults(), true);
-        List<PostEs> postEsList = postEsRepository.search(text, PostStatus.PUBLISH.toString(), pageable);
+        List<PostEs> postEsList = postEsRepository.search(text, PostStatus.PUBLISH, pageable);
         if (postEsList.isEmpty()) {
             return new ArrayList<>();
         }

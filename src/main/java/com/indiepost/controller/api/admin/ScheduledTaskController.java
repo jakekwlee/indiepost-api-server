@@ -22,21 +22,21 @@ public class ScheduledTaskController {
 
 
     // once per 10 min
-    @PutMapping("/post/_publish")
+    @PutMapping("/_publish_posts")
     public void publishScheduledPosts() {
         postScheduledTaskService.publishScheduledPosts();
         log.info(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ": Publish Scheduled Posts:");
     }
 
-    @PutMapping("/post/_cache_stat")
+    // once per a day
+    @PutMapping("/_rebuild_indices")
+    public void rebuildElasticsearchIndices() {
+        postScheduledTaskService.rebuildElasticsearchIndices();
+    }
+
+    @PutMapping("/_cache_stat")
     public void updateCachedPostStats() {
         postScheduledTaskService.updateCachedPostStats();
         log.info(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ": Update cached post stats.");
-    }
-
-    // once per a day
-    @PutMapping("/post/_rebuild_indices")
-    public void rebuildElasticsearchIndices() {
-        postScheduledTaskService.rebuildElasticsearchIndices();
     }
 }

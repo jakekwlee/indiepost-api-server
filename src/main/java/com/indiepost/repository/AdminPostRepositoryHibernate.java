@@ -125,11 +125,11 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
     @Override
     public List<AdminPostSummaryDto> find(User currentUser, Pageable pageable) {
-        return this.find(currentUser, null, pageable);
+        return null;
     }
 
     @Override
-    public List<AdminPostSummaryDto> find(User currentUser, PostQuery search, Pageable pageable) {
+    public List<AdminPostSummaryDto> find(User currentUser, PostStatus status, Pageable pageable) {
         JPAQuery query = getQueryFactory().from(post);
 
         addProjections(query)
@@ -142,24 +142,9 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
                 .distinct();
 
         BooleanBuilder builder = new BooleanBuilder();
-        Long userId = currentUser.getId();
-        switch (currentUser.getHighestRole()) {
-            case Administrator:
-                break;
-            case EditorInChief:
-            case Editor:
-                builder.or(post.modifiedUserId.eq(userId))
-                        .or(post.status.eq(PostStatus.PUBLISH))
-                        .or(post.status.eq(PostStatus.FUTURE))
-                        .or(post.status.eq(PostStatus.PENDING));
-                break;
-            default:
-                builder.and(post.creatorId.eq(userId));
-                break;
-        }
-        if (search != null) {
-            CriteriaUtils.addSearchConjunction(search, builder);
-        }
+        builder.and(post.status.eq(status));
+        addPrivacyCriteria(builder, status, currentUser);
+
         query.where(builder);
         return toDtoList(query.fetch());
     }
@@ -185,6 +170,18 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     public Long count(PostQuery search) {
         JPAQuery query = getQueryFactory().selectFrom(post);
         BooleanBuilder builder = CriteriaUtils.addSearchConjunction(search, new BooleanBuilder());
+        query.where(builder);
+        return query.fetchCount();
+    }
+
+    @Override
+    public Long count(PostStatus status, User currentUser) {
+        JPAQuery query = getQueryFactory().from(post);
+
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(post.status.eq(status));
+        addPrivacyCriteria(builder, status, currentUser);
+
         query.where(builder);
         return query.fetchCount();
     }
@@ -235,6 +232,25 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
                 post.category.name, post.creator.displayName, post.modifiedUser.displayName,
                 post.createdAt, post.modifiedAt, post.publishedAt, post.bookmarkCount, post.status
         );
+    }
+
+    private BooleanBuilder addPrivacyCriteria(BooleanBuilder builder, PostStatus status, User currentUser) {
+        switch (currentUser.getHighestRole()) {
+            case Administrator:
+                return builder;
+            case EditorInChief:
+            case Editor:
+                if (status.equals(PostStatus.PUBLISH) ||
+                        status.equals(PostStatus.FUTURE) ||
+                        status.equals(PostStatus.PENDING)) {
+                    return builder;
+                }
+                builder.and(post.modifiedUserId.eq(currentUser.getId()));
+                return builder;
+            default:
+                builder.and(post.creatorId.eq(currentUser.getId()));
+                return builder;
+        }
     }
 
     private List<AdminPostSummaryDto> toDtoList(List<Tuple> result) {

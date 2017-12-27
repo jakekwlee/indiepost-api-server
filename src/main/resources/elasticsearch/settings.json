@@ -60,7 +60,7 @@
           "type": "text"
         },
         "status": {
-          "type": "text"
+          "type": "keyword"
         },
         "tags": {
           "type": "text",
@@ -72,11 +72,11 @@
           "analyzer": "korean",
           "search_analyzer": "korean"
         },
-        "suggests": {
-          "type": "completion",
-          "analyzer": "korean",
-          "search_analyzer": "korean",
-          "preserve_separators": false
+        "creatorId": {
+          "type": "integer"
+        },
+        "modifiedUserId": {
+          "type": "integer"
         }
       }
     }

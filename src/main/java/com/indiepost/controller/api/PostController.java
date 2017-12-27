@@ -35,7 +35,6 @@ public class PostController {
     public List<PostSummaryDto> getPosts(
             @RequestParam("p") int page,
             @RequestParam("m") int maxResults) {
-
         return postService.find(page, maxResults, true);
     }
 

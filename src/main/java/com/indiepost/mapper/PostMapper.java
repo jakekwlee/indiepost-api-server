@@ -12,7 +12,6 @@ import com.indiepost.model.Tag;
 import com.indiepost.model.elasticsearch.PostEs;
 import org.springframework.beans.BeanUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -136,6 +135,8 @@ public class PostMapper {
         PostEs postEs = new PostEs();
         postEs.setId(post.getId());
         postEs.setTitle(post.getTitle());
+        postEs.setCreatorId(post.getCreatorId());
+        postEs.setModifiedUserId(post.getModifiedUserId());
         postEs.setBylineName(post.getBylineName());
         postEs.setExcerpt(post.getExcerpt());
         postEs.setStatus(post.getStatus().toString());
@@ -150,15 +151,6 @@ public class PostMapper {
                 .collect(Collectors.toList());
         postEs.setTags(tags);
         postEs.setContent(htmlToText(post.getContent()));
-        List<String> suggests = new ArrayList<>();
-        suggests.add(post.getBylineName());
-        if (!tags.isEmpty()) {
-            suggests.addAll(tags);
-        }
-        if (!contributors.isEmpty()) {
-            suggests.addAll(contributors);
-        }
-        postEs.setSuggests(suggests);
         return postEs;
     }
 
