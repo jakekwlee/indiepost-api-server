@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -80,8 +81,8 @@ public class PageServiceImpl implements PageService {
     public List<PageDto> find(int pageNumber, int maxResults, boolean isDesc) {
         Pageable pageable = getPageable(pageNumber, maxResults, isDesc);
         List<PageDto> pageList = pageRepository.find(pageable);
-        if (pageList.size() == 0) {
-            return null;
+        if (pageList.isEmpty()) {
+            return new ArrayList<>();
         }
         return pageList;
     }

@@ -13,6 +13,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.imgscalr.Scalr;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -126,8 +127,14 @@ abstract class AbstractImageService implements ImageService {
     }
 
     @Override
-    public List<ImageSet> findAll(int page, int maxResults) {
-        return imageRepository.findAll(new PageRequest(page, maxResults, Sort.Direction.DESC, "uploadedAt"));
+    public List<ImageSet> findAll(Pageable pageable) {
+        Pageable pageRequest = new PageRequest(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.Direction.DESC,
+                "uploadedAt"
+        );
+        return imageRepository.findAll(pageRequest);
     }
 
     @Override

@@ -84,6 +84,16 @@ public class AdminPostServiceTests {
     }
 
     @Test
+    @WithMockUser(username = "indiepost")
+    public void retrievedResultSetExample() {
+        Page<AdminPostSummaryDto> result = adminPostService.find(
+                PostStatus.DELETED,
+                new PageRequest(PAGE, MAX_RESULTS)
+        );
+        printToJson(result);
+    }
+
+    @Test
     @WithMockUser(username = "eunjechoi")
     public void resultSetRetrievedByUserHasEditorRoleShouldNotContainOtherUsersDraftPosts() {
         Page<AdminPostSummaryDto> results = adminPostService.find(

@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/admin/tag", produces = {"application/json; charset=UTF-8"})
+@RequestMapping(value = "/api/admin/tags", produces = {"application/json; charset=UTF-8"})
 public class AdminTagController {
 
     private final TagService tagService;

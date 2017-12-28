@@ -3,16 +3,14 @@ package com.indiepost.controller.api.admin;
 import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
 import com.indiepost.dto.post.AdminPostSummaryDto;
-import com.indiepost.dto.post.FullTextSearchQuery;
 import com.indiepost.enums.Types;
 import com.indiepost.service.AdminPostService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
-import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * Created by jake on 10/8/16.
@@ -36,30 +34,26 @@ public class AdminPostController {
         return adminPostService.findOne(id);
     }
 
+    @GetMapping
+    public Page<AdminPostSummaryDto> getList(
+            @RequestParam("status") String status,
+            @RequestParam(value = "query", required = false) String query,
+            Pageable pageable
+    ) {
+        Types.PostStatus postStatus = Types.PostStatus.valueOf(status.toUpperCase());
+        if (StringUtils.isNotEmpty(query)) {
+            return adminPostService.fullTextSearch(query, postStatus, pageable);
+        }
+        return adminPostService.find(postStatus, pageable);
+    }
+
     @PutMapping(value = "/{id}")
     public void update(@RequestBody AdminPostRequestDto adminPostRequestDto, @PathVariable Long id) {
         adminPostService.update(adminPostRequestDto);
     }
 
-    @PostMapping(value = "/search")
-    public Page<AdminPostSummaryDto> search(@RequestBody FullTextSearchQuery query, Pageable pageable) {
-        return adminPostService.find(Types.PostStatus.valueOf(query.getStatus()), pageable);
-
-
-    }
-
     @DeleteMapping(value = "/{id}")
     public void delete(@PathVariable Long id) {
         adminPostService.deleteById(id);
-    }
-
-    @GetMapping
-    public Page<AdminPostSummaryDto> getPosts(@RequestParam("s") String status, Pageable pageable) {
-        return adminPostService.find(Types.PostStatus.valueOf(status), pageable);
-    }
-
-    @GetMapping(value = "/lastUpdated")
-    public List<AdminPostSummaryDto> getLastUpdated() {
-        return adminPostService.findLastUpdated(LocalDateTime.now().minusDays(1));
     }
 }

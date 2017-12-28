@@ -3,6 +3,7 @@ package com.indiepost.controller.api.admin;
 import com.indiepost.model.ImageSet;
 import com.indiepost.service.ImageService;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,8 +27,8 @@ public class ImageController {
 
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<ImageSet> getImages(@RequestParam int page, @RequestParam int max) {
-        return imageService.findAll(page, max);
+    public List<ImageSet> getImages(Pageable pageable) {
+        return imageService.findAll(pageable);
     }
 
     @RequestMapping(method = RequestMethod.POST)

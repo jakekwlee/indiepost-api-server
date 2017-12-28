@@ -9,7 +9,7 @@ public class AdminInitialData {
 
     private List<UserDto> creators;
 
-    private List<String> creatorNames;
+    private List<String> bylineNames;
 
     private UserDto currentUser;
 
@@ -39,11 +39,11 @@ public class AdminInitialData {
         this.categories = categories;
     }
 
-    public List<String> getCreatorNames() {
-        return creatorNames;
+    public List<String> getBylineNames() {
+        return bylineNames;
     }
 
-    public void setCreatorNames(List<String> creatorNames) {
-        this.creatorNames = creatorNames;
+    public void setBylineNames(List<String> bylineNames) {
+        this.bylineNames = bylineNames;
     }
 }
