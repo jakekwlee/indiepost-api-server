@@ -2,8 +2,6 @@ package com.indiepost.model;
 
 import com.indiepost.enums.Types;
 import com.indiepost.model.legacy.LegacyPost;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -75,8 +73,7 @@ public class Post implements Serializable {
     @Column(nullable = false)
     private LocalDateTime publishedAt;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @Fetch(FetchMode.JOIN)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "titleImageId", insertable = false, updatable = false)
     private ImageSet titleImage;
 

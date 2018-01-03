@@ -472,6 +472,7 @@ public class PostEsRepositoryJest implements PostEsRepository {
                         .put("require_field_match", false)
                         .put("fields", new JSONObject()
                                 .put("title", new JSONObject())
+                                .put("bylineName", new JSONObject())
                         )
                 )
                 .toString();
@@ -524,6 +525,10 @@ public class PostEsRepositoryJest implements PostEsRepository {
             postEs.setExcerpt(excerpt);
         }
 
+        if (hit.highlight.get("bylineName") != null) {
+            String bylineName = hit.highlight.get("bylineName").get(0);
+            postEs.setBylineName(bylineName);
+        }
         return postEs;
     }
 

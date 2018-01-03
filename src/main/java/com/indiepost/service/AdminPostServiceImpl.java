@@ -212,10 +212,19 @@ public class AdminPostServiceImpl implements AdminPostService {
         int index = 0;
         for (AdminPostSummaryDto dto : dtoList) {
             PostEs postEs = postEsList.get(index);
-            if (postEs.getTitle() == null) {
-                continue;
+            Highlight highlight = new Highlight();
+            boolean highlightExist = false;
+            if (postEs.getTitle() != null) {
+                highlight.setTitle(postEs.getTitle());
+                highlightExist = true;
             }
-            dto.setHighlight(new Highlight(postEs.getTitle()));
+            if (postEs.getBylineName() != null) {
+                highlight.setBylineName(postEs.getBylineName());
+                highlightExist = true;
+            }
+            if (highlightExist) {
+                dto.setHighlight(highlight);
+            }
             index++;
         }
         return new PageImpl<>(dtoList, pageRequest, count);

@@ -5,6 +5,7 @@ import com.indiepost.dto.Highlight;
 import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Created by jake on 10/8/16.
@@ -43,6 +44,26 @@ public class AdminPostSummaryDto {
     private boolean splash;
 
     private int bookmarkCount;
+
+    private List<String> contributors;
+
+    private List<String> tags;
+
+    public List<String> getContributors() {
+        return contributors;
+    }
+
+    public void setContributors(List<String> contributors) {
+        this.contributors = contributors;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
 
     public Highlight getHighlight() {
         return highlight;

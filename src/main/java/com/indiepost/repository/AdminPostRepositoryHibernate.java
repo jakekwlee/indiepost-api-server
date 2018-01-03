@@ -21,6 +21,7 @@ import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.indiepost.enums.Types.isPublicStatus;
 import static com.indiepost.model.QPost.post;
@@ -119,8 +120,20 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     }
 
     @Override
-    public List<AdminPostSummaryDto> findByIdIn(List<Long> id) {
-        return null;
+    public List<AdminPostSummaryDto> findByIdIn(List<Long> ids) {
+        JPAQuery query = getQueryFactory().selectFrom(post);
+        query
+                .innerJoin(post.creator, QUser.user)
+                .innerJoin(post.modifiedUser, QUser.user)
+                .innerJoin(post.category, QCategory.category)
+                .orderBy(post.publishedAt.desc())
+                .distinct();
+
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(post.id.in(ids));
+
+        query.where(builder);
+        return postToDtoList(query.fetch());
     }
 
     @Override
@@ -130,9 +143,8 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
     @Override
     public List<AdminPostSummaryDto> find(User currentUser, PostStatus status, Pageable pageable) {
-        JPAQuery query = getQueryFactory().from(post);
-
-        addProjections(query)
+        JPAQuery query = getQueryFactory().selectFrom(post);
+        query
                 .innerJoin(post.creator, QUser.user)
                 .innerJoin(post.modifiedUser, QUser.user)
                 .innerJoin(post.category, QCategory.category)
@@ -146,7 +158,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
         addPrivacyCriteria(builder, status, currentUser);
 
         query.where(builder);
-        return toDtoList(query.fetch());
+        return postToDtoList(query.fetch());
     }
 
     @Override
@@ -253,6 +265,34 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
         }
     }
 
+    private List<AdminPostSummaryDto> postToDtoList(List<Post> posts) {
+        if (posts == null) {
+            return new ArrayList<>();
+        }
+        List<AdminPostSummaryDto> dtoList = new ArrayList<>();
+        for (Post post : posts) {
+            AdminPostSummaryDto dto = new AdminPostSummaryDto();
+            dto.setId(post.getId());
+            dto.setTitle(post.getTitle());
+            dto.setBylineName(post.getBylineName());
+            dto.setSplash(post.isSplash());
+            dto.setFeatured(post.isFeatured());
+            dto.setPicked(post.isPicked());
+            dto.setCategoryName(post.getCategory().getName());
+            dto.setCreatorName(post.getCreator().getDisplayName());
+            dto.setModifiedUserName(post.getModifiedUser().getDisplayName());
+            dto.setCreatedAt(post.getCreatedAt());
+            dto.setModifiedAt(post.getModifiedAt());
+            dto.setPublishedAt(post.getPublishedAt());
+            dto.setBookmarkCount(post.getBookmarkCount());
+            dto.setStatus(post.getStatus().toString());
+            dto.setContributors(post.getContributors().stream().map(contributor -> contributor.getName()).collect(Collectors.toList()));
+            dto.setTags(post.getTags().stream().map(tag -> tag.getName()).collect(Collectors.toList()));
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
+
     private List<AdminPostSummaryDto> toDtoList(List<Tuple> result) {
         if (result == null) {
             return new ArrayList<>();
@@ -274,6 +314,20 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
             dto.setPublishedAt(row.get(post.publishedAt));
             dto.setBookmarkCount(row.get(post.bookmarkCount));
             dto.setStatus(row.get(post.status).toString());
+//            List<PostContributor> postContributorsList = row.get(post.postContributors);
+//            if (postContributorsList != null) {
+//                List<String> contributors = postContributorsList.stream()
+//                        .map(postContributor -> postContributor.getContributor().getName())
+//                        .collect(Collectors.toList());
+//                dto.setContributors(contributors);
+//            }
+//            List<PostTag> postTags = row.get(post.postTags);
+//            if (postTags != null) {
+//                List<String> tags = postTags.stream()
+//                        .map(postTag -> postTag.getTag().getName())
+//                        .collect(Collectors.toList());
+//                dto.setTags(tags);
+//            }
             dtoList.add(dto);
         }
         return dtoList;
