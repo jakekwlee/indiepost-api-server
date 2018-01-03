@@ -14,6 +14,12 @@ public class Highlight {
 
     private String bylineName;
 
+    private String categoryName;
+
+    private String creatorName;
+
+    private String modifiedUserName;
+
     public Highlight() {
     }
 
@@ -26,6 +32,30 @@ public class Highlight {
 
         this.title = title;
         this.excerpt = excerpt;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public String getCreatorName() {
+        return creatorName;
+    }
+
+    public void setCreatorName(String creatorName) {
+        this.creatorName = creatorName;
+    }
+
+    public String getModifiedUserName() {
+        return modifiedUserName;
+    }
+
+    public void setModifiedUserName(String modifiedUserName) {
+        this.modifiedUserName = modifiedUserName;
     }
 
     public List<String> getContributors() {

@@ -12,7 +12,7 @@ public class MySQLPasswordEncoderUnitTests {
     @Test
     public void passwordEncoderShouldEncodeProperly() throws Exception {
         PasswordEncoder passwordEncoder = new MySQLPasswordEncoder();
-        String rawPassword = "admin";
+        String rawPassword = "sophie1!";
         String encodedPassword = "*4ACFE3202A5FF5CF467898FC58AAB1D615029441";
         Assert.assertEquals(encodedPassword, passwordEncoder.encode(rawPassword));
     }

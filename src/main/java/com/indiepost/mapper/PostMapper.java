@@ -140,6 +140,9 @@ public class PostMapper {
         postEs.setBylineName(post.getBylineName());
         postEs.setExcerpt(post.getExcerpt());
         postEs.setStatus(post.getStatus().toString());
+        postEs.setCategoryName(post.getCategory().getName());
+        postEs.setModifiedUserName(post.getModifiedUser().getDisplayName());
+        postEs.setCreatorName(post.getCreator().getDisplayName());
 
         List<String> contributors = post.getContributors().stream()
                 .map(c -> c.getName())

@@ -222,6 +222,18 @@ public class AdminPostServiceImpl implements AdminPostService {
                 highlight.setBylineName(postEs.getBylineName());
                 highlightExist = true;
             }
+            if (postEs.getCategoryName() != null) {
+                highlight.setCategoryName(postEs.getCategoryName());
+                highlightExist = true;
+            }
+            if (postEs.getCreatorName() != null) {
+                highlight.setCreatorName(postEs.getCreatorName());
+                highlightExist = true;
+            }
+            if (postEs.getModifiedUserName() != null) {
+                highlight.setModifiedUserName(postEs.getModifiedUserName());
+                highlightExist = true;
+            }
             if (highlightExist) {
                 dto.setHighlight(highlight);
             }

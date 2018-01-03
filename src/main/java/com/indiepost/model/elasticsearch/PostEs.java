@@ -31,11 +31,41 @@ public class PostEs implements Serializable {
 
     private Long modifiedUserId;
 
+    private String creatorName;
+
+    private String modifiedUserName;
+
+    private String categoryName;
+
     public PostEs() {
     }
 
     public PostEs(Long id) {
         this.id = id;
+    }
+
+    public String getCreatorName() {
+        return creatorName;
+    }
+
+    public void setCreatorName(String creatorName) {
+        this.creatorName = creatorName;
+    }
+
+    public String getModifiedUserName() {
+        return modifiedUserName;
+    }
+
+    public void setModifiedUserName(String modifiedUserName) {
+        this.modifiedUserName = modifiedUserName;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
     public Long getCreatorId() {

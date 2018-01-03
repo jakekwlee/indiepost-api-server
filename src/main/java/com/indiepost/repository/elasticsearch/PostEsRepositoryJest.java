@@ -425,6 +425,99 @@ public class PostEsRepositoryJest implements PostEsRepository {
                 );
     }
 
+    private JSONArray getAdminQueryContext(String text) {
+        return new JSONArray()
+                .put(new JSONObject()
+                        .put("dis_max", new JSONObject()
+                                .put("queries", new JSONArray()
+                                        .put(new JSONObject()
+                                                .put("match", new JSONObject()
+                                                        .put("title", new JSONObject()
+                                                                .put("query", text)
+                                                                .put("analyzer", "korean")
+                                                                .put("boost", 4)
+                                                                .put("minimum_should_match", "4<75%")
+                                                        )
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("match", new JSONObject()
+                                                        .put("excerpt", new JSONObject()
+                                                                .put("query", text)
+                                                                .put("analyzer", "korean")
+                                                                .put("boost", 3)
+                                                                .put("minimum_should_match", "4<75%")
+                                                        )
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("match", new JSONObject()
+                                                        .put("categoryName", new JSONObject()
+                                                                .put("query", text)
+                                                                .put("boost", 3)
+                                                                .put("minimum_should_match", "4<75%")
+                                                        )
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("match", new JSONObject()
+                                                        .put("creatorName", new JSONObject()
+                                                                .put("query", text)
+                                                                .put("boost", 3)
+                                                                .put("minimum_should_match", "4<75%")
+                                                        )
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("match", new JSONObject()
+                                                        .put("modifiedUserName", new JSONObject()
+                                                                .put("query", text)
+                                                                .put("boost", 3)
+                                                                .put("minimum_should_match", "4<75%")
+                                                        )
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("match", new JSONObject()
+                                                        .put("content", new JSONObject()
+                                                                .put("query", text)
+                                                                .put("analyzer", "korean")
+                                                                .put("boost", 0.6)
+                                                                .put("minimum_should_match", "4<75%")
+                                                        )
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("match", new JSONObject()
+                                                        .put("bylineName", new JSONObject()
+                                                                .put("query", text)
+                                                                .put("minimum_should_match", "4<75%")
+                                                        )
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("match", new JSONObject()
+                                                        .put("contributors", new JSONObject()
+                                                                .put("query", text)
+                                                                .put("analyzer", "korean")
+                                                                .put("minimum_should_match", "4<75%")
+                                                        )
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("match", new JSONObject()
+                                                        .put("tags", new JSONObject()
+                                                                .put("query", text)
+                                                                .put("analyzer", "korean")
+                                                                .put("minimum_should_match", "4<75%")
+                                                        )
+                                                )
+                                        )
+                                )
+                        )
+                );
+    }
+
     private String buildSearch(String text, Types.PostStatus status, Pageable pageable) {
         JSONArray filterContext = getFilterContext(status);
         JSONArray queryContext = getQueryContext(text);
@@ -454,7 +547,7 @@ public class PostEsRepositoryJest implements PostEsRepository {
 
     private String buildSearch(String text, Types.PostStatus status, User currentUser, Pageable pageable) {
         JSONArray filterContext = getFilterContext(status, currentUser);
-        JSONArray queryContext = getQueryContext(text);
+        JSONArray queryContext = getAdminQueryContext(text);
 
         return new JSONObject()
                 .put("query", new JSONObject()
@@ -473,6 +566,9 @@ public class PostEsRepositoryJest implements PostEsRepository {
                         .put("fields", new JSONObject()
                                 .put("title", new JSONObject())
                                 .put("bylineName", new JSONObject())
+                                .put("categoryName", new JSONObject())
+                                .put("creatorName", new JSONObject())
+                                .put("modifiedUserName", new JSONObject())
                         )
                 )
                 .toString();
@@ -528,6 +624,21 @@ public class PostEsRepositoryJest implements PostEsRepository {
         if (hit.highlight.get("bylineName") != null) {
             String bylineName = hit.highlight.get("bylineName").get(0);
             postEs.setBylineName(bylineName);
+        }
+
+        if (hit.highlight.get("categoryName") != null) {
+            String categoryName = hit.highlight.get("categoryName").get(0);
+            postEs.setCategoryName(categoryName);
+        }
+
+        if (hit.highlight.get("creatorName") != null) {
+            String creatorName = hit.highlight.get("creatorName").get(0);
+            postEs.setCreatorName(creatorName);
+        }
+
+        if (hit.highlight.get("modifiedUserName") != null) {
+            String modifiedUserName = hit.highlight.get("modifiedUserName").get(0);
+            postEs.setModifiedUserName(modifiedUserName);
         }
         return postEs;
     }

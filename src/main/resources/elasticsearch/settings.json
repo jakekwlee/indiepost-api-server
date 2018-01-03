@@ -77,6 +77,21 @@
         },
         "modifiedUserId": {
           "type": "integer"
+        },
+        "categoryName": {
+          "type": "text",
+          "analyzer": "korean",
+          "search_analyzer": "korean"
+        },
+        "creatorName": {
+          "type": "text",
+          "analyzer": "korean",
+          "search_analyzer": "korean"
+        },
+        "modifiedUserName": {
+          "type": "text",
+          "analyzer": "korean",
+          "search_analyzer": "korean"
         }
       }
     }
