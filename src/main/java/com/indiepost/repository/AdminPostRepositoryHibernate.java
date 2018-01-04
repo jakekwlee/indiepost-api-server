@@ -45,7 +45,12 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
     @Override
     public Post findOne(Long id) {
-        return entityManager.find(Post.class, id);
+        return getQueryFactory()
+                .selectFrom(post)
+                .leftJoin(post.titleImage, QImageSet.imageSet)
+                .fetchJoin()
+                .where(post.id.eq(id))
+                .fetchOne();
     }
 
     @Override
@@ -126,14 +131,22 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
                 .innerJoin(post.creator, QUser.user)
                 .innerJoin(post.modifiedUser, QUser.user)
                 .innerJoin(post.category, QCategory.category)
-                .orderBy(post.publishedAt.desc())
                 .distinct();
 
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(post.id.in(ids));
 
         query.where(builder);
-        return postToDtoList(query.fetch());
+        List<Post> posts = query.fetch();
+        List<Post> result = ids.stream().map(id -> {
+            for (Post post : posts) {
+                if (id.equals(post.getId())) {
+                    return post;
+                }
+            }
+            return null;
+        }).collect(Collectors.toList());
+        return postToDtoList(result);
     }
 
     @Override

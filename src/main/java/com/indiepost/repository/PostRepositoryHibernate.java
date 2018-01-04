@@ -32,13 +32,20 @@ public class PostRepositoryHibernate implements PostRepository {
 
     @Override
     public Post findById(Long id) {
-        return entityManager.find(Post.class, id);
+        return getQueryFactory()
+                .selectFrom(post)
+                .leftJoin(post.titleImage, QImageSet.imageSet)
+                .fetchJoin()
+                .where(post.id.eq(id))
+                .fetchOne();
     }
 
     @Override
     public Post findByLegacyId(Long id) {
         return getQueryFactory()
                 .selectFrom(post)
+                .leftJoin(post.titleImage, QImageSet.imageSet)
+                .fetchJoin()
                 .where(post.legacyPostId.eq(id))
                 .fetchOne();
     }
