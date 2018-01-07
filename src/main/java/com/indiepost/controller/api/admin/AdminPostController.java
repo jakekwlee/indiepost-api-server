@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 
+import static com.indiepost.enums.Types.isPublicStatus;
+
 /**
  * Created by jake on 10/8/16.
  */
@@ -28,10 +30,14 @@ public class AdminPostController {
 
     @GetMapping(value = "/{id}")
     public AdminPostResponseDto get(@PathVariable Long id, @RequestParam(defaultValue = "false") boolean edit) {
+        AdminPostResponseDto post = adminPostService.findOne(id);
         if (edit) {
-            return adminPostService.createAutosave(id);
+            Types.PostStatus postStatus = Types.PostStatus.valueOf(post.getStatus());
+            if (isPublicStatus(postStatus)) {
+                return adminPostService.createAutosave(id);
+            }
         }
-        return adminPostService.findOne(id);
+        return post;
     }
 
     @GetMapping
