@@ -45,26 +45,6 @@ public class AdminPostSummaryDto {
 
     private int bookmarkCount;
 
-    private List<String> contributors;
-
-    private List<String> tags;
-
-    public List<String> getContributors() {
-        return contributors;
-    }
-
-    public void setContributors(List<String> contributors) {
-        this.contributors = contributors;
-    }
-
-    public List<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
-
     public Highlight getHighlight() {
         return highlight;
     }

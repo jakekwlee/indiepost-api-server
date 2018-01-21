@@ -303,8 +303,6 @@ public class AdminPostServiceImpl implements AdminPostService {
         responseDto.setFeatured(post.isFeatured());
         responseDto.setSplash(post.isSplash());
 
-        responseDto.setBookmarkCount(post.getBookmarkCount());
-
         if (post.getOriginalId() != null) {
             responseDto.setOriginalId(post.getOriginalId());
         }

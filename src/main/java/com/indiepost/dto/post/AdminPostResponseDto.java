@@ -19,8 +19,6 @@ public class AdminPostResponseDto extends AdminPostRequestDto {
 
     private ImageSetDto titleImage;
 
-    private int bookmarkCount = 0;
-
     private Long creatorId;
 
     private Long modifiedUserId;
@@ -47,14 +45,6 @@ public class AdminPostResponseDto extends AdminPostRequestDto {
 
     public void setTitleImage(ImageSetDto titleImage) {
         this.titleImage = titleImage;
-    }
-
-    public int getBookmarkCount() {
-        return bookmarkCount;
-    }
-
-    public void setBookmarkCount(int bookmarkCount) {
-        this.bookmarkCount = bookmarkCount;
     }
 
     public Long getCreatorId() {

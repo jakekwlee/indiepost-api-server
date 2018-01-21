@@ -127,7 +127,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     @Override
     public List<AdminPostSummaryDto> findByIdIn(List<Long> ids) {
         JPAQuery query = getQueryFactory().selectFrom(post);
-        query
+        addProjections(query)
                 .innerJoin(post.creator, QUser.user)
                 .innerJoin(post.modifiedUser, QUser.user)
                 .innerJoin(post.category, QCategory.category)
@@ -137,16 +137,16 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
         builder.and(post.id.in(ids));
 
         query.where(builder);
-        List<Post> posts = query.fetch();
-        List<Post> result = ids.stream().map(id -> {
-            for (Post post : posts) {
+        List<Tuple> rows = query.fetch();
+        List<AdminPostSummaryDto> posts = toDtoList(rows);
+        return ids.stream().map(id -> {
+            for (AdminPostSummaryDto post : posts) {
                 if (id.equals(post.getId())) {
                     return post;
                 }
             }
             return null;
         }).collect(Collectors.toList());
-        return postToDtoList(result);
     }
 
     @Override
@@ -157,7 +157,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     @Override
     public List<AdminPostSummaryDto> find(User currentUser, PostStatus status, Pageable pageable) {
         JPAQuery query = getQueryFactory().selectFrom(post);
-        query
+        addProjections(query)
                 .innerJoin(post.creator, QUser.user)
                 .innerJoin(post.modifiedUser, QUser.user)
                 .innerJoin(post.category, QCategory.category)
@@ -171,7 +171,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
         addPrivacyCriteria(builder, status, currentUser);
 
         query.where(builder);
-        return postToDtoList(query.fetch());
+        return toDtoList(query.fetch());
     }
 
     @Override
@@ -259,22 +259,21 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
         );
     }
 
-    private BooleanBuilder addPrivacyCriteria(BooleanBuilder builder, PostStatus status, User currentUser) {
+    private void addPrivacyCriteria(BooleanBuilder builder, PostStatus status, User currentUser) {
         switch (currentUser.getHighestRole()) {
             case Administrator:
-                return builder;
+                return;
             case EditorInChief:
             case Editor:
                 if (status.equals(PostStatus.PUBLISH) ||
                         status.equals(PostStatus.FUTURE) ||
                         status.equals(PostStatus.PENDING)) {
-                    return builder;
+                    return;
                 }
                 builder.and(post.modifiedUserId.eq(currentUser.getId()));
-                return builder;
+                return;
             default:
                 builder.and(post.creatorId.eq(currentUser.getId()));
-                return builder;
         }
     }
 
@@ -299,8 +298,6 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
             dto.setPublishedAt(post.getPublishedAt());
             dto.setBookmarkCount(post.getBookmarkCount());
             dto.setStatus(post.getStatus().toString());
-            dto.setContributors(post.getContributors().stream().map(contributor -> contributor.getName()).collect(Collectors.toList()));
-            dto.setTags(post.getTags().stream().map(tag -> tag.getName()).collect(Collectors.toList()));
             dtoList.add(dto);
         }
         return dtoList;

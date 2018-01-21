@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
 import com.indiepost.jackson.UtcStringToLocalDateTimeDeserializer;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  */
 public class AdminPostRequestDto {
 
+    @NotNull
     private Long id;
 
     private Long originalId;
