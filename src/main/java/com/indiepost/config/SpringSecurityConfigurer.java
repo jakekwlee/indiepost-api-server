@@ -2,6 +2,7 @@ package com.indiepost.config;
 
 import com.indiepost.filter.JWTAuthenticationFilter;
 import com.indiepost.repository.UserRepository;
+import com.indiepost.security.MySQLPasswordEncoder;
 import com.indiepost.service.CustomUserDetailService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,15 +30,12 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
     private static final String SPRING_SECURITY_EXPRESSION =
             "hasAuthority('Editor')";
 
-    private final PasswordEncoder passwordEncoder;
-
     private final UserRepository userRepository;
 
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
 
     @Inject
-    public SpringSecurityConfigurer(PasswordEncoder passwordEncoder, UserRepository userRepository, JWTAuthenticationFilter jwtAuthenticationFilter) {
-        this.passwordEncoder = passwordEncoder;
+    public SpringSecurityConfigurer(UserRepository userRepository, JWTAuthenticationFilter jwtAuthenticationFilter) {
         this.userRepository = userRepository;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
@@ -45,7 +43,12 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(this.userDetailsServiceBean())
-                .passwordEncoder(passwordEncoder);
+                .passwordEncoder(passwordEncoder());
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new MySQLPasswordEncoder();
     }
 
     @Bean(name = BeanIds.AUTHENTICATION_MANAGER)

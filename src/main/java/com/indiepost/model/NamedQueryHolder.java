@@ -310,7 +310,7 @@ import javax.persistence.*;
                         "LEFT OUTER JOIN LegacyStats l ON p.id = l.postId " +
                         "LEFT OUTER JOIN Stats s ON s.postId = p.id " +
                         "INNER JOIN Categories c ON p.categoryId = c.id " +
-                        "AND p.status = 'PUBLISH' " +
+                        "WHERE p.status = 'PUBLISH' " +
                         "GROUP BY p.id " +
                         "ORDER BY p.publishedAt DESC"
         )
