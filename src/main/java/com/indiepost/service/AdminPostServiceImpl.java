@@ -10,7 +10,6 @@ import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.*;
 import com.indiepost.model.elasticsearch.PostEs;
-import com.indiepost.model.legacy.LegacyPost;
 import com.indiepost.repository.AdminPostRepository;
 import com.indiepost.repository.ContributorRepository;
 import com.indiepost.repository.TagRepository;
@@ -156,20 +155,6 @@ public class AdminPostServiceImpl implements AdminPostService {
                 tags = tagRepository.findByNameIn(postRequestDto.getTags());
             }
             addTagsToPost(post, tags);
-        }
-
-        LegacyPost legacyPost = post.getLegacyPost();
-        if (isPublicStatus(post.getStatus())) {
-            if (legacyPost == null) {
-                legacyPost = new LegacyPost();
-                post.setLegacyPost(legacyPost);
-            }
-            legacyPost.setProperties(post);
-        } else {
-            if (legacyPost == null) {
-                return;
-            }
-            post.setLegacyPost(null);
         }
     }
 

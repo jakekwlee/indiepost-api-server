@@ -10,7 +10,7 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @PropertySource("classpath:webapp-${spring.profiles.active}.properties")
 @ConfigurationProperties(prefix = "webapp.jwt")
-public class JwtConfig {
+public class JWTConfig {
 
     private String tokenPrefix;
 
@@ -19,6 +19,8 @@ public class JwtConfig {
     private long tokenExpiration;
 
     private long rememberMeExpiration;
+
+    private String signingSecret = System.getenv("AUTH0_SECRET");
 
     public String getTokenPrefix() {
         return tokenPrefix;
@@ -50,5 +52,13 @@ public class JwtConfig {
 
     public void setRememberMeExpiration(long rememberMeExpiration) {
         this.rememberMeExpiration = rememberMeExpiration;
+    }
+
+    public String getSigningSecret() {
+        return signingSecret;
+    }
+
+    public void setSigningSecret(String signingSecret) {
+        this.signingSecret = signingSecret;
     }
 }

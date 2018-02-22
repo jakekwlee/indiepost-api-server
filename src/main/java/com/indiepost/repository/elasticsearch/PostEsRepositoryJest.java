@@ -234,6 +234,7 @@ public class PostEsRepositoryJest implements PostEsRepository {
     }
 
     @Override
+    // TODO Move to lambda function
     public void bulkIndex(List<PostEs> posts) {
         if (posts.isEmpty()) {
             return;

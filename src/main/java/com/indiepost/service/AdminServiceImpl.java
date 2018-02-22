@@ -26,12 +26,15 @@ public class AdminServiceImpl implements AdminService {
 
     private final UserService userService;
 
+    private final TagService tagService;
+
     @Inject
     public AdminServiceImpl(AdminPostService adminPostService, CategoryService categoryService,
-                            UserService userService) {
+                            UserService userService, TagService tagService) {
         this.adminPostService = adminPostService;
         this.categoryService = categoryService;
         this.userService = userService;
+        this.tagService = tagService;
     }
 
     @Override
@@ -58,6 +61,7 @@ public class AdminServiceImpl implements AdminService {
         AdminInitialData adminInitialData = new AdminInitialData();
         adminInitialData.setCurrentUser(userToUserDto(currentUser));
         adminInitialData.setCreators(getUserDtoList(UserRole.Author));
+        adminInitialData.setTags(tagService.findAll(0, 9999999));
         adminInitialData.setCategories(categoryService.getDtoList());
         adminInitialData.setBylineNames(adminPostService.findAllBylineNames());
         return adminInitialData;

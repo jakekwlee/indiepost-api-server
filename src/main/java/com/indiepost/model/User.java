@@ -28,7 +28,7 @@ public class User implements Serializable {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    @Size(min = 4, max = 30)
+    @Size(min = 4, max = 100)
     private String username;
 
     @Column(nullable = false)

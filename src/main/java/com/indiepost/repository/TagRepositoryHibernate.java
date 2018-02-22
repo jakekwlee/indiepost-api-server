@@ -88,6 +88,7 @@ public class TagRepositoryHibernate implements TagRepository {
     public List<TagDto> findAll(Pageable pageable) {
         List<Tuple> tupleList = getJpaQuery()
                 .select(qTag.id, qTag.name)
+                .from(QTag.tag)
                 .orderBy(qTag.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

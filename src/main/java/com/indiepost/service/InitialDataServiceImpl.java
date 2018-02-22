@@ -30,7 +30,7 @@ public class InitialDataServiceImpl implements InitialDataService {
 
     @Inject
     public InitialDataServiceImpl(CategoryService categoryService, UserService userService,
-                                  PostService postService, PageService pageService, AppConfig config) {
+                                  PostService postService, PageService pageService, TagService tagService, AppConfig config) {
         this.categoryService = categoryService;
         this.userService = userService;
         this.postService = postService;
