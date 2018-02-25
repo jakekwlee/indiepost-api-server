@@ -58,14 +58,6 @@ public class UserRepositoryHibernate implements UserRepository {
     }
 
     @Override
-    public User findByUsernameAndPassword(String username, String password) {
-        return (User) getCriteria()
-                .add(Restrictions.eq("username", username))
-                .add(Restrictions.eq("password", password))
-                .uniqueResult();
-    }
-
-    @Override
     public User findCurrentUser() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();

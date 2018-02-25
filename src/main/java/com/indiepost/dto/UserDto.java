@@ -1,10 +1,8 @@
 package com.indiepost.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.indiepost.enums.Types.UserGender;
 import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,15 +24,23 @@ public class UserDto {
     private LocalDateTime joinedAt;
 
     @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
-    private LocalDate birthday;
+    private LocalDateTime lastUpdatedAt;
 
     private String profile;
 
     private String picture;
 
-    private UserGender gender;
+    private String gender;
 
     private List<String> roles;
+
+    public LocalDateTime getLastUpdatedAt() {
+        return lastUpdatedAt;
+    }
+
+    public void setLastUpdatedAt(LocalDateTime lastUpdatedAt) {
+        this.lastUpdatedAt = lastUpdatedAt;
+    }
 
     public Long getId() {
         return id;
@@ -76,14 +82,6 @@ public class UserDto {
         this.joinedAt = joinedAt;
     }
 
-    public LocalDate getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
-    }
-
     public String getProfile() {
         return profile;
     }
@@ -100,14 +98,6 @@ public class UserDto {
         this.picture = picture;
     }
 
-    public UserGender getGender() {
-        return gender;
-    }
-
-    public void setGender(UserGender gender) {
-        this.gender = gender;
-    }
-
     public List<String> getRoles() {
         return roles;
     }
@@ -121,5 +111,13 @@ public class UserDto {
             this.roles = new ArrayList<>();
         }
         this.roles.add(role);
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }

@@ -44,7 +44,7 @@ public class AdminPostServiceTests {
     private AdminPostService adminPostService;
 
     @Test
-    @WithMockUser("indiepost")
+    @WithMockUser("auth0|5a88547af5c8213cb27caf41")
     public void retrievedPostShouldContainListOfTagIds() {
         // Example Post: <세 가지 연기와 사랑: 쥘리에트 비노슈의 연기상 수상작들>
         AdminPostResponseDto responseDto = adminPostService.findOne(5789L);
@@ -58,7 +58,7 @@ public class AdminPostServiceTests {
     }
 
     @Test
-    @WithMockUser("indiepost")
+    @WithMockUser("auth0|5a88547af5c8213cb27caf41")
     public void retrievedPostShouldContainProperTitleImage() {
         AdminPostResponseDto responseDto = adminPostService.findOne(1945L);
         assertThat(responseDto.getTitleImage())
@@ -66,7 +66,7 @@ public class AdminPostServiceTests {
     }
 
     @Test
-    @WithMockUser("indiepost")
+    @WithMockUser("auth0|5a88547af5c8213cb27caf41")
     public void retrievedPostShouldContainListOfContributorIds() {
         AdminPostResponseDto responseDto = adminPostService.findOne(5495L);
         List<String> expectedContributorNames = Arrays.asList("최은제", "김유영");
@@ -75,7 +75,7 @@ public class AdminPostServiceTests {
     }
 
     @Test
-    @WithMockUser(username = "indiepost")
+    @WithMockUser(username = "auth0|5a88547af5c8213cb27caf41")
     public void findOneShouldReturnAnAdminPostResponseDtoProperly() {
         AdminPostResponseDto responseDto = adminPostService.findOne(5891L);
         printToJson(responseDto);
@@ -84,7 +84,7 @@ public class AdminPostServiceTests {
     }
 
     @Test
-    @WithMockUser(username = "indiepost")
+    @WithMockUser(username = "auth0|5a88547af5c8213cb27caf41")
     public void retrievedResultSetExample() {
         Page<AdminPostSummaryDto> result = adminPostService.find(
                 PostStatus.DELETED,
@@ -122,7 +122,7 @@ public class AdminPostServiceTests {
     }
 
     @Test
-    @WithMockUser(username = "indiepost")
+    @WithMockUser(username = "auth0|5a88547af5c8213cb27caf41")
     public void retrievedResultSetShouldHaveExactlySameSizeAsExpected() {
         Page<AdminPostSummaryDto> results = adminPostService.find(
                 PostStatus.PUBLISH, new PageRequest(PAGE, MAX_RESULTS)
@@ -133,7 +133,7 @@ public class AdminPostServiceTests {
     }
 
     @Test
-    @WithMockUser(username = "indiepost")
+    @WithMockUser(username = "auth0|5a88547af5c8213cb27caf41")
     public void allRetrievedDtoShouldHaveUniqueId() {
         Page<AdminPostSummaryDto> results = adminPostService.find(
                 PostStatus.PUBLISH,

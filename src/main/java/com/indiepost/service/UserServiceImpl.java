@@ -43,9 +43,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(User user) {
-        String rawPassword = user.getPassword();
-        String encodedPassword = passwordEncoder.encode(rawPassword);
-        user.setPassword(encodedPassword);
         userRepository.save(user);
     }
 
@@ -57,14 +54,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(User user) {
         userRepository.delete(user);
-    }
-
-    @Override
-    public void updatePassword(String username, String oldPassword, String newPassword) {
-        User user = findByUsername(username, oldPassword);
-        String encodedPassword = passwordEncoder.encode(newPassword);
-        user.setPassword(encodedPassword);
-        userRepository.save(user);
     }
 
     @Override
@@ -80,12 +69,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
-    }
-
-    @Override
-    public User findByUsername(String username, String password) {
-        String encodedPassword = passwordEncoder.encode(password);
-        return userRepository.findByUsernameAndPassword(username, encodedPassword);
     }
 
     @Override

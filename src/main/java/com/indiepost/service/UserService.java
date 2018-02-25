@@ -19,15 +19,11 @@ public interface UserService {
 
     void delete(User user);
 
-    void updatePassword(String username, String oldPassword, String newPassword);
-
     User findCurrentUser();
 
     User findById(Long id);
 
     User findByUsername(String username);
-
-    User findByUsername(String username, String password);
 
     boolean isUsernameExist(String username);
 

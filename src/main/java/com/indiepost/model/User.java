@@ -1,6 +1,5 @@
 package com.indiepost.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.indiepost.enums.Types.UserGender;
 import com.indiepost.enums.Types.UserRole;
 import com.indiepost.enums.Types.UserState;
@@ -10,7 +9,6 @@ import javax.persistence.*;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,13 +26,8 @@ public class User implements Serializable {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    @Size(min = 4, max = 100)
+    @Size(min = 4, max = 200)
     private String username;
-
-    @Column(nullable = false)
-    @Size(min = 3, max = 50)
-    @JsonIgnore
-    private String password;
 
     @Size(max = 300)
     private String profile;
@@ -53,14 +46,15 @@ public class User implements Serializable {
     @Column(nullable = false)
     private LocalDateTime joinedAt;
 
+    @Column(nullable = false)
+    private LocalDateTime lastUpdatedAt;
+
+    @Column(nullable = false)
+    private LocalDateTime lastLoggedIn;
+
     @Pattern(regexp = "^01[\\d]{8,9}")
     @Size(min = 7, max = 15)
     private String phone;
-
-    @Size(max = 500)
-    private String uid;
-
-    private LocalDate birthday;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -137,14 +131,6 @@ public class User implements Serializable {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -175,22 +161,6 @@ public class User implements Serializable {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    public LocalDate getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
     }
 
     public UserState getState() {
@@ -227,5 +197,21 @@ public class User implements Serializable {
 
     public void setPicture(String picture) {
         this.picture = picture;
+    }
+
+    public LocalDateTime getLastUpdatedAt() {
+        return lastUpdatedAt;
+    }
+
+    public void setLastUpdatedAt(LocalDateTime lastUpdatedAt) {
+        this.lastUpdatedAt = lastUpdatedAt;
+    }
+
+    public LocalDateTime getLastLoggedIn() {
+        return lastLoggedIn;
+    }
+
+    public void setLastLoggedIn(LocalDateTime lastLoggedIn) {
+        this.lastLoggedIn = lastLoggedIn;
     }
 }
