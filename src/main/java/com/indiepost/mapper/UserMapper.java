@@ -1,6 +1,7 @@
 package com.indiepost.mapper;
 
 import com.indiepost.dto.UserDto;
+import com.indiepost.enums.Types;
 import com.indiepost.model.Role;
 import com.indiepost.model.User;
 import org.springframework.beans.BeanUtils;
@@ -14,7 +15,23 @@ import java.util.stream.Collectors;
 public class UserMapper {
 
     public static User userDtoToUser(UserDto userDto) {
-        return null;
+        User user = new User();
+        userDtoToUser(userDto, user);
+        return user;
+    }
+
+    public static void userDtoToUser(UserDto userDto, User user) {
+        user.setUsername(userDto.getUsername());
+        user.setDisplayName(userDto.getDisplayName());
+        user.setEmail(userDto.getEmail());
+        user.setPicture(userDto.getPicture());
+        user.setUpdatedAt(userDto.getLastUpdatedAt());
+        if (userDto.getGender() == null) {
+            userDto.setGender("UNIDENTIFIED");
+        }
+        Types.UserGender gender = Types.UserGender.valueOf(userDto.getGender());
+        user.setGender(gender);
+        // do not map roles
     }
 
     public static UserDto userToUserDto(User user) {
@@ -23,6 +40,7 @@ public class UserMapper {
         List<String> roles = user.getRoles().stream()
                 .map(Role::getName)
                 .collect(Collectors.toList());
+        userDto.setGender(user.getGender().toString());
         userDto.setRoles(roles);
         return userDto;
     }

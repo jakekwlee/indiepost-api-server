@@ -1,6 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.UserDto;
+import com.indiepost.dto.UserUpdateDto;
 import com.indiepost.enums.Types.UserGender;
 import com.indiepost.enums.Types.UserRole;
 import com.indiepost.enums.Types.UserState;
@@ -17,9 +18,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.indiepost.mapper.UserMapper.userDtoToUser;
+import static com.indiepost.mapper.UserMapper.userToUserDto;
 
 /**
  * Created by jake on 7/27/16.
@@ -158,6 +164,81 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getDtoList(UserRole role, int page, int maxResults, boolean isDesc) {
         return getDtoList(this.findByRolesEnum(role, page, maxResults, isDesc));
+    }
+
+    @Override
+    public UserUpdateDto createOrUpdate(UserDto dto) {
+        User user = findCurrentUser();
+        LocalDateTime now = LocalDateTime.now();
+
+        // when user is new user
+        if (user == null) {
+            user = userDtoToUser(dto);
+            user.setJoinedAt(now);
+            user.setLastLogin(now);
+            addRolesToUser(user, dto.getRoles());
+            userRepository.save(user);
+            return new UserUpdateDto(true, userToUserDto(user));
+        }
+
+        // TODO error 401
+        if (!user.getUsername().equals(dto.getUsername())) {
+            return null;
+        }
+
+        // user exists and not changed from last update
+        if (dto.getLastUpdatedAt().isEqual(user.getUpdatedAt())) {
+            user.setLastLogin(now);
+            userRepository.update(user);
+            return new UserUpdateDto(false, userToUserDto(user));
+        }
+
+        // copy to user entity
+        user.setLastLogin(now);
+        userDtoToUser(dto, user);
+        addRolesToUser(user, dto.getRoles());
+        userRepository.save(user);
+        return new UserUpdateDto(false, userToUserDto(user));
+    }
+
+    private void addRolesToUser(User user, List<String> roles) {
+        if (roles == null || roles.size() == 0) {
+            return;
+        }
+        List<String> originalRoles = user.getRoles()
+                .stream()
+                .map(role -> role.getName())
+                .collect(Collectors.toList());
+        if (!equalLists(originalRoles, roles)) {
+            user.getRoles().clear();
+            for (String r : roles) {
+                Role role = roleRepository.findByUserRoleString(r);
+                if (role == null) {
+                    continue;
+                }
+                user.getRoles().add(role);
+            }
+        }
+
+    }
+
+    private boolean equalLists(List<String> one, List<String> two) {
+        if (one == null && two == null) {
+            return true;
+        }
+
+        if ((one == null && two != null)
+                || one != null && two == null
+                || one.size() != two.size()) {
+            return false;
+        }
+
+        one = new ArrayList<>(one);
+        two = new ArrayList<>(two);
+
+        Collections.sort(one);
+        Collections.sort(two);
+        return one.equals(two);
     }
 
     private Pageable getPageable(int page, int maxResults, boolean isDesc) {

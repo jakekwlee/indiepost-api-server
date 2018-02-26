@@ -1,11 +1,9 @@
 package com.indiepost.controller.api;
 
 import com.indiepost.dto.UserDto;
+import com.indiepost.dto.UserUpdateDto;
 import com.indiepost.service.UserService;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 
@@ -21,8 +19,11 @@ public class UserController {
     }
 
     @PutMapping("/{username}")
-    public UserDto createOrUpdateUser(@RequestBody UserDto userDto) {
-        //TODO
-        return null;
+    public UserUpdateDto createOrUpdateUser(@PathVariable String username, @RequestBody UserDto userDto) {
+        if (!userDto.getUsername().equals(username)) {
+            //TODO handle error
+            return null;
+        }
+        return userService.createOrUpdate(userDto);
     }
 }

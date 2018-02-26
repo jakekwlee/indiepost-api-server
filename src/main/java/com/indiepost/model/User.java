@@ -10,6 +10,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,7 +40,7 @@ public class User implements Serializable {
     @Email
     private String email;
 
-    @Pattern(regexp = "[_0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]{2,30}")
+    @Pattern(regexp = "[_0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣\\s]{2,30}")
     @Size(min = 2, max = 30)
     private String displayName;
 
@@ -47,10 +48,10 @@ public class User implements Serializable {
     private LocalDateTime joinedAt;
 
     @Column(nullable = false)
-    private LocalDateTime lastUpdatedAt;
+    private LocalDateTime updatedAt;
 
     @Column(nullable = false)
-    private LocalDateTime lastLoggedIn;
+    private LocalDateTime lastLogin;
 
     @Pattern(regexp = "^01[\\d]{8,9}")
     @Size(min = 7, max = 15)
@@ -74,7 +75,7 @@ public class User implements Serializable {
             joinColumns = @JoinColumn(name = "userId"),
             inverseJoinColumns = @JoinColumn(name = "roleId")
     )
-    private List<Role> roles;
+    private List<Role> roles = new ArrayList<>();
 
     public UserRole getHighestRole() {
         int userLevel = 1;
@@ -199,19 +200,19 @@ public class User implements Serializable {
         this.picture = picture;
     }
 
-    public LocalDateTime getLastUpdatedAt() {
-        return lastUpdatedAt;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setLastUpdatedAt(LocalDateTime lastUpdatedAt) {
-        this.lastUpdatedAt = lastUpdatedAt;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
-    public LocalDateTime getLastLoggedIn() {
-        return lastLoggedIn;
+    public LocalDateTime getLastLogin() {
+        return lastLogin;
     }
 
-    public void setLastLoggedIn(LocalDateTime lastLoggedIn) {
-        this.lastLoggedIn = lastLoggedIn;
+    public void setLastLogin(LocalDateTime lastLogin) {
+        this.lastLogin = lastLogin;
     }
 }
