@@ -51,7 +51,7 @@ public class UserServiceTests {
         dto.setEmail("sysadmin@indiepost.co.kr");
         dto.setGender("MALE");
         dto.setPicture("https://www.google.co.kr/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png");
-        dto.setLastUpdatedAt(LocalDateTime.of(2018, 2, 26, 12, 0));
+        dto.setUpdatedAt(LocalDateTime.of(2018, 2, 26, 12, 0));
         dto.setGender("FEMALE");
         dto.setRoles(Arrays.asList("Administrator", "Editor", "User"));
 
@@ -64,10 +64,10 @@ public class UserServiceTests {
         assertThat(resultDto.getEmail()).isEqualTo(dto.getEmail());
         assertThat(resultDto.getDisplayName()).isEqualTo(dto.getDisplayName());
         assertThat(resultDto.getPicture()).isEqualTo(dto.getPicture());
-        assertThat(resultDto.getLastUpdatedAt()).isEqualTo(dto.getLastUpdatedAt());
+        assertThat(resultDto.getUpdatedAt()).isEqualTo(dto.getUpdatedAt());
         assertThat(resultDto.getGender()).isEqualTo(dto.getGender());
         assertThat(resultDto.getUsername()).isEqualTo(dto.getUsername());
-        assertThat(resultDto.getLastUpdatedAt()).isEqualTo(dto.getLastUpdatedAt());
+        assertThat(resultDto.getUpdatedAt()).isEqualTo(dto.getUpdatedAt());
 
         assertThat(resultDto.getRoles()).containsSequence(dto.getRoles());
     }

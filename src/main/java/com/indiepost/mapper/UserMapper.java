@@ -25,7 +25,7 @@ public class UserMapper {
         user.setDisplayName(userDto.getDisplayName());
         user.setEmail(userDto.getEmail());
         user.setPicture(userDto.getPicture());
-        user.setUpdatedAt(userDto.getLastUpdatedAt());
+        user.setUpdatedAt(userDto.getUpdatedAt());
         if (userDto.getGender() == null) {
             userDto.setGender("UNIDENTIFIED");
         }

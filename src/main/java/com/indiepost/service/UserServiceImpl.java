@@ -187,7 +187,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // user exists and not changed from last update
-        if (dto.getLastUpdatedAt().isEqual(user.getUpdatedAt())) {
+        if (dto.getUpdatedAt().isEqual(user.getUpdatedAt())) {
             user.setLastLogin(now);
             userRepository.update(user);
             return new UserUpdateDto(false, userToUserDto(user));
