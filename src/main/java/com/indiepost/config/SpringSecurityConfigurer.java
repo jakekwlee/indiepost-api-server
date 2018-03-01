@@ -27,9 +27,6 @@ import javax.inject.Inject;
 @EnableWebSecurity
 public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
-    private static final String SPRING_SECURITY_EXPRESSION =
-            "hasAuthority('Editor')";
-
     private final UserRepository userRepository;
 
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
@@ -72,9 +69,9 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.PUT, "/api/user/**")
-                .hasRole("User")
+                .access("hasAuthority('User')")
                 .antMatchers("/api/admin/**")
-                .access(SPRING_SECURITY_EXPRESSION)
+                .access("hasAuthority('Editor')")
                 .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
                 .and()

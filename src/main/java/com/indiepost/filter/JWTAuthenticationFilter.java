@@ -3,6 +3,7 @@ package com.indiepost.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.indiepost.config.JWTConfig;
 import org.slf4j.Logger;
@@ -52,8 +53,14 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
                 .withAudience("https://www.indiepost.co.kr/api")
                 .acceptLeeway(60)
                 .build();
-
-        DecodedJWT jwt = jwtVerifier.verify(accessToken);
+        DecodedJWT jwt;
+        try {
+            jwt = jwtVerifier.verify(accessToken);
+        } catch (TokenExpiredException te) {
+            log.warn("User requested with expired token: " + req.getRequestURI());
+            chain.doFilter(request, response);
+            return;
+        }
         String user = jwt.getSubject();
         if (user == null) {
             log.warn("Abnormal token detected: subject is null");

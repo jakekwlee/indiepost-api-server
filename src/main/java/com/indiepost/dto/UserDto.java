@@ -24,7 +24,7 @@ public class UserDto {
     private LocalDateTime joinedAt;
 
     @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
-    private LocalDateTime lastUpdatedAt;
+    private LocalDateTime updatedAt;
 
     private String profile;
 
@@ -34,12 +34,12 @@ public class UserDto {
 
     private List<String> roles;
 
-    public LocalDateTime getLastUpdatedAt() {
-        return lastUpdatedAt;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setLastUpdatedAt(LocalDateTime lastUpdatedAt) {
-        this.lastUpdatedAt = lastUpdatedAt;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public Long getId() {

@@ -22,7 +22,7 @@ public class UserMapperUnitTests {
         dto.setEmail("sysadmin@indiepost.co.kr");
         dto.setGender("MALE");
         dto.setPicture("https://www.google.co.kr/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png");
-        dto.setLastUpdatedAt(LocalDateTime.of(2018, 2, 10, 12, 0));
+        dto.setUpdatedAt(LocalDateTime.of(2018, 2, 10, 12, 0));
         dto.setRoles(Arrays.asList("Administrator", "Editor", "User"));
         dto.setGender("MALE");
         User user = userDtoToUser(dto);
@@ -31,10 +31,10 @@ public class UserMapperUnitTests {
         assertThat(user.getEmail()).isEqualTo(dto.getEmail());
         assertThat(user.getDisplayName()).isEqualTo(dto.getDisplayName());
         assertThat(user.getPicture()).isEqualTo(dto.getPicture());
-        assertThat(user.getUpdatedAt()).isEqualTo(dto.getLastUpdatedAt());
+        assertThat(user.getUpdatedAt()).isEqualTo(dto.getUpdatedAt());
         assertThat(user.getGender().toString()).isEqualTo(dto.getGender());
         assertThat(user.getUsername()).isEqualTo(dto.getUsername());
-        assertThat(user.getUpdatedAt()).isEqualTo(dto.getLastUpdatedAt());
+        assertThat(user.getUpdatedAt()).isEqualTo(dto.getUpdatedAt());
 
         assertThat(user.getRoles().size()).isZero();
     }

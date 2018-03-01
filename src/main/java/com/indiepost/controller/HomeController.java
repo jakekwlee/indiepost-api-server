@@ -52,8 +52,8 @@ public class HomeController {
         return "index";
     }
 
-    @GetMapping("/login")
-    public String getLoginPage(Model model) {
+    @GetMapping("/oauth2/callback")
+    public String getOAuth2Callback(Model model) {
         // TODO
         model.addAttribute("res", new ServerSideRenderingResponse());
         model.addAttribute("cdnUrl", config.getCdnUrl());
