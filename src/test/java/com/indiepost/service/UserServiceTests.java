@@ -2,7 +2,7 @@ package com.indiepost.service;
 
 import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.UserDto;
-import com.indiepost.dto.UserUpdateDto;
+import com.indiepost.dto.UserProfileDto;
 import com.indiepost.model.User;
 import org.junit.Assert;
 import org.junit.Test;
@@ -55,10 +55,10 @@ public class UserServiceTests {
         dto.setGender("FEMALE");
         dto.setRoles(Arrays.asList("Administrator", "Editor", "User"));
 
-        UserUpdateDto userUpdateDto = userService.createOrUpdate(dto);
-        UserDto resultDto = userUpdateDto.getUser();
+        UserProfileDto userProfileDto = userService.sync(dto);
+        UserDto resultDto = userProfileDto.getUser();
 
-        assertThat(userUpdateDto.isNew()).isFalse();
+        assertThat(userProfileDto.isNewlyJoined()).isFalse();
         assertThat(resultDto).isNotNull();
         assertThat(resultDto.getId()).isNotNull();
         assertThat(resultDto.getEmail()).isEqualTo(dto.getEmail());

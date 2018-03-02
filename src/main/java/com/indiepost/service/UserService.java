@@ -1,7 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.UserDto;
-import com.indiepost.dto.UserUpdateDto;
+import com.indiepost.dto.UserProfileDto;
 import com.indiepost.enums.Types.UserGender;
 import com.indiepost.enums.Types.UserRole;
 import com.indiepost.enums.Types.UserState;
@@ -52,5 +52,5 @@ public interface UserService {
 
     List<UserDto> getDtoList(UserRole role, int page, int maxResults, boolean isDesc);
 
-    UserUpdateDto createOrUpdate(UserDto dto);
+    UserProfileDto sync(UserDto dto);
 }
