@@ -1,21 +1,19 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.PostDto;
-import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.PostSummary;
-import com.indiepost.dto.RelatedPostResponseDto;
+import com.indiepost.dto.*;
 import com.indiepost.dto.stat.PostStatDto;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
+import com.indiepost.model.elasticsearch.PostEs;
 import com.indiepost.repository.ImageRepository;
 import com.indiepost.repository.PostRepository;
 import com.indiepost.repository.StatRepository;
 import com.indiepost.repository.TagRepository;
+import com.indiepost.repository.elasticsearch.PostEsRepository;
 import com.indiepost.service.mapper.PostMapperService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,15 +43,18 @@ public class PostServiceImpl implements PostService {
 
     private final StatRepository statRepository;
 
+    private final PostEsRepository postEsRepository;
+
     @Autowired
     public PostServiceImpl(PostRepository postRepository, ImageRepository imageRepository,
                            PostMapperService postMapperService, TagRepository tagRepository,
-                           StatRepository statRepository) {
+                           StatRepository statRepository, PostEsRepository postEsRepository) {
         this.postRepository = postRepository;
         this.imageRepository = imageRepository;
         this.postMapperService = postMapperService;
         this.tagRepository = tagRepository;
         this.statRepository = statRepository;
+        this.postEsRepository = postEsRepository;
     }
 
     @Override
@@ -189,24 +190,39 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostSummary> search(String text, int page, int maxResults) {
-        if (text.length() > 30) {
-            text = text.substring(0, 30);
-        }
-        Pageable pageable = getPageable(page, maxResults, true);
-        List<Post> postList = postRepository.search(text, pageable);
-        return postList.stream()
-                .map(post -> {
-                    PostSummary dto = new PostSummary();
-                    BeanUtils.copyProperties(post, dto);
-                    return dto;
-                })
-                .collect(Collectors.toList());
+    public Long findIdByLegacyId(Long legacyId) {
+        return postRepository.findIdByLegacyId(legacyId);
     }
 
     @Override
-    public Long findIdByLegacyId(Long legacyId) {
-        return postRepository.findIdByLegacyId(legacyId);
+    public List<PostSummary> fullTextSearch(FullTextSearchQuery query) {
+        String text = query.getText();
+        if (text.length() > 30) {
+            text = text.substring(0, 30);
+        }
+        Pageable pageable = getPageable(query.getPage(), query.getMaxResults(), true);
+        List<PostEs> postEsList = postEsRepository.search(text, PostStatus.PUBLISH, pageable);
+        if (postEsList.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Long> ids = postEsList.stream()
+                .map(p -> p.getId())
+                .collect(Collectors.toList());
+        List<PostSummary> posts = postRepository.findByIds(ids);
+
+        int index = 0;
+        for (PostSummary dto : posts) {
+            PostEs postEs = postEsList.get(index);
+            String title = postEs.getTitle();
+            String excerpt = postEs.getExcerpt();
+            if (title == null && excerpt == null) {
+                continue;
+            }
+            Highlight highlight = new Highlight(title, excerpt);
+            dto.setHighlight(highlight);
+            index = index + 1;
+        }
+        return posts;
     }
 
     @Override

@@ -52,12 +52,9 @@ public class PostController {
         return postService.findByTagName(tagName);
     }
 
-    @GetMapping("/search")
-    public List<PostSummary> getPosts(
-            @RequestParam("q") String text,
-            @RequestParam("p") int page,
-            @RequestParam("m") int maxResults) {
-        return postService.search(text, page, maxResults);
+    @PostMapping("/search")
+    public List<PostSummary> getPosts(@RequestBody FullTextSearchQuery query) {
+        return postService.fullTextSearch(query);
     }
 
     @PostMapping

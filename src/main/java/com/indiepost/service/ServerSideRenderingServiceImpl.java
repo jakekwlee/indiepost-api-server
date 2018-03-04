@@ -4,6 +4,7 @@ import com.indiepost.config.AppConfig;
 import com.indiepost.dto.*;
 import com.indiepost.dto.ssr.RenderingRequestDto;
 import com.indiepost.dto.ssr.RenderingResponseDto;
+import com.indiepost.enums.Types;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -87,10 +88,17 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
     @Override
     public void renderPostSearchResultsPage(String keyword, Model model, String servletPath) {
         InitialData initialData = initialDataService.getInitialData(false);
-        List<PostSummary> posts = postService.search(keyword, 0, config.getFetchCount());
+
+        FullTextSearchQuery query = new FullTextSearchQuery(
+                keyword,
+                Types.PostStatus.PUBLISH.toString(),
+                0,
+                config.getFetchCount()
+        );
+        List<PostSummary> posts = postService.fullTextSearch(query);
         RenderingRequestDto rsRequest =
                 new RenderingRequestDto(initialData, posts, servletPath);
-        this.render(model, rsRequest);
+        render(model, rsRequest);
     }
 
     private void render(Model model, RenderingRequestDto requestDto) {

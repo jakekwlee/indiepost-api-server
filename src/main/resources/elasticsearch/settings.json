@@ -1,0 +1,99 @@
+{
+  "settings": {
+    "index": {
+      "number_of_replicas": 2,
+      "analysis": {
+        "analyzer": {
+          "korean": {
+            "type": "custom",
+            "tokenizer": "seunjeon_default_tokenizer"
+          }
+        },
+        "tokenizer": {
+          "seunjeon_default_tokenizer": {
+            "type": "seunjeon_tokenizer",
+            "index_poses": [
+              "N",
+              "SL",
+              "SH",
+              "SN",
+              "XR",
+              "V",
+              "UNK",
+              "M"
+            ],
+            "user_words": [
+              "인디,-100",
+              "언더,-100",
+              "일러스트,-100",
+              "일러스트레이터",
+              "인디포스트",
+              "밥장"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "mappings": {
+    "post": {
+      "properties": {
+        "title": {
+          "type": "text",
+          "analyzer": "korean",
+          "search_analyzer": "korean",
+          "search_quote_analyzer": "korean"
+        },
+        "excerpt": {
+          "type": "text",
+          "analyzer": "korean",
+          "search_analyzer": "korean",
+          "search_quote_analyzer": "korean"
+        },
+        "content": {
+          "type": "text",
+          "analyzer": "korean",
+          "search_analyzer": "korean",
+          "search_quote_analyzer": "korean"
+        },
+        "bylineName": {
+          "type": "text"
+        },
+        "status": {
+          "type": "keyword"
+        },
+        "tags": {
+          "type": "text",
+          "analyzer": "korean",
+          "search_analyzer": "korean"
+        },
+        "contributors": {
+          "type": "text",
+          "analyzer": "korean",
+          "search_analyzer": "korean"
+        },
+        "creatorId": {
+          "type": "integer"
+        },
+        "modifiedUserId": {
+          "type": "integer"
+        },
+        "categoryName": {
+          "type": "text",
+          "analyzer": "korean",
+          "search_analyzer": "korean"
+        },
+        "creatorName": {
+          "type": "text",
+          "analyzer": "korean",
+          "search_analyzer": "korean"
+        },
+        "modifiedUserName": {
+          "type": "text",
+          "analyzer": "korean",
+          "search_analyzer": "korean"
+        }
+      }
+    }
+  }
+}

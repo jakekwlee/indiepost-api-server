@@ -50,6 +50,16 @@ public class PostSummary implements Serializable {
 
     private int likesCount;
 
+    private Highlight highlight;
+
+    public Highlight getHighlight() {
+        return highlight;
+    }
+
+    public void setHighlight(Highlight highlight) {
+        this.highlight = highlight;
+    }
+
     public PostSummary() {
     }
 

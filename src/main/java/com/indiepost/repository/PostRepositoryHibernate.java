@@ -6,16 +6,9 @@ import com.indiepost.dto.PostSummary;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Post;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
-import org.hibernate.search.jpa.FullTextEntityManager;
-import org.hibernate.search.jpa.FullTextQuery;
-import org.hibernate.search.jpa.Search;
-import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -151,101 +144,6 @@ public class PostRepositoryHibernate implements PostRepository {
                 .addOrder(Order.asc("publishedAt"))
                 .setResultTransformer(new FluentHibernateResultTransformer(PostSummary.class))
                 .list();
-    }
-
-    @Override
-    public List<Post> search(String text, Pageable pageable) {
-        Criteria criteria = getSession().createCriteria(Post.class);
-        criteria.add(Restrictions.eq("status", PostStatus.PUBLISH))
-                .setFirstResult(pageable.getOffset())
-                .setMaxResults(pageable.getPageSize());
-
-        Sort sort = new Sort(
-                SortField.FIELD_SCORE,
-                new SortField("id_sortable", SortField.Type.LONG, true));
-
-        FullTextQuery fullTextQuery = makeKeywordQuery(text);
-
-        @SuppressWarnings("unchecked")
-        List<Post> results = fullTextQuery
-                .setCriteriaQuery(criteria)
-                .setSort(sort)
-                .getResultList();
-
-        return results;
-    }
-
-    private FullTextQuery makePhraseQuery(String text) {
-        FullTextEntityManager fullTextEntityManager =
-                Search.getFullTextEntityManager(entityManager);
-
-        QueryBuilder queryBuilder = getQueryBuilder();
-
-        Query luceneQuery = queryBuilder
-                .bool()
-                .should(queryBuilder
-                        .phrase()
-                        .withSlop(1)
-                        .onField("title")
-                        .sentence(text)
-                        .createQuery())
-                .should(
-                        queryBuilder
-                                .phrase()
-                                .withSlop(1)
-                                .onField("excerpt")
-                                .sentence(text)
-                                .createQuery()
-                )
-                .should(
-                        queryBuilder
-                                .phrase()
-                                .withSlop(1)
-                                .onField("content")
-                                .sentence(text)
-                                .createQuery()
-                ).createQuery();
-        return fullTextEntityManager.createFullTextQuery(luceneQuery, Post.class);
-    }
-
-    private FullTextQuery makeKeywordQuery(String text) {
-        FullTextEntityManager fullTextEntityManager =
-                getFullTextEntityManager();
-
-        QueryBuilder queryBuilder = getQueryBuilder();
-        String[] splited = text.split("\\s+");
-
-        Query luceneQuery = queryBuilder
-                .keyword()
-                .onFields("title", "excerpt", "content", "displayName", "tags.name")
-                .matching(splited[0])
-                .createQuery();
-
-        if (splited.length > 1) {
-            for (int i = 1; i < splited.length; ++i) {
-                luceneQuery = queryBuilder
-                        .bool()
-                        .must(luceneQuery)
-                        .must(queryBuilder
-                                .keyword()
-                                .onFields("title", "excerpt", "content", "displayName", "tags.name")
-                                .matching(splited[i])
-                                .createQuery()
-                        )
-                        .createQuery();
-            }
-        }
-
-        return fullTextEntityManager.createFullTextQuery(luceneQuery, Post.class);
-    }
-
-    private FullTextEntityManager getFullTextEntityManager() {
-        return Search.getFullTextEntityManager(entityManager);
-    }
-
-    private QueryBuilder getQueryBuilder() {
-        return getFullTextEntityManager().getSearchFactory()
-                .buildQueryBuilder().forEntity(Post.class).get();
     }
 
     private ProjectionList getProjectionList() {
