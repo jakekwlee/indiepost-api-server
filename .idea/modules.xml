@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/new-indiepost-stable.iml" filepath="$PROJECT_DIR$/.idea/modules/new-indiepost-stable.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/new-indiepost-stable_generated.iml" filepath="$PROJECT_DIR$/.idea/modules/new-indiepost-stable_generated.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/new-indiepost-stable_main.iml" filepath="$PROJECT_DIR$/.idea/modules/new-indiepost-stable_main.iml" group="new-indiepost-stable" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/new-indiepost-stable_test.iml" filepath="$PROJECT_DIR$/.idea/modules/new-indiepost-stable_test.iml" group="new-indiepost-stable" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/new-indiepost-current.iml" filepath="$PROJECT_DIR$/.idea/modules/new-indiepost-current.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/new-indiepost-current_main.iml" filepath="$PROJECT_DIR$/.idea/modules/new-indiepost-current_main.iml" group="new-indiepost-current" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/new-indiepost-current_test.iml" filepath="$PROJECT_DIR$/.idea/modules/new-indiepost-current_test.iml" group="new-indiepost-current" />
     </modules>
   </component>
 </project>
