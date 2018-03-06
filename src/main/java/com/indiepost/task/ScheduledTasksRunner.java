@@ -29,7 +29,7 @@ public class ScheduledTasksRunner {
         this.analyticsService = analyticsService;
     }
 
-    @Scheduled(fixedRate = 600000)
+    @Deprecated
     public void publishScheduledPosts() {
         adminPostService.publishScheduledPosts();
         log.info(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ": Publish Scheduled Posts:");

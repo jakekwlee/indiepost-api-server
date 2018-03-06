@@ -2,6 +2,7 @@ package com.indiepost.repository.elasticsearch;
 
 import com.indiepost.enums.Types;
 import com.indiepost.model.User;
+import com.indiepost.model.Word;
 import com.indiepost.model.elasticsearch.PostEs;
 import org.springframework.data.domain.Pageable;
 
@@ -40,4 +41,6 @@ public interface PostEsRepository {
     void delete(PostEs postEs);
 
     void bulkDelete(List<Long> ids);
+
+    void updateDictionary(List<Word> words);
 }

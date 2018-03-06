@@ -2,6 +2,7 @@ package com.indiepost.repository.elasticsearch;
 
 import com.indiepost.enums.Types;
 import com.indiepost.model.User;
+import com.indiepost.model.Word;
 import com.indiepost.model.elasticsearch.PostEs;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
@@ -11,6 +12,7 @@ import io.searchbox.core.*;
 import io.searchbox.indices.CreateIndex;
 import io.searchbox.indices.DeleteIndex;
 import io.searchbox.indices.IndicesExists;
+import io.searchbox.indices.settings.UpdateSettings;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -321,6 +324,41 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
         }
     }
 
+    public void updateDictionary(List<Word> words) {
+        JSONArray indexPoses = new JSONArray(Arrays.asList("N", "SL", "SH", "SN", "XR", "V", "UNK", "M"));
+        List<String> dictionary = words.stream()
+                .map(word -> {
+                    String cost = word.getCost() != null ? "," + word.getCost().toString() : "";
+                    return word.getSurface() + cost;
+                })
+                .collect(Collectors.toList());
+        JSONArray userWords = new JSONArray(dictionary);
+        JSONObject settings = new JSONObject()
+                .put("analysis", new JSONObject()
+                        .put("analyzer", new JSONObject()
+                                .put("korean", new JSONObject()
+                                        .put("type", "custom")
+                                        .put("tokenizer", "seunjeon_default_tokenizer")))
+                        .put("tokenizer", new JSONObject()
+                                .put("seunjeon_default_tokenizer", new JSONObject()
+                                        .put("index_poses", indexPoses)
+                                        .put("user_words", userWords)
+                                )
+                        )
+                );
+        UpdateSettings updateSettings = new UpdateSettings.Builder(settings.toString()).addIndex(INDEX_NAME).build();
+        try {
+            JestResult result = getClient().execute(updateSettings);
+            if (result.isSucceeded()) {
+                return;
+            }
+            log.error(result.getJsonString());
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+
+    }
+
     private JSONArray getFilterContext(Types.PostStatus status) {
         return new JSONArray()
                 .put(new JSONObject()
@@ -521,8 +559,12 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
                 .put("highlight", new JSONObject()
                         .put("require_field_match", false)
                         .put("fields", new JSONObject()
-                                .put("title", new JSONObject())
-                                .put("excerpt", new JSONObject())
+                                .put("title", new JSONObject()
+                                        .put("number_of_fragments", 0)
+                                )
+                                .put("excerpt", new JSONObject()
+                                        .put("number_of_fragments", 0)
+                                )
                         )
                 )
                 .toString();
@@ -624,6 +666,19 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
             postEs.setModifiedUserName(modifiedUserName);
         }
         return postEs;
+    }
+
+    private String getHighlight(SearchResult.Hit<PostEs, Void> hit, String field) {
+        String result;
+        List<String> highlight = hit.highlight.get(field);
+        int size = highlight.size();
+        if (size > 1) {
+            result = highlight.stream()
+                    .reduce("", (s, str) -> s.concat(str).concat(" "));
+        } else {
+            result = highlight.get(0);
+        }
+        return result;
     }
 
     private JestClient getClient() {
