@@ -15,7 +15,6 @@ public interface AnalyticsService {
 
     List<PostStatDto> getPostStats(PeriodDto periodDto);
 
-    PostStatsDto getAllPostStats();
+    PostStatsDto getCachedPostStats();
 
-    void updateCachedPostStats();
 }

@@ -199,7 +199,7 @@ public class StatRepositoryTest {
         PeriodDto dto = getOneDayPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
-        List<ShareStat> share = statRepository.getPageviewByAuthor(since, until, 30L);
+        List<ShareStat> share = statRepository.getPageviewsByAuthor(since, until, 30L);
         testSerializeAndPrintStats(share, dto, "Pageview By Author");
         Assert.assertTrue("Repository should return resultset", share.size() > 0);
     }

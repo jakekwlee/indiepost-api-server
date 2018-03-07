@@ -4,9 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.dto.stat.OverviewStats;
-import com.indiepost.dto.stat.PeriodDto;
-import com.indiepost.dto.stat.RecentAndOldPostStats;
+import com.indiepost.dto.stat.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
  * Created by jake on 17. 4. 28.
@@ -48,6 +50,28 @@ public class AnalyticsServiceTest {
         serializeAndPrintStats(stats, "Recent And Old Stats");
     }
 
+    @Test
+    public void getCachedPostStatsShouldWordProperly() {
+        PostStatsDto postStatsDto = analyticsService.getCachedPostStats();
+        List<PostStatDto> stats = postStatsDto.getStatData();
+        LocalDateTime lastUpdated = postStatsDto.getLastUpdated();
+        assertThat(postStatsDto).isNotNull();
+        assertThat(lastUpdated).isNotNull();
+        assertThat(stats).isNotNull().hasAtLeastOneElementOfType(PostStatDto.class);
+
+        PostStatDto dto = stats.get(0);
+        assertThat(dto).isNotNull();
+        assertThat(dto.getId()).isNotNull();
+        assertThat(dto.getAuthor()).isNotEmpty();
+        assertThat(dto.getCategory()).isNotEmpty();
+        assertThat(dto.getTitle()).isNotEmpty();
+        assertThat(dto.getPublishedAt()).isNotNull();
+        assertThat(dto.getPageviews()).isGreaterThanOrEqualTo(0);
+        assertThat(dto.getLegacyPageviews()).isGreaterThanOrEqualTo(0);
+        assertThat(dto.getUniquePageviews()).isGreaterThanOrEqualTo(0);
+        assertThat(dto.getLegacyUniquePageviews()).isGreaterThanOrEqualTo(0);
+    }
+
     private void serializeAndPrintStats(Object o, String name) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         System.out.println("\n\n*** Start serialize " + name + " ***\n\n");
@@ -56,4 +80,5 @@ public class AnalyticsServiceTest {
         System.out.println("Size of results: " + (result.getBytes().length / 1024.0) + " kb");
         System.out.println(result);
     }
+
 }

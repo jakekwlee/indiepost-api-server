@@ -46,11 +46,11 @@ public interface StatRepository {
 
     List<PostStatDto> getAllPostStats();
 
-    List<PostStatDto> getAllPostStatsFromCache();
+    List<PostStatDto> getCachedPostStats();
 
     List<ShareStat> getPageviewsByCategory(LocalDateTime since, LocalDateTime until, Long limit);
 
-    List<ShareStat> getPageviewByAuthor(LocalDateTime since, LocalDateTime until, Long limit);
+    List<ShareStat> getPageviewsByAuthor(LocalDateTime since, LocalDateTime until, Long limit);
 
     List<ShareStat> getTopPages(LocalDateTime since, LocalDateTime until, Long limit);
 
@@ -71,9 +71,5 @@ public interface StatRepository {
     List<ShareStat> getTopRecentPosts(LocalDateTime since, LocalDateTime until, Long limit);
 
     List<ShareStat> getTopOldPosts(LocalDateTime since, LocalDateTime until, Long limit);
-
-    void updatePostStatsCache();
-
-    void deleteAllPostStatsCache();
 
 }

@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
  * Created by jake on 17. 5. 10.
  */
 public class PostStatDto {
+
     private Long id;
 
     @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
@@ -23,6 +24,26 @@ public class PostStatDto {
     private Long pageviews;
 
     private Long uniquePageviews;
+
+    private Long legacyPageviews;
+
+    private Long legacyUniquePageviews;
+
+    public Long getLegacyPageviews() {
+        return legacyPageviews;
+    }
+
+    public void setLegacyPageviews(Long legacyPageviews) {
+        this.legacyPageviews = legacyPageviews;
+    }
+
+    public Long getLegacyUniquePageviews() {
+        return legacyUniquePageviews;
+    }
+
+    public void setLegacyUniquePageviews(Long legacyUniquePageviews) {
+        this.legacyUniquePageviews = legacyUniquePageviews;
+    }
 
     public Long getId() {
         return id;

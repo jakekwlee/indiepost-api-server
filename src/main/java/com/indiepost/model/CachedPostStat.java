@@ -2,10 +2,7 @@ package com.indiepost.model;
 
 import net.minidev.json.annotate.JsonIgnore;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -15,18 +12,40 @@ import java.io.Serializable;
 @Table(name = "CachedPostStats")
 public class CachedPostStat implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -8011193195679356884L;
 
     @Id
     @GeneratedValue
     @JsonIgnore
     private Long id;
 
-    private Long postId;
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "postId")
+    private Post post;
 
     private Long pageviews;
 
     private Long uniquePageviews;
+
+    private Long legacyPageviews;
+
+    private Long legacyUniquePageviews;
+
+    public Long getLegacyPageviews() {
+        return legacyPageviews;
+    }
+
+    public void setLegacyPageviews(Long legacyPageviews) {
+        this.legacyPageviews = legacyPageviews;
+    }
+
+    public Long getLegacyUniquePageviews() {
+        return legacyUniquePageviews;
+    }
+
+    public void setLegacyUniquePageviews(Long legacyUniquePageviews) {
+        this.legacyUniquePageviews = legacyUniquePageviews;
+    }
 
     public Long getId() {
         return id;
@@ -34,14 +53,6 @@ public class CachedPostStat implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Long getPostId() {
-        return postId;
-    }
-
-    public void setPostId(Long postId) {
-        this.postId = postId;
     }
 
     public Long getPageviews() {
@@ -58,5 +69,13 @@ public class CachedPostStat implements Serializable {
 
     public void setUniquePageviews(Long uniquePageviews) {
         this.uniquePageviews = uniquePageviews;
+    }
+
+    public Post getPost() {
+        return post;
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
     }
 }

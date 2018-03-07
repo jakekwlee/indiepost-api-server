@@ -37,6 +37,12 @@ public class PostStatsResultTransformer implements ResultTransformer {
                 case "uniquePageviews":
                     postStatDto.setUniquePageviews(((BigInteger) tuple[i]).longValue());
                     break;
+                case "legacyPageviews":
+                    postStatDto.setLegacyPageviews(((BigInteger) tuple[i]).longValue());
+                    break;
+                case "legacyUniquePageviews":
+                    postStatDto.setLegacyUniquePageviews(((BigInteger) tuple[i]).longValue());
+                    break;
             }
         }
         return postStatDto;

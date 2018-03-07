@@ -33,7 +33,7 @@ public class AdminAnalyticsController {
 
     @GetMapping("/posts")
     public PostStatsDto getAllPostStats() {
-        return analyticsService.getAllPostStats();
+        return analyticsService.getCachedPostStats();
     }
 
     @PostMapping("/posts")

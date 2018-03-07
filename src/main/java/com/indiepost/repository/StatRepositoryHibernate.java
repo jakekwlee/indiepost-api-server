@@ -222,7 +222,7 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public List<PostStatDto> getAllPostStatsFromCache() {
+    public List<PostStatDto> getCachedPostStats() {
         Query query = getNamedQuery("@GET_ALL_POST_STATS_FROM_CACHE");
         query.setResultTransformer(new PostStatsResultTransformer());
         return query.list();
@@ -235,7 +235,7 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     @Override
-    public List<ShareStat> getPageviewByAuthor(LocalDateTime since, LocalDateTime until, Long limit) {
+    public List<ShareStat> getPageviewsByAuthor(LocalDateTime since, LocalDateTime until, Long limit) {
         Query query = getNamedQuery("@GET_PAGEVIEWS_ORDER_BY_AUTHOR");
         return getShare(query, since, until, limit);
     }
@@ -298,18 +298,6 @@ public class StatRepositoryHibernate implements StatRepository {
     public List<ShareStat> getTopOldPosts(LocalDateTime since, LocalDateTime until, Long limit) {
         Query query = getNamedQuery("@GET_TOP_OLD_POSTS");
         return getShare(query, since, until, limit, null);
-    }
-
-    @Override
-    public void updatePostStatsCache() {
-        Query query = getNamedQuery("@UPDATE_ALL_POST_STATS_CACHE");
-        query.executeUpdate();
-    }
-
-    @Override
-    public void deleteAllPostStatsCache() {
-        Query query = getNamedQuery("@DELETE_ALL_POST_STATS_CACHE");
-        query.executeUpdate();
     }
 
     private Session getSession() {

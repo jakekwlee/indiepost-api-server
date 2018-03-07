@@ -68,7 +68,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         stats.setTotalUniquePostview(statRepository.getTotalUniquePostviews(since, until));
         stats.setTopPagesWebapp(statRepository.getTopPages(since, until, 10L));
         stats.setTopPosts(statRepository.getTopPosts(since, until, 10L));
-        stats.setPageviewByAuthor(statRepository.getPageviewByAuthor(since, until, 100L));
+        stats.setPageviewByAuthor(statRepository.getPageviewsByAuthor(since, until, 100L));
         stats.setPageviewByCategory(statRepository.getPageviewsByCategory(since, until, 30L));
         stats.setTopTags(statRepository.getTopTags(since, until, 10L));
 
@@ -104,8 +104,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     }
 
     @Override
-    public PostStatsDto getAllPostStats() {
-        List<PostStatDto> statData = statRepository.getAllPostStatsFromCache();
+    public PostStatsDto getCachedPostStats() {
+        List<PostStatDto> statData = statRepository.getCachedPostStats();
         StatMetadata metadata = statMetadataRepository.findOne(1L);
         LocalDateTime lastUpdated = metadata.getPostStatsUpdatedAt();
         return new PostStatsDto(lastUpdated, statData);
@@ -118,19 +118,5 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         LocalDateTime since = startDate.atStartOfDay();
         LocalDateTime until = endDate.atTime(23, 59, 59);
         return statRepository.getPostStatsOrderByPageviews(since, until, 3000L);
-    }
-
-    @Override
-    public void updateCachedPostStats() {
-        statRepository.deleteAllPostStatsCache();
-        statRepository.updatePostStatsCache();
-
-        StatMetadata statMetadata = statMetadataRepository.findOne(1L);
-        if (statMetadata == null) {
-            statMetadata = new StatMetadata();
-        }
-        LocalDateTime now = LocalDateTime.now();
-        statMetadata.setPostStatsUpdatedAt(now);
-        statMetadataRepository.save(statMetadata);
     }
 }

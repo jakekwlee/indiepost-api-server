@@ -34,16 +34,7 @@ public class AppConfig {
 
     private List<String> acceptedImageTypes;
 
-    private boolean buildSearchIndex;
     private int fetchCount;
-
-    public boolean isBuildSearchIndex() {
-        return buildSearchIndex;
-    }
-
-    public void setBuildSearchIndex(boolean buildSearchIndex) {
-        this.buildSearchIndex = buildSearchIndex;
-    }
 
     public String getBaseUrl() {
         return baseUrl;

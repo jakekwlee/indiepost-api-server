@@ -295,26 +295,12 @@ import javax.persistence.*;
 
         @NamedNativeQuery(name = "@GET_ALL_POST_STATS_FROM_CACHE",
                 query = "SELECT p.id, p.title, p.publishedAt, p.displayName author, c.name category, " +
-                        "s.pageviews, s.uniquePageviews " +
+                        "s.pageviews, s.uniquePageviews, s.legacyPageviews, s.legacyUniquePageviews  " +
                         "FROM CachedPostStats s " +
                         "INNER JOIN Posts p ON s.postId = p.id " +
                         "INNER JOIN Categories c ON p.categoryId = c.id " +
                         "ORDER BY p.publishedAt DESC"),
 
-        @NamedNativeQuery(name = "@UPDATE_ALL_POST_STATS_CACHE",
-                query = "INSERT INTO CachedPostStats  (postId, pageviews, uniquePageviews) " +
-                        "SELECT p.id postId, count(*) AS pageviews, count(DISTINCT s.visitorId) AS uniquePageviews " +
-                        "FROM Posts p " +
-                        "LEFT JOIN Stats s ON s.postId = p.id " +
-                        "INNER JOIN Categories c ON p.categoryId = c.id " +
-                        "AND p.status = 'PUBLISH' " +
-                        "GROUP BY p.id " +
-                        "ORDER BY p.publishedAt DESC"
-        ),
-
-        @NamedNativeQuery(name = "@DELETE_ALL_POST_STATS_CACHE",
-                query = "DELETE FROM CachedPostStats WHERE id > 0"
-        )
 })
 public class NamedQueryHolder {
     @Id

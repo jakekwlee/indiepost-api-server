@@ -27,6 +27,6 @@ public class LocalDateTimeToUtcStringSerializer extends LocalDateTimeSerializer 
     @Override
     public void serialize(LocalDateTime value, JsonGenerator g, SerializerProvider provider)
             throws IOException {
-        g.writeString(value.atZone(ZoneId.systemDefault()).toInstant().toString());
+        g.writeString(value.atZone(ZoneId.of("Asia/Seoul")).toInstant().toString());
     }
 }
