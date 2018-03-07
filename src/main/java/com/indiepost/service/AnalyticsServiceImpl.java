@@ -1,10 +1,10 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.StatMetadata;
+import com.indiepost.dto.Metadata;
 import com.indiepost.dto.stat.*;
 import com.indiepost.enums.Types;
 import com.indiepost.enums.Types.ClientType;
-import com.indiepost.repository.StatMetadataRepository;
+import com.indiepost.repository.MetadataRepository;
 import com.indiepost.repository.StatRepository;
 import com.indiepost.repository.VisitorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,17 +22,17 @@ import java.util.List;
 @Transactional
 public class AnalyticsServiceImpl implements AnalyticsService {
 
-    private final StatMetadataRepository statMetadataRepository;
+    private final MetadataRepository metadataRepository;
 
     private final StatRepository statRepository;
 
     private final VisitorRepository visitorRepository;
 
     @Autowired
-    public AnalyticsServiceImpl(StatMetadataRepository statMetadataRepository,
+    public AnalyticsServiceImpl(MetadataRepository metadataRepository,
                                 StatRepository statRepository,
                                 VisitorRepository visitorRepository) {
-        this.statMetadataRepository = statMetadataRepository;
+        this.metadataRepository = metadataRepository;
         this.statRepository = statRepository;
         this.visitorRepository = visitorRepository;
     }
@@ -106,8 +106,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     @Override
     public PostStatsDto getCachedPostStats() {
         List<PostStatDto> statData = statRepository.getCachedPostStats();
-        StatMetadata metadata = statMetadataRepository.findOne(1L);
-        LocalDateTime lastUpdated = metadata.getPostStatsUpdatedAt();
+        Metadata metadata = metadataRepository.findOne(1L);
+        LocalDateTime lastUpdated = metadata.getPostStatsLastUpdated();
         return new PostStatsDto(lastUpdated, statData);
     }
 
