@@ -2,6 +2,7 @@ package com.indiepost.service.mapper;
 
 import com.indiepost.dto.PostDto;
 import com.indiepost.dto.PostSummary;
+import com.indiepost.dto.RelatedPostsMatchingResult;
 import com.indiepost.dto.TagDto;
 import com.indiepost.dto.admin.AdminPostRequestDto;
 import com.indiepost.dto.admin.AdminPostResponseDto;
@@ -19,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.indiepost.utils.DomUtil.getRelatedPostIdsFromPostContent;
 
 /**
  * Created by jake on 16. 12. 15.
@@ -64,6 +67,11 @@ public class PostMapperServiceImpl implements PostMapperService {
     public PostDto postToPostDto(Post post) {
         PostDto postDto = new PostDto();
         BeanUtils.copyProperties(post, postDto);
+        RelatedPostsMatchingResult result = getRelatedPostIdsFromPostContent(postDto.getContent());
+        if (result != null) {
+            postDto.setContent(result.getContent());
+            postDto.setRelatedPostIds(result.getIds());
+        }
         return postDto;
     }
 
