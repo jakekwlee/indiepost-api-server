@@ -47,4 +47,12 @@ public interface Types {
     enum TimeDomainDuration {
         HOURLY, DAILY, MONTHLY, YEARLY
     }
+
+    enum ContributorType {
+        FeatureEditor, FreelanceEditor, Photographer
+    }
+
+    enum ContributorDisplayType {
+        HTML, PLAIN
+    }
 }

@@ -12,7 +12,9 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by jake on 7/24/16.
@@ -41,6 +43,14 @@ public class Post implements Serializable {
 
     @Column(name = "legacyPostId", nullable = false, insertable = false, updatable = false)
     private Long legacyPostId;
+
+    @OneToMany(
+            mappedBy = "post",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @OrderBy("id")
+    private List<PostContributor> postContributors = new ArrayList<>();
 
     @Column(nullable = false)
     private boolean featured = false;
@@ -274,6 +284,42 @@ public class Post implements Serializable {
 
     public void clearTags() {
         this.tags.clear();
+    }
+
+    public void setPostContributors(List<PostContributor> postContributors) {
+        this.postContributors = postContributors;
+    }
+
+    public void addContributor(Contributor contributor, int prioity) {
+        PostContributor postContributor =
+                new PostContributor(this, contributor, prioity);
+        this.postContributors.add(postContributor);
+        contributor.getPostContributors().add(postContributor);
+    }
+
+    public void removeContributor(Contributor contributor) {
+        for (Iterator<PostContributor> iterator = postContributors.iterator();
+             iterator.hasNext(); ) {
+            PostContributor postContributor = iterator.next();
+
+            if (postContributor.getPost().equals(this) &&
+                    postContributor.getContributor().equals(contributor)) {
+                iterator.remove();
+                postContributor.getContributor().getPostContributors().remove(postContributor);
+                postContributor.setPost(null);
+                postContributor.setContributor(null);
+            }
+        }
+    }
+
+    public List<Contributor> getContributors() {
+        return postContributors.stream()
+                .map(postContributor -> postContributor.getContributor())
+                .collect(Collectors.toList());
+    }
+
+    public void clearContributors() {
+        this.postContributors.clear();
     }
 
     public List<Comment> getComments() {
