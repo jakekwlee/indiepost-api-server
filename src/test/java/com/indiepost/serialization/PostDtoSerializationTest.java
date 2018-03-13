@@ -70,18 +70,17 @@ public class PostDtoSerializationTest {
      *
      * @throws JsonProcessingException
      */
-    @Test
     public void getRelatedPostsWorksCorrectly() throws JsonProcessingException {
-        List<Long> ids = new ArrayList<>();
-        ids.add(516L);
-        ids.add(218L);
-        List<RelatedPostResponseDto> postList = this.postService.getRelatedPosts(ids, true, true);
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new Hibernate5Module());
-        System.out.println("\n\n*** Start serialize List<RelatedPostResponseDto> ***\n\n");
-        System.out.println("Result Length: " + postList.size());
-        String result = objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true)
-                .writeValueAsString(postList);
-        System.out.println(result);
+//        List<Long> ids = new ArrayList<>();
+//        ids.add(516L);
+//        ids.add(218L);
+//        List<RelatedPostResponseDto> postList = this.postService.getRelatedPosts(ids, true, true);
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        objectMapper.registerModule(new Hibernate5Module());
+//        System.out.println("\n\n*** Start serialize List<RelatedPostResponseDto> ***\n\n");
+//        System.out.println("Result Length: " + postList.size());
+//        String result = objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true)
+//                .writeValueAsString(postList);
+//        System.out.println(result);
     }
 }

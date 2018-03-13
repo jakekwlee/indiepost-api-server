@@ -10,11 +10,11 @@ public interface ContributorService {
 
     ContributorDto findOne(Long id);
 
-    Long save(ContributorDto contributor);
+    ContributorDto save(ContributorDto contributor);
 
-    void delete(ContributorDto contributor);
+    Long delete(ContributorDto contributor);
 
-    void deleteById(Long id);
+    Long deleteById(Long id);
 
     int count(Types.ContributorType type);
 

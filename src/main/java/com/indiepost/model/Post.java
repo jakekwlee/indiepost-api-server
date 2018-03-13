@@ -49,7 +49,7 @@ public class Post implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @OrderBy("id")
+    @OrderBy("priority")
     private List<PostContributor> postContributors = new ArrayList<>();
 
     @Column(nullable = false)

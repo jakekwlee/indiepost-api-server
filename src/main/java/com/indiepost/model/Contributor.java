@@ -26,7 +26,7 @@ public class Contributor {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @OrderBy("publishedAt desc")
+    @OrderBy("id desc")
     private List<PostContributor> postContributors = new ArrayList<>();
 
     @NotNull

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,20 +37,27 @@ public class ContributorServiceImpl implements ContributorService {
     }
 
     @Override
-    public Long save(ContributorDto dto) {
+    public ContributorDto save(ContributorDto dto) {
         Contributor contributor = toEntity(dto);
+        LocalDateTime now = LocalDateTime.now();
+        if (contributor.getId() == null) {
+            contributor.setCreated(now);
+        }
+        contributor.setLastUpdated(now);
         contributorRepository.save(contributor);
-        return contributor.getId();
+        return toDto(contributor);
     }
 
     @Override
-    public void delete(ContributorDto dto) {
+    public Long delete(ContributorDto dto) {
         contributorRepository.delete(dto.getId());
+        return dto.getId();
     }
 
     @Override
-    public void deleteById(Long id) {
+    public Long deleteById(Long id) {
         contributorRepository.delete(id);
+        return id;
     }
 
     @Override
@@ -63,8 +71,8 @@ public class ContributorServiceImpl implements ContributorService {
         if (count == 0) {
             return new PageImpl<>(new ArrayList<>(), pageable, 0);
         }
-        List<Contributor> contributorList = contributorRepository.findAllByContributorType(type, pageable);
-        List<ContributorDto> dtoList = contributorList
+        Page<Contributor> contributorList = contributorRepository.findAllByContributorType(type, pageable);
+        List<ContributorDto> dtoList = contributorList.getContent()
                 .stream()
                 .map(contributor -> toDto(contributor))
                 .collect(Collectors.toList());
