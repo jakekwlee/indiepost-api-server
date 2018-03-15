@@ -1,9 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.FullTextSearchQuery;
-import com.indiepost.dto.PostDto;
-import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.PostSummary;
+import com.indiepost.dto.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,6 +27,8 @@ public interface PostService {
     List<PostSummary> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc);
 
     List<PostSummary> findByTagName(String tagName);
+
+    List<RelatedPostResponseDto> getRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobile);
 
     List<PostSummary> getTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit);
 

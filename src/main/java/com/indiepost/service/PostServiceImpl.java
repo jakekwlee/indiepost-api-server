@@ -3,6 +3,7 @@ package com.indiepost.service;
 import com.indiepost.dto.*;
 import com.indiepost.dto.stat.PostStatDto;
 import com.indiepost.enums.Types.PostStatus;
+import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
@@ -130,6 +131,43 @@ public class PostServiceImpl implements PostService {
                 .map(postMapperService::postToPostSummaryDto)
                 .collect(Collectors.toList());
         return setTitleImages(dtoList);
+    }
+
+    @Override
+    public List<RelatedPostResponseDto> getRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobile) {
+        List<PostSummary> postSummaryList = this.postRepository.findByIds(ids);
+        if (postSummaryList == null) {
+            return null;
+        }
+
+        this.setTitleImages(postSummaryList);
+        String legacyPostMobileUrl = "http://www.indiepost.co.kr/indiepost/ContentView.do?no=";
+        String legacyPostWebUrl = "http://www.indiepost.co.kr/ContentView.do?no=";
+
+        List<RelatedPostResponseDto> relatedPostResponseDtoList = new ArrayList<>();
+        for (PostSummary postSummary : postSummaryList) {
+            RelatedPostResponseDto relatedPostResponseDto = new RelatedPostResponseDto();
+            relatedPostResponseDto.setId(postSummary.getId());
+            relatedPostResponseDto.setTitle(postSummary.getTitle());
+            relatedPostResponseDto.setExcerpt(postSummary.getExcerpt());
+            if (postSummary.getTitleImageId() != null) {
+                Image image = postSummary.getTitleImage().getThumbnail();
+                relatedPostResponseDto.setImageUrl(image.getFilePath());
+                relatedPostResponseDto.setImageWidth(image.getWidth());
+                relatedPostResponseDto.setImageHeight(image.getHeight());
+            }
+            if (isLegacy) {
+                if (isMobile) {
+                    relatedPostResponseDto.setUrl(legacyPostMobileUrl + postSummary.getLegacyPostId());
+                } else {
+                    relatedPostResponseDto.setUrl(legacyPostWebUrl + postSummary.getLegacyPostId());
+                }
+            } else {
+                relatedPostResponseDto.setUrl("/posts/" + postSummary.getId());
+            }
+            relatedPostResponseDtoList.add(relatedPostResponseDto);
+        }
+        return relatedPostResponseDtoList;
     }
 
     @Override
