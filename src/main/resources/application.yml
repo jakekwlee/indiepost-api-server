@@ -71,7 +71,7 @@ logging:
 spring:
   profiles: prod
   datasource:
-    url: jdbc:mysql://indiepost-rds-cluster.cluster-cwrbrz9y9dsp.ap-northeast-2.rds.amazonaws.com:3306/indiepost?useUnicode=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&characterEncoding=UTF-8&sessionVariables=sql_mode=''&useSSL=false
+    url: jdbc:mysql://rds.indiepost.vpc:3306/indiepost?useUnicode=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&characterEncoding=UTF-8&sessionVariables=sql_mode=''&useSSL=false
     username: indiepost
     password: indiepost
   jpa:
