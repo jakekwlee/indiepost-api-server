@@ -30,7 +30,7 @@ public class ContributorRepositoryTests {
     @Before
     public void beforeTests() {
         Contributor contributor = new Contributor();
-        contributor.setName(RandomStringUtils.randomAlphanumeric(10));
+        contributor.setFullName(RandomStringUtils.randomAlphanumeric(10));
         contributor.setEmail("before@example.com");
         contributor.setSubEmail("test_before_sub@example.com");
         contributor.setDescription("Hello World!");
@@ -48,7 +48,7 @@ public class ContributorRepositoryTests {
     @Test
     public void save_shouldSaveEntityAndReturnIdProperly() {
         Contributor contributor = new Contributor();
-        contributor.setName(RandomStringUtils.randomAlphanumeric(10));
+        contributor.setFullName(RandomStringUtils.randomAlphanumeric(10));
         contributor.setEmail("test@example.com");
         contributor.setSubEmail("test_sub@example.com");
         contributor.setDescription("Hello World");

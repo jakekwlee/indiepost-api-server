@@ -30,9 +30,9 @@ public class Contributor {
     private List<PostContributor> postContributors = new ArrayList<>();
 
     @NotNull
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     @Size(max = 30)
-    private String name;
+    private String fullName;
 
     @Size(max = 50)
     private String email = "email@example.com";
@@ -166,12 +166,12 @@ public class Contributor {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getEmail() {

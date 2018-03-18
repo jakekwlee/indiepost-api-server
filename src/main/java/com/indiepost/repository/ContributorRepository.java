@@ -12,7 +12,7 @@ public interface ContributorRepository extends CrudRepository<Contributor, Long>
 
     Page<Contributor> findAllByContributorType(Types.ContributorType contributorType, Pageable pageable);
 
-    Page<Contributor> findAllByName(String name, Pageable pageable);
+    Page<Contributor> findAllByFullName(String fullName, Pageable pageable);
 
     Long countAllByContributorType(Types.ContributorType contributorType);
 
