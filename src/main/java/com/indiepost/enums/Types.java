@@ -53,6 +53,6 @@ public interface Types {
     }
 
     enum ContributorDisplayType {
-        HTML, PLAIN
+        HTML, TEXT
     }
 }

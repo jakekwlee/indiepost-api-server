@@ -34,7 +34,7 @@ public class ContributorRepositoryTests {
         contributor.setEmail("before@example.com");
         contributor.setSubEmail("test_before_sub@example.com");
         contributor.setDescription("Hello World!");
-        contributor.setDisplayType(Types.ContributorDisplayType.PLAIN);
+        contributor.setDisplayType(Types.ContributorDisplayType.TEXT);
         contributor.setTitle("Test Before title");
         contributor.setContributorType(Types.ContributorType.FreelanceEditor);
 
@@ -52,7 +52,7 @@ public class ContributorRepositoryTests {
         contributor.setEmail("test@example.com");
         contributor.setSubEmail("test_sub@example.com");
         contributor.setDescription("Hello World");
-        contributor.setDisplayType(Types.ContributorDisplayType.PLAIN);
+        contributor.setDisplayType(Types.ContributorDisplayType.TEXT);
         contributor.setTitle("Test Title");
         contributor.setContributorType(Types.ContributorType.FeatureEditor);
 

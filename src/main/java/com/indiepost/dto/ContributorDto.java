@@ -1,5 +1,10 @@
 package com.indiepost.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
+
+import java.time.LocalDateTime;
+
 public class ContributorDto {
     private Long id;
 
@@ -38,6 +43,28 @@ public class ContributorDto {
     private boolean pictureVisible;
 
     private boolean phoneVisible;
+
+    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
+    private LocalDateTime lastUpdated;
+
+    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
+    private LocalDateTime created;
+
+    public LocalDateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(LocalDateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    public LocalDateTime getCreated() {
+        return created;
+    }
+
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
+    }
 
     public boolean isTitleVisible() {
         return titleVisible;

@@ -23,6 +23,8 @@ public class ContributorMapper {
         dto.setDescriptionVisible(contributor.isDescriptionVisible());
         dto.setContributorType(contributor.getContributorType().toString());
         dto.setDisplayType(contributor.getDisplayType().toString());
+        dto.setLastUpdated(contributor.getLastUpdated());
+        dto.setCreated(contributor.getCreated());
         dto.setEtc(contributor.getEtc());
         return dto;
     }
