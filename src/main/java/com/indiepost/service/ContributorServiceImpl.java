@@ -16,8 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.indiepost.service.mapper.ContributorMapper.toDto;
-import static com.indiepost.service.mapper.ContributorMapper.toEntity;
+import static com.indiepost.service.mapper.ContributorMapper.*;
 
 @Service
 @Transactional
@@ -38,10 +37,15 @@ public class ContributorServiceImpl implements ContributorService {
 
     @Override
     public ContributorDto save(ContributorDto dto) {
-        Contributor contributor = toEntity(dto);
         LocalDateTime now = LocalDateTime.now();
-        if (contributor.getId() == null) {
+        Contributor contributor;
+        if (dto.getId() == null) {
+            contributor = toEntity(dto);
             contributor.setCreated(now);
+
+        } else {
+            contributor = contributorRepository.findOne(dto.getId());
+            copy(dto, contributor);
         }
         contributor.setLastUpdated(now);
         contributorRepository.save(contributor);

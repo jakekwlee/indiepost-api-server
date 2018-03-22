@@ -8,7 +8,7 @@ public class ContributorMapper {
     public static ContributorDto toDto(Contributor contributor) {
         ContributorDto dto = new ContributorDto();
         dto.setId(contributor.getId());
-        dto.setName(contributor.getFullName());
+        dto.setFullName(contributor.getFullName());
         dto.setEmail(contributor.getEmail());
         dto.setEmailVisible(contributor.isEmailVisible());
         dto.setSubEmail(contributor.getSubEmail());
@@ -31,7 +31,16 @@ public class ContributorMapper {
 
     public static Contributor toEntity(ContributorDto dto) {
         Contributor contributor = new Contributor();
-        contributor.setFullName(dto.getName());
+        copy(dto, contributor);
+        return contributor;
+    }
+
+    public static void copy(ContributorDto dto, Contributor contributor) {
+        copy(dto, contributor, true);
+    }
+
+    public static void copy(ContributorDto dto, Contributor contributor, boolean copyId) {
+        contributor.setFullName(dto.getFullName());
         contributor.setTitle(dto.getTitle());
         contributor.setTitleVisible(dto.isTitleVisible());
         contributor.setPicture(dto.getPicture());
@@ -48,6 +57,5 @@ public class ContributorMapper {
         contributor.setPhoneVisible(dto.isPhoneVisible());
         contributor.setUrl(dto.getUrl());
         contributor.setUrlVisible(dto.isUrlVisible());
-        return contributor;
     }
 }
