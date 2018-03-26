@@ -4,13 +4,14 @@ import com.indiepost.dto.UserDto;
 import com.indiepost.dto.admin.AdminInitResponseDto;
 import com.indiepost.enums.Types.UserRole;
 import com.indiepost.model.User;
-import com.indiepost.service.mapper.UserMapperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.indiepost.mapper.UserMapper.userToUserDto;
 
 /**
  * Created by jake on 10/8/16.
@@ -25,25 +26,23 @@ public class AdminServiceImpl implements AdminService {
 
     private final UserService userService;
 
-    private final UserMapperService userMapperService;
 
     @Autowired
     public AdminServiceImpl(AdminPostService adminPostService, CategoryService categoryService,
-                            UserService userService, UserMapperService userMapperService) {
+                            UserService userService) {
         this.adminPostService = adminPostService;
         this.categoryService = categoryService;
         this.userService = userService;
-        this.userMapperService = userMapperService;
     }
 
     @Override
     public AdminInitResponseDto buildInitialResponse() {
-        User currentUser = userService.getCurrentUser();
+        User currentUser = userService.findCurrentUser();
         AdminInitResponseDto adminInitResponseDto = new AdminInitResponseDto();
-        adminInitResponseDto.setCurrentUser(userMapperService.userToUserDto(currentUser));
+        adminInitResponseDto.setCurrentUser(userToUserDto(currentUser));
         adminInitResponseDto.setAuthors(getUserDtoList(UserRole.Author));
         adminInitResponseDto.setCategories(categoryService.getDtoList());
-        adminInitResponseDto.setAuthorNames(adminPostService.findAllDisplayNames());
+        adminInitResponseDto.setAuthorNames(adminPostService.findAllBylineNames());
         return adminInitResponseDto;
     }
 
@@ -61,14 +60,14 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public UserDto getCurrentUserDto() {
-        User currentUser = userService.getCurrentUser();
-        return userMapperService.userToUserDto(currentUser);
+        User currentUser = userService.findCurrentUser();
+        return userToUserDto(currentUser);
     }
 
     private List<UserDto> userListToUserDtoList(List<User> userList) {
         List<UserDto> userDtoList = new ArrayList<>();
         for (User user : userList) {
-            userDtoList.add(userMapperService.userToUserDto(user));
+            userDtoList.add(userToUserDto(user));
         }
         return userDtoList;
     }

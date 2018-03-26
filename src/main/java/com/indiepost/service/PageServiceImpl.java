@@ -42,7 +42,7 @@ public class PageServiceImpl implements PageService {
         page.setType(pageDto.getType());
         page.setStatus(pageDto.getStatus());
 
-        User currentUser = userService.getCurrentUser();
+        User currentUser = userService.findCurrentUser();
         page.setAuthor(currentUser);
 
         page.setCreatedAt(LocalDateTime.now());

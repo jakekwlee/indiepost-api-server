@@ -7,6 +7,9 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -72,6 +75,17 @@ public class UserRepositoryHibernate implements UserRepository {
         return (User) getCriteria()
                 .add(Restrictions.eq("email", email))
                 .uniqueResult();
+    }
+
+    @Override
+    public User findCurrentUser() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        if (authentication == null) {
+            return null;
+        }
+        String username = authentication.getName();
+        return findByUsername(username);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.indiepost.dto.admin;
 
-import com.indiepost.model.ImageSet;
+import com.indiepost.dto.ImageSetDto;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +13,7 @@ public class AdminPostResponseDto extends AdminPostRequestDto {
 
     private LocalDateTime modifiedAt;
 
-    private ImageSet titleImage;
+    private ImageSetDto titleImage;
 
     private String postType;
 
@@ -41,11 +41,11 @@ public class AdminPostResponseDto extends AdminPostRequestDto {
         this.modifiedAt = modifiedAt;
     }
 
-    public ImageSet getTitleImage() {
+    public ImageSetDto getTitleImage() {
         return titleImage;
     }
 
-    public void setTitleImage(ImageSet titleImage) {
+    public void setTitleImage(ImageSetDto titleImage) {
         this.titleImage = titleImage;
     }
 

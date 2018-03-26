@@ -24,6 +24,8 @@ public interface UserRepository {
 
     User findByUsernameAndPassword(String username, String password);
 
+    User findCurrentUser();
+
     User findByEmail(String email);
 
     List<User> findAll(Pageable pageable);

@@ -1,30 +1,25 @@
 package com.indiepost.repository;
 
-import com.github.fluent.hibernate.request.aliases.Aliases;
 import com.indiepost.dto.PostQuery;
+import com.indiepost.dto.admin.AdminPostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
-import com.indiepost.enums.Types.UserRole;
-import com.indiepost.model.Post;
-import com.indiepost.model.Role;
-import com.indiepost.model.User;
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
-import org.hibernate.Session;
-import org.hibernate.criterion.*;
+import com.indiepost.model.*;
+import com.indiepost.repository.utils.CriteriaUtils;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static com.indiepost.repository.utils.CriteriaUtils.buildConjunction;
-import static com.indiepost.repository.utils.CriteriaUtils.setPageToCriteria;
+import static com.indiepost.model.QPost.post;
 
 /**
  * Created by jake on 17. 1. 11.
@@ -38,199 +33,243 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
     @Override
     public Long save(Post post) {
-        return (Long) getSession().save(post);
+        entityManager.persist(post);
+        entityManager.flush();
+        return post.getId();
     }
 
     @Override
-    public Post findById(Long id) {
-        // TODO reduce query
-        return entityManager.find(Post.class, id);
-    }
-
-    @Override
-    public void update(Post post) {
-        getSession().update(post);
+    public Post findOne(Long id) {
+        return getQueryFactory()
+                .selectFrom(post)
+                .leftJoin(post.titleImage, QImageSet.imageSet)
+                .fetchJoin()
+                .where(post.id.eq(id))
+                .fetchOne();
     }
 
     @Override
     public void delete(Post post) {
-        getSession().delete(post);
+        entityManager.remove(post);
     }
 
     @Override
-    public List<Post> find(User user, Pageable pageable) {
-        return find(user, null, pageable);
-    }
-
-
-    @Override
-    public List<Post> find(User user, PostQuery query, Pageable pageable) {
-        Criteria criteria = getPagedCriteria(pageable);
-        getAliases().addToCriteria(criteria);
-        // TODO Projection List<AdminPostSummaryDto>
-        // TODO fetch n + 1 problem
-//        criteria.setProjection(getProjectionList());
-        criteria.setFetchMode("tags", FetchMode.JOIN);
-        UserRole role = getRole(user);
-        Conjunction conjunction = Restrictions.conjunction();
-
-        if (query != null) {
-            buildConjunction(query, conjunction);
-        }
-
-        switch (role) {
-            case Administrator:
-                break;
-            case EditorInChief:
-            case Editor:
-                conjunction.add(getPrivacyCriterion(user.getId()));
-                break;
-            default:
-                conjunction.add(getPrivacyCriterion(user.getId()));
-                conjunction.add(Restrictions.eq("author.id", user.getId()));
-                break;
-        }
-
-        if (conjunction.conditions().iterator().hasNext()) {
-            criteria.add(conjunction);
-        }
-        criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-
-        return criteria.list();
+    public void deleteById(Long id) {
+        Post post = findOne(id);
+        delete(post);
     }
 
     @Override
-    public Long count() {
-        return (Long) getCriteria().setProjection(Projections.rowCount())
-                .uniqueResult();
+    public List<AdminPostSummaryDto> findByIdIn(List<Long> ids) {
+        JPAQuery query = getQueryFactory().selectFrom(post);
+        addProjections(query)
+                .innerJoin(post.author, QUser.user)
+                .innerJoin(post.editor, QUser.user)
+                .innerJoin(post.category, QCategory.category)
+                .distinct();
+
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(post.id.in(ids));
+
+        query.where(builder);
+        List<Tuple> rows = query.fetch();
+        List<AdminPostSummaryDto> posts = toDtoList(rows);
+        return ids.stream().map(id -> {
+            for (AdminPostSummaryDto post : posts) {
+                if (id.equals(post.getId())) {
+                    return post;
+                }
+            }
+            return null;
+        }).collect(Collectors.toList());
     }
 
     @Override
-    public Long count(PostQuery postQuery) {
-        Conjunction conjunction = Restrictions.conjunction();
-        buildConjunction(postQuery, conjunction);
-        return (Long) getCriteria().add(conjunction).setProjection(Projections.rowCount())
-                .uniqueResult();
+    public List<AdminPostSummaryDto> find(User currentUser, Pageable pageable) {
+        return null;
     }
 
     @Override
-    public List<Post> findScheduledPosts() {
-        return getCriteria()
-                .add(Restrictions.eq("status", PostStatus.FUTURE))
-                .add(Restrictions.le("publishedAt", LocalDateTime.now()))
-                .setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY)
-                .list();
-    }
+    public List<AdminPostSummaryDto> find(User currentUser, PostStatus status, Pageable pageable) {
+        JPAQuery query = getQueryFactory().selectFrom(post);
+        addProjections(query)
+                .innerJoin(post.author, QUser.user)
+                .innerJoin(post.editor, QUser.user)
+                .innerJoin(post.category, QCategory.category)
+                .orderBy(post.publishedAt.desc())
+                .limit(pageable.getPageSize())
+                .offset(pageable.getOffset())
+                .distinct();
 
-    @Override
-    public void disableSplashPosts() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaUpdate<Post> update = criteriaBuilder.createCriteriaUpdate(Post.class);
-        Root e = update.from(Post.class);
-        update.set("splash", false);
-        update.where(criteriaBuilder.and(
-                criteriaBuilder.equal(e.get("status"), PostStatus.PUBLISH)),
-                criteriaBuilder.equal(e.get("splash"), true));
-        entityManager.createQuery(update).executeUpdate();
-    }
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(post.status.eq(status));
+        addPrivacyCriteria(builder, status, currentUser);
 
-    @Override
-    public void disableFeaturedPosts() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaUpdate<Post> update = criteriaBuilder.createCriteriaUpdate(Post.class);
-        Root e = update.from(Post.class);
-        update.set("featured", false);
-        update.where(criteriaBuilder.and(
-                criteriaBuilder.equal(e.get("status"), PostStatus.PUBLISH)),
-                criteriaBuilder.equal(e.get("featured"), true));
-        entityManager.createQuery(update).executeUpdate();
+        query.where(builder);
+        return toDtoList(query.fetch());
     }
 
     @Override
     public List<String> findAllDisplayNames() {
-        Criteria criteria = getCriteria()
-                .add(Restrictions.ne("displayName", ""))
-                .setProjection(
-                        Projections.distinct(
-                                Projections.projectionList()
-                                        .add(Projections.property("displayName"))
-
-                        )
-                );
-        return criteria.list();
+        return getQueryFactory()
+                .from(post)
+                .select(post.displayName)
+                .where(post.displayName.isNotEmpty())
+                .distinct()
+                .fetch();
     }
 
-
-    private Session getSession() {
-        return entityManager.unwrap(Session.class);
+    @Override
+    public Long count() {
+        return getQueryFactory()
+                .selectFrom(post)
+                .fetchCount();
     }
 
-    private Criteria getCriteria() {
-        return getSession().createCriteria(Post.class);
+    @Override
+    public Long count(PostQuery search) {
+        JPAQuery query = getQueryFactory().selectFrom(post);
+        BooleanBuilder builder = CriteriaUtils.addSearchConjunction(search, new BooleanBuilder());
+        query.where(builder);
+        return query.fetchCount();
     }
 
-    private Criteria getPagedCriteria(Pageable pageable) {
-        return setPageToCriteria(getCriteria(), pageable);
+    @Override
+    public Long count(PostStatus status, User currentUser) {
+        JPAQuery query = getQueryFactory().from(post);
+
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(post.status.eq(status));
+        addPrivacyCriteria(builder, status, currentUser);
+
+        query.where(builder);
+        return query.fetchCount();
     }
 
-    private Aliases getAliases() {
-        return Aliases.create()
-                .add("author", "author", JoinType.INNER)
-                .add("editor", "editor", JoinType.INNER)
-                .add("category", "category", JoinType.INNER);
+    @Override
+    public List<Post> findScheduledToBePublished() {
+        return getQueryFactory()
+                .selectFrom(post)
+                .where(post.status.eq(PostStatus.FUTURE), post.publishedAt.before(LocalDateTime.now()))
+                .fetch();
     }
 
-    private ProjectionList getProjectionList() {
-        return Projections.projectionList()
-                .add(Property.forName("id"), "id")
-                .add(Property.forName("title"), "title")
-                .add(Property.forName("status"), "status")
-                .add(Property.forName("displayName"), "displayName")
-                .add(Property.forName("category.name"), "category.name")
-                .add(Property.forName("author.displayName"), "author.displayName")
-                .add(Property.forName("editor.displayName"), "editor.displayName")
-                .add(Property.forName("createdAt"), "createdAt")
-                .add(Property.forName("publishedAt"), "publishedAt")
-                .add(Property.forName("modifiedAt"), "modifiedAt")
-                .add(Property.forName("likesCount"), "likesCount")
-                .add(Property.forName("tags"), "tags");
+    @Override
+    public void disableSplashPosts() {
+        getQueryFactory()
+                .update(post)
+                .set(post.splash, false)
+                .where(post.status.eq(PostStatus.PUBLISH), post.splash.eq(true))
+                .execute();
     }
 
-    private Criterion getPrivacyCriterion(Long userId) {
-        return Restrictions.not(
-                Restrictions.and(
-                        Restrictions.ne("editor.id", userId),
-                        Restrictions.or(
-                                Restrictions.eq("status", PostStatus.TRASH),
-                                Restrictions.eq("status", PostStatus.DRAFT),
-                                Restrictions.eq("status", PostStatus.AUTOSAVE)
-                        )
-                )
+    @Override
+    public void disableFeaturedPosts() {
+        getQueryFactory()
+                .update(post)
+                .set(post.featured, false)
+                .where(post.status.eq(PostStatus.PUBLISH), post.featured.eq(true))
+                .execute();
+    }
+
+    @Override
+    public void flush() {
+        entityManager.flush();
+    }
+
+    private JPAQuery addProjections(JPAQuery query) {
+        return query.select(
+                post.id, post.title, post.displayName, post.splash, post.featured, post.picked,
+                post.category.name, post.author.displayName, post.editor.displayName,
+                post.createdAt, post.modifiedAt, post.publishedAt, post.likes, post.status
         );
     }
 
-    private UserRole getRole(User user) {
-        List<Role> roleList = user.getRoles();
-        int userLevel = 1;
-        for (Role role : roleList) {
-            if (role.getLevel() > userLevel) {
-                userLevel = role.getLevel();
-            }
-        }
-
-        switch (userLevel) {
-            case 9:
-                return UserRole.Administrator;
-            case 7:
-                return UserRole.EditorInChief;
-            case 5:
-                return UserRole.Editor;
-            case 3:
-                return UserRole.Author;
-            case 1:
-                return UserRole.User;
+    private void addPrivacyCriteria(BooleanBuilder builder, PostStatus status, User currentUser) {
+        switch (currentUser.getHighestRole()) {
+            case Administrator:
+                return;
+            case EditorInChief:
+            case Editor:
+                if (status.equals(PostStatus.PUBLISH) ||
+                        status.equals(PostStatus.FUTURE) ||
+                        status.equals(PostStatus.PENDING)) {
+                    return;
+                }
+                builder.and(post.editorId.eq(currentUser.getId()));
+                return;
             default:
-                return UserRole.User;
+                builder.and(post.authorId.eq(currentUser.getId()));
         }
+    }
+
+    private List<AdminPostSummaryDto> postToDtoList(List<Post> posts) {
+        if (posts == null) {
+            return new ArrayList<>();
+        }
+        List<AdminPostSummaryDto> dtoList = new ArrayList<>();
+        for (Post post : posts) {
+            AdminPostSummaryDto dto = new AdminPostSummaryDto();
+            dto.setId(post.getId());
+            dto.setTitle(post.getTitle());
+            dto.setDisplayName(post.getDisplayName());
+            dto.setSplash(post.isSplash());
+            dto.setFeatured(post.isFeatured());
+            dto.setPicked(post.isPicked());
+            dto.setCategoryName(post.getCategory().getName());
+            dto.setAuthorDisplayName(post.getAuthor().getDisplayName());
+            dto.setEditorDisplayName(post.getEditor().getDisplayName());
+            dto.setCreatedAt(post.getCreatedAt());
+            dto.setModifiedAt(post.getModifiedAt());
+            dto.setPublishedAt(post.getPublishedAt());
+            dto.setLikedCount(post.getLikesCount());
+            dto.setStatus(post.getStatus().toString());
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
+
+    private List<AdminPostSummaryDto> toDtoList(List<Tuple> result) {
+        if (result == null) {
+            return new ArrayList<>();
+        }
+        List<AdminPostSummaryDto> dtoList = new ArrayList<>();
+        for (Tuple row : result) {
+            AdminPostSummaryDto dto = new AdminPostSummaryDto();
+            dto.setId(row.get(post.id));
+            dto.setTitle(row.get(post.title));
+            dto.setDisplayName(row.get(post.displayName));
+            dto.setSplash(row.get(post.splash));
+            dto.setFeatured(row.get(post.featured));
+            dto.setPicked(row.get(post.picked));
+            dto.setCategoryName(row.get(post.category.name));
+            dto.setAuthorDisplayName(row.get(post.author.displayName));
+            dto.setEditorDisplayName(row.get(post.editor.displayName));
+            dto.setCreatedAt(row.get(post.createdAt));
+            dto.setModifiedAt(row.get(post.modifiedAt));
+            dto.setPublishedAt(row.get(post.publishedAt));
+            dto.setLikedCount(row.get(post.likesCount));
+            dto.setStatus(row.get(post.status).toString());
+//            List<PostContributor> postContributorsList = row.get(post.postContributors);
+//            if (postContributorsList != null) {
+//                List<String> contributors = postContributorsList.stream()
+//                        .map(postContributor -> postContributor.getContributor().getName())
+//                        .collect(Collectors.toList());
+//                dto.setContributors(contributors);
+//            }
+//            List<PostTag> postTags = row.get(post.postTags);
+//            if (postTags != null) {
+//                List<String> tags = postTags.stream()
+//                        .map(postTag -> postTag.getTag().getName())
+//                        .collect(Collectors.toList());
+//                dto.setTags(tags);
+//            }
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
+
+    private JPAQueryFactory getQueryFactory() {
+        return new JPAQueryFactory(entityManager);
     }
 }

@@ -1,6 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.UserDto;
+import com.indiepost.dto.UserProfileDto;
 import com.indiepost.enums.Types.UserGender;
 import com.indiepost.enums.Types.UserRole;
 import com.indiepost.enums.Types.UserState;
@@ -13,16 +14,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.indiepost.mapper.UserMapper.userDtoToUser;
+import static com.indiepost.mapper.UserMapper.userToUserDto;
 
 /**
  * Created by jake on 7/27/16.
@@ -46,9 +49,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(User user) {
-        String rawPassword = user.getPassword();
-        String encodedPassword = passwordEncoder.encode(rawPassword);
-        user.setPassword(encodedPassword);
         userRepository.save(user);
     }
 
@@ -63,37 +63,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updatePassword(String username, String oldPassword, String newPassword) {
-        User user = findByUsername(username, oldPassword);
-        String encodedPassword = passwordEncoder.encode(newPassword);
-        user.setPassword(encodedPassword);
-        userRepository.save(user);
+    public User findCurrentUser() {
+        return userRepository.findCurrentUser();
     }
-
 
     @Override
     public User findById(Long id) {
         return userRepository.findById(id);
-    }
-
-
-    @Override
-    public User getCurrentUser() {
-        String username = getCurrentUsername();
-        if (username == null) {
-            return null;
-        }
-        return findByUsername(username);
-    }
-
-    @Override
-    public String getCurrentUsername() {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        Authentication authentication = securityContext.getAuthentication();
-        if (authentication == null) {
-            return null;
-        }
-        return authentication.getName();
     }
 
     @Override
@@ -144,30 +120,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getCurrentUserDto() {
-        User user = getCurrentUser();
+        User user = findCurrentUser();
         return getUserDto(user);
-    }
-
-    @Override
-    public List<UserDto> getDtoList(List<User> userList) {
-        return userList
-                .stream()
-                .map(user -> {
-                    UserDto userDto = new UserDto();
-                    BeanUtils.copyProperties(user, userDto);
-                    return userDto;
-                })
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<UserDto> getDtoList(int page, int maxResults, boolean isDesc) {
-        return getDtoList(this.findAllUsers(page, maxResults, isDesc));
-    }
-
-    @Override
-    public List<UserDto> getDtoList(UserRole role, int page, int maxResults, boolean isDesc) {
-        return getDtoList(this.findByRolesEnum(role, page, maxResults, isDesc));
     }
 
     @Override
@@ -194,6 +148,96 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserDto(String username) {
         User user = this.findByUsername(username);
         return getUserDto(user);
+    }
+
+    @Override
+    public List<UserDto> getDtoList(List<User> userList) {
+        return userList
+                .stream()
+                .map(user -> {
+                    UserDto userDto = new UserDto();
+                    BeanUtils.copyProperties(user, userDto);
+                    return userDto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserDto> getDtoList(int page, int maxResults, boolean isDesc) {
+        return getDtoList(this.findAllUsers(page, maxResults, isDesc));
+    }
+
+    @Override
+    public List<UserDto> getDtoList(UserRole role, int page, int maxResults, boolean isDesc) {
+        return getDtoList(this.findByRolesEnum(role, page, maxResults, isDesc));
+    }
+
+    @Override
+    public UserProfileDto sync(UserDto dto) {
+        User user = findCurrentUser();
+        LocalDateTime now = LocalDateTime.now();
+
+        // if user is newly joined
+        if (user == null) {
+            user = userDtoToUser(dto);
+            user.setJoinedAt(now);
+//            user.setLastLogin(now);
+            addRolesToUser(user, dto.getRoles());
+            userRepository.save(user);
+            return new UserProfileDto(true, userToUserDto(user));
+        }
+
+        // TODO error 401
+        if (!user.getUsername().equals(dto.getUsername())) {
+            return null;
+        }
+
+//        user.setLastLogin(now);
+        List<String> originalRoles = user.getRoles()
+                .stream()
+                .map(role -> role.getName())
+                .collect(Collectors.toList());
+
+        // if user roles have changed
+        if (!equalLists(originalRoles, dto.getRoles())) {
+            addRolesToUser(user, dto.getRoles());
+//            user.setUpdatedAt(now);
+            userRepository.save(user);
+        }
+        return new UserProfileDto(false, userToUserDto(user));
+    }
+
+    private void addRolesToUser(User user, List<String> roles) {
+        if (roles == null || roles.size() == 0) {
+            return;
+        }
+        user.getRoles().clear();
+        for (String r : roles) {
+            Role role = roleRepository.findByUserRoleString(r);
+            if (role == null) {
+                continue;
+            }
+            user.getRoles().add(role);
+        }
+    }
+
+    private boolean equalLists(List<String> one, List<String> two) {
+        if (one == null && two == null) {
+            return true;
+        }
+
+        if ((one == null && two != null)
+                || one != null && two == null
+                || one.size() != two.size()) {
+            return false;
+        }
+
+        one = new ArrayList<>(one);
+        two = new ArrayList<>(two);
+
+        Collections.sort(one);
+        Collections.sort(two);
+        return one.equals(two);
     }
 
     private Pageable getPageable(int page, int maxResults, boolean isDesc) {

@@ -1,7 +1,7 @@
 package com.indiepost.repository;
 
 import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.PostSummary;
+import com.indiepost.dto.PostSummaryDto;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Post;
 import org.springframework.data.domain.Pageable;
@@ -19,16 +19,20 @@ public interface PostRepository {
 
     Long count(PostQuery query);
 
-    List<PostSummary> find(Pageable pageable);
+    List<PostSummaryDto> findByIds(List<Long> ids);
 
-    List<PostSummary> findByQuery(PostQuery query, Pageable pageable);
+    List<PostSummaryDto> findByCategoryId(Long categoryId, Pageable pageable);
 
-    List<PostSummary> findByIds(List<Long> ids);
+    @SuppressWarnings("JpaQlInspection")
+    List<PostSummaryDto> findByCategorySlug(String slug, Pageable pageable);
 
-    List<PostSummary> findByCategoryId(Long categoryId, Pageable pageable);
+    List<PostSummaryDto> findByTagName(String tagName, Pageable pageable);
 
-    List<PostSummary> findByStatus(Types.PostStatus status, Pageable pageable);
+    List<PostSummaryDto> findByStatus(Types.PostStatus status, Pageable pageable);
 
-    List<PostSummary> findScheduledPosts();
+    List<PostSummaryDto> findScheduledPosts();
 
+    List<PostSummaryDto> search(PostQuery search, Pageable pageable);
+
+    Types.PostStatus getStatusById(Long postId);
 }

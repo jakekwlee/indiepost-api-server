@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.indiepost.service.mapper.ContributorMapper.*;
+import static com.indiepost.mapper.ContributorMapper.*;
 
 @Service
 @Transactional

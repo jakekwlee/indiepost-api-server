@@ -1,7 +1,5 @@
 package com.indiepost.dto.admin;
 
-import com.indiepost.dto.TagDto;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -36,7 +34,9 @@ public class AdminPostRequestDto {
 
     private boolean splash;
 
-    private List<TagDto> tags;
+    private List<String> tags;
+
+    private List<String> contributors;
 
     public Long getId() {
         return id;
@@ -110,12 +110,20 @@ public class AdminPostRequestDto {
         this.categoryId = categoryId;
     }
 
-    public List<TagDto> getTags() {
+    public List<String> getTags() {
         return tags;
     }
 
-    public void setTags(List<TagDto> tags) {
+    public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    public List<String> getContributors() {
+        return contributors;
+    }
+
+    public void setContributors(List<String> contributors) {
+        this.contributors = contributors;
     }
 
     public LocalDateTime getPublishedAt() {

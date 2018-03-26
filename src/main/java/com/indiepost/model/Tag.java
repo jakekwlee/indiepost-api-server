@@ -31,6 +31,14 @@ public class Tag implements Serializable {
     @JsonIgnore
     private List<Post> posts = new ArrayList<>();
 
+    public Tag(String name) {
+        this.name = name;
+    }
+
+    public Tag() {
+
+    }
+
     public Long getId() {
         return id;
     }

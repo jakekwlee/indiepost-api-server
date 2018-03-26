@@ -17,4 +17,6 @@ public interface RoleRepository {
     Role findById(Long id);
 
     Role findByUserRole(UserRole role);
+
+    Role findByUserRoleString(String role);
 }

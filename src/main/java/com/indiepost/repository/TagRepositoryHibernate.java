@@ -1,6 +1,8 @@
 package com.indiepost.repository;
 
+import com.indiepost.model.QTag;
 import com.indiepost.model.Tag;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.indiepost.repository.utils.CriteriaUtils.setPageToCriteria;
@@ -23,6 +26,8 @@ public class TagRepositoryHibernate implements TagRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    private QTag qTag = QTag.tag;
 
     @Override
     public void save(Tag tag) {
@@ -57,6 +62,24 @@ public class TagRepositoryHibernate implements TagRepository {
     }
 
     @Override
+    public List<Tag> findByNameIn(List<String> tagNames) {
+        List<Tag> tags = getJpaQuery()
+                .selectFrom(qTag)
+                .where(qTag.name.in(tagNames))
+                .fetch();
+        List<Tag> result = new ArrayList<>();
+        for (String name : tagNames) {
+            for (Tag tag : tags) {
+                if (name.equals(tag.getName())) {
+                    result.add(tag);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
     public void update(Tag tag) {
         getSession().update(tag);
     }
@@ -72,5 +95,9 @@ public class TagRepositoryHibernate implements TagRepository {
 
     private Criteria getCriteria() {
         return getSession().createCriteria(Tag.class);
+    }
+
+    private JPAQueryFactory getJpaQuery() {
+        return new JPAQueryFactory(entityManager);
     }
 }

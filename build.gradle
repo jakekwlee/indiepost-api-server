@@ -79,6 +79,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-security')
     compile('org.springframework.boot:spring-boot-starter-thymeleaf')
     compile('org.springframework.boot:spring-boot-starter-validation')
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: '2.0.0.RELEASE'
     runtime('org.springframework.boot:spring-boot-devtools')
     compileOnly('org.springframework.boot:spring-boot-configuration-processor')
     testCompile('org.springframework.boot:spring-boot-starter-test')
@@ -103,14 +104,15 @@ dependencies {
         exclude group: "org.hibernate"
     }
     compile("com.zaxxer:HikariCP:2.6.1")
-    compile group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-hibernate5"
-    compile group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-jsr310"
     compile group: "com.eclipsesource.j2v8", name: "j2v8_linux_x86_64", version: "4.6.0"
     compile group: "cz.jiripinkas", name: "jsitemapgenerator", version: "2.2"
     compile group: "com.sangupta", name: "murmur", version: "1.0.0"
     compile group: "com.amazonaws", name: "aws-java-sdk", version: "1.11.163"
     compile group: "org.jsoup", name: "jsoup", version: "1.10.3"
     compile group: "org.apache.commons", name: "commons-collections4", version: "4.1"
+    compile group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-hibernate5"
+
+
     testCompile group: "org.assertj", name: "assertj-core", version: "3.8.0"
     runtime("mysql:mysql-connector-java")
 

@@ -49,6 +49,14 @@ public class RoleRepositoryHibernate implements RoleRepository {
                 .uniqueResult();
     }
 
+    @Override
+    public Role findByUserRoleString(String role) {
+        // TODO 20180226
+        return (Role) getCriteria()
+                .add(Restrictions.eq("name", role))
+                .uniqueResult();
+    }
+
     private Session getSession() {
         return entityManager.unwrap(Session.class);
     }

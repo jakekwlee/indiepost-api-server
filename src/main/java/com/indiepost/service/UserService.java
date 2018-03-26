@@ -1,6 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.UserDto;
+import com.indiepost.dto.UserProfileDto;
 import com.indiepost.enums.Types.UserGender;
 import com.indiepost.enums.Types.UserRole;
 import com.indiepost.enums.Types.UserState;
@@ -18,11 +19,7 @@ public interface UserService {
 
     void delete(User user);
 
-    void updatePassword(String username, String oldPassword, String newPassword);
-
-    User getCurrentUser();
-
-    String getCurrentUsername();
+    User findCurrentUser();
 
     User findById(Long id);
 
@@ -55,4 +52,6 @@ public interface UserService {
     List<UserDto> getDtoList(int page, int maxResults, boolean isDesc);
 
     List<UserDto> getDtoList(UserRole role, int page, int maxResults, boolean isDesc);
+
+    UserProfileDto sync(UserDto dto);
 }

@@ -1,9 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.FullTextSearchQuery;
-import com.indiepost.dto.PostDto;
-import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.PostSummary;
+import com.indiepost.dto.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,31 +10,35 @@ import java.util.List;
  */
 public interface PostService {
 
-    PostDto findById(Long id);
+    PostDto findOne(Long id);
+
+    PostDto findOneByLegacyId(Long id);
 
     Long count();
 
     Long count(PostQuery query);
 
-    List<PostSummary> findByIds(List<Long> ids);
+    List<PostSummaryDto> findByIds(List<Long> ids);
 
-    List<PostSummary> findAll(int page, int maxResults, boolean isDesc);
+    List<PostSummaryDto> find(int page, int maxResults, boolean isDesc);
 
-    List<PostSummary> findByQuery(PostQuery query, int page, int maxResults, boolean isDesc);
+    List<PostSummaryDto> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc);
 
-    List<PostSummary> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc);
+    List<PostSummaryDto> findByTagName(String tagName, int page, int maxResults, boolean isDesc);
 
-    List<PostSummary> findByTagName(String tagName);
+    List<RelatedPostResponseDto> findRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobile);
 
-    List<PostSummary> getTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit);
+    List<PostSummaryDto> findTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit);
 
-    List<PostSummary> getScheduledPosts();
+    List<PostSummaryDto> findScheduledPosts();
 
-    List<PostSummary> fullTextSearch(FullTextSearchQuery query);
+    List<PostSummaryDto> search(PostQuery query, int page, int maxResults, boolean isDesc);
+
+    List<PostSummaryDto> fullTextSearch(FullTextSearchQuery query);
 
     PostSummary findSplashPost();
 
-    PostSummary findFeaturePost();
+    PostSummaryDto findFeaturePost();
 
-    List<PostSummary> findPickedPosts();
+    List<PostSummaryDto> findPickedPosts();
 }

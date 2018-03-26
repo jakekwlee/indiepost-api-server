@@ -20,6 +20,8 @@ public interface TagRepository {
 
     List<Tag> findAll(Pageable pageable);
 
+    List<Tag> findByNameIn(List<String> tagNames);
+
     void update(Tag tag);
 
     void delete(Tag tag);

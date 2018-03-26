@@ -3,12 +3,15 @@ package com.indiepost.controller.api.admin;
 import com.indiepost.dto.admin.AdminPostRequestDto;
 import com.indiepost.dto.admin.AdminPostResponseDto;
 import com.indiepost.dto.admin.AdminPostSummaryDto;
+import com.indiepost.enums.Types;
 import com.indiepost.service.AdminPostService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import static com.indiepost.enums.Types.isPublicStatus;
 
 /**
  * Created by jake on 10/8/16.
@@ -24,45 +27,38 @@ public class AdminPostController {
         this.adminPostService = adminPostService;
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public AdminPostResponseDto getPost(@PathVariable Long id) {
-        return adminPostService.getPostResponse(id);
+    @GetMapping(value = "/{id}")
+    public AdminPostResponseDto get(@PathVariable Long id, @RequestParam(defaultValue = "false") boolean edit) {
+        AdminPostResponseDto post = adminPostService.findOne(id);
+        if (edit) {
+            Types.PostStatus postStatus = Types.PostStatus.valueOf(post.getStatus());
+            if (isPublicStatus(postStatus)) {
+                return adminPostService.createAutosave(id);
+            }
+        }
+        return post;
     }
 
-    @RequestMapping(method = RequestMethod.POST)
-    public AdminPostResponseDto savePost(@RequestBody AdminPostRequestDto adminPostRequestDto) {
-        return adminPostService.save(adminPostRequestDto);
+    @GetMapping
+    public Page<AdminPostSummaryDto> getList(
+            @RequestParam("status") String status,
+            @RequestParam(value = "query", required = false) String query,
+            Pageable pageable
+    ) {
+        Types.PostStatus postStatus = Types.PostStatus.valueOf(status.toUpperCase());
+        if (StringUtils.isNotEmpty(query)) {
+            return adminPostService.fullTextSearch(query, postStatus, pageable);
+        }
+        return adminPostService.find(postStatus, pageable);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public void updatePost(@RequestBody AdminPostRequestDto adminPostRequestDto, @PathVariable Long id) {
-        adminPostService.update(id, adminPostRequestDto);
+    @PutMapping(value = "/{id}")
+    public void update(@RequestBody AdminPostRequestDto adminPostRequestDto, @PathVariable Long id) {
+        adminPostService.update(adminPostRequestDto);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public Long deletePost(@PathVariable Long id) {
+    @DeleteMapping(value = "/{id}")
+    public void delete(@PathVariable Long id) {
         adminPostService.deleteById(id);
-        return id;
     }
-
-    @RequestMapping(value = "/autosave", method = RequestMethod.POST)
-    public AdminPostResponseDto createAutosave(@RequestBody AdminPostRequestDto adminPostRequestDto) {
-        return adminPostService.createAutosave(adminPostRequestDto);
-    }
-
-    @RequestMapping(value = "/autosave/{id}", method = RequestMethod.PUT)
-    public void updateAutosave(@PathVariable Long id, @RequestBody AdminPostRequestDto adminPostRequestDto) {
-        adminPostService.updateAutosave(id, adminPostRequestDto);
-    }
-
-    @RequestMapping(method = RequestMethod.GET)
-    public List<AdminPostSummaryDto> getPostList() {
-        return adminPostService.getAdminPostTableDtoList(0, 1000000, true);
-    }
-
-    @RequestMapping(value = "/lastUpdated", method = RequestMethod.GET)
-    public List<AdminPostSummaryDto> getLastUpdated() {
-        return adminPostService.getLastUpdated(LocalDateTime.now().minusDays(1));
-    }
-
 }

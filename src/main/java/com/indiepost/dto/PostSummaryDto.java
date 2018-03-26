@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 /**
  * Created by jake on 17. 1. 21.
  */
-public class PostSummary implements Serializable {
+public class PostSummaryDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -47,7 +47,7 @@ public class PostSummary implements Serializable {
 
     private Highlight highlight;
 
-    public PostSummary() {
+    public PostSummaryDto() {
     }
 
     public PostSummary(Long id, boolean featured, boolean picked, boolean splash,
@@ -202,13 +202,13 @@ public class PostSummary implements Serializable {
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
-        if (!(obj instanceof PostSummary)) {
+        if (!(obj instanceof PostSummaryDto)) {
             return false;
         }
 
-        PostSummary postSummary = (PostSummary) obj;
+        PostSummaryDto postSummaryDto = (PostSummaryDto) obj;
         return new EqualsBuilder()
-                .append(id, postSummary.getId())
+                .append(id, postSummaryDto.getId())
                 .isEquals();
     }
 

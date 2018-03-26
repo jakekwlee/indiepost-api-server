@@ -1,4 +1,4 @@
-package com.indiepost.service.mapper;
+package com.indiepost.mapper;
 
 import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.TagDto;

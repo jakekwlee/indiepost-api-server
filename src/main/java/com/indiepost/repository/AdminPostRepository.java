@@ -1,6 +1,8 @@
 package com.indiepost.repository;
 
 import com.indiepost.dto.PostQuery;
+import com.indiepost.dto.admin.AdminPostSummaryDto;
+import com.indiepost.enums.Types;
 import com.indiepost.model.Post;
 import com.indiepost.model.User;
 import org.springframework.data.domain.Pageable;
@@ -14,15 +16,17 @@ public interface AdminPostRepository {
 
     Long save(Post post);
 
-    Post findById(Long id);
-
-    void update(Post post);
+    Post findOne(Long id);
 
     void delete(Post post);
 
-    List<Post> find(User user, Pageable pageable);
+    void deleteById(Long id);
 
-    List<Post> find(User user, PostQuery postQuery, Pageable pageable);
+    List<AdminPostSummaryDto> findByIdIn(List<Long> id);
+
+    List<AdminPostSummaryDto> find(User currentUser, Pageable pageable);
+
+    List<AdminPostSummaryDto> find(User currentUser, Types.PostStatus status, Pageable pageable);
 
     List<String> findAllDisplayNames();
 
@@ -30,9 +34,13 @@ public interface AdminPostRepository {
 
     Long count(PostQuery postQuery);
 
-    List<Post> findScheduledPosts();
+    Long count(Types.PostStatus status, User currentUser);
+
+    List<Post> findScheduledToBePublished();
 
     void disableSplashPosts();
 
     void disableFeaturedPosts();
+
+    void flush();
 }
