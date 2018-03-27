@@ -37,6 +37,7 @@ public class PostRepositoryHibernate implements PostRepository {
     public Post findById(Long id) {
         return getQueryFactory()
                 .selectFrom(post)
+                .join(post.category, QCategory.category)
                 .leftJoin(post.titleImage, QImageSet.imageSet)
                 .fetchJoin()
                 .where(post.id.eq(id))
@@ -121,56 +122,7 @@ public class PostRepositoryHibernate implements PostRepository {
 
     @Override
     public List<PostSummaryDto> findByTagName(String tagName, Pageable pageable) {
-//        QPostTag postTag = QPostTag.postTag;
-//
-//        JPAQuery query = getQueryFactory()
-//                .select(
-//                        postTag.post.id,
-//                        postTag.post.legacyPostId,
-//                        postTag.post.category.slug,
-//                        postTag.post.splash,
-//                        postTag.post.picked,
-//                        postTag.post.featured,
-//                        postTag.post.bylineName,
-//                        postTag.post.title,
-//                        postTag.post.publishedAt,
-//                        postTag.post.excerpt,
-//                        postTag.post.titleImage,
-//                        postTag.post.bookmarkCount
-//                )
-//                .from(postTag)
-//                .innerJoin(postTag.post, post)
-//                .innerJoin(postTag.post.category, QCategory.category)
-//                .leftJoin(postTag.post.titleImage, QImageSet.imageSet)
-//                .where(
-//                        postTag.tag.name.eq(tagName),
-//                        postTag.post.status.eq(PostStatus.PUBLISH)
-//                )
-//                .orderBy(postTag.post.publishedAt.desc())
-//                .distinct();
-//
-//        List<Tuple> result = query.fetch();
-//        if (result == null) {
-//            return new ArrayList<>();
-//        }
 
-//        return toDtoList(query.fetch());
-
-//        QPostTag postTag = QPostTag.postTag;
-//
-//        List<Long> ids = getQueryFactory()
-//                .select(postTag.post.id)
-//                .from(postTag)
-//                .innerJoin(postTag.tag, QTag.tag)
-//                .innerJoin(postTag.post, QPost.post)
-//                .where(postTag.tag.name.eq(tagName), postTag.post.status.eq(PostStatus.PUBLISH))
-//                .orderBy(postTag.post.publishedAt.desc()).fetch();
-
-//        if (ids == null) {
-//            return new ArrayList<>();
-//        }
-//
-//        return findByIds(ids);
         // TODO
         return new ArrayList<>();
     }
@@ -221,7 +173,7 @@ public class PostRepositoryHibernate implements PostRepository {
 
     private JPAQuery addProjections(JPAQuery query) {
         return query.select(
-                post.id, post.legacyPostId, post.category.slug, post.splash, post.picked, post.featured,
+                post.id, post.legacyPostId, post.categoryId, post.category.name, post.category.slug, post.splash, post.picked, post.featured,
                 post.displayName, post.title, post.publishedAt, post.excerpt, post.titleImage,
                 post.likesCount);
     }
@@ -241,6 +193,7 @@ public class PostRepositoryHibernate implements PostRepository {
             dto.setFeatured(row.get(post.featured));
             dto.setPicked(row.get(post.picked));
             dto.setCategoryName(row.get(post.category.slug));
+            dto.setCategoryId(row.get(post.categoryId));
             ImageSet titleImage = row.get(post.titleImage);
             if (titleImage != null) {
                 dto.setTitleImage(titleImage);

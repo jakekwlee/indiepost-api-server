@@ -3,6 +3,7 @@ package com.indiepost.mapper;
 import com.indiepost.dto.ImageSetDto;
 import com.indiepost.dto.PostDto;
 import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.RelatedPostsMatchingResult;
 import com.indiepost.dto.admin.AdminPostRequestDto;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Contributor;
@@ -15,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.indiepost.utils.DomUtil.getRelatedPostIdsFromPostContent;
 import static com.indiepost.utils.DomUtil.htmlToText;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
@@ -47,6 +49,7 @@ public class PostMapper {
     public static PostSummaryDto toSummaryDto(Post post) {
         PostSummaryDto postSummaryDto = new PostSummaryDto();
         postSummaryDto.setId(post.getId());
+        postSummaryDto.setCategoryId(post.getCategoryId());
         postSummaryDto.setFeatured(post.isFeatured());
         postSummaryDto.setSplash(post.isSplash());
         postSummaryDto.setPicked(post.isPicked());
@@ -112,6 +115,12 @@ public class PostMapper {
     public static PostDto postToPostDto(Post post) {
         PostDto postDto = new PostDto();
         BeanUtils.copyProperties(post, postDto);
+        postDto.setCategoryName(post.getCategory().getName());
+        RelatedPostsMatchingResult result = getRelatedPostIdsFromPostContent(post.getContent());
+        if (result != null && result.getIds().size() > 0) {
+            postDto.setRelatedPostIds(result.getIds());
+            postDto.setContent(result.getContent());
+        }
         return postDto;
     }
 
