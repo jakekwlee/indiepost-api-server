@@ -1,7 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.dto.PostDto;
+import com.indiepost.dto.post.PostDto;
 import com.indiepost.utils.DomUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,7 +35,7 @@ public class PostServiceTest {
 
     @Test
     public void findById_shouldReturnPostDtoWithRelatedPostsProperly() {
-        PostDto post = postService.findById(908L);
+        PostDto post = postService.findOne(908L);
         assertThat(post).isNotNull();
         assertThat(post.getRelatedPostIds()).isNotNull();
         assertThat(post.getRelatedPostIds().size()).isGreaterThan(1);

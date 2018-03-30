@@ -1,6 +1,10 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.*;
+import com.indiepost.dto.FullTextSearchQuery;
+import com.indiepost.dto.post.PostDto;
+import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.PostSummaryDto;
+import com.indiepost.dto.post.RelatedPostResponseDto;
 
 import java.time.LocalDateTime;
 import java.util.List;

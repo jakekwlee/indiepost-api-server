@@ -1,7 +1,12 @@
 package com.indiepost.service;
 
 import com.indiepost.config.AppConfig;
-import com.indiepost.dto.*;
+import com.indiepost.dto.FullTextSearchQuery;
+import com.indiepost.dto.InitialData;
+import com.indiepost.dto.PageDto;
+import com.indiepost.dto.post.PostDto;
+import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.dto.ssr.RenderingRequestDto;
 import com.indiepost.dto.ssr.RenderingResponseDto;
 import com.indiepost.enums.Types;

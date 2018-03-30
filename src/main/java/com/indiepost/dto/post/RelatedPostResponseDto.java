@@ -1,4 +1,4 @@
-package com.indiepost.dto;
+package com.indiepost.dto.post;
 
 /**
  * Created by jake on 17. 1. 24.

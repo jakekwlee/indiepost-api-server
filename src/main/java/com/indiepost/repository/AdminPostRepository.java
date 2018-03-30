@@ -1,7 +1,7 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.admin.AdminPostSummaryDto;
+import com.indiepost.dto.post.AdminPostSummaryDto;
+import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Post;
 import com.indiepost.model.User;

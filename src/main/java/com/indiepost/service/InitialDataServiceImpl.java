@@ -2,7 +2,7 @@ package com.indiepost.service;
 
 import com.indiepost.config.AppConfig;
 import com.indiepost.dto.InitialData;
-import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,8 +1,8 @@
 package com.indiepost.controller.api.admin;
 
-import com.indiepost.dto.admin.AdminPostRequestDto;
-import com.indiepost.dto.admin.AdminPostResponseDto;
-import com.indiepost.dto.admin.AdminPostSummaryDto;
+import com.indiepost.dto.post.AdminPostRequestDto;
+import com.indiepost.dto.post.AdminPostResponseDto;
+import com.indiepost.dto.post.AdminPostSummaryDto;
 import com.indiepost.enums.Types;
 import com.indiepost.service.AdminPostService;
 import org.apache.commons.lang3.StringUtils;

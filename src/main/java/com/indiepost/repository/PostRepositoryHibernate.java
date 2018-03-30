@@ -1,12 +1,9 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
-import com.indiepost.model.ImageSet;
-import com.indiepost.model.Post;
-import com.indiepost.model.QCategory;
-import com.indiepost.model.QImageSet;
+import com.indiepost.model.*;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -122,9 +119,21 @@ public class PostRepositoryHibernate implements PostRepository {
 
     @Override
     public List<PostSummaryDto> findByTagName(String tagName, Pageable pageable) {
-
-        // TODO
-        return new ArrayList<>();
+        JPAQuery query = getQueryFactory().from(post);
+        addProjections(query)
+                .innerJoin(post.category, QCategory.category)
+                .innerJoin(post.postTags, QPostTag.postTag)
+                .innerJoin(QPostTag.postTag.tag, QTag.tag)
+                .leftJoin(post.titleImage, QImageSet.imageSet)
+                .where(QTag.tag.name.eq(tagName).and(post.status.eq(PostStatus.PUBLISH)))
+                .orderBy(post.publishedAt.desc(), QPostTag.postTag.priority.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize()).distinct();
+        List<Tuple> result = query.fetch();
+        if (result.size() == 0) {
+            return new ArrayList<>();
+        }
+        return toDtoList(result);
     }
 
     @Override

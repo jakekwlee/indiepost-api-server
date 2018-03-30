@@ -1,4 +1,4 @@
-package com.indiepost.dto;
+package com.indiepost.dto.post;
 
 import java.util.ArrayList;
 import java.util.List;

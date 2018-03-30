@@ -1,6 +1,6 @@
 package com.indiepost.repository.utils;
 
-import com.indiepost.dto.PostQuery;
+import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.stat.PostStatDto;
 import com.indiepost.dto.stat.ShareStat;
 import com.indiepost.dto.stat.TimeDomainDoubleStat;

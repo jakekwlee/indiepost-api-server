@@ -1,9 +1,6 @@
 package com.indiepost.model;
 
 import com.indiepost.enums.Types;
-import com.indiepost.model.analytics.Pageview;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -20,20 +17,19 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "Posts")
-
 public class Post implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -1121960490475976481L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "originalId")
+    @JoinColumn(name = "originalId", insertable = false, updatable = false)
     private Post original;
 
-    @Column(name = "originalId", nullable = false, insertable = false, updatable = false)
+    @Column(name = "originalId")
     private Long originalId;
 
     @OneToMany(
@@ -61,8 +57,8 @@ public class Post implements Serializable {
     private String content = "";
 
     @Column(nullable = false)
-    @Size(max = 300)
-    private String excerpt = "No Excerpt";
+    @Size(max = 400)
+    private String excerpt = "";
 
     @Column(nullable = false)
     @Size(max = 30)
@@ -77,12 +73,11 @@ public class Post implements Serializable {
     @Column(nullable = false)
     private LocalDateTime publishedAt;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "titleImageId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "titleImageId", insertable = false, updatable = false)
     private ImageSet titleImage;
 
-    @Column(name = "titleImageId", insertable = false, updatable = false)
+    @Column(name = "titleImageId")
     private Long titleImageId;
 
     @Column(nullable = false)
@@ -90,38 +85,33 @@ public class Post implements Serializable {
     private Types.PostStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "authorId", nullable = false)
+    @JoinColumn(name = "authorId", nullable = false, insertable = false, updatable = false)
     private User author;
 
-    @Column(name = "authorId", nullable = false, insertable = false, updatable = false)
+    @Column(name = "authorId", nullable = false)
     private Long authorId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "editorId", nullable = false)
+    @JoinColumn(name = "editorId", nullable = false, insertable = false, updatable = false)
     private User editor;
 
-    @Column(name = "editorId", nullable = false, insertable = false, updatable = false)
+    @Column(name = "editorId", nullable = false)
     private Long editorId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "categoryId", nullable = false)
+    @JoinColumn(name = "categoryId", nullable = false, insertable = false, updatable = false)
     private Category category;
 
-    @Column(name = "categoryId", nullable = false, insertable = false, updatable = false)
-    private Long categoryId;
+    @Column(name = "categoryId", nullable = false)
+    private Long categoryId = 2L;
 
-    @ManyToMany
-    @OrderBy("id desc")
-    @JoinTable(
-            name = "Posts_Tags",
-            joinColumns = {@JoinColumn(name = "postId")},
-            inverseJoinColumns = {@JoinColumn(name = "tagId")}
+    @OneToMany(
+            mappedBy = "post",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
     )
-    private List<Tag> tags = new ArrayList<>();
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("createdAt")
-    private List<Comment> comments;
+    @OrderBy("priority")
+    private List<PostTag> postTags = new ArrayList<>();
 
     @Column(nullable = false)
     @Min(0)
@@ -134,17 +124,6 @@ public class Post implements Serializable {
     @Column(nullable = false)
     @Min(0)
     private int likesCount = 0;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "post")
-    private List<Pageview> pageviews;
-
-    public List<Pageview> getPageviews() {
-        return pageviews;
-    }
-
-    public void setPageviews(List<Pageview> pageviews) {
-        this.pageviews = pageviews;
-    }
 
     public Long getId() {
         return id;
@@ -250,41 +229,44 @@ public class Post implements Serializable {
         this.category = category;
     }
 
+    public void addTag(Tag tag, int priority) {
+        PostTag postTag = new PostTag(this, tag, priority);
+        this.postTags.add(postTag);
+        tag.getPostTags().add(postTag);
+    }
+
+    public void removeTag(Tag tag) {
+        for (Iterator<PostTag> iterator = postTags.iterator();
+             iterator.hasNext(); ) {
+            PostTag postTag = iterator.next();
+
+            if (postTag.getPost().equals(this) &&
+                    postTag.getTag().equals(tag)) {
+                iterator.remove();
+                postTag.getTag().getPostTags().remove(postTag);
+                postTag.setPost(null);
+                postTag.setTag(null);
+            }
+        }
+    }
+
     public List<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
-    }
-
-    public void addTag(Tag tag) {
-        if (!this.tags.contains(tag)) {
-            this.tags.add(tag);
-            tag.addPost(this);
-        }
-    }
-
-    public Long removeTag(Tag tag) {
-        Long tagId = tag.getId();
-        if (this.tags.contains(tag)) {
-            this.tags.remove(tag);
-            tag.removePost(this);
-        }
-        return tagId;
+        return postTags.stream()
+                .map(postTag -> postTag.getTag())
+                .collect(Collectors.toList());
     }
 
     public void clearTags() {
-        this.tags.clear();
+        this.postTags.clear();
     }
 
     public void setPostContributors(List<PostContributor> postContributors) {
         this.postContributors = postContributors;
     }
 
-    public void addContributor(Contributor contributor, int prioity) {
+    public void addContributor(Contributor contributor, int priority) {
         PostContributor postContributor =
-                new PostContributor(this, contributor, prioity);
+                new PostContributor(this, contributor, priority);
         this.postContributors.add(postContributor);
         contributor.getPostContributors().add(postContributor);
     }
@@ -312,25 +294,6 @@ public class Post implements Serializable {
 
     public void clearContributors() {
         this.postContributors.clear();
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
-    public void addComment(Comment comment) {
-        this.comments.add(comment);
-    }
-
-    public Long removeComment(Comment comment) {
-        Long commentId = comment.getId();
-        this.comments.remove(comment);
-        return commentId;
     }
 
     public List<Like> getLikes() {

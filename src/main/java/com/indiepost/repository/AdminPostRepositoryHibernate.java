@@ -1,7 +1,7 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.admin.AdminPostSummaryDto;
+import com.indiepost.dto.post.AdminPostSummaryDto;
+import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.*;
 import com.indiepost.repository.utils.CriteriaUtils;
@@ -250,20 +250,20 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
             dto.setPublishedAt(row.get(post.publishedAt));
             dto.setLikedCount(row.get(post.likesCount));
             dto.setStatus(row.get(post.status).toString());
-//            List<PostContributor> postContributorsList = row.get(post.postContributors);
-//            if (postContributorsList != null) {
-//                List<String> contributors = postContributorsList.stream()
-//                        .map(postContributor -> postContributor.getContributor().getName())
-//                        .collect(Collectors.toList());
-//                dto.setContributors(contributors);
-//            }
-//            List<PostTag> postTags = row.get(post.postTags);
-//            if (postTags != null) {
-//                List<String> tags = postTags.stream()
-//                        .map(postTag -> postTag.getTag().getName())
-//                        .collect(Collectors.toList());
-//                dto.setTags(tags);
-//            }
+            List<PostContributor> postContributorsList = row.get(post.postContributors);
+            if (postContributorsList != null) {
+                List<String> contributors = postContributorsList.stream()
+                        .map(postContributor -> postContributor.getContributor().getFullName())
+                        .collect(Collectors.toList());
+                dto.setContributors(contributors);
+            }
+            List<PostTag> postTags = row.get(post.postTags);
+            if (postTags != null) {
+                List<String> tags = postTags.stream()
+                        .map(postTag -> postTag.getTag().getName())
+                        .collect(Collectors.toList());
+                dto.setTags(tags);
+            }
             dtoList.add(dto);
         }
         return dtoList;

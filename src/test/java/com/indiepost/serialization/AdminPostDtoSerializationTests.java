@@ -5,17 +5,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.dto.admin.AdminPostResponseDto;
-import com.indiepost.dto.admin.AdminPostSummaryDto;
+import com.indiepost.dto.post.AdminPostResponseDto;
+import com.indiepost.dto.post.AdminPostSummaryDto;
+import com.indiepost.enums.Types;
 import com.indiepost.service.AdminPostService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-
-import java.util.List;
 
 /**
  * Created by jake on 17. 1. 22.
@@ -34,13 +35,13 @@ public class AdminPostDtoSerializationTests {
      * @throws JsonProcessingException
      */
     public void adminPostSummaryDtoListShouldSerializeCorrectly() throws JsonProcessingException {
-        List<AdminPostSummaryDto> postList = adminPostService.find(20, 10, true);
+        Page<AdminPostSummaryDto> page = adminPostService.find(Types.PostStatus.PUBLISH, new PageRequest(0, 10));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Hibernate5Module());
         System.out.println("*** Start serialize List<AdminPostResponseDto> ***");
-        System.out.println("Result Length: " + postList.size());
+        System.out.println("Result Length: " + page.getContent().size());
         String result = objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true)
-                .writeValueAsString(postList);
+                .writeValueAsString(page);
 
         System.out.println(result);
     }
@@ -52,7 +53,7 @@ public class AdminPostDtoSerializationTests {
      */
     @Test
     public void adminPostResponseDtoShouldSerializeCorrectly() throws JsonProcessingException {
-        AdminPostResponseDto dto = adminPostService.getDtoById(291L);
+        AdminPostResponseDto dto = adminPostService.findOne(291L);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Hibernate5Module());
         System.out.println("*** Start serialize AdminPostResponseDto ***");

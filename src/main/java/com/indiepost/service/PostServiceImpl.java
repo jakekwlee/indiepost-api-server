@@ -1,6 +1,12 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.*;
+import com.indiepost.dto.ContributorDto;
+import com.indiepost.dto.FullTextSearchQuery;
+import com.indiepost.dto.Highlight;
+import com.indiepost.dto.post.PostDto;
+import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.PostSummaryDto;
+import com.indiepost.dto.post.RelatedPostResponseDto;
 import com.indiepost.dto.stat.PostStatDto;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Image;

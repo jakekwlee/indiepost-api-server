@@ -1,8 +1,9 @@
-package com.indiepost.dto.admin;
+package com.indiepost.dto.post;
 
 import com.indiepost.dto.Highlight;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Created by jake on 10/8/16.
@@ -31,6 +32,10 @@ public class AdminPostSummaryDto {
 
     private LocalDateTime modifiedAt;
 
+    private List<String> Contributors;
+
+    private List<String> Tags;
+
     private Highlight highlight;
 
     private boolean featured;
@@ -40,6 +45,22 @@ public class AdminPostSummaryDto {
     private boolean splash;
 
     private int likedCount;
+
+    public List<String> getContributors() {
+        return Contributors;
+    }
+
+    public void setContributors(List<String> contributors) {
+        Contributors = contributors;
+    }
+
+    public List<String> getTags() {
+        return Tags;
+    }
+
+    public void setTags(List<String> tags) {
+        Tags = tags;
+    }
 
     public Highlight getHighlight() {
         return highlight;

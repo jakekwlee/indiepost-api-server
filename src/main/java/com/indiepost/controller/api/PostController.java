@@ -1,6 +1,8 @@
 package com.indiepost.controller.api;
 
-import com.indiepost.dto.*;
+import com.indiepost.dto.FullTextSearchQuery;
+import com.indiepost.dto.PostImageSetListDto;
+import com.indiepost.dto.post.*;
 import com.indiepost.service.ImageService;
 import com.indiepost.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;

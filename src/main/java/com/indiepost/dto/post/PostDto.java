@@ -1,4 +1,6 @@
-package com.indiepost.dto;
+package com.indiepost.dto.post;
+
+import com.indiepost.dto.ContributorDto;
 
 import java.io.Serializable;
 import java.util.ArrayList;

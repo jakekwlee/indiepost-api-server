@@ -1,7 +1,7 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Post;
 import org.springframework.data.domain.Pageable;

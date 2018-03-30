@@ -1,4 +1,4 @@
-package com.indiepost.dto.admin;
+package com.indiepost.dto.post;
 
 import java.time.LocalDateTime;
 import java.util.List;

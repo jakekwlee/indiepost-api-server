@@ -1,6 +1,6 @@
 package com.indiepost.utils;
 
-import com.indiepost.dto.RelatedPostsMatchingResult;
+import com.indiepost.dto.post.RelatedPostsMatchingResult;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

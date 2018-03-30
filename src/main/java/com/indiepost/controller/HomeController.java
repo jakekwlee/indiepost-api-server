@@ -121,6 +121,6 @@ public class HomeController {
         return "User-agent: *\n" +
                 "Disallow: /admin/\n" +
                 "Disallow: /indiepost/\n" +
-                "Sitemap: http://www.indiepsot.co.kr/sitemap.xml";
+                "Sitemap: https://www.indiepsot.co.kr/sitemap.xml";
     }
 }

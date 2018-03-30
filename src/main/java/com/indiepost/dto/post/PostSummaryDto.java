@@ -1,5 +1,6 @@
-package com.indiepost.dto;
+package com.indiepost.dto.post;
 
+import com.indiepost.dto.Highlight;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.ImageSet;
 import org.apache.commons.lang3.builder.EqualsBuilder;

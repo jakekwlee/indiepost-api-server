@@ -1,7 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.PageDto;
-import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Category;
 import com.indiepost.repository.CategoryRepository;

@@ -1,10 +1,10 @@
 package com.indiepost.mapper;
 
 import com.indiepost.dto.ImageSetDto;
-import com.indiepost.dto.PostDto;
-import com.indiepost.dto.PostSummaryDto;
-import com.indiepost.dto.RelatedPostsMatchingResult;
-import com.indiepost.dto.admin.AdminPostRequestDto;
+import com.indiepost.dto.post.AdminPostRequestDto;
+import com.indiepost.dto.post.PostDto;
+import com.indiepost.dto.post.PostSummaryDto;
+import com.indiepost.dto.post.RelatedPostsMatchingResult;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Contributor;
 import com.indiepost.model.ImageSet;
@@ -96,8 +96,9 @@ public class PostMapper {
             return;
         }
         post.clearTags();
+        int priority = 0;
         for (Tag tag : tags) {
-            post.addTag(tag);
+            post.addTag(tag, priority++);
         }
     }
 

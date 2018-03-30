@@ -1,5 +1,7 @@
 package com.indiepost.dto;
 
+import com.indiepost.dto.post.PostSummaryDto;
+
 import java.util.List;
 
 /**

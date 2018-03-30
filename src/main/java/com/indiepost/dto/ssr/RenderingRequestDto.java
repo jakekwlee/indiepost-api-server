@@ -3,8 +3,8 @@ package com.indiepost.dto.ssr;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.indiepost.dto.InitialData;
 import com.indiepost.dto.PageDto;
-import com.indiepost.dto.PostDto;
-import com.indiepost.dto.PostSummaryDto;
+import com.indiepost.dto.post.PostDto;
+import com.indiepost.dto.post.PostSummaryDto;
 
 import java.util.List;
 
