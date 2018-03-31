@@ -1,8 +1,10 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.AdminInitResponseDto;
+import com.indiepost.dto.TagDto;
 import com.indiepost.dto.UserDto;
 import com.indiepost.enums.Types.UserRole;
+import com.indiepost.model.Tag;
 import com.indiepost.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.indiepost.mapper.UserMapper.userToUserDto;
 
@@ -26,6 +29,8 @@ public class AdminServiceImpl implements AdminService {
 
     private final UserService userService;
 
+    @Autowired
+    private TagService tagService;
 
     @Autowired
     public AdminServiceImpl(AdminPostService adminPostService, CategoryService categoryService,
@@ -43,6 +48,11 @@ public class AdminServiceImpl implements AdminService {
         adminInitResponseDto.setAuthors(getUserDtoList(UserRole.Author));
         adminInitResponseDto.setCategories(categoryService.getDtoList());
         adminInitResponseDto.setAuthorNames(adminPostService.findAllBylineNames());
+        List<Tag> tagList = tagService.findAll();
+        List<TagDto> tags = tagList.stream()
+                .map(tag -> new TagDto(tag.getId(), tag.getName()))
+                .collect(Collectors.toList());
+        adminInitResponseDto.setTags(tags);
         return adminInitResponseDto;
     }
 

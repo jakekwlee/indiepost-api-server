@@ -14,6 +14,7 @@ public class OverviewStats {
     private Long totalAppVisitor;
     private Trend pageviewTrend;
     private Trend visitorTrend;
+    private PeriodDto period;
     private List<ShareStat> pageviewByCategory;
     private List<ShareStat> pageviewByAuthor;
     private List<ShareStat> topPagesWebapp;
@@ -187,4 +188,11 @@ public class OverviewStats {
         this.topChannel = topChannel;
     }
 
+    public PeriodDto getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(PeriodDto period) {
+        this.period = period;
+    }
 }

@@ -8,6 +8,8 @@ import java.util.List;
 public class RecentAndOldPostStats {
     private DoubleTrend trend;
 
+    private PeriodDto period;
+
     private List<ShareStat> topOldPosts;
 
     private List<ShareStat> topRecentPosts;
@@ -34,5 +36,13 @@ public class RecentAndOldPostStats {
 
     public void setTopRecentPosts(List<ShareStat> topRecentPosts) {
         this.topRecentPosts = topRecentPosts;
+    }
+
+    public PeriodDto getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(PeriodDto period) {
+        this.period = period;
     }
 }

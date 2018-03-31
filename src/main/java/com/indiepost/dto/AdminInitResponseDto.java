@@ -13,9 +13,19 @@ public class AdminInitResponseDto {
 
     private List<String> authorNames;
 
+    private List<TagDto> tags;
+
     private UserDto currentUser;
 
     private List<CategoryDto> categories;
+
+    public List<TagDto> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<TagDto> tags) {
+        this.tags = tags;
+    }
 
     public List<UserDto> getAuthors() {
         return authors;

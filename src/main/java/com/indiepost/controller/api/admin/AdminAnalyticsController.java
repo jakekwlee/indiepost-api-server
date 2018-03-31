@@ -1,11 +1,12 @@
 package com.indiepost.controller.api.admin;
 
-import com.indiepost.dto.stat.*;
+import com.indiepost.dto.stat.OverviewStats;
+import com.indiepost.dto.stat.PeriodDto;
+import com.indiepost.dto.stat.PostStatsDto;
+import com.indiepost.dto.stat.RecentAndOldPostStats;
 import com.indiepost.service.AnalyticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * Created by jake on 17. 4. 29.
@@ -37,7 +38,7 @@ public class AdminAnalyticsController {
     }
 
     @PostMapping("/posts")
-    public List<PostStatDto> getPostStats(@RequestBody PeriodDto periodDto) {
+    public PostStatsDto getPostStats(@RequestBody PeriodDto periodDto) {
         return analyticsService.getPostStats(periodDto);
     }
 }

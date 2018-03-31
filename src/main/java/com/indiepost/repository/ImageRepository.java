@@ -29,5 +29,7 @@ public interface ImageRepository {
 
     void deleteById(Long id);
 
+    Long count();
+
     ImageSet getReference(Long id);
 }

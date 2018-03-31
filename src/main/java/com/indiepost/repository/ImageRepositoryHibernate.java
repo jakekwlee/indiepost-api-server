@@ -5,6 +5,7 @@ import com.indiepost.model.ImageSet;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 import org.springframework.data.domain.Pageable;
@@ -84,6 +85,11 @@ public class ImageRepositoryHibernate implements ImageRepository {
     @Override
     public void deleteById(Long id) {
         delete(findById(id));
+    }
+
+    @Override
+    public Long count() {
+        return (Long) getCriteria().setProjection(Projections.rowCount()).uniqueResult();
     }
 
     @Override

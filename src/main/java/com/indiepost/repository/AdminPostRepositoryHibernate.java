@@ -181,7 +181,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
         return query.select(
                 post.id, post.title, post.displayName, post.splash, post.featured, post.picked,
                 post.category.name, post.author.displayName, post.editor.displayName,
-                post.createdAt, post.modifiedAt, post.publishedAt, post.likes, post.status
+                post.createdAt, post.modifiedAt, post.publishedAt, post.status
         );
     }
 
@@ -248,7 +248,6 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
             dto.setCreatedAt(row.get(post.createdAt));
             dto.setModifiedAt(row.get(post.modifiedAt));
             dto.setPublishedAt(row.get(post.publishedAt));
-            dto.setLikedCount(row.get(post.likesCount));
             dto.setStatus(row.get(post.status).toString());
             List<PostContributor> postContributorsList = row.get(post.postContributors);
             if (postContributorsList != null) {

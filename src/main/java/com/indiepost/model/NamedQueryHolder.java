@@ -161,8 +161,8 @@ import javax.persistence.*;
 
         @NamedNativeQuery(name = "@GET_TOP_TAGS",
                 query = "SELECT t.name AS statName, count(*) AS statValue FROM Stats s " +
-                        "INNER JOIN Posts_Tags pt ON s.postId = pt.postId " +
-                        "INNER JOIN Tags t ON pt.tagId = t.id " +
+                        "INNER JOIN Posts_Tags pt ON s.postId = pt.post_id " +
+                        "INNER JOIN Tags t ON pt.tag_id = t.id " +
                         "WHERE s.timestamp BETWEEN :since AND :until " +
                         "GROUP BY t.id " +
                         "ORDER BY statValue DESC " +
@@ -172,8 +172,8 @@ import javax.persistence.*;
                 query = "SELECT t.name AS statName, count(*) AS statValue FROM Stats s " +
                         "INNER JOIN Visitors v ON s.visitorId = v.id " +
                         "INNER JOIN Posts p ON s.postId = p.id " +
-                        "INNER JOIN Posts_Tags pt ON p.id = pt.postId " +
-                        "INNER JOIN Tags t ON pt.tagId = t.id " +
+                        "INNER JOIN Posts_Tags pt ON p.id = pt.post_id " +
+                        "INNER JOIN Tags t ON pt.tag_id = t.id " +
                         "WHERE s.timestamp BETWEEN :since AND :until " +
                         "AND v.appName = :client " +
                         "GROUP BY t.id " +
