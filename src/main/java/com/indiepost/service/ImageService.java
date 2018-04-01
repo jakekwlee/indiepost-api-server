@@ -4,6 +4,7 @@ import com.indiepost.dto.PostImageSetListDto;
 import com.indiepost.model.ImageSet;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ public interface ImageService {
 
     ImageSet getReference(Long id);
 
-    Page<ImageSet> findAll(int page, int maxResults);
+    Page<ImageSet> findAll(Pageable pageable);
 
     PostImageSetListDto findImagesOnPost(Long postId);
 

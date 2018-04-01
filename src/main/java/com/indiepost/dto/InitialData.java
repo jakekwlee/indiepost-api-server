@@ -25,7 +25,7 @@ public class InitialData {
 
     private PostSummaryDto featured;
 
-    private List<PageDto> pages;
+    private List<StaticPageDto> pages;
 
     private boolean withLatestPosts;
 
@@ -93,11 +93,11 @@ public class InitialData {
         this.withLatestPosts = withLatestPosts;
     }
 
-    public List<PageDto> getPages() {
+    public List<StaticPageDto> getPages() {
         return pages;
     }
 
-    public void setPages(List<PageDto> pages) {
+    public void setPages(List<StaticPageDto> pages) {
         this.pages = pages;
     }
 }

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 /**
  * Created by jake on 17. 3. 5.
  */
-public class PageDto {
+public class StaticPageDto {
 
     private Long id;
 

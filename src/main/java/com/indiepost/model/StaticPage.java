@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "Pages")
-public class Page {
+public class StaticPage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

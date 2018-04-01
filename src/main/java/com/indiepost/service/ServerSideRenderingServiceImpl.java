@@ -3,7 +3,7 @@ package com.indiepost.service;
 import com.indiepost.config.AppConfig;
 import com.indiepost.dto.FullTextSearchQuery;
 import com.indiepost.dto.InitialData;
-import com.indiepost.dto.PageDto;
+import com.indiepost.dto.StaticPageDto;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
@@ -28,7 +28,7 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
 
     private final PostService postService;
 
-    private final PageService pageService;
+    private final StaticPageService staticPageService;
 
     private final RestTemplate restTemplate;
 
@@ -38,13 +38,13 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
     public ServerSideRenderingServiceImpl(
             InitialDataService initialDataService,
             PostService postService,
-            PageService pageService,
+            StaticPageService staticPageService,
             RestTemplate restTemplate,
             AppConfig config
     ) {
         this.initialDataService = initialDataService;
         this.postService = postService;
-        this.pageService = pageService;
+        this.staticPageService = staticPageService;
         this.restTemplate = restTemplate;
         this.config = config;
     }
@@ -71,9 +71,9 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
     @Override
     public void renderPage(String pageSlug, Model model, String servletPath) {
         InitialData initialData = initialDataService.getInitialData(false);
-        PageDto pageDto = pageService.findBySlug(pageSlug);
+        StaticPageDto staticPageDto = staticPageService.findBySlug(pageSlug);
         RenderingRequestDto rsRequest =
-                new RenderingRequestDto(initialData, pageDto, servletPath);
+                new RenderingRequestDto(initialData, staticPageDto, servletPath);
         this.render(model, rsRequest);
     }
 

@@ -5,6 +5,7 @@ import com.indiepost.service.ImageService;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,8 +28,8 @@ public class ImageController {
 
 
     @RequestMapping(method = RequestMethod.GET)
-    public Page<ImageSet> getImages(@RequestParam int page, @RequestParam int max) {
-        return imageService.findAll(page, max);
+    public Page<ImageSet> getImages(Pageable pageable) {
+        return imageService.findAll(pageable);
     }
 
     @RequestMapping(method = RequestMethod.POST)

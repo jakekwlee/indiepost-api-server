@@ -1,14 +1,16 @@
 package com.indiepost.repository;
 
 import com.github.fluent.hibernate.transformer.FluentHibernateResultTransformer;
-import com.indiepost.dto.PageDto;
+import com.indiepost.dto.StaticPageDto;
 import com.indiepost.enums.Types;
-import com.indiepost.model.Page;
+import com.indiepost.model.StaticPage;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -22,44 +24,48 @@ import static com.indiepost.repository.utils.CriteriaUtils.setPageToCriteria;
  * Created by jake on 17. 3. 5.
  */
 @Repository
-public class PageRepositoryHibernate implements PageRepository {
+public class StaticPageRepositoryHibernate implements StaticPageRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
-    public Long save(Page page) {
-        return (Long) getSession().save(page);
+    public Long save(StaticPage staticPage) {
+        return (Long) getSession().save(staticPage);
     }
 
     @Override
-    public Page findById(Long id) {
-        return entityManager.find(Page.class, id);
+    public StaticPage findById(Long id) {
+        return entityManager.find(StaticPage.class, id);
     }
 
     @Override
-    public void update(Page page) {
-        getSession().update(page);
+    public void update(StaticPage staticPage) {
+        getSession().update(staticPage);
     }
 
     @Override
-    public void delete(Page page) {
-        getSession().delete(page);
+    public void delete(StaticPage staticPage) {
+        getSession().delete(staticPage);
     }
 
     @Override
-    public List<PageDto> find(Pageable pageable) {
+    public Page<StaticPageDto> find(Pageable pageable) {
         Criteria criteria = getPagedCriteria(pageable);
         setProjectionForDto(criteria);
-        return criteria.list();
+        List<StaticPageDto> staticPageDtoList = criteria.list();
+        Long count = count();
+        return new PageImpl<>(staticPageDtoList, pageable, count);
     }
 
     @Override
-    public List<PageDto> find(Pageable pageable, Types.PostStatus pageStatus) {
+    public Page<StaticPageDto> find(Pageable pageable, Types.PostStatus pageStatus) {
         Criteria criteria = getPagedCriteria(pageable);
         criteria.add(Restrictions.eq("status", pageStatus));
         setProjectionForDto(criteria);
-        return criteria.list();
+        List<StaticPageDto> staticPageDtoList = criteria.list();
+        Long count = count(pageStatus);
+        return new PageImpl<>(staticPageDtoList, pageable, count);
     }
 
     @Override
@@ -69,8 +75,15 @@ public class PageRepositoryHibernate implements PageRepository {
     }
 
     @Override
-    public Page findBySlug(String slug) {
-        return (Page) getCriteria()
+    public Long count(Types.PostStatus pageStatus) {
+        return (Long) getCriteria().setProjection(Projections.rowCount())
+                .add(Restrictions.eq("status", pageStatus))
+                .uniqueResult();
+    }
+
+    @Override
+    public StaticPage findBySlug(String slug) {
+        return (StaticPage) getCriteria()
                 .add(Restrictions.eq("slug", slug))
                 .uniqueResult();
     }
@@ -89,7 +102,7 @@ public class PageRepositoryHibernate implements PageRepository {
                                 .add(Property.forName("status"), "status")
                                 .add(Property.forName("a.displayName"), "authorDisplayName")
                 )
-                .setResultTransformer(new FluentHibernateResultTransformer(PageDto.class));
+                .setResultTransformer(new FluentHibernateResultTransformer(StaticPageDto.class));
     }
 
     private Session getSession() {
@@ -97,7 +110,7 @@ public class PageRepositoryHibernate implements PageRepository {
     }
 
     private Criteria getCriteria() {
-        return getSession().createCriteria(Page.class);
+        return getSession().createCriteria(StaticPage.class);
     }
 
     private Criteria getPagedCriteria(Pageable pageable) {

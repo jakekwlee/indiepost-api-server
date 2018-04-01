@@ -1,7 +1,7 @@
 package com.indiepost.controller.api;
 
-import com.indiepost.dto.PageDto;
-import com.indiepost.service.PageService;
+import com.indiepost.dto.StaticPageDto;
+import com.indiepost.service.StaticPageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,16 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/pages")
-public class PageController {
-    private final PageService pageService;
+public class StaticPageController {
+    private final StaticPageService staticPageService;
 
     @Autowired
-    public PageController(PageService pageService) {
-        this.pageService = pageService;
+    public StaticPageController(StaticPageService staticPageService) {
+        this.staticPageService = staticPageService;
     }
 
     @GetMapping("/{slug}")
-    public PageDto get(@PathVariable String slug) {
-        return pageService.findBySlug(slug);
+    public StaticPageDto get(@PathVariable String slug) {
+        return staticPageService.findBySlug(slug);
     }
 }

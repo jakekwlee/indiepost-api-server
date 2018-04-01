@@ -15,7 +15,6 @@ import com.indiepost.repository.ContributorRepository;
 import com.indiepost.repository.TagRepository;
 import com.indiepost.repository.elasticsearch.PostEsRepository;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -131,7 +130,7 @@ public class AdminPostServiceImpl implements AdminPostService {
 
         if (postRequestDto.getContributors() != null) {
             Page<Contributor> page =
-                    contributorRepository.findByFullNameIn(postRequestDto.getContributors(), new PageRequest(0, 100));
+                    contributorRepository.findByFullNameIn(postRequestDto.getContributors(), PageRequest.of(0, 100));
             List<Contributor> contributors = page.getContent();
             addContributorsToPost(post, contributors);
         }
@@ -356,8 +355,8 @@ public class AdminPostServiceImpl implements AdminPostService {
 
     private Pageable getPageable(int page, int maxResults, boolean isDesc) {
         return isDesc ?
-                new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt") :
-                new PageRequest(page, maxResults, Sort.Direction.ASC, "publishedAt");
+                PageRequest.of(page, maxResults, Sort.Direction.DESC, "publishedAt") :
+                PageRequest.of(page, maxResults, Sort.Direction.ASC, "publishedAt");
     }
 
     private AdminPostResponseDto toAdminPostResponseDto(Post post) {

@@ -242,6 +242,6 @@ public class UserServiceImpl implements UserService {
 
     private Pageable getPageable(int page, int maxResults, boolean isDesc) {
         Sort.Direction direction = isDesc ? Sort.Direction.DESC : Sort.Direction.ASC;
-        return new PageRequest(page, maxResults, direction, "joinedAt");
+        return PageRequest.of(page, maxResults, direction, "joinedAt");
     }
 }

@@ -2,7 +2,7 @@ package com.indiepost.dto.ssr;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.indiepost.dto.InitialData;
-import com.indiepost.dto.PageDto;
+import com.indiepost.dto.StaticPageDto;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostSummaryDto;
 
@@ -15,13 +15,8 @@ import java.util.List;
 public class RenderingRequestDto {
     private InitialData initialData;
     private List<PostSummaryDto> posts;
-
-    private List<PostSummary> posts;
-
     private PostDto post;
-
-    private PageDto page;
-
+    private StaticPageDto page;
     private String path;
 
     public RenderingRequestDto() {
@@ -43,7 +38,7 @@ public class RenderingRequestDto {
         this.path = path;
     }
 
-    public RenderingRequestDto(InitialData initialData, PageDto page, String path) {
+    public RenderingRequestDto(InitialData initialData, StaticPageDto page, String path) {
         this.initialData = initialData;
         this.page = page;
         this.path = path;
@@ -87,11 +82,11 @@ public class RenderingRequestDto {
         this.path = path;
     }
 
-    public PageDto getPage() {
+    public StaticPageDto getPage() {
         return page;
     }
 
-    public void setPage(PageDto page) {
+    public void setPage(StaticPageDto page) {
         this.page = page;
     }
 }

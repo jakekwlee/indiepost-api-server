@@ -31,7 +31,7 @@ public class ContributorSerializationTests {
         Page<ContributorDto> page = contributorService.find(Types.ContributorType.FeatureEditor, pageRequest);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Hibernate5Module());
-        System.out.println("*** Start serialize Page<ContributorDto> ***");
+        System.out.println("*** Start serialize StaticPage<ContributorDto> ***");
         System.out.println("Result Length: " + page.getContent().size());
         String result = objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true)
                 .writeValueAsString(page);

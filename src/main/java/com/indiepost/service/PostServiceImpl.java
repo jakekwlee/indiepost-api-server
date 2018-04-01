@@ -114,7 +114,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostSummaryDto> findByTagName(String tagName, int page, int maxResults, boolean isDesc) {
-        return postRepository.findByTagName(tagName, new PageRequest(page, maxResults));
+        return postRepository.findByTagName(tagName, PageRequest.of(page, maxResults));
     }
 
     @Override
@@ -225,7 +225,7 @@ public class PostServiceImpl implements PostService {
 
     private Pageable getPageable(int page, int maxResults, boolean isDesc) {
         return isDesc ?
-                new PageRequest(page, maxResults, Sort.Direction.DESC, "publishedAt") :
-                new PageRequest(page, maxResults, Sort.Direction.ASC, "publishedAt");
+                PageRequest.of(page, maxResults, Sort.Direction.DESC, "publishedAt") :
+                PageRequest.of(page, maxResults, Sort.Direction.ASC, "publishedAt");
     }
 }

@@ -13,10 +13,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -145,10 +142,11 @@ abstract class AbstractImageService implements ImageService {
     }
 
     @Override
-    public Page<ImageSet> findAll(int page, int maxResults) {
-        List<ImageSet> imageSetList = imageRepository.findAll(new PageRequest(page, maxResults, Sort.Direction.DESC, "uploadedAt"));
+    public Page<ImageSet> findAll(Pageable pageable) {
+        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, "uploadedAt");
+        List<ImageSet> imageSetList = imageRepository.findAll(pageRequest);
         Long count = imageRepository.count();
-        return new PageImpl<>(imageSetList, new PageRequest(page, maxResults), count);
+        return new PageImpl<>(imageSetList, pageRequest, count);
     }
 
     @Override

@@ -1,12 +1,12 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.PageDto;
+import com.indiepost.dto.StaticPageDto;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Category;
 import com.indiepost.repository.CategoryRepository;
-import com.indiepost.repository.PageRepository;
 import com.indiepost.repository.PostRepository;
+import com.indiepost.repository.StaticPageRepository;
 import cz.jiripinkas.jsitemapgenerator.WebPageBuilder;
 import cz.jiripinkas.jsitemapgenerator.generator.SitemapGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +25,13 @@ import java.util.List;
 public class SitemapServiceImpl implements SitemapService {
     private final PostRepository postRepository;
     private final CategoryRepository categoryRepository;
-    private final PageRepository pageRepository;
+    private final StaticPageRepository staticPageRepository;
 
     @Autowired
-    public SitemapServiceImpl(PostRepository postRepository, CategoryRepository categoryRepository, PageRepository pageRepository) {
+    public SitemapServiceImpl(PostRepository postRepository, CategoryRepository categoryRepository, StaticPageRepository staticPageRepository) {
         this.postRepository = postRepository;
         this.categoryRepository = categoryRepository;
-        this.pageRepository = pageRepository;
+        this.staticPageRepository = staticPageRepository;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class SitemapServiceImpl implements SitemapService {
 
         List<PostSummaryDto> posts = postRepository.findByStatus(
                 PostStatus.PUBLISH,
-                new PageRequest(0, 9999, Sort.Direction.DESC, "publishedAt")
+                PageRequest.of(0, 9999, Sort.Direction.DESC, "publishedAt")
         );
 
         for (PostSummaryDto postSummaryDto : posts) {
@@ -59,8 +59,10 @@ public class SitemapServiceImpl implements SitemapService {
                     .build()
             );
         }
-        List<PageDto> pageList = pageRepository.find(new PageRequest(0, 100, Sort.Direction.ASC, "displayOrder"));
-        for (PageDto page : pageList) {
+        List<StaticPageDto> pageList = staticPageRepository
+                .find(PageRequest.of(0, 100, Sort.Direction.ASC, "displayOrder"))
+                .getContent();
+        for (StaticPageDto page : pageList) {
             sitemapGenerator.addPage(new WebPageBuilder()
                     .name("page/" + page.getSlug())
                     .changeFreqDaily()

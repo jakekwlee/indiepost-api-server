@@ -2,9 +2,13 @@ package com.indiepost.service;
 
 import com.indiepost.config.AppConfig;
 import com.indiepost.dto.InitialData;
+import com.indiepost.dto.StaticPageDto;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,17 +28,17 @@ public class InitialDataServiceImpl implements InitialDataService {
 
     private final PostService postService;
 
-    private final PageService pageService;
+    private final StaticPageService staticPageService;
 
     private final AppConfig config;
 
     @Autowired
     public InitialDataServiceImpl(CategoryService categoryService, UserService userService,
-                                  PostService postService, PageService pageService, AppConfig config) {
+                                  PostService postService, StaticPageService staticPageService, AppConfig config) {
         this.categoryService = categoryService;
         this.userService = userService;
         this.postService = postService;
-        this.pageService = pageService;
+        this.staticPageService = staticPageService;
         this.config = config;
     }
 
@@ -44,7 +48,9 @@ public class InitialDataServiceImpl implements InitialDataService {
         initialData.setCategories(categoryService.getDtoList());
         initialData.setCurrentUser(userService.getCurrentUserDto());
         initialData.setWithLatestPosts(withLatestPosts);
-        initialData.setPages(pageService.find(Types.PostStatus.PUBLISH, 0, 100, false));
+        Page<StaticPageDto> page = staticPageService.find(
+                Types.PostStatus.PUBLISH, PageRequest.of(0, 100, Sort.Direction.DESC, "displayOrder"));
+        initialData.setPages(page.getContent());
 
         initialData.setSplash(postService.findSplashPost());
         initialData.setFeatured(postService.findFeaturePost());
