@@ -1,5 +1,6 @@
 package com.indiepost.controller.api.admin;
 
+import com.indiepost.dto.DeleteResponse;
 import com.indiepost.dto.StaticPageDto;
 import com.indiepost.enums.Types;
 import com.indiepost.service.StaticPageService;
@@ -46,9 +47,9 @@ public class AdminStaticPageController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public Long delete(@PathVariable Long id) {
+    public DeleteResponse delete(@PathVariable Long id) {
         staticPageService.deleteById(id);
-        return id;
+        return new DeleteResponse(id);
     }
 
 }

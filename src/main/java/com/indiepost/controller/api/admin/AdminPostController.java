@@ -1,5 +1,6 @@
 package com.indiepost.controller.api.admin;
 
+import com.indiepost.dto.DeleteResponse;
 import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
 import com.indiepost.dto.post.AdminPostSummaryDto;
@@ -58,7 +59,8 @@ public class AdminPostController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public void delete(@PathVariable Long id) {
+    public DeleteResponse delete(@PathVariable Long id) {
         adminPostService.deleteById(id);
+        return new DeleteResponse(id);
     }
 }

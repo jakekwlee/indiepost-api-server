@@ -1,5 +1,6 @@
 package com.indiepost.controller.api.admin;
 
+import com.indiepost.dto.DeleteResponse;
 import com.indiepost.model.ImageSet;
 import com.indiepost.service.ImageService;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
@@ -38,8 +39,8 @@ public class ImageController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public Long handleImageDelete(@PathVariable Long id) throws IOException {
+    public DeleteResponse handleImageDelete(@PathVariable Long id) throws IOException {
         imageService.deleteById(id);
-        return id;
+        return new DeleteResponse(id);
     }
 }

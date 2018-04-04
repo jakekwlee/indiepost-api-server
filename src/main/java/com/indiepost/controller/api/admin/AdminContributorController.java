@@ -1,7 +1,7 @@
 package com.indiepost.controller.api.admin;
 
 import com.indiepost.dto.ContributorDto;
-import com.indiepost.dto.DeletedResponse;
+import com.indiepost.dto.DeleteResponse;
 import com.indiepost.enums.Types;
 import com.indiepost.service.ContributorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +40,9 @@ public class AdminContributorController {
     }
 
     @DeleteMapping("/{id}")
-    public DeletedResponse delete(@PathVariable Long id) {
+    public DeleteResponse delete(@PathVariable Long id) {
         Long deletedId = contributorService.deleteById(id);
-        return new DeletedResponse(deletedId);
+        return new DeleteResponse(deletedId);
     }
 
 }
