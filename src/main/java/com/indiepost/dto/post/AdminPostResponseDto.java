@@ -15,6 +15,8 @@ public class AdminPostResponseDto extends AdminPostRequestDto {
 
     private ImageSetDto titleImage;
 
+    private String categoryName;
+
     private String postType;
 
     private int likesCount = 0;
@@ -87,5 +89,13 @@ public class AdminPostResponseDto extends AdminPostRequestDto {
 
     public void setEditorId(Long editorId) {
         this.editorId = editorId;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }

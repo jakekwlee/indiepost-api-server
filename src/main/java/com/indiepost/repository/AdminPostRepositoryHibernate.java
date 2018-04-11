@@ -42,6 +42,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     public Post findOne(Long id) {
         return getQueryFactory()
                 .selectFrom(post)
+                .innerJoin(post.category, QCategory.category)
                 .leftJoin(post.titleImage, QImageSet.imageSet)
                 .fetchJoin()
                 .where(post.id.eq(id))
