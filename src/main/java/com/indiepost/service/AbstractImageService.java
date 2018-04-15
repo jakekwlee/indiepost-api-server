@@ -143,7 +143,7 @@ abstract class AbstractImageService implements ImageService {
 
     @Override
     public Page<ImageSet> findAll(Pageable pageable) {
-        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, "uploadedAt");
+        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, "id");
         List<ImageSet> imageSetList = imageRepository.findAll(pageRequest);
         Long count = imageRepository.count();
         return new PageImpl<>(imageSetList, pageRequest, count);
