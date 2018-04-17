@@ -3,10 +3,7 @@ package com.indiepost.service;
 import com.amazonaws.services.pinpoint.model.BadRequestException;
 import com.indiepost.dto.Highlight;
 import com.indiepost.dto.ImageSetDto;
-import com.indiepost.dto.post.AdminPostRequestDto;
-import com.indiepost.dto.post.AdminPostResponseDto;
-import com.indiepost.dto.post.AdminPostSummaryDto;
-import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.*;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.*;
 import com.indiepost.model.elasticsearch.PostEs;
@@ -351,6 +348,34 @@ public class AdminPostServiceImpl implements AdminPostService {
                     "It's prohibited directly bulk delete public status posts(PUBLIC|FUTURE|PENDING).");
         }
 //        adminPostRepository.bulkDeleteByUserAndStatus(currentUser, status);
+    }
+
+    @Override
+    public void bulkStatusUpdate(BulkStatusUpdateDto bulkStatusUpdateDto) {
+        User currentUser = userService.findCurrentUser();
+        String status = bulkStatusUpdateDto.getStatus().toUpperCase();
+        PostStatus changeTo = PostStatus.valueOf(status);
+//        boolean isAttemptingChangeToPublic = isPublicStatus(changeTo);
+        if (changeTo.equals(PostStatus.AUTOSAVE)) {
+            return;
+        }
+        for (Long id : bulkStatusUpdateDto.getIds()) {
+            Post post = adminPostRepository.findOne(id);
+            PostStatus postStatus = post.getStatus();
+            if (post.getTitleImageId() == null) {
+                return;
+            }
+            // if original post is exists, unlink original
+            if (post.getOriginalId() != null && !isPublicStatus(postStatus)) {
+                post.setOriginalId(null);
+            }
+            post.setStatus(changeTo);
+            post.setEditorId(currentUser.getId());
+
+            LocalDateTime now = LocalDateTime.now();
+            post.setModifiedAt(now);
+            adminPostRepository.save(post);
+        }
     }
 
     private Pageable getPageable(int page, int maxResults, boolean isDesc) {

@@ -4,6 +4,7 @@ import com.indiepost.dto.DeleteResponse;
 import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
 import com.indiepost.dto.post.AdminPostSummaryDto;
+import com.indiepost.dto.post.BulkStatusUpdateDto;
 import com.indiepost.enums.Types;
 import com.indiepost.service.AdminPostService;
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +57,11 @@ public class AdminPostController {
     @PutMapping(value = "/{id}")
     public void update(@RequestBody AdminPostRequestDto adminPostRequestDto, @PathVariable Long id) {
         adminPostService.update(adminPostRequestDto);
+    }
+
+    @PutMapping(value = "/_bulk")
+    public void update(@RequestBody BulkStatusUpdateDto bulkStatusUpdateDto) {
+        adminPostService.bulkStatusUpdate(bulkStatusUpdateDto);
     }
 
     @DeleteMapping(value = "/{id}")

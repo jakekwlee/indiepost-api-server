@@ -1,9 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.post.AdminPostRequestDto;
-import com.indiepost.dto.post.AdminPostResponseDto;
-import com.indiepost.dto.post.AdminPostSummaryDto;
-import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.*;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Post;
 import org.springframework.data.domain.Page;
@@ -43,4 +40,6 @@ public interface AdminPostService {
     List<String> findAllBylineNames();
 
     void bulkDeleteByStatus(Types.PostStatus status);
+
+    void bulkStatusUpdate(BulkStatusUpdateDto bulkStatusUpdateDto);
 }
