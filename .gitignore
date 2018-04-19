@@ -245,3 +245,9 @@ venv/
 
 migration/dist/*
 migration/dist/
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+ElasticbeanstalkBundle.zip

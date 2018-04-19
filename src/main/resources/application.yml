@@ -3,12 +3,13 @@ spring:
     active: prod
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: org.mariadb.jdbc.Driver
   http:
     multipart:
       max-file-size: 20MB
       max-request-size: 100MB
   jmx:
-    default-domain: newIndiepost
+    default-domain: newIndiepostEb
   jpa:
     hibernate:
       ddl-auto: update
@@ -50,7 +51,7 @@ logging:
 spring:
   profiles: dev
   datasource:
-    url: jdbc:mysql://localhost:3306/indiepost?useUnicode=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&characterEncoding=UTF-8&sessionVariables=sql_mode=''&useSSL=false
+    url: jdbc:mariadb://localhost:3306/indiepost?useUnicode=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&characterEncoding=UTF-8&sessionVariables=sql_mode=''&useSSL=false
     username: indiepost
     password: indiepost
   jpa:
@@ -71,7 +72,7 @@ logging:
 spring:
   profiles: prod
   datasource:
-    url: jdbc:mysql://rds.indiepost.vpc:3306/indiepost?useUnicode=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&characterEncoding=UTF-8&sessionVariables=sql_mode=''&useSSL=false
+    url: jdbc:mariadb://rds.indiepost.test:3306/indiepost?useUnicode=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&characterEncoding=UTF-8&sessionVariables=sql_mode=''&useSSL=false
     username: indiepost
     password: indiepost
   jpa:
