@@ -1,9 +1,9 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.Metadata;
 import com.indiepost.dto.stat.*;
 import com.indiepost.enums.Types;
 import com.indiepost.enums.Types.ClientType;
+import com.indiepost.model.Metadata;
 import com.indiepost.repository.MetadataRepository;
 import com.indiepost.repository.StatRepository;
 import com.indiepost.repository.VisitorRepository;
@@ -14,6 +14,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by jake on 17. 4. 13.
@@ -106,9 +107,15 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     @Override
     public PostStatsDto getCachedPostStats() {
         List<PostStatDto> statData = statRepository.getCachedPostStats();
-        Metadata metadata = metadataRepository.findOne(1L);
-        LocalDateTime lastUpdated = metadata.getPostStatsLastUpdated();
-        return new PostStatsDto(lastUpdated, statData);
+        Optional<Metadata> optional = metadataRepository.findById(1L);
+        if (optional.isPresent()) {
+            Metadata metadata = optional.get();
+            LocalDateTime lastUpdated = metadata.getPostStatsLastUpdated();
+            return new PostStatsDto(lastUpdated, statData);
+        } else {
+            return null;
+        }
+
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.indiepost.dto;
+package com.indiepost.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

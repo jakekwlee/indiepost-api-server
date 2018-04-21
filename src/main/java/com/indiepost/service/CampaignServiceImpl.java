@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -43,13 +44,18 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     public void deleteById(Long id) {
-        campaignRepository.delete(id);
+        campaignRepository.deleteById(id);
     }
 
     @Override
     public CampaignDto findById(Long id) {
-        Campaign campaign = campaignRepository.findOne(id);
-        return campaignToDto(campaign);
+        Optional<Campaign> optional = campaignRepository.findById(id);
+        if (optional.isPresent()) {
+            Campaign campaign = optional.get();
+            return campaignToDto(campaign);
+        } else {
+            return null;
+        }
     }
 
     @Override

@@ -39,7 +39,8 @@ public interface CriteriaUtils {
                 }
             }
         }
-        criteria.setFirstResult(pageable.getOffset());
+        // TODO remove verbose casting
+        criteria.setFirstResult(new Long(pageable.getOffset()).intValue());
         criteria.setMaxResults(pageable.getPageSize());
         return criteria;
     }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -45,13 +46,18 @@ public class LinkServiceImpl implements LinkService {
 
     @Override
     public void deleteById(Long id) {
-        linkRepository.delete(id);
+        linkRepository.deleteById(id);
     }
 
     @Override
     public LinkDto findById(Long id) {
-        Link link = linkRepository.findOne(id);
-        return linkToDto(link);
+        Optional<Link> optional = linkRepository.findById(id);
+        if (optional.isPresent()) {
+            Link link = optional.get();
+            return linkToDto(link);
+        } else {
+            return null;
+        }
     }
 
     @Override

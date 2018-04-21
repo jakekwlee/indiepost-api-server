@@ -1,9 +1,9 @@
 package com.indiepost.service;
 
+import com.google.common.collect.Lists;
 import com.indiepost.model.Word;
 import com.indiepost.repository.DictionaryRepository;
 import com.indiepost.repository.elasticsearch.PostEsRepository;
-import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
