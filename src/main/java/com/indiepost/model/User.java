@@ -60,6 +60,7 @@ public class User implements Serializable {
     @Size(max = 500)
     private String uid;
 
+    @Column(columnDefinition = "DATETIME")
     private LocalDate birthday;
 
     @Column(nullable = false)

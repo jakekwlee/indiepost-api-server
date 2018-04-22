@@ -18,15 +18,15 @@ public class Contentlist {
 
     private String writerid;
 
-    private Long menuno;
+    private Integer menuno;
 
-    private Long type1no;
+    private Integer type1no;
 
-    private Long type2no;
+    private Integer type2no;
 
-    private Long os;
+    private Integer os;
 
-    private Long platform;
+    private Integer platform;
 
     private String dataurl;
 
@@ -36,37 +36,38 @@ public class Contentlist {
 
     private String keyword;
 
-    private Long price;
+    private Integer price;
 
-    private Long isarticleservice;
+    private Integer isarticleservice;
 
-    private Long isstreamingservice;
+    private Integer isstreamingservice;
 
-    private Long isdownloadservice;
+    private Integer isdownloadservice;
 
     private String imageurl;
 
+    @Column(columnDefinition = "TEXT")
     private String contenttext;
 
-    private Long isdisplay;
+    private Integer isdisplay;
 
-    private Long listseq;
+    private Integer listseq;
 
-    private Long goods;
+    private Integer goods;
 
-    private Long listseqmain;
+    private Integer listseqmain;
 
-    private Long ismain;
+    private Integer ismain;
 
     private String imageurl2;
 
-    private Long uv;
+    private Integer uv;
 
-    private Long hit;
+    private Integer hit;
 
-    private Long jjim;
+    private Integer jjim;
 
-    private Long subs;
+    private Integer subs;
 
     public Long getNo() {
         return no;
@@ -100,43 +101,43 @@ public class Contentlist {
         this.writerid = writerid;
     }
 
-    public Long getMenuno() {
+    public Integer getMenuno() {
         return menuno;
     }
 
-    public void setMenuno(Long menuno) {
+    public void setMenuno(Integer menuno) {
         this.menuno = menuno;
     }
 
-    public Long getType1no() {
+    public Integer getType1no() {
         return type1no;
     }
 
-    public void setType1no(Long type1no) {
+    public void setType1no(Integer type1no) {
         this.type1no = type1no;
     }
 
-    public Long getType2no() {
+    public Integer getType2no() {
         return type2no;
     }
 
-    public void setType2no(Long type2no) {
+    public void setType2no(Integer type2no) {
         this.type2no = type2no;
     }
 
-    public Long getOs() {
+    public Integer getOs() {
         return os;
     }
 
-    public void setOs(Long os) {
+    public void setOs(Integer os) {
         this.os = os;
     }
 
-    public Long getPlatform() {
+    public Integer getPlatform() {
         return platform;
     }
 
-    public void setPlatform(Long platform) {
+    public void setPlatform(Integer platform) {
         this.platform = platform;
     }
 
@@ -172,35 +173,35 @@ public class Contentlist {
         this.keyword = keyword;
     }
 
-    public Long getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(Long price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 
-    public Long getIsarticleservice() {
+    public Integer getIsarticleservice() {
         return isarticleservice;
     }
 
-    public void setIsarticleservice(Long isarticleservice) {
+    public void setIsarticleservice(Integer isarticleservice) {
         this.isarticleservice = isarticleservice;
     }
 
-    public Long getIsstreamingservice() {
+    public Integer getIsstreamingservice() {
         return isstreamingservice;
     }
 
-    public void setIsstreamingservice(Long isstreamingservice) {
+    public void setIsstreamingservice(Integer isstreamingservice) {
         this.isstreamingservice = isstreamingservice;
     }
 
-    public Long getIsdownloadservice() {
+    public Integer getIsdownloadservice() {
         return isdownloadservice;
     }
 
-    public void setIsdownloadservice(Long isdownloadservice) {
+    public void setIsdownloadservice(Integer isdownloadservice) {
         this.isdownloadservice = isdownloadservice;
     }
 
@@ -220,43 +221,43 @@ public class Contentlist {
         this.contenttext = HtmlUtils.htmlEscape(contenttext);
     }
 
-    public Long getIsdisplay() {
+    public Integer getIsdisplay() {
         return isdisplay;
     }
 
-    public void setIsdisplay(Long isdisplay) {
+    public void setIsdisplay(Integer isdisplay) {
         this.isdisplay = isdisplay;
     }
 
-    public Long getListseq() {
+    public Integer getListseq() {
         return listseq;
     }
 
-    public void setListseq(Long listseq) {
+    public void setListseq(Integer listseq) {
         this.listseq = listseq;
     }
 
-    public Long getGoods() {
+    public Integer getGoods() {
         return goods;
     }
 
-    public void setGoods(Long goods) {
+    public void setGoods(Integer goods) {
         this.goods = goods;
     }
 
-    public Long getListseqmain() {
+    public Integer getListseqmain() {
         return listseqmain;
     }
 
-    public void setListseqmain(Long listseqmain) {
+    public void setListseqmain(Integer listseqmain) {
         this.listseqmain = listseqmain;
     }
 
-    public Long getIsmain() {
+    public Integer getIsmain() {
         return ismain;
     }
 
-    public void setIsmain(Long ismain) {
+    public void setIsmain(Integer ismain) {
         this.ismain = ismain;
     }
 
@@ -268,35 +269,35 @@ public class Contentlist {
         this.imageurl2 = imageurl2;
     }
 
-    public Long getUv() {
+    public Integer getUv() {
         return uv;
     }
 
-    public void setUv(Long uv) {
+    public void setUv(Integer uv) {
         this.uv = uv;
     }
 
-    public Long getHit() {
+    public Integer getHit() {
         return hit;
     }
 
-    public void setHit(Long hit) {
+    public void setHit(Integer hit) {
         this.hit = hit;
     }
 
-    public Long getJjim() {
+    public Integer getJjim() {
         return jjim;
     }
 
-    public void setJjim(Long jjim) {
+    public void setJjim(Integer jjim) {
         this.jjim = jjim;
     }
 
-    public Long getSubs() {
+    public Integer getSubs() {
         return subs;
     }
 
-    public void setSubs(Long subs) {
+    public void setSubs(Integer subs) {
         this.subs = subs;
     }
 }

@@ -12,13 +12,14 @@ public class Detaillist {
 
     private Long parent;
 
-    private Long iorder;
+    private Integer iorder;
 
-    private Long type;
+    private Integer type;
 
+    @Column(columnDefinition = "TEXT")
     private String data;
 
-    private Long ispay;
+    private Integer ispay;
 
     public Long getNo() {
         return no;
@@ -36,19 +37,19 @@ public class Detaillist {
         this.parent = parent;
     }
 
-    public Long getIorder() {
+    public Integer getIorder() {
         return iorder;
     }
 
-    public void setIorder(Long iorder) {
+    public void setIorder(Integer iorder) {
         this.iorder = iorder;
     }
 
-    public Long getType() {
+    public Integer getType() {
         return type;
     }
 
-    public void setType(Long type) {
+    public void setType(Integer type) {
         this.type = type;
     }
 
@@ -60,11 +61,11 @@ public class Detaillist {
         this.data = data;
     }
 
-    public Long getIspay() {
+    public Integer getIspay() {
         return ispay;
     }
 
-    public void setIspay(Long ispay) {
+    public void setIspay(Integer ispay) {
         this.ispay = ispay;
     }
 }

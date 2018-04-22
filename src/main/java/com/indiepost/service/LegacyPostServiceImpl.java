@@ -78,20 +78,20 @@ public class LegacyPostServiceImpl implements LegacyPostService {
     }
 
     private void copyNewToLegacy(Post post, Contentlist contentlist, Detaillist detaillist) {
-        Long status;
+        int status;
 
         // TODO
         if (post.getStatus() == PostStatus.PENDING || post.getStatus() == PostStatus.TRASH) {
-            status = 0L;
+            status = 0;
         } else {
-            status = 1L;
+            status = 1;
         }
         String regDatePattern = "yyyyMMdd";
         String modifyDatePattern = "yyyyMMddHH";
 
         contentlist.setRegdate(post.getCreatedAt().format(DateTimeFormatter.ofPattern(regDatePattern)));
         contentlist.setModifydate(post.getPublishedAt().format(DateTimeFormatter.ofPattern(modifyDatePattern)));
-        contentlist.setMenuno(post.getCategory().getId());
+        contentlist.setMenuno(post.getCategory().getId().intValue());
         contentlist.setContentname(StringEscapeUtils.escapeHtml4(post.getTitle()));
         contentlist.setContenttext(post.getExcerpt());
         contentlist.setWriterid(post.getAuthor().getUsername());
@@ -108,27 +108,27 @@ public class LegacyPostServiceImpl implements LegacyPostService {
         contentlist.setImageurl(imageUrl);
         contentlist.setImageurl2("");
         contentlist.setDataurl("");
-        contentlist.setSubs(0L);
+        contentlist.setSubs(0);
         contentlist.setIsdisplay(status);
         contentlist.setIsmain(status);
-        contentlist.setPrice(0L);
+        contentlist.setPrice(0);
         contentlist.setDataurl("");
-        contentlist.setIsarticleservice(0L);
-        contentlist.setIsstreamingservice(0L);
-        contentlist.setIsdownloadservice(0L);
-        contentlist.setPrice(0L);
-        if (contentlist.getHit() == null || contentlist.getHit() == 0) {
-            contentlist.setGoods(0L);
-            contentlist.setUv(0L);
-            contentlist.setJjim(0L);
-            contentlist.setHit(0L);
+        contentlist.setIsarticleservice(0);
+        contentlist.setIsstreamingservice(0);
+        contentlist.setIsdownloadservice(0);
+        contentlist.setPrice(0);
+        if (contentlist.getHit() == 0) {
+            contentlist.setGoods(0);
+            contentlist.setUv(0);
+            contentlist.setJjim(0);
+            contentlist.setHit(0);
         }
-        contentlist.setListseq(0L);
-        contentlist.setListseqmain(0L);
-        contentlist.setOs(0L);
-        contentlist.setPlatform(0L);
-        contentlist.setType1no(1L);
-        contentlist.setType2no(1L);
+        contentlist.setListseq(0);
+        contentlist.setListseqmain(0);
+        contentlist.setOs(0);
+        contentlist.setPlatform(0);
+        contentlist.setType1no(1);
+        contentlist.setType2no(1);
 
         List<Tag> tags = post.getTags();
 
@@ -141,10 +141,10 @@ public class LegacyPostServiceImpl implements LegacyPostService {
             contentlist.setKeyword(String.join(", ", tagNameArray));
         }
 
-        detaillist.setIorder(1L);
+        detaillist.setIorder(1);
         detaillist.setData(post.getContent());
-        detaillist.setType(9L);
-        detaillist.setIspay(0L);
+        detaillist.setType(9);
+        detaillist.setIspay(0);
     }
 
     private void deleteContentAndDetail(Contentlist contentlist) {

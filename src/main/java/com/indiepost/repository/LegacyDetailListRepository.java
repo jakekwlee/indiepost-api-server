@@ -8,7 +8,7 @@ import java.util.List;
  * Created by jake on 11/22/16.
  */
 public interface LegacyDetailListRepository {
-    Long save(Detaillist detaillist);
+    Integer save(Detaillist detaillist);
 
     void update(Detaillist detaillist);
 
