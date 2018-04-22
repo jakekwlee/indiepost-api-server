@@ -1,9 +1,7 @@
 package com.indiepost.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.indiepost.enums.Types.ImageSize;
-import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
 
@@ -46,7 +44,6 @@ public class ImageSet {
     @Column(unique = true, nullable = false)
     private String prefix;
 
-    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     @Column(nullable = false)
     private LocalDateTime uploadedAt;
 

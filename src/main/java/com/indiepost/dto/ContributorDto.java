@@ -1,8 +1,5 @@
 package com.indiepost.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
-
 import java.time.LocalDateTime;
 
 public class ContributorDto {
@@ -44,10 +41,8 @@ public class ContributorDto {
 
     private boolean phoneVisible;
 
-    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     private LocalDateTime lastUpdated;
 
-    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     private LocalDateTime created;
 
     public LocalDateTime getLastUpdated() {

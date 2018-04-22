@@ -1,8 +1,6 @@
 package com.indiepost.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.indiepost.enums.Types.UserGender;
-import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,10 +22,8 @@ public class UserDto {
 
     private String email;
 
-    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     private LocalDateTime joinedAt;
 
-    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     private LocalDate birthday;
 
     private String profile;

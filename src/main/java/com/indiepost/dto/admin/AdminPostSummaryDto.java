@@ -1,8 +1,5 @@
 package com.indiepost.dto.admin;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,13 +24,10 @@ public class AdminPostSummaryDto {
 
     private String editorDisplayName;
 
-    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     private LocalDateTime createdAt;
 
-    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     private LocalDateTime publishedAt;
 
-    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     private LocalDateTime modifiedAt;
 
     private boolean featured;

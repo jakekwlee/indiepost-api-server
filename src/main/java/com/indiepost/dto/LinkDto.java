@@ -1,7 +1,5 @@
 package com.indiepost.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
 import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.Max;
@@ -36,7 +34,6 @@ public class LinkDto {
 
     private Long validClicks;
 
-    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     private LocalDateTime createdAt;
 
     public Long getValidClicks() {

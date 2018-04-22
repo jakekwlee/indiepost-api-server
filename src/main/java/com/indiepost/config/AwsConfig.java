@@ -11,8 +11,8 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:webapp-${spring.profiles.active}.properties")
 @ConfigurationProperties(prefix = "webapp.aws")
 public class AwsConfig {
-    ;
     private String s3BucketName;
+
     private boolean usingS3;
 
     public String getS3BucketName() {

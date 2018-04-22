@@ -1,8 +1,5 @@
 package com.indiepost.dto.stat;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.indiepost.jackson.LocalDateTimeToUtcStringSerializer;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,7 +8,6 @@ import java.util.List;
  */
 public class PostStatsDto {
 
-    @JsonSerialize(using = LocalDateTimeToUtcStringSerializer.class)
     private LocalDateTime lastUpdated;
 
     private List<PostStatDto> statData;
