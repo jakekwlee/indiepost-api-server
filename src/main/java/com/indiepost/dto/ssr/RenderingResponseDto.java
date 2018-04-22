@@ -5,9 +5,13 @@ package com.indiepost.dto.ssr;
  */
 public class RenderingResponseDto {
     private String title;
+
     private String meta;
+
     private String link;
+
     private String state = "{}";
+
     private String markup = "";
 
     public String getLink() {

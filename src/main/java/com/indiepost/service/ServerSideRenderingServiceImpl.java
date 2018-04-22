@@ -54,6 +54,7 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
         RenderingRequestDto rsRequest =
                 new RenderingRequestDto(initialData, postDto, servletPath);
         this.render(model, rsRequest);
+        return;
     }
 
     @Override
