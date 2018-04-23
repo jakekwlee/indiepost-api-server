@@ -117,7 +117,7 @@ public class LegacyPostServiceImpl implements LegacyPostService {
         contentlist.setIsstreamingservice(0);
         contentlist.setIsdownloadservice(0);
         contentlist.setPrice(0);
-        if (contentlist.getHit() == 0) {
+        if (contentlist.getHit() == null || contentlist.getHit() == 0) {
             contentlist.setGoods(0);
             contentlist.setUv(0);
             contentlist.setJjim(0);
