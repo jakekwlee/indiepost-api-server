@@ -246,6 +246,9 @@ venv/
 migration/dist/*
 migration/dist/
 
+# ignore querydsl generated files
+generated/
+
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml

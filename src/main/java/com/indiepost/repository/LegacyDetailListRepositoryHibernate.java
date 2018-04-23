@@ -22,8 +22,8 @@ public class LegacyDetailListRepositoryHibernate implements LegacyDetailListRepo
     private EntityManager entityManager;
 
     @Override
-    public Integer save(Detaillist detaillist) {
-        return (Integer) getSession().save(detaillist);
+    public Long save(Detaillist detaillist) {
+        return (Long) getSession().save(detaillist);
     }
 
     @Override
