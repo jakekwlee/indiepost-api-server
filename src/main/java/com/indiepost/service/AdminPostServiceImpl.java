@@ -8,7 +8,6 @@ import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
 import com.indiepost.model.User;
-import com.indiepost.model.legacy.Contentlist;
 import com.indiepost.repository.AdminPostRepository;
 import com.indiepost.repository.CategoryRepository;
 import com.indiepost.service.mapper.PostMapperService;
@@ -43,16 +42,13 @@ public class AdminPostServiceImpl implements AdminPostService {
 
     private final PostMapperService postMapperService;
 
-    private final LegacyPostService legacyPostService;
-
     @Autowired
     public AdminPostServiceImpl(AdminPostRepository adminPostRepository, UserService userService,
-                                CategoryRepository categoryRepository, PostMapperService postMapperService, LegacyPostService legacyPostService) {
+                                CategoryRepository categoryRepository, PostMapperService postMapperService) {
         this.adminPostRepository = adminPostRepository;
         this.categoryRepository = categoryRepository;
         this.userService = userService;
         this.postMapperService = postMapperService;
-        this.legacyPostService = legacyPostService;
     }
 
     @Override
@@ -88,7 +84,6 @@ public class AdminPostServiceImpl implements AdminPostService {
 
     @Override
     public void delete(Post post) {
-        legacyPostService.deleteById(post.getId());
         adminPostRepository.delete(post);
     }
 
@@ -196,16 +191,6 @@ public class AdminPostServiceImpl implements AdminPostService {
         }
         postMapperService.adminPostRequestDtoToPost(adminPostRequestDto, originalPost);
 
-        PostStatus status = originalPost.getStatus();
-        if (status.equals(PostStatus.FUTURE) || status.equals(PostStatus.PUBLISH)) {
-            Contentlist contentlist = originalPost.getLegacyPost();
-            if (contentlist == null) {
-                contentlist = legacyPostService.save(originalPost);
-                originalPost.setLegacyPost(contentlist);
-            } else {
-                legacyPostService.update(originalPost);
-            }
-        }
         update(originalPost);
         return postMapperService.postToAdminPostResponseDto(originalPost);
     }

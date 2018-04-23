@@ -14,9 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.indiepost.repository.utils.CriteriaUtils.buildConjunction;
 import static com.indiepost.repository.utils.CriteriaUtils.setPageToCriteria;
@@ -36,26 +34,6 @@ public class PostRepositoryHibernate implements PostRepository {
         return (Post) getCriteria()
                 .add(Restrictions.eq("id", id))
                 .uniqueResult();
-    }
-
-    @Override
-    public Post findByLegacyId(Long id) {
-        return (Post) getCriteria()
-                .add(Restrictions.eq("legacyPostId", id))
-                .uniqueResult();
-    }
-
-    @Override
-    public Long findIdByLegacyId(Long legacyId) {
-        Criteria criteria = getCriteria().setProjection(
-                Projections.projectionList()
-                        .add(Property.forName("id"), "id")
-                        .add(Property.forName("legacyPostId"), "legacyPostId")
-        );
-        criteria.add(Restrictions.eq("legacyPostId", legacyId));
-        criteria.setResultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP);
-        Map post = (HashMap) criteria.uniqueResult();
-        return (Long) post.get("id");
     }
 
     @Override
@@ -121,7 +99,7 @@ public class PostRepositoryHibernate implements PostRepository {
 
         String joinedIds = String.join(", ", stringArray);
         String queryString = "select new com.indiepost.dto.PostSummary(" +
-                "p.id, p.legacyPostId, p.featured, p.picked, p.splash, p.title, p.excerpt, " +
+                "p.id, p.featured, p.picked, p.splash, p.title, p.excerpt, " +
                 "p.displayName, p.publishedAt, p.titleImage, p.titleImageId, p.status, c.id, c.name, " +
                 "p.commentsCount, p.likesCount) from Post p inner join p.category c where p.id in (:ids) ORDER BY field(p.id, " + joinedIds + ")";
         org.hibernate.Query query = getSession().createQuery(queryString);

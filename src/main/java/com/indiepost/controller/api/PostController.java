@@ -67,11 +67,6 @@ public class PostController {
         return postService.findByIds(dto.getPostIds());
     }
 
-    @PostMapping(value = "/relatedPosts")
-    public List<RelatedPostResponseDto> getRelatedPosts(@RequestBody LegacyRelatedPostRequestDto dto) {
-        return postService.getRelatedPosts(dto.getPostIds(), dto.isLegacy(), dto.isMobile());
-    }
-
     @GetMapping(value = "/images/{id}")
     public PostImageSetListDto getImagesOnPost(@PathVariable Long id) {
         return imageService.findImagesOnPost(id);

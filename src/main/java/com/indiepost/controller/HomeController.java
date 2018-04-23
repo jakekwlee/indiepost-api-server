@@ -1,9 +1,7 @@
 package com.indiepost.controller;
 
 import com.indiepost.config.AppConfig;
-import com.indiepost.dto.PostDto;
 import com.indiepost.dto.ssr.RenderingResponseDto;
-import com.indiepost.service.PostService;
 import com.indiepost.service.ServerSideRenderingService;
 import com.indiepost.service.SitemapService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,16 +24,13 @@ public class HomeController {
 
     private final ServerSideRenderingService serverSideRenderingService;
 
-    private final PostService postService;
-
     private final AppConfig config;
 
     private final SitemapService sitemapService;
 
     @Autowired
-    public HomeController(ServerSideRenderingService serverSideRenderingService, PostService postService, AppConfig config, SitemapService sitemapService) {
+    public HomeController(ServerSideRenderingService serverSideRenderingService, AppConfig config, SitemapService sitemapService) {
         this.serverSideRenderingService = serverSideRenderingService;
-        this.postService = postService;
         this.config = config;
         this.sitemapService = sitemapService;
     }
@@ -80,12 +74,6 @@ public class HomeController {
         }
         model.addAttribute("cdnUrl", config.getCdnUrl());
         return "index";
-    }
-
-    @GetMapping("/ContentView.do")
-    public String getPostByLegacyId(@RequestParam Long no) {
-        PostDto postDto = postService.findByLegacyId(no);
-        return "redirect:post/" + postDto.getId();
     }
 
     @GetMapping("/category/{categoryName}")

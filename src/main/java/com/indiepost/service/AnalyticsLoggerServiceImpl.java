@@ -90,12 +90,7 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
         pageview.setVisitorId(visitorId);
         pageview.setPath(pageviewDto.getPath());
         if (pageviewDto.getPostId() != null) {
-            if (!pageviewDto.getAppName().contains("LEGACY")) {
-                pageview.setPostId(pageviewDto.getPostId());
-            } else {
-                Long id = postRepository.findIdByLegacyId(pageviewDto.getPostId());
-                pageview.setPostId(id);
-            }
+            pageview.setPostId(pageviewDto.getPostId());
         }
         pageview.setTimestamp(LocalDateTime.now());
         pageviewRepository.save(pageview);

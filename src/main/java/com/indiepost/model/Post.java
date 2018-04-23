@@ -2,7 +2,6 @@ package com.indiepost.model;
 
 import com.indiepost.enums.Types;
 import com.indiepost.model.analytics.Pageview;
-import com.indiepost.model.legacy.Contentlist;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -36,13 +35,6 @@ public class Post implements Serializable {
 
     @Column(name = "originalId", nullable = false, insertable = false, updatable = false)
     private Long originalId;
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "legacyPostId")
-    private Contentlist legacyPost;
-
-    @Column(name = "legacyPostId", nullable = false, insertable = false, updatable = false)
-    private Long legacyPostId;
 
     @OneToMany(
             mappedBy = "post",
@@ -381,28 +373,12 @@ public class Post implements Serializable {
         this.original = original;
     }
 
-    public Contentlist getLegacyPost() {
-        return legacyPost;
-    }
-
-    public void setLegacyPost(Contentlist legacyPost) {
-        this.legacyPost = legacyPost;
-    }
-
     public Long getOriginalId() {
         return originalId;
     }
 
     public void setOriginalId(Long originalId) {
         this.originalId = originalId;
-    }
-
-    public Long getLegacyPostId() {
-        return legacyPostId;
-    }
-
-    public void setLegacyPostId(Long legacyPostId) {
-        this.legacyPostId = legacyPostId;
     }
 
     public Long getAuthorId() {

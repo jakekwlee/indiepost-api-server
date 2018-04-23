@@ -17,8 +17,6 @@ public class PostSummary implements Serializable {
 
     private Long id;
 
-    private Long legacyPostId;
-
     private boolean featured;
 
     private boolean picked;
@@ -49,22 +47,13 @@ public class PostSummary implements Serializable {
 
     private Highlight highlight;
 
-    public Highlight getHighlight() {
-        return highlight;
-    }
-
-    public void setHighlight(Highlight highlight) {
-        this.highlight = highlight;
-    }
-
     public PostSummary() {
     }
 
-    public PostSummary(Long id, Long legacyPostId, boolean featured, boolean picked, boolean splash,
+    public PostSummary(Long id, boolean featured, boolean picked, boolean splash,
                        String title, String excerpt, String displayName, LocalDateTime publishedAt, ImageSet titleImage, Long titleImageId,
                        PostStatus status, Long categoryId, String categoryName, int commentsCount, int likesCount) {
         this.id = id;
-        this.legacyPostId = legacyPostId;
         this.featured = featured;
         this.picked = picked;
         this.splash = splash;
@@ -79,6 +68,14 @@ public class PostSummary implements Serializable {
         this.categoryName = categoryName;
         this.commentsCount = commentsCount;
         this.likesCount = likesCount;
+    }
+
+    public Highlight getHighlight() {
+        return highlight;
+    }
+
+    public void setHighlight(Highlight highlight) {
+        this.highlight = highlight;
     }
 
     public Long getId() {
@@ -183,14 +180,6 @@ public class PostSummary implements Serializable {
 
     public void setPicked(boolean picked) {
         this.picked = picked;
-    }
-
-    public Long getLegacyPostId() {
-        return legacyPostId;
-    }
-
-    public void setLegacyPostId(Long legacyPostId) {
-        this.legacyPostId = legacyPostId;
     }
 
     public boolean isSplash() {

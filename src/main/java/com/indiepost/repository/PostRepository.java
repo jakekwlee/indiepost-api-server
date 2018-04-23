@@ -15,10 +15,6 @@ public interface PostRepository {
 
     Post findById(Long id);
 
-    Post findByLegacyId(Long id);
-
-    Long findIdByLegacyId(Long id);
-
     Long count();
 
     Long count(PostQuery query);

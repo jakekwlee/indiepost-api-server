@@ -3,7 +3,6 @@ package com.indiepost.service;
 import com.indiepost.dto.*;
 import com.indiepost.dto.stat.PostStatDto;
 import com.indiepost.enums.Types.PostStatus;
-import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import com.indiepost.model.Post;
 import com.indiepost.model.Tag;
@@ -72,17 +71,6 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostDto findByLegacyId(Long id) {
-        Post post = postRepository.findByLegacyId(id);
-        List<Tag> tagList = post.getTags();
-        if (tagList.size() > 0) {
-            tagList.get(0);
-        }
-        post.getTitleImage().getOptimized();
-        return postMapperService.postToPostDto(post);
-    }
-
-    @Override
     public Long count() {
         return postRepository.count();
     }
@@ -134,43 +122,6 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<RelatedPostResponseDto> getRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobile) {
-        List<PostSummary> postSummaryList = this.postRepository.findByIds(ids);
-        if (postSummaryList == null) {
-            return null;
-        }
-
-        this.setTitleImages(postSummaryList);
-        String legacyPostMobileUrl = "http://www.indiepost.co.kr/indiepost/ContentView.do?no=";
-        String legacyPostWebUrl = "http://www.indiepost.co.kr/ContentView.do?no=";
-
-        List<RelatedPostResponseDto> relatedPostResponseDtoList = new ArrayList<>();
-        for (PostSummary postSummary : postSummaryList) {
-            RelatedPostResponseDto relatedPostResponseDto = new RelatedPostResponseDto();
-            relatedPostResponseDto.setId(postSummary.getId());
-            relatedPostResponseDto.setTitle(postSummary.getTitle());
-            relatedPostResponseDto.setExcerpt(postSummary.getExcerpt());
-            if (postSummary.getTitleImageId() != null) {
-                Image image = postSummary.getTitleImage().getThumbnail();
-                relatedPostResponseDto.setImageUrl(image.getFilePath());
-                relatedPostResponseDto.setImageWidth(image.getWidth());
-                relatedPostResponseDto.setImageHeight(image.getHeight());
-            }
-            if (isLegacy) {
-                if (isMobile) {
-                    relatedPostResponseDto.setUrl(legacyPostMobileUrl + postSummary.getLegacyPostId());
-                } else {
-                    relatedPostResponseDto.setUrl(legacyPostWebUrl + postSummary.getLegacyPostId());
-                }
-            } else {
-                relatedPostResponseDto.setUrl("/posts/" + postSummary.getId());
-            }
-            relatedPostResponseDtoList.add(relatedPostResponseDto);
-        }
-        return relatedPostResponseDtoList;
-    }
-
-    @Override
     public List<PostSummary> getTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit) {
         List<PostStatDto> topStats = statRepository.getPostStatsOrderByPageviews(since, until, limit);
         List<Long> topPostIds = topStats.stream()
@@ -187,11 +138,6 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<PostSummary> getScheduledPosts() {
         return postRepository.findScheduledPosts();
-    }
-
-    @Override
-    public Long findIdByLegacyId(Long legacyId) {
-        return postRepository.findIdByLegacyId(legacyId);
     }
 
     @Override

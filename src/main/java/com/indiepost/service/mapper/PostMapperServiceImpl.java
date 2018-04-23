@@ -17,7 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,7 +90,6 @@ public class PostMapperServiceImpl implements PostMapperService {
         postSummary.setCategoryId(post.getCategoryId());
         postSummary.setCommentsCount(post.getCommentsCount());
         postSummary.setLikesCount(post.getLikesCount());
-        postSummary.setLegacyPostId(post.getLegacyPostId());
         postSummary.setDisplayName(post.getDisplayName());
         postSummary.setTitleImageId(post.getTitleImageId());
         return postSummary;
@@ -173,7 +175,10 @@ public class PostMapperServiceImpl implements PostMapperService {
             post.setExcerpt(adminPostRequestDto.getExcerpt());
         }
         if (adminPostRequestDto.getPublishedAt() != null) {
-            post.setPublishedAt(adminPostRequestDto.getPublishedAt().atZone(ZoneId.systemDefault()).toLocalDateTime());
+            LocalDateTime ldt = adminPostRequestDto.getPublishedAt();
+            ZonedDateTime utcDateTime = ldt.atZone(ZoneId.ofOffset("UTC", ZoneOffset.UTC));
+            ZonedDateTime localZonedDateTime = utcDateTime.withZoneSameInstant(ZoneId.systemDefault());
+            post.setPublishedAt(localZonedDateTime.toLocalDateTime());
         }
         if (adminPostRequestDto.getDisplayName() != null && adminPostRequestDto.getDisplayName().length() > 0) {
             post.setDisplayName(adminPostRequestDto.getDisplayName());
@@ -225,7 +230,7 @@ public class PostMapperServiceImpl implements PostMapperService {
     }
 
     @Transactional
-    private void postRequestTagDtoListToPostTagSet(List<TagDto> tagDtos, Post post) {
+    public void postRequestTagDtoListToPostTagSet(List<TagDto> tagDtos, Post post) {
         post.clearTags();
         if (tagDtos != null) {
             for (TagDto tagDto : tagDtos) {
