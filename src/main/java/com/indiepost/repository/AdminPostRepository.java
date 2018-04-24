@@ -5,6 +5,7 @@ import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Post;
 import com.indiepost.model.User;
+import com.indiepost.repository.utils.PostReference;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -14,7 +15,9 @@ import java.util.List;
  */
 public interface AdminPostRepository {
 
-    Long save(Post post);
+    void save(Post post);
+
+    void saveWithReference(Post post, PostReference reference);
 
     Post findOne(Long id);
 
@@ -27,6 +30,8 @@ public interface AdminPostRepository {
     List<AdminPostSummaryDto> find(User currentUser, Pageable pageable);
 
     List<AdminPostSummaryDto> find(User currentUser, Types.PostStatus status, Pageable pageable);
+
+    List<Long> findIds(User currentUser, Types.PostStatus status);
 
     List<String> findAllDisplayNames();
 

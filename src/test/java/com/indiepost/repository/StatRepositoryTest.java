@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.indiepost.repository.RepositoryTestUtil.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created by jake on 8/9/17.
@@ -142,10 +143,10 @@ public class StatRepositoryTest {
 
     @Test
     public void testRetrieveYearlyTotalPageview() throws JsonProcessingException {
-        Long expected = 306542L;
+        Long expected = 306742L;
         PeriodDto dto = getYearlyPeriod();
         Long result = testRetrieveTotals(dto);
-        Assert.assertEquals(expected, result);
+        assertThat(result).isGreaterThanOrEqualTo(expected);
     }
 
     @Test

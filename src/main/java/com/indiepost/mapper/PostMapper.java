@@ -39,10 +39,6 @@ public class PostMapper {
         destPost.setSplash(srcPost.isSplash());
         destPost.setFeatured(srcPost.isFeatured());
         destPost.setPicked(srcPost.isPicked());
-        destPost.setCategoryId(srcPost.getCategoryId());
-        destPost.setAuthorId(srcPost.getAuthorId());
-        destPost.setEditorId(srcPost.getEditorId());
-        destPost.setTitleImageId(srcPost.getTitleImageId());
         return destPost;
     }
 
@@ -56,7 +52,6 @@ public class PostMapper {
         postSummaryDto.setTitle(post.getTitle());
         postSummaryDto.setExcerpt(post.getExcerpt());
         postSummaryDto.setLikesCount(post.getLikesCount());
-        postSummaryDto.setLegacyPostId(post.getLegacyPostId());
         postSummaryDto.setDisplayName(post.getDisplayName());
         return postSummaryDto;
     }
@@ -76,12 +71,6 @@ public class PostMapper {
         }
         if (isNotEmpty(requestDto.getDisplayName())) {
             post.setDisplayName(requestDto.getDisplayName());
-        }
-        if (requestDto.getCategoryId() != null) {
-            post.setCategoryId(requestDto.getCategoryId());
-        }
-        if (requestDto.getTitleImageId() != null) {
-            post.setTitleImageId(requestDto.getTitleImageId());
         }
         if (requestDto.getStatus() != null) {
             post.setStatus(PostStatus.valueOf(requestDto.getStatus()));

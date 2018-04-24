@@ -42,26 +42,6 @@ public class PostRepositoryHibernate implements PostRepository {
     }
 
     @Override
-    public Post findByLegacyId(Long id) {
-        return getQueryFactory()
-                .selectFrom(post)
-                .leftJoin(post.titleImage, QImageSet.imageSet)
-                .fetchJoin()
-                .where(post.legacyPostId.eq(id))
-                .fetchOne();
-    }
-
-    @Override
-    public Long findIdByLegacyId(Long legacyId) {
-        Tuple tuple = getQueryFactory()
-                .select(post.id, post.legacyPostId)
-                .from(post)
-                .where(post.legacyPostId.eq(legacyId))
-                .fetchOne();
-        return tuple != null ? tuple.get(post.id) : null;
-    }
-
-    @Override
     public Long count() {
         return getQueryFactory()
                 .selectFrom(post)
@@ -182,7 +162,7 @@ public class PostRepositoryHibernate implements PostRepository {
 
     private JPAQuery addProjections(JPAQuery query) {
         return query.select(
-                post.id, post.legacyPostId, post.categoryId, post.category.name, post.category.slug, post.splash, post.picked, post.featured,
+                post.id, post.categoryId, post.category.name, post.category.slug, post.splash, post.picked, post.featured,
                 post.displayName, post.title, post.publishedAt, post.excerpt, post.titleImage,
                 post.likesCount);
     }
@@ -193,7 +173,6 @@ public class PostRepositoryHibernate implements PostRepository {
         for (Tuple row : result) {
             PostSummaryDto dto = new PostSummaryDto();
             dto.setId(row.get(post.id));
-            dto.setLegacyPostId(row.get(post.legacyPostId));
             dto.setTitle(row.get(post.title));
             dto.setDisplayName(row.get(post.displayName));
             dto.setPublishedAt(row.get(post.publishedAt));

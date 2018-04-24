@@ -24,16 +24,6 @@ public class PostServiceTest {
     private PostService postService;
 
     @Test
-    public void testFindPostIdByLegacyId() {
-        Long legacyId = 10171L;
-        Long id = postService.findIdByLegacyId(legacyId);
-        System.out.println("===================================");
-        System.out.println("Input:" + legacyId);
-        System.out.println("Output:" + id);
-        System.out.println("===================================");
-    }
-
-    @Test
     public void findById_shouldReturnPostDtoWithRelatedPostsProperly() {
         PostDto post = postService.findOne(908L);
         assertThat(post).isNotNull();

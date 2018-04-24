@@ -6,11 +6,8 @@ import com.indiepost.dto.Highlight;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
-import com.indiepost.dto.post.RelatedPostResponseDto;
 import com.indiepost.dto.stat.PostStatDto;
 import com.indiepost.enums.Types.PostStatus;
-import com.indiepost.model.Image;
-import com.indiepost.model.ImageSet;
 import com.indiepost.model.Post;
 import com.indiepost.model.elasticsearch.PostEs;
 import com.indiepost.repository.ImageRepository;
@@ -61,10 +58,6 @@ public class PostServiceImpl implements PostService {
         // TODO I will find better solution!
         post.getTags();
         post.getContributors();
-        ImageSet titleImage = post.getTitleImage();
-        if (titleImage != null) {
-            titleImage.getImages();
-        }
         PostDto dto = postToPostDto(post);
         if (!post.getTags().isEmpty()) {
             List<String> tags = post.getTags().stream()
@@ -204,7 +197,6 @@ public class PostServiceImpl implements PostService {
     private PostSummaryDto toPostSummaryDto(Post post) {
         PostSummaryDto dto = new PostSummaryDto();
         dto.setId(post.getId());
-        dto.setLegacyPostId(post.getLegacyPostId());
         dto.setTitle(post.getTitle());
         dto.setCategoryId(post.getCategoryId());
         dto.setCategoryName(post.getCategory().getName());

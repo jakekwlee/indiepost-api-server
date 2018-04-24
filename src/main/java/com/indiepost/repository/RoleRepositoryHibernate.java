@@ -1,10 +1,9 @@
 package com.indiepost.repository;
 
 import com.indiepost.enums.Types.UserRole;
+import com.indiepost.model.QRole;
 import com.indiepost.model.Role;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -16,52 +15,42 @@ import javax.persistence.PersistenceContext;
 @Repository
 public class RoleRepositoryHibernate implements RoleRepository {
 
+    static final QRole qRole = QRole.role;
+
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
     public void save(UserRole role) {
-        getSession().save(role);
+        entityManager.persist(role);
     }
 
     @Override
     public void update(UserRole role) {
-        getSession().update(role);
+        entityManager.persist(role);
     }
 
     @Override
     public void delete(UserRole role) {
-        getSession().delete(role);
+        entityManager.remove(role);
     }
 
     @Override
     public Role findById(Long id) {
-        return (Role) getCriteria()
-                .add(Restrictions.eq("id", id))
-                .uniqueResult();
+        return getQueryFactory().selectFrom(qRole).where(qRole.id.eq(id)).fetchOne();
     }
 
     @Override
     public Role findByUserRole(UserRole role) {
-        return (Role) getCriteria()
-                .createAlias("users", "users")
-                .add(Restrictions.eq("name", role.toString()))
-                .uniqueResult();
+        return findByUserRoleString(role.toString());
     }
 
     @Override
     public Role findByUserRoleString(String role) {
-        // TODO 20180226
-        return (Role) getCriteria()
-                .add(Restrictions.eq("name", role))
-                .uniqueResult();
+        return getQueryFactory().selectFrom(qRole).where(qRole.name.eq(role)).fetchOne();
     }
 
-    private Session getSession() {
-        return entityManager.unwrap(Session.class);
-    }
-
-    private Criteria getCriteria() {
-        return getSession().createCriteria(Role.class);
+    private JPAQueryFactory getQueryFactory() {
+        return new JPAQueryFactory(entityManager);
     }
 }

@@ -11,6 +11,7 @@ import com.indiepost.repository.AdminPostRepository;
 import com.indiepost.repository.ContributorRepository;
 import com.indiepost.repository.TagRepository;
 import com.indiepost.repository.elasticsearch.PostEsRepository;
+import com.indiepost.repository.utils.PostReference;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -42,19 +43,16 @@ public class AdminPostServiceImpl implements AdminPostService {
 
     private final PostEsRepository postEsRepository;
 
-    private final LegacyPostService legacyPostService;
-
     @Inject
     public AdminPostServiceImpl(UserService userService,
                                 AdminPostRepository adminPostRepository,
                                 ContributorRepository contributorRepository,
-                                PostEsRepository postEsRepository, TagRepository tagRepository, LegacyPostService legacyPostService) {
+                                PostEsRepository postEsRepository, TagRepository tagRepository) {
         this.userService = userService;
         this.adminPostRepository = adminPostRepository;
         this.contributorRepository = contributorRepository;
         this.postEsRepository = postEsRepository;
         this.tagRepository = tagRepository;
-        this.legacyPostService = legacyPostService;
     }
 
 
@@ -67,27 +65,35 @@ public class AdminPostServiceImpl implements AdminPostService {
     @Override
     public AdminPostResponseDto createAutosave() {
         Post post = new Post();
-        Long userId = userService.findCurrentUser().getId();
+        User user = userService.findCurrentUser();
         post.setCreatedAt(LocalDateTime.now());
         post.setModifiedAt(LocalDateTime.now());
         post.setPublishedAt(LocalDateTime.now().plusDays(10));
         post.setStatus(PostStatus.AUTOSAVE);
-        post.setAuthorId(userId);
-        post.setEditorId(userId);
-        adminPostRepository.save(post);
+        post.setAuthor(user);
+        post.setEditor(user);
+
+        PostReference reference = new PostReference();
+        reference.setCategoryId(2L);
+        adminPostRepository.saveWithReference(post, reference);
         return toAdminPostResponseDto(post);
     }
 
     @Override
-    public AdminPostResponseDto createAutosave(Long postId) {
+    public AdminPostResponseDto createAutosaveFromPost(Long postId) {
         Post originalPost = adminPostRepository.findOne(postId);
         if (postId == null) {
             throw new BadRequestException("No original post with id:" + postId);
         }
         Post autosave = duplicate(originalPost);
-        autosave.setOriginalId(postId);
+        autosave.setOriginal(originalPost);
         autosave.setStatus(PostStatus.AUTOSAVE);
-        adminPostRepository.save(autosave);
+
+        PostReference reference = new PostReference();
+        reference.setAuthorId(originalPost.getAuthorId());
+        reference.setEditorId(originalPost.getEditorId());
+        reference.setCategoryId(originalPost.getCategoryId());
+        reference.setTitleImageId(originalPost.getTitleImageId());
 
         if (originalPost.getContributors() != null) {
             List<Contributor> contributors = originalPost.getContributors();
@@ -97,11 +103,8 @@ public class AdminPostServiceImpl implements AdminPostService {
             List<Tag> tags = originalPost.getTags();
             addTagsToPost(autosave, tags);
         }
-        if (autosave.getTitleImageId() != null) {
-            ImageSet titleImage = originalPost.getTitleImage();
-            autosave.setTitleImage(titleImage);
-        }
-        adminPostRepository.flush();
+
+        adminPostRepository.saveWithReference(autosave, reference);
         return toAdminPostResponseDto(autosave);
     }
 
@@ -120,7 +123,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         }
 
         User currentUser = userService.findCurrentUser();
-        post.setEditorId(currentUser.getId());
+        post.setEditor(currentUser);
         post.setModifiedAt(LocalDateTime.now());
 
         copyDtoToPost(postRequestDto, post);
@@ -231,123 +234,31 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
-    public AdminPostResponseDto save(AdminPostRequestDto adminPostRequestDto) {
-        User currentUser = userService.getCurrentUser();
-        Post post = postMapperService.adminPostRequestDtoToPost(adminPostRequestDto);
-        post.setStatus(PostStatus.valueOf(adminPostRequestDto.getStatus()));
-        post.setCreatedAt(LocalDateTime.now());
-        post.setModifiedAt(LocalDateTime.now());
-        post.setAuthor(currentUser);
-        post.setEditor(currentUser);
-        save(post);
-        return postMapperService.postToAdminPostResponseDto(post);
-    }
-
-    @Override
-    public AdminPostResponseDto createAutosave(AdminPostRequestDto adminPostRequestDto) {
-        Post post;
-        User currentUser = userService.getCurrentUser();
-        if (adminPostRequestDto.getId() != null) {
-            Post originalPost = findById(adminPostRequestDto.getId());
-            post = postMapperService.postToPost(originalPost);
-            postMapperService.adminPostRequestDtoToPost(adminPostRequestDto, post);
-            post.setOriginal(originalPost);
-        } else {
-            post = postMapperService.adminPostRequestDtoToPost(adminPostRequestDto);
-            post.setAuthor(currentUser);
-            post.setCreatedAt(LocalDateTime.now());
-        }
-        if (StringUtils.isEmpty(post.getTitle())) {
-            post.setTitle("No Title");
-        }
-        if (StringUtils.isEmpty(post.getContent())) {
-            post.setContent("");
-        }
-        if (StringUtils.isEmpty(post.getExcerpt())) {
-            post.setExcerpt("");
-        }
-        if (StringUtils.isEmpty(post.getDisplayName())) {
-            post.setDisplayName("Indiepost");
-        }
-        if (post.getPublishedAt() == null) {
-            post.setPublishedAt(LocalDateTime.now().plusDays(7));
-        }
-        post.setEditor(currentUser);
-        post.setModifiedAt(LocalDateTime.now());
-        post.setStatus(PostStatus.AUTOSAVE);
-        post.setCategory(categoryRepository.getReference(2L));
-        save(post);
-        return postMapperService.postToAdminPostResponseDto(post);
-    }
-
-    @Override
-    public void updateAutosave(Long id, AdminPostRequestDto adminPostRequestDto) {
-        Post post = findById(id);
-        postMapperService.adminPostRequestDtoToPost(adminPostRequestDto, post);
-        update(post);
-    }
-
-    @Override
-    public AdminPostResponseDto update(Long id, AdminPostRequestDto adminPostRequestDto) {
-        Post originalPost = findById(id);
-        if (adminPostRequestDto.getOriginalId() != null && !adminPostRequestDto.getId().equals(id)) {
-            deleteById(adminPostRequestDto.getId());
-        }
-        if (PostStatus.valueOf(adminPostRequestDto.getStatus()).equals(
-                PostStatus.AUTOSAVE
-        )) {
-            adminPostRequestDto.setStatus(null);
-        }
-        postMapperService.adminPostRequestDtoToPost(adminPostRequestDto, originalPost);
-
-        PostStatus status = originalPost.getStatus();
-        if (status.equals(PostStatus.FUTURE) || status.equals(PostStatus.PUBLISH)) {
-            Contentlist contentlist = originalPost.getLegacyPost();
-            if (contentlist == null) {
-                contentlist = legacyPostService.save(originalPost);
-                originalPost.setLegacyPost(contentlist);
-            } else {
-                legacyPostService.update(originalPost);
-            }
-        }
-        update(originalPost);
-        return postMapperService.postToAdminPostResponseDto(originalPost);
-    }
-
-    @Override
-    public AdminPostResponseDto getPostResponse(Long id) {
-        return postMapperService.postToAdminPostResponseDto(findById(id));
-    }
-
-    @Override
-    public List<AdminPostSummaryDto> getAdminPostTableDtoList(int page, int maxResults, boolean isDesc) {
-        User currentUser = userService.getCurrentUser();
-        List<Post> postList = adminPostRepository.find(currentUser, getPageable(page, maxResults, isDesc));
-
-        return postList.stream()
-                .map(postMapperService::postToAdminPostSummaryDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<AdminPostSummaryDto> getLastUpdated(LocalDateTime dateFrom) {
-        return null;
-    }
-
-    @Override
     public List<String> findAllBylineNames() {
         return adminPostRepository.findAllDisplayNames();
     }
 
     @Override
     public void bulkDeleteByStatus(PostStatus status) {
-        // TODO
         User currentUser = userService.findCurrentUser();
         if (isPublicStatus(status)) {
             throw new BadRequestException(
                     "It's prohibited directly bulk delete public status posts(PUBLIC|FUTURE|PENDING).");
         }
-//        adminPostRepository.bulkDeleteByUserAndStatus(currentUser, status);
+        List<Long> ids = adminPostRepository.findIds(currentUser, status);
+        if (ids.size() == 0) {
+            return;
+        }
+        for (Long id : ids) {
+            deleteById(id);
+        }
+    }
+
+    @Override
+    public void bulkDeleteByIds(BulkStatusUpdateDto bulkStatusUpdateDto) {
+        for (Long id : bulkStatusUpdateDto.getIds()) {
+            deleteById(id);
+        }
     }
 
     @Override
@@ -355,7 +266,6 @@ public class AdminPostServiceImpl implements AdminPostService {
         User currentUser = userService.findCurrentUser();
         String status = bulkStatusUpdateDto.getStatus().toUpperCase();
         PostStatus changeTo = PostStatus.valueOf(status);
-//        boolean isAttemptingChangeToPublic = isPublicStatus(changeTo);
         if (changeTo.equals(PostStatus.AUTOSAVE)) {
             return;
         }
@@ -408,7 +318,8 @@ public class AdminPostServiceImpl implements AdminPostService {
         responseDto.setPicked(post.isPicked());
         responseDto.setFeatured(post.isFeatured());
         responseDto.setSplash(post.isSplash());
-        responseDto.setCategoryName(post.getCategory().getName());
+        Category category = post.getCategory();
+        responseDto.setCategoryName(category.getName());
 
         if (post.getOriginalId() != null) {
             responseDto.setOriginalId(post.getOriginalId());

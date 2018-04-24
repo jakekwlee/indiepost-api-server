@@ -12,6 +12,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.Arrays;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
@@ -23,7 +25,6 @@ public class AdminPostServiceTests {
     @WithMockUser(username = "eunjechoi")
     public void save_shouldSaveTagsOrderProperly() {
         AdminPostResponseDto post = service.createAutosave();
-        Long id = post.getId();
         post.setTags(Arrays.asList("tag1", "tag2", "tag3"));
         post.setContent("test content");
         post.setTitle("test title");
@@ -31,5 +32,6 @@ public class AdminPostServiceTests {
         post.setCategoryId(2L);
         post.setDisplayName("TEST name");
         service.update(post);
+        assertThat(post.getTags()).isEqualTo(Arrays.asList("tag1", "tag2", "tag3"));
     }
 }

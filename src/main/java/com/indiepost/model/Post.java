@@ -26,10 +26,10 @@ public class Post implements Serializable {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "originalId", insertable = false, updatable = false)
+    @JoinColumn(name = "originalId")
     private Post original;
 
-    @Column(name = "originalId")
+    @Column(name = "originalId", nullable = false, insertable = false, updatable = false)
     private Long originalId;
 
     @OneToMany(
@@ -73,11 +73,11 @@ public class Post implements Serializable {
     @Column(nullable = false)
     private LocalDateTime publishedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "titleImageId", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "titleImageId")
     private ImageSet titleImage;
 
-    @Column(name = "titleImageId")
+    @Column(name = "titleImageId", insertable = false, updatable = false)
     private Long titleImageId;
 
     @Column(nullable = false)
@@ -85,25 +85,25 @@ public class Post implements Serializable {
     private Types.PostStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "authorId", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "authorId", nullable = false)
     private User author;
 
-    @Column(name = "authorId", nullable = false)
+    @Column(name = "authorId", nullable = false, insertable = false, updatable = false)
     private Long authorId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "editorId", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "editorId", nullable = false)
     private User editor;
 
-    @Column(name = "editorId", nullable = false)
+    @Column(name = "editorId", nullable = false, insertable = false, updatable = false)
     private Long editorId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "categoryId", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "categoryId", nullable = false)
     private Category category;
 
-    @Column(name = "categoryId", nullable = false)
-    private Long categoryId = 2L;
+    @Column(name = "categoryId", nullable = false, insertable = false, updatable = false)
+    private Long categoryId;
 
     @OneToMany(
             mappedBy = "post",

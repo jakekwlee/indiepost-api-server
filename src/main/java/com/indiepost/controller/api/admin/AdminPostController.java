@@ -35,7 +35,7 @@ public class AdminPostController {
         if (edit) {
             Types.PostStatus postStatus = Types.PostStatus.valueOf(post.getStatus());
             if (isPublicStatus(postStatus)) {
-                return adminPostService.createAutosave(id);
+                return adminPostService.createAutosaveFromPost(id);
             }
         }
         return post;
@@ -56,12 +56,26 @@ public class AdminPostController {
 
     @PutMapping(value = "/{id}")
     public void update(@RequestBody AdminPostRequestDto adminPostRequestDto, @PathVariable Long id) {
+        if (!adminPostRequestDto.getId().equals(id)) {
+            return;
+        }
         adminPostService.update(adminPostRequestDto);
     }
 
     @PutMapping(value = "/_bulk")
     public void update(@RequestBody BulkStatusUpdateDto bulkStatusUpdateDto) {
         adminPostService.bulkStatusUpdate(bulkStatusUpdateDto);
+    }
+
+    @DeleteMapping(value = "/_bulk")
+    public void delete(@RequestBody BulkStatusUpdateDto bulkStatusUpdateDto) {
+        adminPostService.bulkDeleteByIds(bulkStatusUpdateDto);
+    }
+
+    @DeleteMapping(value = "/trash")
+    public void delete(@RequestParam("status") String status) {
+        Types.PostStatus postStatus = Types.PostStatus.valueOf(status.toUpperCase());
+        adminPostService.bulkDeleteByStatus(postStatus);
     }
 
     @DeleteMapping(value = "/{id}")

@@ -48,7 +48,7 @@ public class HomeController {
 
     @GetMapping("/login")
     public String getLoginPage(Model model) {
-        // TODO
+        // TODO add server-side rendering
         model.addAttribute("res", new RenderingResponseDto());
         model.addAttribute("cdnUrl", config.getCdnUrl());
         return "index";

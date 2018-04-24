@@ -5,6 +5,7 @@ import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.*;
 import com.indiepost.repository.utils.CriteriaUtils;
+import com.indiepost.repository.utils.PostReference;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -32,10 +33,29 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     private EntityManager entityManager;
 
     @Override
-    public Long save(Post post) {
+    public void save(Post post) {
         entityManager.persist(post);
-        entityManager.flush();
-        return post.getId();
+    }
+
+    @Override
+    public void saveWithReference(Post post, PostReference reference) {
+        if (reference.getAuthorId() != null) {
+            User author = entityManager.getReference(User.class, reference.getAuthorId());
+            post.setAuthor(author);
+        }
+        if (reference.getEditorId() != null) {
+            User editor = entityManager.getReference(User.class, reference.getAuthorId());
+            post.setEditor(editor);
+        }
+        if (reference.getCategoryId() != null) {
+            Category category = entityManager.getReference(Category.class, reference.getCategoryId());
+            post.setCategory(category);
+        }
+        if (reference.getOriginalId() != null) {
+            Post original = entityManager.getReference(Post.class, reference.getOriginalId());
+            post.setOriginal(original);
+        }
+        entityManager.persist(post);
     }
 
     @Override
@@ -100,6 +120,22 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
                 .orderBy(post.publishedAt.desc())
                 .limit(pageable.getPageSize())
                 .offset(pageable.getOffset())
+                .distinct();
+
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(post.status.eq(status));
+        addPrivacyCriteria(builder, status, currentUser);
+
+        query.where(builder);
+        return toDtoList(query.fetch());
+    }
+
+    @Override
+    public List<Long> findIds(User currentUser, PostStatus status) {
+        JPAQuery query = getQueryFactory().selectFrom(post)
+                .select(post.id)
+                .innerJoin(post.author, QUser.user)
+                .innerJoin(post.editor, QUser.user)
                 .distinct();
 
         BooleanBuilder builder = new BooleanBuilder();

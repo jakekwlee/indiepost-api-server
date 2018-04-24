@@ -4,7 +4,6 @@ import com.indiepost.dto.FullTextSearchQuery;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
-import com.indiepost.dto.post.RelatedPostResponseDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,8 +14,6 @@ import java.util.List;
 public interface PostService {
 
     PostDto findOne(Long id);
-
-    PostDto findOneByLegacyId(Long id);
 
     Long count();
 
@@ -30,8 +27,6 @@ public interface PostService {
 
     List<PostSummaryDto> findByTagName(String tagName, int page, int maxResults, boolean isDesc);
 
-    List<RelatedPostResponseDto> findRelatedPosts(List<Long> ids, boolean isLegacy, boolean isMobile);
-
     List<PostSummaryDto> findTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit);
 
     List<PostSummaryDto> findScheduledPosts();
@@ -40,7 +35,7 @@ public interface PostService {
 
     List<PostSummaryDto> fullTextSearch(FullTextSearchQuery query);
 
-    PostSummary findSplashPost();
+    PostSummaryDto findSplashPost();
 
     PostSummaryDto findFeaturePost();
 

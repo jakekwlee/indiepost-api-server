@@ -51,9 +51,9 @@ public class PostSummaryDto implements Serializable {
     public PostSummaryDto() {
     }
 
-    public PostSummary(Long id, boolean featured, boolean picked, boolean splash,
-                       String title, String excerpt, String displayName, LocalDateTime publishedAt, ImageSet titleImage, Long titleImageId,
-                       PostStatus status, Long categoryId, String categoryName, int commentsCount, int likesCount) {
+    public PostSummaryDto(Long id, boolean featured, boolean picked, boolean splash,
+                          String title, String excerpt, String displayName, LocalDateTime publishedAt, ImageSet titleImage, Long titleImageId,
+                          PostStatus status, Long categoryId, String categoryName, int commentsCount, int likesCount) {
         this.id = id;
         this.featured = featured;
         this.picked = picked;
