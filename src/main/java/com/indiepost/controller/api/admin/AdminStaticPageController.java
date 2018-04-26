@@ -25,7 +25,7 @@ public class AdminStaticPageController {
 
     @RequestMapping(method = RequestMethod.GET)
     public Page<StaticPageDto> getList(@RequestParam String status, Pageable pageable) {
-        return staticPageService.find(Types.PostStatus.valueOf(status), pageable);
+        return staticPageService.find(Types.PostStatus.valueOf(status.toUpperCase()), pageable);
     }
 
     @RequestMapping(method = RequestMethod.POST)
