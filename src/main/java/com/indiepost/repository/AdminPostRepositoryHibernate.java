@@ -143,7 +143,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
         addPrivacyCriteria(builder, status, currentUser);
 
         query.where(builder);
-        return toDtoList(query.fetch());
+        return query.fetch();
     }
 
     @Override

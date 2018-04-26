@@ -1,6 +1,9 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.post.*;
+import com.indiepost.dto.post.AdminPostRequestDto;
+import com.indiepost.dto.post.AdminPostResponseDto;
+import com.indiepost.dto.post.AdminPostSummaryDto;
+import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Post;
 import org.springframework.data.domain.Page;
@@ -29,7 +32,6 @@ public interface AdminPostService {
 
     Page<AdminPostSummaryDto> fullTextSearch(String text, Types.PostStatus status,
                                              Pageable pageable);
-
     Long count();
 
     Long count(PostQuery query);
@@ -38,7 +40,7 @@ public interface AdminPostService {
 
     void bulkDeleteByStatus(Types.PostStatus status);
 
-    void bulkDeleteByIds(BulkStatusUpdateDto bulkStatusUpdateDto);
+    void bulkDeleteByIds(List<Long> ids);
 
-    void bulkStatusUpdate(BulkStatusUpdateDto bulkStatusUpdateDto);
+    void bulkStatusUpdate(List<Long> ids, Types.PostStatus changeTo);
 }

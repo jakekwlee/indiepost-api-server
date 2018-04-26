@@ -63,19 +63,19 @@ public class AdminPostController {
     }
 
     @PutMapping(value = "/_bulk")
-    public void update(@RequestBody BulkStatusUpdateDto bulkStatusUpdateDto) {
-        adminPostService.bulkStatusUpdate(bulkStatusUpdateDto);
+    public void update(@RequestBody BulkStatusUpdateDto dto) {
+        Types.PostStatus status = Types.PostStatus.valueOf(dto.getStatus().toUpperCase());
+        adminPostService.bulkStatusUpdate(dto.getIds(), status);
     }
 
     @DeleteMapping(value = "/_bulk")
     public void delete(@RequestBody BulkStatusUpdateDto bulkStatusUpdateDto) {
-        adminPostService.bulkDeleteByIds(bulkStatusUpdateDto);
+        adminPostService.bulkDeleteByIds(bulkStatusUpdateDto.getIds());
     }
 
-    @DeleteMapping(value = "/trash")
-    public void delete(@RequestParam("status") String status) {
-        Types.PostStatus postStatus = Types.PostStatus.valueOf(status.toUpperCase());
-        adminPostService.bulkDeleteByStatus(postStatus);
+    @DeleteMapping(value = "/_trash")
+    public void emptyTrash() {
+        adminPostService.bulkDeleteByStatus(Types.PostStatus.TRASH);
     }
 
     @DeleteMapping(value = "/{id}")

@@ -3,7 +3,10 @@ package com.indiepost.service;
 import com.amazonaws.services.pinpoint.model.BadRequestException;
 import com.indiepost.dto.Highlight;
 import com.indiepost.dto.ImageSetDto;
-import com.indiepost.dto.post.*;
+import com.indiepost.dto.post.AdminPostRequestDto;
+import com.indiepost.dto.post.AdminPostResponseDto;
+import com.indiepost.dto.post.AdminPostSummaryDto;
+import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.*;
 import com.indiepost.model.elasticsearch.PostEs;
@@ -246,37 +249,29 @@ public class AdminPostServiceImpl implements AdminPostService {
                     "It's prohibited directly bulk delete public status posts(PUBLIC|FUTURE|PENDING).");
         }
         List<Long> ids = adminPostRepository.findIds(currentUser, status);
-        if (ids.size() == 0) {
-            return;
-        }
+        bulkDeleteByIds(ids);
+    }
+
+    @Override
+    public void bulkDeleteByIds(List<Long> ids) {
         for (Long id : ids) {
             deleteById(id);
         }
     }
 
     @Override
-    public void bulkDeleteByIds(BulkStatusUpdateDto bulkStatusUpdateDto) {
-        for (Long id : bulkStatusUpdateDto.getIds()) {
-            deleteById(id);
-        }
-    }
-
-    @Override
-    public void bulkStatusUpdate(BulkStatusUpdateDto bulkStatusUpdateDto) {
+    public void bulkStatusUpdate(List<Long> ids, PostStatus changeTo) {
         User currentUser = userService.findCurrentUser();
-        String status = bulkStatusUpdateDto.getStatus().toUpperCase();
-        PostStatus changeTo = PostStatus.valueOf(status);
         if (changeTo.equals(PostStatus.AUTOSAVE)) {
             return;
         }
-        for (Long id : bulkStatusUpdateDto.getIds()) {
+        for (Long id : ids) {
             Post post = adminPostRepository.findOne(id);
-            PostStatus postStatus = post.getStatus();
-            if (post.getTitleImageId() == null) {
+            if (post.getTitleImageId() == null && isPublicStatus(changeTo)) {
                 return;
             }
             // if original post is exists, unlink original
-            if (post.getOriginalId() != null && !isPublicStatus(postStatus)) {
+            if (post.getOriginalId() != null) {
                 post.setOriginalId(null);
             }
             post.setStatus(changeTo);
