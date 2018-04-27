@@ -63,13 +63,13 @@ public class AdminPostController {
     }
 
     @PutMapping(value = "/_bulk")
-    public void update(@RequestBody BulkStatusUpdateDto dto) {
+    public void bulkUpdate(@RequestBody BulkStatusUpdateDto dto) {
         Types.PostStatus status = Types.PostStatus.valueOf(dto.getStatus().toUpperCase());
         adminPostService.bulkStatusUpdate(dto.getIds(), status);
     }
 
     @DeleteMapping(value = "/_bulk")
-    public void delete(@RequestBody BulkStatusUpdateDto bulkStatusUpdateDto) {
+    public void bulkDelete(@RequestBody BulkStatusUpdateDto bulkStatusUpdateDto) {
         adminPostService.bulkDeleteByIds(bulkStatusUpdateDto.getIds());
     }
 

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Created by jake on 17. 3. 5.
@@ -101,6 +102,21 @@ public class StaticPageServiceImpl implements StaticPageService {
     @Override
     public Long count() {
         return staticPageRepository.count();
+    }
+
+    @Override
+    public void bulkUpdateStatus(List<Long> ids, Types.PostStatus status) {
+        staticPageRepository.bulkUpdateStatusByIds(ids, status);
+    }
+
+    @Override
+    public void bulkDeleteByIds(List<Long> ids) {
+        staticPageRepository.bulkDeleteByIds(ids);
+    }
+
+    @Override
+    public void emptyTrash() {
+        staticPageRepository.bulkDeleteByStatus(Types.PostStatus.TRASH);
     }
 
     private StaticPageDto pageToPageDto(StaticPage staticPage) {

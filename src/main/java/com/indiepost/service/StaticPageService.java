@@ -5,6 +5,8 @@ import com.indiepost.enums.Types;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 /**
  * Created by jake on 17. 3. 5.
  */
@@ -28,4 +30,9 @@ public interface StaticPageService {
 
     Long count();
 
+    void bulkUpdateStatus(List<Long> ids, Types.PostStatus status);
+
+    void bulkDeleteByIds(List<Long> ids);
+
+    void emptyTrash();
 }

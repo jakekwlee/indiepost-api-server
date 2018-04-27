@@ -6,6 +6,8 @@ import com.indiepost.model.StaticPage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 /**
  * Created by jake on 17. 3. 5.
  */
@@ -28,4 +30,10 @@ public interface StaticPageRepository {
     Long count(Types.PostStatus pageStatus);
 
     StaticPage findBySlug(String slug);
+
+    void bulkUpdateStatusByIds(List<Long> ids, Types.PostStatus status);
+
+    void bulkDeleteByIds(List<Long> ids);
+
+    void bulkDeleteByStatus(Types.PostStatus status);
 }

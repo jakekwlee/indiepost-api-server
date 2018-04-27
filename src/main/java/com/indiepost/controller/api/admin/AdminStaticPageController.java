@@ -2,6 +2,7 @@ package com.indiepost.controller.api.admin;
 
 import com.indiepost.dto.DeleteResponse;
 import com.indiepost.dto.StaticPageDto;
+import com.indiepost.dto.post.BulkStatusUpdateDto;
 import com.indiepost.enums.Types;
 import com.indiepost.service.StaticPageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,4 +53,19 @@ public class AdminStaticPageController {
         return new DeleteResponse(id);
     }
 
+    @PutMapping(value = "/_bulk")
+    public void bulkUpdate(@RequestBody BulkStatusUpdateDto dto) {
+        Types.PostStatus status = Types.PostStatus.valueOf(dto.getStatus().toUpperCase());
+        staticPageService.bulkUpdateStatus(dto.getIds(), status);
+    }
+
+    @DeleteMapping(value = "/_bulk")
+    public void bulkDelete(@RequestBody BulkStatusUpdateDto bulkStatusUpdateDto) {
+        staticPageService.bulkDeleteByIds(bulkStatusUpdateDto.getIds());
+    }
+
+    @DeleteMapping(value = "/_trash")
+    public void emptyTrash() {
+        staticPageService.emptyTrash();
+    }
 }

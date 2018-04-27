@@ -1,14 +1,11 @@
 package com.indiepost.repository;
 
-import com.github.fluent.hibernate.transformer.FluentHibernateResultTransformer;
 import com.indiepost.dto.StaticPageDto;
 import com.indiepost.enums.Types;
+import com.indiepost.model.QStaticPage;
 import com.indiepost.model.StaticPage;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Property;
-import org.hibernate.criterion.Restrictions;
+import com.querydsl.core.Tuple;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -17,8 +14,10 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static com.indiepost.repository.utils.CriteriaUtils.setPageToCriteria;
+import static com.indiepost.model.QStaticPage.staticPage;
+import static com.indiepost.model.QUser.user;
 
 /**
  * Created by jake on 17. 3. 5.
@@ -31,7 +30,9 @@ public class StaticPageRepositoryHibernate implements StaticPageRepository {
 
     @Override
     public Long save(StaticPage staticPage) {
-        return (Long) getSession().save(staticPage);
+        entityManager.persist(staticPage);
+        entityManager.flush();
+        return staticPage.getId();
     }
 
     @Override
@@ -40,80 +41,130 @@ public class StaticPageRepositoryHibernate implements StaticPageRepository {
     }
 
     @Override
-    public void update(StaticPage staticPage) {
-        getSession().update(staticPage);
+    public void update(StaticPage page) {
+        entityManager.persist(page);
     }
 
     @Override
-    public void delete(StaticPage staticPage) {
-        getSession().delete(staticPage);
+    public void delete(StaticPage page) {
+        entityManager.remove(page);
     }
 
     @Override
     public Page<StaticPageDto> find(Pageable pageable) {
-        Criteria criteria = getPagedCriteria(pageable);
-        setProjectionForDto(criteria);
-        List<StaticPageDto> staticPageDtoList = criteria.list();
-        Long count = count();
-        return new PageImpl<>(staticPageDtoList, pageable, count);
+        QStaticPage p = staticPage;
+        List<Tuple> rows = getQueryFactory().select(
+                p.id,
+                p.title,
+                p.status,
+                p.title,
+                p.createdAt,
+                p.modifiedAt,
+                p.displayOrder,
+                p.author.displayName)
+                .from(p)
+                .innerJoin(user)
+                .on(p.authorId.eq(user.id))
+                .orderBy(p.displayOrder.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        List<StaticPageDto> dtoList = toDtoList(rows);
+        return new PageImpl<>(dtoList, pageable, count());
     }
 
     @Override
     public Page<StaticPageDto> find(Pageable pageable, Types.PostStatus pageStatus) {
-        Criteria criteria = getPagedCriteria(pageable);
-        criteria.add(Restrictions.eq("status", pageStatus));
-        setProjectionForDto(criteria);
-        List<StaticPageDto> staticPageDtoList = criteria.list();
+        QStaticPage p = staticPage;
+        List<Tuple> rows = getQueryFactory().select(
+                p.id,
+                p.title,
+                p.status,
+                p.title,
+                p.createdAt,
+                p.modifiedAt,
+                p.displayOrder,
+                p.author.displayName)
+                .from(p)
+                .innerJoin(user)
+                .on(p.authorId.eq(user.id))
+                .where(p.status.eq(pageStatus))
+                .orderBy(p.displayOrder.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        List<StaticPageDto> dtoList = toDtoList(rows);
         Long count = count(pageStatus);
-        return new PageImpl<>(staticPageDtoList, pageable, count);
+        return new PageImpl<>(dtoList, pageable, count);
     }
 
     @Override
     public Long count() {
-        return (Long) getCriteria().setProjection(Projections.rowCount())
-                .uniqueResult();
+        return getQueryFactory().selectFrom(staticPage).fetchCount();
     }
 
     @Override
     public Long count(Types.PostStatus pageStatus) {
-        return (Long) getCriteria().setProjection(Projections.rowCount())
-                .add(Restrictions.eq("status", pageStatus))
-                .uniqueResult();
+        return getQueryFactory()
+                .selectFrom(staticPage)
+                .where(staticPage.status.eq(pageStatus))
+                .fetchCount();
     }
 
     @Override
     public StaticPage findBySlug(String slug) {
-        return (StaticPage) getCriteria()
-                .add(Restrictions.eq("slug", slug))
-                .uniqueResult();
+        return getQueryFactory()
+                .selectFrom(staticPage)
+                .where(staticPage.slug.eq(slug))
+                .fetchOne();
     }
 
-    private void setProjectionForDto(Criteria criteria) {
-        criteria.createAlias("author", "a")
-                .setProjection(
-                        Projections.projectionList()
-                                .add(Property.forName("id"), "id")
-                                .add(Property.forName("title"), "title")
-                                .add(Property.forName("slug"), "slug")
-                                .add(Property.forName("createdAt"), "createdAt")
-                                .add(Property.forName("modifiedAt"), "modifiedAt")
-                                .add(Property.forName("displayOrder"), "displayOrder")
-                                .add(Property.forName("type"), "type")
-                                .add(Property.forName("status"), "status")
-                                .add(Property.forName("a.displayName"), "authorDisplayName")
-                )
-                .setResultTransformer(new FluentHibernateResultTransformer(StaticPageDto.class));
+    @Override
+    public void bulkUpdateStatusByIds(List<Long> ids, Types.PostStatus status) {
+        getQueryFactory()
+                .update(staticPage)
+                .set(staticPage.status, status)
+                .where(staticPage.id.in(ids))
+                .execute();
     }
 
-    private Session getSession() {
-        return entityManager.unwrap(Session.class);
+    @Override
+    public void bulkDeleteByIds(List<Long> ids) {
+        getQueryFactory()
+                .delete(staticPage)
+                .where(staticPage.id.in(ids))
+                .execute();
     }
 
-    private Criteria getCriteria() {
-        return getSession().createCriteria(StaticPage.class);
+    @Override
+    public void bulkDeleteByStatus(Types.PostStatus status) {
+        if (!status.equals(Types.PostStatus.TRASH)) {
+            // TODO error handling
+            return;
+        }
+        getQueryFactory()
+                .delete(staticPage)
+                .where(staticPage.status.eq(status))
+                .execute();
     }
 
-    private Criteria getPagedCriteria(Pageable pageable) {
-        return setPageToCriteria(getCriteria(), pageable);
+    private JPAQueryFactory getQueryFactory() {
+        return new JPAQueryFactory(entityManager);
+    }
+
+    private List<StaticPageDto> toDtoList(List<Tuple> result) {
+        return result.stream().map(row -> {
+            StaticPageDto dto = new StaticPageDto();
+            dto.setId(row.get(staticPage.id));
+            dto.setTitle(row.get(staticPage.title));
+            dto.setAuthorDisplayName(row.get(staticPage.author.displayName));
+            dto.setCreatedAt(row.get(staticPage.createdAt));
+            dto.setModifiedAt(row.get(staticPage.modifiedAt));
+            dto.setDisplayOrder(row.get(staticPage.displayOrder));
+            dto.setSlug(row.get(staticPage.slug));
+            return dto;
+        }).collect(Collectors.toList());
     }
 }
