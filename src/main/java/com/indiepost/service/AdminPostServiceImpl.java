@@ -90,6 +90,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         }
         Post autosave = duplicate(originalPost);
         autosave.setOriginal(originalPost);
+        autosave.setOriginalId(originalPost.getId());
         autosave.setStatus(PostStatus.AUTOSAVE);
 
         PostReference reference = new PostReference();
