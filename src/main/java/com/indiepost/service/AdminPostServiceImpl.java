@@ -320,7 +320,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         if (post.getOriginalId() != null) {
             responseDto.setOriginalId(post.getOriginalId());
         }
-        if (post.getTitleImageId() != null) {
+        if (post.getTitleImage() != null) {
             ImageSetDto imageSetDto = imageSetToDto(post.getTitleImage());
             responseDto.setTitleImage(imageSetDto);
         }

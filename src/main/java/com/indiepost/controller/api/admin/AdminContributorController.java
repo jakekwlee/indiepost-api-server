@@ -18,7 +18,10 @@ public class AdminContributorController {
 
     @GetMapping
     public Page<ContributorDto> get(@RequestParam String type, Pageable pageable) {
-        return contributorService.find(Types.ContributorType.valueOf(type), pageable);
+        if (type != null) {
+            return contributorService.find(Types.ContributorType.valueOf(type), pageable);
+        }
+        return contributorService.find(pageable);
     }
 
     @GetMapping("/{id}")

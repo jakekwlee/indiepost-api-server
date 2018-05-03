@@ -5,9 +5,7 @@ import com.indiepost.enums.Types;
 import com.indiepost.model.Contributor;
 import com.indiepost.repository.ContributorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -81,6 +79,11 @@ public class ContributorServiceImpl implements ContributorService {
     }
 
     @Override
+    public int count() {
+        return new Long(contributorRepository.count()).intValue();
+    }
+
+    @Override
     public Page<ContributorDto> find(Types.ContributorType type, Pageable pageable) {
         int count = count(type);
         if (count == 0) {
@@ -93,5 +96,22 @@ public class ContributorServiceImpl implements ContributorService {
                 .collect(Collectors.toList());
         return new PageImpl<>(dtoList, pageable, count);
 
+    }
+
+    @Override
+    public Page<ContributorDto> find(Pageable pageable) {
+        int count = count();
+        if (count == 0) {
+            return new PageImpl<>(new ArrayList<>(), pageable, 0);
+        }
+        Page<Contributor> contributorList = contributorRepository.findAll(PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.Direction.ASC, "fullName"));
+        List<ContributorDto> dtoList = contributorList.getContent()
+                .stream()
+                .map(contributor -> toDto(contributor))
+                .collect(Collectors.toList());
+        return new PageImpl<>(dtoList, pageable, count);
     }
 }

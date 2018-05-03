@@ -55,6 +55,10 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
             Post original = entityManager.getReference(Post.class, reference.getOriginalId());
             post.setOriginal(original);
         }
+        if (reference.getTitleImageId() != null) {
+            ImageSet titleImage = entityManager.getReference(ImageSet.class, reference.getTitleImageId());
+            post.setTitleImage(titleImage);
+        }
         entityManager.persist(post);
     }
 

@@ -19,6 +19,8 @@ public class AdminInitResponseDto {
 
     private List<CategoryDto> categories;
 
+    private List<ContributorDto> contributors;
+
     public List<TagDto> getTags() {
         return tags;
     }
@@ -57,5 +59,13 @@ public class AdminInitResponseDto {
 
     public void setAuthorNames(List<String> authorNames) {
         this.authorNames = authorNames;
+    }
+
+    public List<ContributorDto> getContributors() {
+        return contributors;
+    }
+
+    public void setContributors(List<ContributorDto> contributors) {
+        this.contributors = contributors;
     }
 }

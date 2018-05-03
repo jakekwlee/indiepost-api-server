@@ -7,6 +7,7 @@ import com.indiepost.enums.Types.UserRole;
 import com.indiepost.model.Tag;
 import com.indiepost.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,15 +30,18 @@ public class AdminServiceImpl implements AdminService {
 
     private final UserService userService;
 
-    @Autowired
-    private TagService tagService;
+    private final TagService tagService;
+
+    private final ContributorService contributorService;
 
     @Autowired
     public AdminServiceImpl(AdminPostService adminPostService, CategoryService categoryService,
-                            UserService userService) {
+                            UserService userService, TagService tagService, ContributorService contributorService) {
         this.adminPostService = adminPostService;
         this.categoryService = categoryService;
         this.userService = userService;
+        this.tagService = tagService;
+        this.contributorService = contributorService;
     }
 
     @Override
@@ -48,6 +52,8 @@ public class AdminServiceImpl implements AdminService {
         adminInitResponseDto.setAuthors(getUserDtoList(UserRole.Author));
         adminInitResponseDto.setCategories(categoryService.getDtoList());
         adminInitResponseDto.setAuthorNames(adminPostService.findAllBylineNames());
+        // TODO for test
+        adminInitResponseDto.setContributors(contributorService.find(PageRequest.of(0, 1000)).getContent());
         List<Tag> tagList = tagService.findAll();
         List<TagDto> tags = tagList.stream()
                 .map(tag -> new TagDto(tag.getId(), tag.getName()))

@@ -1,6 +1,7 @@
 package com.indiepost.dto.post;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,9 +35,9 @@ public class AdminPostRequestDto {
 
     private boolean splash;
 
-    private List<String> tags;
+    private List<String> tags = new ArrayList<>();
 
-    private List<String> contributors;
+    private List<String> contributors = new ArrayList<>();
 
     public Long getId() {
         return id;
