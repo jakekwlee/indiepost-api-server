@@ -3,6 +3,7 @@ package com.indiepost.dto.post;
 import com.indiepost.dto.Highlight;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,6 +14,8 @@ public class AdminPostSummaryDto {
     private static final long serialVersionUID = 1L;
 
     private Long id;
+
+    private Long originalId;
 
     private String title;
 
@@ -32,9 +35,9 @@ public class AdminPostSummaryDto {
 
     private LocalDateTime modifiedAt;
 
-    private List<String> Contributors;
+    private List<String> Contributors = new ArrayList<>();
 
-    private List<String> Tags;
+    private List<String> Tags = new ArrayList<>();
 
     private Highlight highlight;
 
@@ -180,5 +183,13 @@ public class AdminPostSummaryDto {
 
     public void setSplash(boolean splash) {
         this.splash = splash;
+    }
+
+    public Long getOriginalId() {
+        return originalId;
+    }
+
+    public void setOriginalId(Long originalId) {
+        this.originalId = originalId;
     }
 }

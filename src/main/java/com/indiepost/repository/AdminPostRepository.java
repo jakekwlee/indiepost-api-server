@@ -15,9 +15,9 @@ import java.util.List;
  */
 public interface AdminPostRepository {
 
-    void save(Post post);
+    Long save(Post post);
 
-    void saveWithReference(Post post, PostReference reference);
+    Long saveWithReference(Post post, PostReference reference);
 
     Post findOne(Long id);
 

@@ -113,6 +113,26 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
+    public AdminPostResponseDto createDraft(AdminPostRequestDto dto) {
+        User currentUser = userService.findCurrentUser();
+        Post post = copyDtoToPost(dto);
+        PostReference reference = new PostReference();
+        reference.setAuthorId(currentUser.getId());
+        reference.setEditorId(currentUser.getId());
+        if (dto.getTitleImageId() != null) {
+            reference.setTitleImageId(dto.getTitleImageId());
+        }
+        if (dto.getCategoryId() != null) {
+            reference.setCategoryId(dto.getCategoryId());
+        }
+        reference.setTitleImageId(dto.getTitleImageId());
+
+        adminPostRepository.saveWithReference(post, reference);
+        return toAdminPostResponseDto(post);
+    }
+
+
+    @Override
     public void update(AdminPostRequestDto postRequestDto) {
         Long postId = postRequestDto.getId();
         Long originalId = postRequestDto.getOriginalId();

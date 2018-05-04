@@ -33,12 +33,14 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     private EntityManager entityManager;
 
     @Override
-    public void save(Post post) {
+    public Long save(Post post) {
         entityManager.persist(post);
+        entityManager.flush();
+        return post.getId();
     }
 
     @Override
-    public void saveWithReference(Post post, PostReference reference) {
+    public Long saveWithReference(Post post, PostReference reference) {
         if (reference.getAuthorId() != null) {
             User author = entityManager.getReference(User.class, reference.getAuthorId());
             post.setAuthor(author);
@@ -59,7 +61,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
             ImageSet titleImage = entityManager.getReference(ImageSet.class, reference.getTitleImageId());
             post.setTitleImage(titleImage);
         }
-        entityManager.persist(post);
+        return save(post);
     }
 
     @Override
@@ -220,7 +222,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
     private JPAQuery addProjections(JPAQuery query) {
         return query.select(
-                post.id, post.title, post.displayName, post.splash, post.featured, post.picked,
+                post.id, post.originalId, post.title, post.displayName, post.splash, post.featured, post.picked,
                 post.category.name, post.author.displayName, post.editor.displayName,
                 post.createdAt, post.modifiedAt, post.publishedAt, post.status
         );
@@ -244,32 +246,6 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
         }
     }
 
-    private List<AdminPostSummaryDto> postToDtoList(List<Post> posts) {
-        if (posts == null) {
-            return new ArrayList<>();
-        }
-        List<AdminPostSummaryDto> dtoList = new ArrayList<>();
-        for (Post post : posts) {
-            AdminPostSummaryDto dto = new AdminPostSummaryDto();
-            dto.setId(post.getId());
-            dto.setTitle(post.getTitle());
-            dto.setDisplayName(post.getDisplayName());
-            dto.setSplash(post.isSplash());
-            dto.setFeatured(post.isFeatured());
-            dto.setPicked(post.isPicked());
-            dto.setCategoryName(post.getCategory().getName());
-            dto.setAuthorDisplayName(post.getAuthor().getDisplayName());
-            dto.setEditorDisplayName(post.getEditor().getDisplayName());
-            dto.setCreatedAt(post.getCreatedAt());
-            dto.setModifiedAt(post.getModifiedAt());
-            dto.setPublishedAt(post.getPublishedAt());
-            dto.setLikedCount(post.getLikesCount());
-            dto.setStatus(post.getStatus().toString());
-            dtoList.add(dto);
-        }
-        return dtoList;
-    }
-
     private List<AdminPostSummaryDto> toDtoList(List<Tuple> result) {
         if (result == null) {
             return new ArrayList<>();
@@ -278,6 +254,7 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
         for (Tuple row : result) {
             AdminPostSummaryDto dto = new AdminPostSummaryDto();
             dto.setId(row.get(post.id));
+            dto.setOriginalId(row.get(post.originalId));
             dto.setTitle(row.get(post.title));
             dto.setDisplayName(row.get(post.displayName));
             dto.setSplash(row.get(post.splash));

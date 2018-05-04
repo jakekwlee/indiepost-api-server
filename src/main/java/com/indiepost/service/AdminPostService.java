@@ -22,6 +22,8 @@ public interface AdminPostService {
 
     AdminPostResponseDto createAutosaveFromPost(Long postId);
 
+    AdminPostResponseDto createDraft(AdminPostRequestDto adminPostRequestDto);
+
     void update(AdminPostRequestDto adminPostRequestDto);
 
     void deleteById(Long id);
@@ -32,6 +34,7 @@ public interface AdminPostService {
 
     Page<AdminPostSummaryDto> fullTextSearch(String text, Types.PostStatus status,
                                              Pageable pageable);
+
     Long count();
 
     Long count(PostQuery query);
@@ -43,4 +46,5 @@ public interface AdminPostService {
     void bulkDeleteByIds(List<Long> ids);
 
     void bulkStatusUpdate(List<Long> ids, Types.PostStatus changeTo);
+
 }

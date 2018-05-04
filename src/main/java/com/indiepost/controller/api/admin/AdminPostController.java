@@ -41,6 +41,16 @@ public class AdminPostController {
         return post;
     }
 
+    @PostMapping
+    public AdminPostResponseDto createDraft(@RequestBody AdminPostRequestDto adminPostRequestDto) {
+        return adminPostService.createDraft(adminPostRequestDto);
+    }
+
+    @PostMapping(value = "/_new")
+    public AdminPostResponseDto createAutosave() {
+        return adminPostService.createAutosave();
+    }
+
     @GetMapping
     public Page<AdminPostSummaryDto> getList(
             @RequestParam("status") String status,
