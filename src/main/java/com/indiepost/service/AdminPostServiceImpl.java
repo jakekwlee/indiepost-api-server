@@ -126,7 +126,10 @@ public class AdminPostServiceImpl implements AdminPostService {
             reference.setCategoryId(dto.getCategoryId());
         }
         reference.setTitleImageId(dto.getTitleImageId());
-
+        LocalDateTime now = LocalDateTime.now();
+        post.setCreatedAt(now);
+        post.setModifiedAt(now);
+        post.setStatus(PostStatus.DRAFT);
         adminPostRepository.saveWithReference(post, reference);
         return toAdminPostResponseDto(post);
     }
