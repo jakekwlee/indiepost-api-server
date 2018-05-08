@@ -1,6 +1,6 @@
 package com.indiepost.dto.post;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class AdminPostRequestDto {
 
     private Long categoryId;
 
-    private LocalDateTime publishedAt;
+    private OffsetDateTime publishedAt;
 
     private boolean featured;
 
@@ -127,11 +127,11 @@ public class AdminPostRequestDto {
         this.contributors = contributors;
     }
 
-    public LocalDateTime getPublishedAt() {
+    public OffsetDateTime getPublishedAt() {
         return publishedAt;
     }
 
-    public void setPublishedAt(LocalDateTime publishedAt) {
+    public void setPublishedAt(OffsetDateTime publishedAt) {
         this.publishedAt = publishedAt;
     }
 

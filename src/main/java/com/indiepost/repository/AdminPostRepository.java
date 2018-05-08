@@ -5,7 +5,6 @@ import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Post;
 import com.indiepost.model.User;
-import com.indiepost.repository.utils.PostReference;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -15,9 +14,9 @@ import java.util.List;
  */
 public interface AdminPostRepository {
 
-    Long save(Post post);
+    Long persist(Post post);
 
-    Long saveWithReference(Post post, PostReference reference);
+    Object getReference(Class clazz, Long id);
 
     Post findOne(Long id);
 

@@ -5,7 +5,6 @@ import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.*;
 import com.indiepost.repository.utils.CriteriaUtils;
-import com.indiepost.repository.utils.PostReference;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -33,36 +32,17 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     private EntityManager entityManager;
 
     @Override
-    public Long save(Post post) {
+    public Long persist(Post post) {
         entityManager.persist(post);
         entityManager.flush();
         return post.getId();
     }
 
     @Override
-    public Long saveWithReference(Post post, PostReference reference) {
-        if (reference.getAuthorId() != null) {
-            User author = entityManager.getReference(User.class, reference.getAuthorId());
-            post.setAuthor(author);
-        }
-        if (reference.getEditorId() != null) {
-            User editor = entityManager.getReference(User.class, reference.getAuthorId());
-            post.setEditor(editor);
-        }
-        if (reference.getCategoryId() != null) {
-            Category category = entityManager.getReference(Category.class, reference.getCategoryId());
-            post.setCategory(category);
-        }
-        if (reference.getOriginalId() != null) {
-            Post original = entityManager.getReference(Post.class, reference.getOriginalId());
-            post.setOriginal(original);
-        }
-        if (reference.getTitleImageId() != null) {
-            ImageSet titleImage = entityManager.getReference(ImageSet.class, reference.getTitleImageId());
-            post.setTitleImage(titleImage);
-        }
-        return save(post);
+    public Object getReference(Class clazz, Long id) {
+        return entityManager.getReference(clazz, id);
     }
+
 
     @Override
     public Post findOne(Long id) {

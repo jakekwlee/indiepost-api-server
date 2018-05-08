@@ -1,5 +1,6 @@
 package com.indiepost.controller.api.admin;
 
+import com.indiepost.dto.CreateResponse;
 import com.indiepost.dto.DeleteResponse;
 import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
@@ -12,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
-import static com.indiepost.enums.Types.isPublicStatus;
 
 /**
  * Created by jake on 10/8/16.
@@ -30,25 +29,43 @@ public class AdminPostController {
     }
 
     @GetMapping(value = "/{id}")
-    public AdminPostResponseDto get(@PathVariable Long id, @RequestParam(defaultValue = "false") boolean edit) {
-        AdminPostResponseDto post = adminPostService.findOne(id);
-        if (edit) {
-            Types.PostStatus postStatus = Types.PostStatus.valueOf(post.getStatus());
-            if (isPublicStatus(postStatus)) {
-                return adminPostService.createAutosaveFromPost(id);
-            }
-        }
-        return post;
+    public AdminPostResponseDto get(@PathVariable Long id) {
+        return adminPostService.findOne(id);
     }
 
     @PostMapping
-    public AdminPostResponseDto createDraft(@RequestBody AdminPostRequestDto adminPostRequestDto) {
-        return adminPostService.createDraft(adminPostRequestDto);
+    public CreateResponse createDraft(@RequestBody AdminPostRequestDto dto) {
+        return adminPostService.createDraft(dto);
     }
 
-    @PostMapping(value = "/_new")
-    public AdminPostResponseDto createAutosave() {
-        return adminPostService.createAutosave();
+
+    @PutMapping(value = "/{id}")
+    public void update(@RequestBody AdminPostRequestDto dto, @PathVariable Long id) {
+        if (!id.equals(dto.getOriginalId()) && !id.equals(dto.getId())) {
+            // TODO throw error
+            return;
+        }
+        adminPostService.update(dto);
+    }
+
+    @PostMapping(value = "/autosave")
+    public CreateResponse createAutosave(@RequestBody AdminPostRequestDto dto) {
+        return adminPostService.createAutosave(dto);
+    }
+
+    @PutMapping(value = "/autosave/{id}")
+    public void updateAutosave(@RequestBody AdminPostRequestDto dto, @PathVariable Long id) {
+        if (!id.equals(dto.getOriginalId()) && !id.equals(dto.getId())) {
+            // TODO throw error
+            return;
+        }
+        adminPostService.updateAutosave(dto);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public DeleteResponse delete(@PathVariable Long id) {
+        adminPostService.deleteById(id);
+        return new DeleteResponse(id);
     }
 
     @GetMapping
@@ -64,13 +81,6 @@ public class AdminPostController {
         return adminPostService.find(postStatus, pageable);
     }
 
-    @PutMapping(value = "/{id}")
-    public void update(@RequestBody AdminPostRequestDto adminPostRequestDto, @PathVariable Long id) {
-        if (!adminPostRequestDto.getId().equals(id)) {
-            return;
-        }
-        adminPostService.update(adminPostRequestDto);
-    }
 
     @PutMapping(value = "/_bulk")
     public void bulkUpdate(@RequestBody BulkStatusUpdateDto dto) {
@@ -86,11 +96,5 @@ public class AdminPostController {
     @DeleteMapping(value = "/_trash")
     public void emptyTrash() {
         adminPostService.bulkDeleteByStatus(Types.PostStatus.TRASH);
-    }
-
-    @DeleteMapping(value = "/{id}")
-    public DeleteResponse delete(@PathVariable Long id) {
-        adminPostService.deleteById(id);
-        return new DeleteResponse(id);
     }
 }

@@ -67,7 +67,7 @@ public class PostMapper {
             post.setExcerpt(requestDto.getExcerpt());
         }
         if (requestDto.getPublishedAt() != null) {
-            post.setPublishedAt(requestDto.getPublishedAt());
+            post.setPublishedAt(requestDto.getPublishedAt().toLocalDateTime());
         }
         if (isNotEmpty(requestDto.getDisplayName())) {
             post.setDisplayName(requestDto.getDisplayName());
@@ -117,7 +117,8 @@ public class PostMapper {
     public static Post copyDtoToPost(AdminPostRequestDto dto) {
         Post post = new Post();
         post.setTitle(dto.getTitle());
-        post.setPublishedAt(dto.getPublishedAt());
+        // TODO 20180508
+        post.setPublishedAt(dto.getPublishedAt().toLocalDateTime());
         post.setContent(dto.getContent());
         post.setExcerpt(dto.getExcerpt());
         post.setDisplayName(dto.getDisplayName());

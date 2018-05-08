@@ -1,6 +1,8 @@
 package com.indiepost.service;
 
 import com.amazonaws.services.pinpoint.model.BadRequestException;
+import com.indiepost.dto.CreateResponse;
+import com.indiepost.dto.DeleteResponse;
 import com.indiepost.dto.Highlight;
 import com.indiepost.dto.ImageSetDto;
 import com.indiepost.dto.post.AdminPostRequestDto;
@@ -14,7 +16,6 @@ import com.indiepost.repository.AdminPostRepository;
 import com.indiepost.repository.ContributorRepository;
 import com.indiepost.repository.TagRepository;
 import com.indiepost.repository.elasticsearch.PostEsRepository;
-import com.indiepost.repository.utils.PostReference;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,125 +68,115 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
-    public AdminPostResponseDto createAutosave() {
-        Post post = new Post();
-        User user = userService.findCurrentUser();
-        post.setCreatedAt(LocalDateTime.now());
-        post.setModifiedAt(LocalDateTime.now());
-        post.setPublishedAt(LocalDateTime.now().plusDays(10));
-        post.setStatus(PostStatus.AUTOSAVE);
-        post.setAuthor(user);
-        post.setEditor(user);
-
-        PostReference reference = new PostReference();
-        reference.setCategoryId(2L);
-        adminPostRepository.saveWithReference(post, reference);
-        return toAdminPostResponseDto(post);
-    }
-
-    @Override
-    public AdminPostResponseDto createAutosaveFromPost(Long postId) {
-        Post originalPost = adminPostRepository.findOne(postId);
-        if (postId == null) {
-            throw new BadRequestException("No original post with id:" + postId);
-        }
-        Post autosave = duplicate(originalPost);
-        autosave.setOriginal(originalPost);
-        autosave.setOriginalId(originalPost.getId());
-        autosave.setStatus(PostStatus.AUTOSAVE);
-
-        PostReference reference = new PostReference();
-        reference.setAuthorId(originalPost.getAuthorId());
-        reference.setEditorId(originalPost.getEditorId());
-        reference.setCategoryId(originalPost.getCategoryId());
-        reference.setTitleImageId(originalPost.getTitleImageId());
-
-        if (originalPost.getContributors() != null) {
-            List<Contributor> contributors = originalPost.getContributors();
-            addContributorsToPost(autosave, contributors);
-        }
-        if (originalPost.getTags() != null) {
-            List<Tag> tags = originalPost.getTags();
-            addTagsToPost(autosave, tags);
-        }
-
-        adminPostRepository.saveWithReference(autosave, reference);
-        return toAdminPostResponseDto(autosave);
-    }
-
-    @Override
-    public AdminPostResponseDto createDraft(AdminPostRequestDto dto) {
+    public CreateResponse createDraft(AdminPostRequestDto dto) {
         User currentUser = userService.findCurrentUser();
         Post post = copyDtoToPost(dto);
-        PostReference reference = new PostReference();
-        reference.setAuthorId(currentUser.getId());
-        reference.setEditorId(currentUser.getId());
-        if (dto.getTitleImageId() != null) {
-            reference.setTitleImageId(dto.getTitleImageId());
-        }
-        if (dto.getCategoryId() != null) {
-            reference.setCategoryId(dto.getCategoryId());
-        }
-        reference.setTitleImageId(dto.getTitleImageId());
+
         LocalDateTime now = LocalDateTime.now();
         post.setCreatedAt(now);
         post.setModifiedAt(now);
+
+        post.setAuthor(currentUser);
+        post.setEditor(currentUser);
+
+        addTitleImage(post, dto.getTitleImageId());
+        addCategory(post, dto.getCategoryId());
+        addContributors(post, dto.getContributors());
+        addTags(post, dto.getTags());
+
         post.setStatus(PostStatus.DRAFT);
-        adminPostRepository.saveWithReference(post, reference);
-        return toAdminPostResponseDto(post);
+        adminPostRepository.persist(post);
+        return new CreateResponse(post.getId());
     }
 
-
     @Override
-    public void update(AdminPostRequestDto postRequestDto) {
-        Long postId = postRequestDto.getId();
-        Long originalId = postRequestDto.getOriginalId();
-        PostStatus status = PostStatus.valueOf(postRequestDto.getStatus());
-        Post post;
+    public void update(AdminPostRequestDto dto) {
+        Long postId;
+        if (dto.getOriginalId() != null) {
+            postId = dto.getOriginalId();
 
-        if (isPublicStatus(status) && originalId != null) {
-            post = adminPostRepository.findOne(originalId);
-            adminPostRepository.deleteById(postId);
+            // delete autosave
+            adminPostRepository.deleteById(dto.getId());
         } else {
-            post = adminPostRepository.findOne(postId);
+            postId = dto.getId();
         }
+
+        Post post = adminPostRepository.findOne(postId);
+        copyDtoToPost(dto, post);
+
+        addTitleImage(post, dto.getTitleImageId());
+        addCategory(post, dto.getCategoryId());
+        addContributors(post, dto.getContributors());
+        addTags(post, dto.getTags());
 
         User currentUser = userService.findCurrentUser();
         post.setEditor(currentUser);
         post.setModifiedAt(LocalDateTime.now());
-
-        copyDtoToPost(postRequestDto, post);
-
-        if (postRequestDto.getContributors() != null) {
-            Page<Contributor> page =
-                    contributorRepository.findByFullNameIn(postRequestDto.getContributors(), PageRequest.of(0, 100));
-            List<Contributor> contributors = page.getContent();
-            addContributorsToPost(post, contributors);
-        }
-        if (postRequestDto.getTags() != null) {
-            List<Tag> tags = tagRepository.findByNameIn(postRequestDto.getTags());
-            List<String> tagNames = tags.stream().map(t -> t.getName()).collect(Collectors.toList());
-            List<String> subList = (List<String>) CollectionUtils.subtract(
-                    postRequestDto.getTags(), tagNames
-            );
-            if (!subList.isEmpty()) {
-                for (String name : subList) {
-                    tagRepository.save(new Tag(name));
-                }
-                tags = tagRepository.findByNameIn(postRequestDto.getTags());
-            }
-            addTagsToPost(post, tags);
-        }
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void updateAutosave(AdminPostRequestDto dto) {
+        User currentUser = userService.findCurrentUser();
+
+        Post post = adminPostRepository.findOne(dto.getId());
+
+        copyDtoToPost(dto, post);
+
+        addTitleImage(post, dto.getTitleImageId());
+        addCategory(post, dto.getCategoryId());
+        addContributors(post, dto.getContributors());
+        addTags(post, dto.getTags());
+
+        post.setModifiedAt(LocalDateTime.now());
+        post.setEditor(currentUser);
+        post.setStatus(PostStatus.AUTOSAVE);
+        adminPostRepository.persist(post);
+    }
+
+    @Override
+    public CreateResponse createAutosave(AdminPostRequestDto dto) {
+        User currentUser = userService.findCurrentUser();
+
+        Post post = new Post();
+        if (dto.getId() != null) {
+            Post originalPost = adminPostRepository.findOne(dto.getId());
+            post.setOriginal(originalPost);
+            post.setOriginalId(originalPost.getId());
+            post.setAuthor(post.getAuthor());
+        }
+
+
+        copyDtoToPost(dto, post);
+
+        addTitleImage(post, dto.getTitleImageId());
+        addCategory(post, dto.getCategoryId());
+
+        post.setCreatedAt(LocalDateTime.now());
+        post.setModifiedAt(LocalDateTime.now());
+        post.setEditor(currentUser);
+        if (post.getAuthor() == null) {
+            post.setAuthor(currentUser);
+        }
+        post.setStatus(PostStatus.AUTOSAVE);
+
+        Long postId = adminPostRepository.persist(post);
+
+        addContributors(post, dto.getContributors());
+        addTags(post, dto.getTags());
+
+        return dto.getId() != null ? new CreateResponse(postId, dto.getId()) : new CreateResponse(postId);
+    }
+
+    @Override
+    public DeleteResponse deleteById(Long id) {
         adminPostRepository.deleteById(id);
+        return new DeleteResponse(id);
     }
 
     @Override
-    public void delete(Post post) {
+    public DeleteResponse delete(Post post) {
         adminPostRepository.delete(post);
+        return new DeleteResponse(post.getId());
     }
 
     // using
@@ -303,7 +295,7 @@ public class AdminPostServiceImpl implements AdminPostService {
 
             LocalDateTime now = LocalDateTime.now();
             post.setModifiedAt(now);
-            adminPostRepository.save(post);
+            adminPostRepository.persist(post);
         }
     }
 
@@ -311,6 +303,56 @@ public class AdminPostServiceImpl implements AdminPostService {
         return isDesc ?
                 PageRequest.of(page, maxResults, Sort.Direction.DESC, "publishedAt") :
                 PageRequest.of(page, maxResults, Sort.Direction.ASC, "publishedAt");
+    }
+
+    private void addContributors(Post post, List<String> contributorList) {
+        if (contributorList != null) {
+            Page<Contributor> page =
+                    contributorRepository.findByFullNameIn(contributorList, PageRequest.of(0, 100));
+            List<Contributor> contributors = page.getContent();
+            addContributorsToPost(post, contributors);
+        }
+    }
+
+    private void addTags(Post post, List<String> tagList) {
+        if (tagList != null) {
+            List<Tag> tags = tagRepository.findByNameIn(tagList);
+            List<String> tagNames = tags.stream().map(t -> t.getName()).collect(Collectors.toList());
+            List<String> subList = (List<String>) CollectionUtils.subtract(
+                    tagList, tagNames
+            );
+            if (!subList.isEmpty()) {
+                for (String name : subList) {
+                    tagRepository.save(new Tag(name));
+                }
+                tags = tagRepository.findByNameIn(tagList);
+            }
+            addTagsToPost(post, tags);
+        }
+
+    }
+
+    private void addTitleImage(Post post, Long id) {
+        if (id != null
+                && !id.equals(post.getTitleImageId())) {
+            ImageSet titleImage = (ImageSet) adminPostRepository.getReference(ImageSet.class, id);
+            post.setTitleImage(titleImage);
+        }
+    }
+
+    private void addOriginal(Post post, Long id) {
+        if (id != null
+                && !id.equals(post.getOriginalId())) {
+            Post originalPost = (Post) adminPostRepository.getReference(Post.class, id);
+            post.setOriginal(originalPost);
+        }
+    }
+
+    private void addCategory(Post post, Long id) {
+        if (id != null) {
+            Category category = (Category) adminPostRepository.getReference(Category.class, id);
+            post.setCategory(category);
+        }
     }
 
     private AdminPostResponseDto toAdminPostResponseDto(Post post) {
@@ -328,7 +370,7 @@ public class AdminPostServiceImpl implements AdminPostService {
 
         responseDto.setCreatedAt(post.getCreatedAt());
         responseDto.setModifiedAt(post.getModifiedAt());
-        responseDto.setPublishedAt(post.getPublishedAt());
+        responseDto.setPublishedAt(post.getPublishedAt().atOffset(ZoneOffset.ofHours(9)));
 
         responseDto.setCategoryId(post.getCategoryId());
         responseDto.setAuthorId(post.getAuthorId());
