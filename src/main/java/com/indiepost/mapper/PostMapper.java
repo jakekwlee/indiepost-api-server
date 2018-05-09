@@ -16,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.indiepost.utils.DateUtil.instantToLocalDateTime;
 import static com.indiepost.utils.DomUtil.getRelatedPostIdsFromPostContent;
 import static com.indiepost.utils.DomUtil.htmlToText;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -67,7 +68,7 @@ public class PostMapper {
             post.setExcerpt(requestDto.getExcerpt());
         }
         if (requestDto.getPublishedAt() != null) {
-            post.setPublishedAt(requestDto.getPublishedAt().toLocalDateTime());
+            post.setPublishedAt(instantToLocalDateTime(requestDto.getPublishedAt()));
         }
         if (isNotEmpty(requestDto.getDisplayName())) {
             post.setDisplayName(requestDto.getDisplayName());
@@ -118,7 +119,7 @@ public class PostMapper {
         Post post = new Post();
         post.setTitle(dto.getTitle());
         // TODO 20180508
-        post.setPublishedAt(dto.getPublishedAt().toLocalDateTime());
+        post.setPublishedAt(instantToLocalDateTime(dto.getPublishedAt()));
         post.setContent(dto.getContent());
         post.setExcerpt(dto.getExcerpt());
         post.setDisplayName(dto.getDisplayName());

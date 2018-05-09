@@ -1,6 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.NewIndiepostApplication;
+import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +25,8 @@ public class AdminPostServiceTests {
     @Test
     @WithMockUser(username = "eunjechoi")
     public void save_shouldSaveTagsOrderProperly() {
-        AdminPostResponseDto post = service.createAutosave();
+        Long id = service.createAutosave(new AdminPostRequestDto()).getId();
+        AdminPostResponseDto post = service.findOne(id);
         post.setTags(Arrays.asList("tag1", "tag2", "tag3"));
         post.setContent("test content");
         post.setTitle("test title");

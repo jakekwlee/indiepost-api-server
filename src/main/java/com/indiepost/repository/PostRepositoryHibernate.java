@@ -18,6 +18,7 @@ import java.util.List;
 
 import static com.indiepost.model.QPost.post;
 import static com.indiepost.repository.utils.CriteriaUtils.addSearchConjunction;
+import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 
 /**
@@ -175,7 +176,7 @@ public class PostRepositoryHibernate implements PostRepository {
             dto.setId(row.get(post.id));
             dto.setTitle(row.get(post.title));
             dto.setDisplayName(row.get(post.displayName));
-            dto.setPublishedAt(row.get(post.publishedAt));
+            dto.setPublishedAt(localDateTimeToInstant(row.get(post.publishedAt)));
             dto.setExcerpt(row.get(post.excerpt));
             dto.setSplash(row.get(post.splash));
             dto.setFeatured(row.get(post.featured));

@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.indiepost.utils.DateUtil.instantToLocalDateTime;
 import static com.indiepost.utils.DateUtil.localDateTimeToDate;
 
 /**
@@ -62,22 +63,28 @@ public interface CriteriaUtils {
             builder.and(post.category.slug.eq(search.getCategorySlug()));
         }
         if (search.getPublishedAfter() != null) {
-            builder.and(post.publishedAt.goe(search.getPublishedAfter()));
+            LocalDateTime publishedAfter = instantToLocalDateTime(search.getPublishedAfter());
+            builder.and(post.publishedAt.goe(publishedAfter));
         }
         if (search.getPublishedBefore() != null) {
-            builder.and(post.publishedAt.loe(search.getPublishedBefore()));
+            LocalDateTime publishedBefore = instantToLocalDateTime(search.getPublishedBefore());
+            builder.and(post.publishedAt.loe(publishedBefore));
         }
         if (search.getCreatedAfter() != null) {
-            builder.and(post.createdAt.goe(search.getCreatedAfter()));
+            LocalDateTime createdAfter = instantToLocalDateTime(search.getCreatedAfter());
+            builder.and(post.createdAt.goe(createdAfter));
         }
         if (search.getCreatedBefore() != null) {
-            builder.and(post.createdAt.loe(search.getCreatedBefore()));
+            LocalDateTime createdBefore = instantToLocalDateTime(search.getCreatedBefore());
+            builder.and(post.createdAt.loe(createdBefore));
         }
         if (search.getModifiedAfter() != null) {
-            builder.and(post.modifiedAt.goe(search.getModifiedAfter()));
+            LocalDateTime modifiedAfter = instantToLocalDateTime(search.getModifiedAfter());
+            builder.and(post.modifiedAt.goe(modifiedAfter));
         }
         if (search.getModifiedBefore() != null) {
-            builder.and(post.modifiedAt.loe(search.getModifiedBefore()));
+            LocalDateTime modifiedBefore = instantToLocalDateTime(search.getModifiedBefore());
+            builder.and(post.modifiedAt.loe(modifiedBefore));
         }
         builder.and(post.splash.eq(search.isSplash()));
         builder.and(post.featured.eq(search.isFeatured()));

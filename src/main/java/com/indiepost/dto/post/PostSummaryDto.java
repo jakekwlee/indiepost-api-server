@@ -7,7 +7,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 /**
  * Created by jake on 17. 1. 21.
@@ -30,7 +30,7 @@ public class PostSummaryDto implements Serializable {
 
     private String displayName;
 
-    private LocalDateTime publishedAt;
+    private Instant publishedAt;
 
     private ImageSet titleImage;
 
@@ -52,7 +52,7 @@ public class PostSummaryDto implements Serializable {
     }
 
     public PostSummaryDto(Long id, boolean featured, boolean picked, boolean splash,
-                          String title, String excerpt, String displayName, LocalDateTime publishedAt, ImageSet titleImage, Long titleImageId,
+                          String title, String excerpt, String displayName, Instant publishedAt, ImageSet titleImage, Long titleImageId,
                           PostStatus status, Long categoryId, String categoryName, int commentsCount, int likesCount) {
         this.id = id;
         this.featured = featured;
@@ -127,11 +127,11 @@ public class PostSummaryDto implements Serializable {
         this.excerpt = excerpt;
     }
 
-    public LocalDateTime getPublishedAt() {
+    public Instant getPublishedAt() {
         return publishedAt;
     }
 
-    public void setPublishedAt(LocalDateTime publishedAt) {
+    public void setPublishedAt(Instant publishedAt) {
         this.publishedAt = publishedAt;
     }
 

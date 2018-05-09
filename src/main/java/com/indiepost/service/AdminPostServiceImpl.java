@@ -23,13 +23,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.indiepost.enums.Types.isPublicStatus;
 import static com.indiepost.mapper.PostMapper.*;
+import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
 
 /**
  * Created by jake on 17. 1. 14.
@@ -91,10 +91,12 @@ public class AdminPostServiceImpl implements AdminPostService {
 
     @Override
     public void update(AdminPostRequestDto dto) {
+        PostStatus status = PostStatus.valueOf(dto.getStatus());
+        disableCurrentFeaturePostIfNeeded(status, dto.isSplash(), dto.isFeatured());
+
         Long postId;
         if (dto.getOriginalId() != null) {
             postId = dto.getOriginalId();
-
             // delete autosave
             adminPostRepository.deleteById(dto.getId());
         } else {
@@ -286,6 +288,8 @@ public class AdminPostServiceImpl implements AdminPostService {
             if (post.getTitleImageId() == null && isPublicStatus(changeTo)) {
                 return;
             }
+
+            disableCurrentFeaturePostIfNeeded(changeTo, post.isSplash(), post.isFeatured());
             // if original post is exists, unlink original
             if (post.getOriginalId() != null) {
                 post.setOriginalId(null);
@@ -368,9 +372,9 @@ public class AdminPostServiceImpl implements AdminPostService {
         responseDto.setTitleImageId(post.getTitleImageId());
         responseDto.setStatus(post.getStatus().toString());
 
-        responseDto.setCreatedAt(post.getCreatedAt());
-        responseDto.setModifiedAt(post.getModifiedAt());
-        responseDto.setPublishedAt(post.getPublishedAt().atOffset(ZoneOffset.ofHours(9)));
+        responseDto.setCreatedAt(localDateTimeToInstant(post.getCreatedAt()));
+        responseDto.setModifiedAt(localDateTimeToInstant(post.getModifiedAt()));
+        responseDto.setPublishedAt(localDateTimeToInstant(post.getPublishedAt()));
 
         responseDto.setCategoryId(post.getCategoryId());
         responseDto.setAuthorId(post.getAuthorId());
@@ -402,5 +406,16 @@ public class AdminPostServiceImpl implements AdminPostService {
             responseDto.setContributors(contributors);
         }
         return responseDto;
+    }
+
+    private void disableCurrentFeaturePostIfNeeded(PostStatus status, boolean isSplash, boolean isFeatured) {
+        if (status.equals(PostStatus.PUBLISH)) {
+            if (isSplash) {
+                adminPostRepository.disableSplashPosts();
+            }
+            if (isFeatured) {
+                adminPostRepository.disableFeaturedPosts();
+            }
+        }
     }
 }

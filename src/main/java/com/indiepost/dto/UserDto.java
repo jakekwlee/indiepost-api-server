@@ -1,7 +1,7 @@
 package com.indiepost.dto;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class UserDto {
 
     private String email;
 
-    private LocalDateTime joinedAt;
+    private Instant joinedAt;
 
     private LocalDate birthday;
 
@@ -64,11 +64,11 @@ public class UserDto {
         this.email = email;
     }
 
-    public LocalDateTime getJoinedAt() {
+    public Instant getJoinedAt() {
         return joinedAt;
     }
 
-    public void setJoinedAt(LocalDateTime joinedAt) {
+    public void setJoinedAt(Instant joinedAt) {
         this.joinedAt = joinedAt;
     }
 

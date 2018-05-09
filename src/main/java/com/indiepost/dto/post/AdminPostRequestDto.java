@@ -1,6 +1,6 @@
 package com.indiepost.dto.post;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class AdminPostRequestDto {
 
     private Long categoryId;
 
-    private OffsetDateTime publishedAt;
+    private Instant publishedAt;
 
     private boolean featured;
 
@@ -127,11 +127,11 @@ public class AdminPostRequestDto {
         this.contributors = contributors;
     }
 
-    public OffsetDateTime getPublishedAt() {
+    public Instant getPublishedAt() {
         return publishedAt;
     }
 
-    public void setPublishedAt(OffsetDateTime publishedAt) {
+    public void setPublishedAt(Instant publishedAt) {
         this.publishedAt = publishedAt;
     }
 

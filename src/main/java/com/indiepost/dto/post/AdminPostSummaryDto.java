@@ -2,7 +2,7 @@ package com.indiepost.dto.post;
 
 import com.indiepost.dto.Highlight;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,11 +29,11 @@ public class AdminPostSummaryDto {
 
     private String editorDisplayName;
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
-    private LocalDateTime publishedAt;
+    private Instant publishedAt;
 
-    private LocalDateTime modifiedAt;
+    private Instant modifiedAt;
 
     private List<String> Contributors = new ArrayList<>();
 
@@ -121,27 +121,27 @@ public class AdminPostSummaryDto {
         this.status = status;
     }
 
-    public LocalDateTime getPublishedAt() {
+    public Instant getPublishedAt() {
         return publishedAt;
     }
 
-    public void setPublishedAt(LocalDateTime publishedAt) {
+    public void setPublishedAt(Instant publishedAt) {
         this.publishedAt = publishedAt;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getModifiedAt() {
+    public Instant getModifiedAt() {
         return modifiedAt;
     }
 
-    public void setModifiedAt(LocalDateTime modifiedAt) {
+    public void setModifiedAt(Instant modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
 

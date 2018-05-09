@@ -1,6 +1,6 @@
 package com.indiepost.dto.post;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import static com.indiepost.enums.Types.PostStatus;
 
@@ -21,17 +21,17 @@ public class PostQuery {
 
     private String categorySlug;
 
-    private LocalDateTime createdAfter;
+    private Instant createdAfter;
 
-    private LocalDateTime createdBefore;
+    private Instant createdBefore;
 
-    private LocalDateTime modifiedAfter;
+    private Instant modifiedAfter;
 
-    private LocalDateTime modifiedBefore;
+    private Instant modifiedBefore;
 
-    private LocalDateTime publishedAfter;
+    private Instant publishedAfter;
 
-    private LocalDateTime publishedBefore;
+    private Instant publishedBefore;
 
     private PostStatus status = PostStatus.PUBLISH;
 
@@ -57,51 +57,51 @@ public class PostQuery {
         this.maxResults = maxResults;
     }
 
-    public LocalDateTime getCreatedAfter() {
+    public Instant getCreatedAfter() {
         return createdAfter;
     }
 
-    public void setCreatedAfter(LocalDateTime createdAfter) {
+    public void setCreatedAfter(Instant createdAfter) {
         this.createdAfter = createdAfter;
     }
 
-    public LocalDateTime getCreatedBefore() {
+    public Instant getCreatedBefore() {
         return createdBefore;
     }
 
-    public void setCreatedBefore(LocalDateTime createdBefore) {
+    public void setCreatedBefore(Instant createdBefore) {
         this.createdBefore = createdBefore;
     }
 
-    public LocalDateTime getModifiedAfter() {
+    public Instant getModifiedAfter() {
         return modifiedAfter;
     }
 
-    public void setModifiedAfter(LocalDateTime modifiedAfter) {
+    public void setModifiedAfter(Instant modifiedAfter) {
         this.modifiedAfter = modifiedAfter;
     }
 
-    public LocalDateTime getModifiedBefore() {
+    public Instant getModifiedBefore() {
         return modifiedBefore;
     }
 
-    public void setModifiedBefore(LocalDateTime modifiedBefore) {
+    public void setModifiedBefore(Instant modifiedBefore) {
         this.modifiedBefore = modifiedBefore;
     }
 
-    public LocalDateTime getPublishedAfter() {
+    public Instant getPublishedAfter() {
         return publishedAfter;
     }
 
-    public void setPublishedAfter(LocalDateTime publishedAfter) {
+    public void setPublishedAfter(Instant publishedAfter) {
         this.publishedAfter = publishedAfter;
     }
 
-    public LocalDateTime getPublishedBefore() {
+    public Instant getPublishedBefore() {
         return publishedBefore;
     }
 
-    public void setPublishedBefore(LocalDateTime publishedBefore) {
+    public void setPublishedBefore(Instant publishedBefore) {
         this.publishedBefore = publishedBefore;
     }
 

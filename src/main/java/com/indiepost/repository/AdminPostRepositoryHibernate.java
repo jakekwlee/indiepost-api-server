@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.indiepost.model.QPost.post;
+import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
 
 /**
  * Created by jake on 17. 1. 11.
@@ -243,9 +244,9 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
             dto.setCategoryName(row.get(post.category.name));
             dto.setAuthorDisplayName(row.get(post.author.displayName));
             dto.setEditorDisplayName(row.get(post.editor.displayName));
-            dto.setCreatedAt(row.get(post.createdAt));
-            dto.setModifiedAt(row.get(post.modifiedAt));
-            dto.setPublishedAt(row.get(post.publishedAt));
+            dto.setCreatedAt(localDateTimeToInstant(row.get(post.createdAt)));
+            dto.setModifiedAt(localDateTimeToInstant(row.get(post.modifiedAt)));
+            dto.setPublishedAt(localDateTimeToInstant(row.get(post.publishedAt)));
             dto.setStatus(row.get(post.status).toString());
             List<PostContributor> postContributorsList = row.get(post.postContributors);
             if (postContributorsList != null) {

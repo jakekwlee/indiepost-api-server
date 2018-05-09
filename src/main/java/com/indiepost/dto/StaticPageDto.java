@@ -2,7 +2,7 @@ package com.indiepost.dto;
 
 import com.indiepost.enums.Types;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 /**
  * Created by jake on 17. 3. 5.
@@ -23,9 +23,9 @@ public class StaticPageDto {
 
     private String authorDisplayName;
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
-    private LocalDateTime modifiedAt;
+    private Instant modifiedAt;
 
     private String type = "";
 
@@ -77,19 +77,19 @@ public class StaticPageDto {
         this.authorDisplayName = authorDisplayName;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getModifiedAt() {
+    public Instant getModifiedAt() {
         return modifiedAt;
     }
 
-    public void setModifiedAt(LocalDateTime modifiedAt) {
+    public void setModifiedAt(Instant modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
 

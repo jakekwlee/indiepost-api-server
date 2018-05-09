@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static com.indiepost.model.QStaticPage.staticPage;
 import static com.indiepost.model.QUser.user;
+import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
 
 /**
  * Created by jake on 17. 3. 5.
@@ -160,8 +161,8 @@ public class StaticPageRepositoryHibernate implements StaticPageRepository {
             dto.setId(row.get(staticPage.id));
             dto.setTitle(row.get(staticPage.title));
             dto.setAuthorDisplayName(row.get(staticPage.author.displayName));
-            dto.setCreatedAt(row.get(staticPage.createdAt));
-            dto.setModifiedAt(row.get(staticPage.modifiedAt));
+            dto.setCreatedAt(localDateTimeToInstant(row.get(staticPage.createdAt)));
+            dto.setModifiedAt(localDateTimeToInstant(row.get(staticPage.modifiedAt)));
             dto.setDisplayOrder(row.get(staticPage.displayOrder));
             dto.setSlug(row.get(staticPage.slug));
             return dto;

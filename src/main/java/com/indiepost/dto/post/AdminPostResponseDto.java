@@ -2,16 +2,16 @@ package com.indiepost.dto.post;
 
 import com.indiepost.dto.ImageSetDto;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 /**
  * Created by jake on 11/19/16.
  */
 public class AdminPostResponseDto extends AdminPostRequestDto {
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
-    private LocalDateTime modifiedAt;
+    private Instant modifiedAt;
 
     private ImageSetDto titleImage;
 
@@ -27,19 +27,19 @@ public class AdminPostResponseDto extends AdminPostRequestDto {
 
     private Long editorId;
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getModifiedAt() {
+    public Instant getModifiedAt() {
         return modifiedAt;
     }
 
-    public void setModifiedAt(LocalDateTime modifiedAt) {
+    public void setModifiedAt(Instant modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
 

@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
+
 /**
  * Created by jake on 17. 3. 5.
  */
@@ -128,8 +130,8 @@ public class StaticPageServiceImpl implements StaticPageService {
         staticPageDto.setAuthorDisplayName(staticPage.getAuthor().getDisplayName());
         staticPageDto.setSlug(staticPage.getSlug());
         staticPageDto.setDisplayOrder(staticPage.getDisplayOrder());
-        staticPageDto.setModifiedAt(staticPage.getModifiedAt());
-        staticPageDto.setCreatedAt(staticPage.getCreatedAt());
+        staticPageDto.setModifiedAt(localDateTimeToInstant(staticPage.getModifiedAt()));
+        staticPageDto.setCreatedAt(localDateTimeToInstant(staticPage.getCreatedAt()));
         staticPageDto.setStatus(staticPage.getStatus());
         return staticPageDto;
     }

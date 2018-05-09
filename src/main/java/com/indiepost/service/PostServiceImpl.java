@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.indiepost.mapper.PostMapper.postToPostDto;
+import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
 
 /**
  * Created by jake on 7/30/16.
@@ -202,7 +203,7 @@ public class PostServiceImpl implements PostService {
         dto.setCategoryName(post.getCategory().getName());
         dto.setDisplayName(post.getDisplayName());
         dto.setLikesCount(post.getLikesCount());
-        dto.setPublishedAt(post.getPublishedAt());
+        dto.setPublishedAt(localDateTimeToInstant(post.getPublishedAt()));
         dto.setSplash(post.isSplash());
         dto.setFeatured(post.isFeatured());
         dto.setPicked(post.isPicked());
