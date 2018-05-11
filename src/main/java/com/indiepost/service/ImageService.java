@@ -1,5 +1,6 @@
 package com.indiepost.service;
 
+import com.indiepost.dto.ImageSetDto;
 import com.indiepost.dto.PostImageSetListDto;
 import com.indiepost.model.ImageSet;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
@@ -17,13 +18,13 @@ public interface ImageService {
 
     void save(ImageSet imageSet);
 
-    List<ImageSet> saveUploadedImages(MultipartFile[] multipartFiles) throws IOException, FileUploadException;
+    List<ImageSetDto> saveUploadedImages(MultipartFile[] multipartFiles) throws IOException, FileUploadException;
 
     ImageSet findById(Long id);
 
     ImageSet getReference(Long id);
 
-    Page<ImageSet> findAll(Pageable pageable);
+    Page<ImageSetDto> findAll(Pageable pageable);
 
     PostImageSetListDto findImagesOnPost(Long postId);
 

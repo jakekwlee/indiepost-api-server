@@ -1,5 +1,7 @@
 package com.indiepost.dto;
 
+import java.time.Instant;
+
 public class ImageSetDto {
 
     private Long id;
@@ -7,6 +9,10 @@ public class ImageSetDto {
     private int width;
 
     private int height;
+
+    private Instant uploadedAt;
+
+    private String contentType;
 
     private String original;
 
@@ -80,5 +86,21 @@ public class ImageSetDto {
 
     public void setHeight(int height) {
         this.height = height;
+    }
+
+    public Instant getUploadedAt() {
+        return uploadedAt;
+    }
+
+    public void setUploadedAt(Instant uploadedAt) {
+        this.uploadedAt = uploadedAt;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 }

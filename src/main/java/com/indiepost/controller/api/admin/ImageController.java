@@ -1,7 +1,7 @@
 package com.indiepost.controller.api.admin;
 
 import com.indiepost.dto.DeleteResponse;
-import com.indiepost.model.ImageSet;
+import com.indiepost.dto.ImageSetDto;
 import com.indiepost.service.ImageService;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +29,12 @@ public class ImageController {
 
 
     @RequestMapping(method = RequestMethod.GET)
-    public Page<ImageSet> getImages(Pageable pageable) {
+    public Page<ImageSetDto> getImages(Pageable pageable) {
         return imageService.findAll(pageable);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public List<ImageSet> handleImageUpload(@RequestParam("files") MultipartFile[] multipartFiles) throws IOException, FileUploadException {
+    public List<ImageSetDto> handleImageUpload(@RequestParam("files") MultipartFile[] multipartFiles) throws IOException, FileUploadException {
         return imageService.saveUploadedImages(multipartFiles);
     }
 

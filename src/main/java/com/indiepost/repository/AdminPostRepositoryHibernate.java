@@ -64,7 +64,9 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     @Override
     public void deleteById(Long id) {
         Post post = findOne(id);
-        delete(post);
+        if (post != null) {
+            delete(post);
+        }
     }
 
     @Override
