@@ -86,6 +86,7 @@ public class StaticPageRepositoryHibernate implements StaticPageRepository {
                 p.createdAt,
                 p.modifiedAt,
                 p.displayOrder,
+                p.slug,
                 p.author.displayName)
                 .from(p)
                 .innerJoin(user)

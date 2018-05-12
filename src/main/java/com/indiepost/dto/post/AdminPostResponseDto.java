@@ -15,7 +15,7 @@ public class AdminPostResponseDto extends AdminPostRequestDto {
 
     private ImageSetDto titleImage;
 
-    private String categoryName;
+    private String originalStatus;
 
     private String postType;
 
@@ -26,6 +26,28 @@ public class AdminPostResponseDto extends AdminPostRequestDto {
     private Long authorId;
 
     private Long editorId;
+
+    private String authorName;
+
+    private String editorName;
+
+    private String categoryName;
+
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
+    }
+
+    public String getEditorName() {
+        return editorName;
+    }
+
+    public void setEditorName(String editorName) {
+        this.editorName = editorName;
+    }
 
     public Instant getCreatedAt() {
         return createdAt;
@@ -97,5 +119,13 @@ public class AdminPostResponseDto extends AdminPostRequestDto {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public String getOriginalStatus() {
+        return originalStatus;
+    }
+
+    public void setOriginalStatus(String originalStatus) {
+        this.originalStatus = originalStatus;
     }
 }

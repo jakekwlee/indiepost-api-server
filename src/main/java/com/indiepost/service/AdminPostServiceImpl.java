@@ -383,11 +383,20 @@ public class AdminPostServiceImpl implements AdminPostService {
         responseDto.setPicked(post.isPicked());
         responseDto.setFeatured(post.isFeatured());
         responseDto.setSplash(post.isSplash());
-        Category category = post.getCategory();
-        responseDto.setCategoryName(category.getName());
 
-        if (post.getOriginalId() != null) {
-            responseDto.setOriginalId(post.getOriginalId());
+        if (post.getAuthor() != null) {
+            responseDto.setAuthorName(post.getAuthor().getDisplayName());
+
+        }
+        if (post.getEditor() != null) {
+            responseDto.setEditorName(post.getEditor().getDisplayName());
+        }
+        if (post.getCategory() != null) {
+            responseDto.setCategoryName(post.getCategory().getName());
+        }
+        if (post.getOriginal() != null) {
+            responseDto.setOriginalId(post.getOriginal().getId());
+            responseDto.setOriginalStatus(post.getOriginal().getStatus().toString());
         }
         if (post.getTitleImage() != null) {
             ImageSetDto imageSetDto = imageSetToDto(post.getTitleImage());

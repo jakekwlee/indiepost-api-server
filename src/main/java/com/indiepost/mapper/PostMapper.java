@@ -107,6 +107,7 @@ public class PostMapper {
     public static PostDto postToPostDto(Post post) {
         PostDto postDto = new PostDto();
         BeanUtils.copyProperties(post, postDto);
+        postDto.setPublishedAt(localDateTimeToInstant(post.getPublishedAt()));
         postDto.setCategoryName(post.getCategory().getName());
         RelatedPostsMatchingResult result = getRelatedPostIdsFromPostContent(post.getContent());
         if (result != null && result.getIds().size() > 0) {

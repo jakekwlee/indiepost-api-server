@@ -48,29 +48,6 @@ public class PostSummaryDto implements Serializable {
 
     private Highlight highlight;
 
-    public PostSummaryDto() {
-    }
-
-    public PostSummaryDto(Long id, boolean featured, boolean picked, boolean splash,
-                          String title, String excerpt, String displayName, Instant publishedAt, ImageSet titleImage, Long titleImageId,
-                          PostStatus status, Long categoryId, String categoryName, int commentsCount, int likesCount) {
-        this.id = id;
-        this.featured = featured;
-        this.picked = picked;
-        this.splash = splash;
-        this.title = title;
-        this.excerpt = excerpt;
-        this.displayName = displayName;
-        this.publishedAt = publishedAt;
-        this.titleImage = titleImage;
-        this.titleImageId = titleImageId;
-        this.status = status;
-        this.categoryId = categoryId;
-        this.categoryName = categoryName;
-        this.commentsCount = commentsCount;
-        this.likesCount = likesCount;
-    }
-
     public Highlight getHighlight() {
         return highlight;
     }
