@@ -1,9 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.stat.OverviewStats;
-import com.indiepost.dto.stat.PeriodDto;
-import com.indiepost.dto.stat.PostStatsDto;
-import com.indiepost.dto.stat.RecentAndOldPostStats;
+import com.indiepost.dto.stat.*;
 
 /**
  * Created by jake on 17. 4. 13.
@@ -18,4 +15,5 @@ public interface AnalyticsService {
 
     PostStatsDto getCachedPostStats();
 
+    TopStats getTopStats(PeriodDto periodDto);
 }

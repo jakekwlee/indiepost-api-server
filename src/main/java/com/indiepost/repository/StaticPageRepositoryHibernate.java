@@ -92,7 +92,7 @@ public class StaticPageRepositoryHibernate implements StaticPageRepository {
                 .innerJoin(user)
                 .on(p.authorId.eq(user.id))
                 .where(p.status.eq(pageStatus))
-                .orderBy(p.displayOrder.desc())
+                .orderBy(p.displayOrder.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

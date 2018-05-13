@@ -75,7 +75,7 @@ public class PostMapper {
             post.setDisplayName(requestDto.getDisplayName());
         }
         if (requestDto.getStatus() != null) {
-            post.setStatus(PostStatus.valueOf(requestDto.getStatus()));
+            post.setStatus(PostStatus.valueOf(requestDto.getStatus().toUpperCase()));
         }
         post.setSplash(requestDto.isSplash());
         post.setFeatured(requestDto.isFeatured());

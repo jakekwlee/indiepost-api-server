@@ -48,10 +48,3 @@ drop table Posts_Tags;
 alter table Posts_Tags1
 rename to Posts_Tags;
 
-alter table `indiepost`.`Posts`
-  drop foreign key `FKapaarymahbai5je4qrpkk45rj`;
-
-alter table `indiepost`.`Posts`
-  drop column `legacyPostId`,
-  drop index `FKapaarymahbai5je4qrpkk45rj`;
-

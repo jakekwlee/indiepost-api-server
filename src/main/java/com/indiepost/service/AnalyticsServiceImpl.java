@@ -68,20 +68,33 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         stats.setTotalUniquePageview(statRepository.getTotalUniquePageviews(since, until));
         stats.setTotalPostview(statRepository.getTotalPostviews(since, until));
         stats.setTotalUniquePostview(statRepository.getTotalUniquePostviews(since, until));
+
+        stats.setTotalVisitor(visitorRepository.getTotalVisitors(since, until));
+        stats.setTotalAppVisitor(visitorRepository.getTotalVisitors(since, until, ClientType.INDIEPOST_LEGACY_MOBILE_APP.toString()));
+
+        return stats;
+    }
+
+    @Override
+    public TopStats getTopStats(PeriodDto periodDto) {
+        LocalDate startDate = periodDto.getStartDate();
+        LocalDate endDate = periodDto.getEndDate();
+        LocalDateTime since = startDate.atStartOfDay();
+        LocalDateTime until = endDate.atTime(23, 59, 59);
+
+        TopStats stats = new TopStats();
+        stats.setPeriod(periodDto);
         stats.setTopPagesWebapp(statRepository.getTopPages(since, until, 10L));
         stats.setTopPosts(statRepository.getTopPosts(since, until, 10L));
         stats.setPageviewByAuthor(statRepository.getPageviewsByAuthor(since, until, 10L));
         stats.setPageviewByCategory(statRepository.getPageviewsByCategory(since, until, 10L));
-
-        stats.setTotalVisitor(visitorRepository.getTotalVisitors(since, until));
-        stats.setTotalAppVisitor(visitorRepository.getTotalVisitors(since, until, ClientType.INDIEPOST_LEGACY_MOBILE_APP.toString()));
         stats.setTopBrowser(visitorRepository.getTopWebBrowsers(since, until, 10L));
         stats.setTopChannel(visitorRepository.getTopChannel(since, until, 10L));
         stats.setTopReferrer(visitorRepository.getTopReferrers(since, until, 10L));
         stats.setTopOs(visitorRepository.getTopOs(since, until, 10L));
-
         return stats;
     }
+
 
     @Override
     public RecentAndOldPostStats getRecentAndOldPostStats(PeriodDto periodDto) {
