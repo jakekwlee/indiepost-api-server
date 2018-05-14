@@ -17,10 +17,10 @@ public class Pageview extends Stat {
     private Boolean isLandingPage = false;
 
     @ManyToOne
-    @JoinColumn(name = "postId", updatable = false, insertable = false)
+    @JoinColumn(name = "postId")
     private Post post;
 
-    @Column(name = "postId")
+    @Column(name = "postId", updatable = false, insertable = false)
     private Long postId;
 
     public Boolean getLandingPage() {

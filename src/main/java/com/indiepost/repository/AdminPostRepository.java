@@ -45,6 +45,4 @@ public interface AdminPostRepository {
     void disableSplashPosts();
 
     void disableFeaturedPosts();
-
-    void flush();
 }

@@ -32,14 +32,6 @@ public class Post implements Serializable {
     @Column(name = "originalId", nullable = false, insertable = false, updatable = false)
     private Long originalId;
 
-    @OneToMany(
-            mappedBy = "post",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    @OrderBy("priority")
-    private List<PostContributor> postContributors = new ArrayList<>();
-
     @Column(nullable = false)
     private boolean featured = false;
 
@@ -112,6 +104,14 @@ public class Post implements Serializable {
     )
     @OrderBy("priority")
     private List<PostTag> postTags = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "post",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @OrderBy("priority asc")
+    private List<PostContributor> postContributors = new ArrayList<>();
 
     @Column(nullable = false)
     @Min(0)

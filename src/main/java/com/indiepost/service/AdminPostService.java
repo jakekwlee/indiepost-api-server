@@ -1,7 +1,5 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.CreateResponse;
-import com.indiepost.dto.DeleteResponse;
 import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
 import com.indiepost.dto.post.AdminPostSummaryDto;
@@ -20,17 +18,17 @@ public interface AdminPostService {
 
     AdminPostResponseDto findOne(Long id);
 
-    CreateResponse createDraft(AdminPostRequestDto dto);
+    Long createDraft(AdminPostRequestDto dto);
 
-    CreateResponse createAutosave(AdminPostRequestDto requestDto);
+    Long createAutosave(AdminPostRequestDto requestDto);
 
     void update(AdminPostRequestDto postUpdateDto);
 
     void updateAutosave(AdminPostRequestDto requestDto);
 
-    DeleteResponse deleteById(Long id);
+    Long deleteById(Long id);
 
-    DeleteResponse delete(Post post);
+    Long delete(Post post);
 
     Page<AdminPostSummaryDto> find(Types.PostStatus status, Pageable pageable);
 

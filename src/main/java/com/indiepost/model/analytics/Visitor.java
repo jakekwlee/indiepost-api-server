@@ -54,13 +54,17 @@ public class Visitor {
     @NotNull
     @Enumerated(EnumType.STRING)
     private Types.Channel channel = Types.Channel.NONE;
+
     @NotNull
     private LocalDateTime timestamp;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", insertable = false, updatable = false)
+    @JoinColumn(name = "userId")
     private User user;
-    @Column(name = "userId")
+
+    @Column(name = "userId", insertable = false, updatable = false)
     private Long userId;
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "userAgentId")
     private UserAgent userAgent;

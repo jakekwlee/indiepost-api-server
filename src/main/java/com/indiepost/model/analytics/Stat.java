@@ -29,11 +29,11 @@ public class Stat {
     private LocalDateTime timestamp;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "visitorId", updatable = false, insertable = false, nullable = false)
+    @JoinColumn(name = "visitorId", nullable = false)
     private Visitor visitor;
 
     @NotNull
-    @Column(name = "visitorId", nullable = false)
+    @Column(name = "visitorId", updatable = false, insertable = false, nullable = false)
     private Long visitorId;
 
     public Long getId() {

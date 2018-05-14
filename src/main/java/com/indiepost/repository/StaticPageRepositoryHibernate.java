@@ -32,7 +32,6 @@ public class StaticPageRepositoryHibernate implements StaticPageRepository {
     @Override
     public Long save(StaticPage staticPage) {
         entityManager.persist(staticPage);
-        entityManager.flush();
         return staticPage.getId();
     }
 

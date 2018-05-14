@@ -4,11 +4,21 @@ import com.indiepost.enums.Types;
 import com.indiepost.model.Contributor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface ContributorRepository extends CrudRepository<Contributor, Long> {
+public interface ContributorRepository {
+
+    Long save(Contributor contributor);
+
+    void delete(Contributor contributor);
+
+    void deleteById(Long id);
+
+    Optional<Contributor> findById(Long id);
+
+    Long count();
 
     Page<Contributor> findAll(Pageable pageable);
 
@@ -22,5 +32,4 @@ public interface ContributorRepository extends CrudRepository<Contributor, Long>
 
     Long countAllByContributorType(Types.ContributorType contributorType);
 
-    void deleteAllByIdGreaterThan(Long id);
 }

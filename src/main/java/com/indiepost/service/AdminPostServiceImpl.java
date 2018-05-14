@@ -1,8 +1,6 @@
 package com.indiepost.service;
 
 import com.amazonaws.services.pinpoint.model.BadRequestException;
-import com.indiepost.dto.CreateResponse;
-import com.indiepost.dto.DeleteResponse;
 import com.indiepost.dto.Highlight;
 import com.indiepost.dto.ImageSetDto;
 import com.indiepost.dto.post.AdminPostRequestDto;
@@ -62,13 +60,47 @@ public class AdminPostServiceImpl implements AdminPostService {
 
 
     @Override
+    public Long createAutosave(AdminPostRequestDto dto) {
+        User currentUser = userService.findCurrentUser();
+
+        Post post = new Post();
+        if (dto.getId() != null) {
+            Post originalPost = adminPostRepository.findOne(dto.getId());
+            post.setOriginal(originalPost);
+            post.setOriginalId(originalPost.getId());
+            post.setAuthor(post.getAuthor());
+        }
+
+
+        copyDtoToPost(dto, post);
+
+        addTitleImage(post, dto.getTitleImageId());
+        addCategory(post, dto.getCategoryId());
+
+        post.setCreatedAt(LocalDateTime.now());
+        post.setModifiedAt(LocalDateTime.now());
+        post.setEditor(currentUser);
+        if (post.getAuthor() == null) {
+            post.setAuthor(currentUser);
+        }
+        post.setStatus(PostStatus.AUTOSAVE);
+
+        Long postId = adminPostRepository.persist(post);
+
+        addContributors(post, dto.getContributors());
+        addTags(post, dto.getTags());
+
+        return postId;
+    }
+
+    @Override
     public AdminPostResponseDto findOne(Long id) {
         Post post = adminPostRepository.findOne(id);
         return toAdminPostResponseDto(post);
     }
 
     @Override
-    public CreateResponse createDraft(AdminPostRequestDto dto) {
+    public Long createDraft(AdminPostRequestDto dto) {
         User currentUser = userService.findCurrentUser();
         Post post = copyDtoToPost(dto);
 
@@ -81,12 +113,13 @@ public class AdminPostServiceImpl implements AdminPostService {
 
         addTitleImage(post, dto.getTitleImageId());
         addCategory(post, dto.getCategoryId());
+        post.setStatus(PostStatus.DRAFT);
+        adminPostRepository.persist(post);
+
         addContributors(post, dto.getContributors());
         addTags(post, dto.getTags());
 
-        post.setStatus(PostStatus.DRAFT);
-        adminPostRepository.persist(post);
-        return new CreateResponse(post.getId());
+        return post.getId();
     }
 
     @Override
@@ -136,49 +169,16 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
-    public CreateResponse createAutosave(AdminPostRequestDto dto) {
-        User currentUser = userService.findCurrentUser();
-
-        Post post = new Post();
-        if (dto.getId() != null) {
-            Post originalPost = adminPostRepository.findOne(dto.getId());
-            post.setOriginal(originalPost);
-            post.setOriginalId(originalPost.getId());
-            post.setAuthor(post.getAuthor());
-        }
-
-
-        copyDtoToPost(dto, post);
-
-        addTitleImage(post, dto.getTitleImageId());
-        addCategory(post, dto.getCategoryId());
-
-        post.setCreatedAt(LocalDateTime.now());
-        post.setModifiedAt(LocalDateTime.now());
-        post.setEditor(currentUser);
-        if (post.getAuthor() == null) {
-            post.setAuthor(currentUser);
-        }
-        post.setStatus(PostStatus.AUTOSAVE);
-
-        Long postId = adminPostRepository.persist(post);
-
-        addContributors(post, dto.getContributors());
-        addTags(post, dto.getTags());
-
-        return dto.getId() != null ? new CreateResponse(postId, dto.getId()) : new CreateResponse(postId);
-    }
-
-    @Override
-    public DeleteResponse deleteById(Long id) {
+    public Long deleteById(Long id) {
         adminPostRepository.deleteById(id);
-        return new DeleteResponse(id);
+        return id;
     }
 
     @Override
-    public DeleteResponse delete(Post post) {
+    public Long delete(Post post) {
+        Long id = post.getId();
         adminPostRepository.delete(post);
-        return new DeleteResponse(post.getId());
+        return id;
     }
 
     // using
@@ -355,6 +355,7 @@ public class AdminPostServiceImpl implements AdminPostService {
     private void addCategory(Post post, Long id) {
         if (id != null) {
             Category category = (Category) adminPostRepository.getReference(Category.class, id);
+            post.setCategoryId(id);
             post.setCategory(category);
         }
     }

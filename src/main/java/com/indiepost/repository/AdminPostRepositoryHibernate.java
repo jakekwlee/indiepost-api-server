@@ -35,7 +35,6 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
     @Override
     public Long persist(Post post) {
         entityManager.persist(post);
-        entityManager.flush();
         return post.getId();
     }
 
@@ -196,11 +195,6 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
                 .set(post.featured, false)
                 .where(post.status.eq(PostStatus.PUBLISH), post.featured.eq(true))
                 .execute();
-    }
-
-    @Override
-    public void flush() {
-        entityManager.flush();
     }
 
     private JPAQuery addProjections(JPAQuery query) {

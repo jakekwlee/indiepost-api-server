@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.model.ImageSet;
+import com.indiepost.dto.ImageSetDto;
 import com.indiepost.service.ImageService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,8 +35,8 @@ public class ImageSetSerializationTest {
      */
     @Test
     public void imageSetShouldSerializeCorrectly() throws JsonProcessingException {
-        Page<ImageSet> page = imageService.findAll(PageRequest.of(2, 10));
-        List<ImageSet> imageSetList = page.getContent();
+        Page<ImageSetDto> page = imageService.findAll(PageRequest.of(2, 10));
+        List<ImageSetDto> imageSetList = page.getContent();
         ObjectMapper objectMapper = new ObjectMapper();
         System.out.println("*** Start serialize List<ImageSet> ***");
         System.out.println("Result Length: " + imageSetList.size());

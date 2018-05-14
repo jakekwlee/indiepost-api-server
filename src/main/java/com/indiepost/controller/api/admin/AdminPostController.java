@@ -35,7 +35,8 @@ public class AdminPostController {
 
     @PostMapping
     public CreateResponse createDraft(@RequestBody AdminPostRequestDto dto) {
-        return adminPostService.createDraft(dto);
+        Long id = adminPostService.createDraft(dto);
+        return new CreateResponse(id);
     }
 
 
@@ -50,7 +51,8 @@ public class AdminPostController {
 
     @PostMapping(value = "/autosave")
     public CreateResponse createAutosave(@RequestBody AdminPostRequestDto dto) {
-        return adminPostService.createAutosave(dto);
+        Long id = adminPostService.createAutosave(dto);
+        return dto.getId() != null ? new CreateResponse(id, dto.getId()) : new CreateResponse(id);
     }
 
     @PutMapping(value = "/autosave/{id}")

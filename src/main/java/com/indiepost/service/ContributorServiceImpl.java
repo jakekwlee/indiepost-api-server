@@ -2,6 +2,7 @@ package com.indiepost.service;
 
 import com.indiepost.dto.ContributorDto;
 import com.indiepost.enums.Types;
+import com.indiepost.mapper.ContributorMapper;
 import com.indiepost.model.Contributor;
 import com.indiepost.repository.ContributorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +33,9 @@ public class ContributorServiceImpl implements ContributorService {
     @Override
     public ContributorDto findOne(Long id) {
         Optional<Contributor> contributor = contributorRepository.findById(id);
-        if (contributor.isPresent()) {
-            return toDto(contributor.get());
-        }
-        return null;
+        return contributor
+                .map(c -> ContributorMapper.toDto(c))
+                .orElse(null);
     }
 
     @Override
