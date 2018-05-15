@@ -61,11 +61,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void update(Tag tag) {
-        tagRepository.update(tag);
-    }
-
-    @Override
     public void delete(Tag tag) {
         tagRepository.delete(tag);
     }

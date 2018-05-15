@@ -1,12 +1,9 @@
-package com.indiepost.repository;
+package com.indiepost.repository.jpa;
 
 import com.indiepost.model.QTag;
 import com.indiepost.model.Tag;
+import com.indiepost.repository.TagRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -15,57 +12,62 @@ import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.indiepost.repository.utils.CriteriaUtils.setPageToCriteria;
-
 /**
  * Created by jake on 9/17/16.
  */
 @Repository
 @SuppressWarnings("unchecked")
-public class TagRepositoryHibernate implements TagRepository {
+public class TagRepositoryJpa implements TagRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    private QTag qTag = QTag.tag;
+    private QTag t = QTag.tag;
 
     @Override
     public void save(Tag tag) {
-        getSession().save(tag);
+        entityManager.persist(tag);
     }
 
     @Override
     public Tag findByTagName(String name) {
-        return (Tag) getCriteria()
-                .add(Restrictions.eq("name", name))
-                .uniqueResult();
+        return getJPAQueryFactory()
+                .selectFrom(t)
+                .where(t.name.eq(name))
+                .fetchOne();
     }
 
     @Override
     public Tag findById(Long id) {
-        return (Tag) getCriteria()
-                .add(Restrictions.eq("id", id))
-                .uniqueResult();
+        return getJPAQueryFactory()
+                .selectFrom(t)
+                .where(t.id.eq(id))
+                .fetchOne();
     }
 
     @Override
     public List<Tag> findAll() {
-        return getCriteria()
-                .addOrder(Order.asc("name"))
-                .list();
+        return getJPAQueryFactory()
+                .selectFrom(t)
+                .orderBy(t.name.asc())
+                .fetch();
     }
 
     @Override
     public List<Tag> findAll(Pageable pageable) {
-        return setPageToCriteria(getCriteria(), pageable)
-                .list();
+        return getJPAQueryFactory()
+                .selectFrom(t)
+                .orderBy(t.name.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
     }
 
     @Override
     public List<Tag> findByNameIn(List<String> tagNames) {
-        List<Tag> tags = getJpaQuery()
-                .selectFrom(qTag)
-                .where(qTag.name.in(tagNames))
+        List<Tag> tags = getJPAQueryFactory()
+                .selectFrom(t)
+                .where(t.name.in(tagNames))
                 .fetch();
         List<Tag> result = new ArrayList<>();
         for (String name : tagNames) {
@@ -80,24 +82,11 @@ public class TagRepositoryHibernate implements TagRepository {
     }
 
     @Override
-    public void update(Tag tag) {
-        getSession().update(tag);
-    }
-
-    @Override
     public void delete(Tag tag) {
-        getSession().delete(tag);
+        entityManager.remove(tag);
     }
 
-    private Session getSession() {
-        return entityManager.unwrap(Session.class);
-    }
-
-    private Criteria getCriteria() {
-        return getSession().createCriteria(Tag.class);
-    }
-
-    private JPAQueryFactory getJpaQuery() {
+    private JPAQueryFactory getJPAQueryFactory() {
         return new JPAQueryFactory(entityManager);
     }
 }

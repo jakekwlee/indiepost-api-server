@@ -144,11 +144,6 @@ abstract class AbstractImageService implements ImageService {
     }
 
     @Override
-    public ImageSet getReference(Long id) {
-        return imageRepository.getReference(id);
-    }
-
-    @Override
     public Page<ImageSetDto> findAll(Pageable pageable) {
         Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, "id");
         List<ImageSet> imageSetList = imageRepository.findAll(pageRequest);
@@ -175,11 +170,6 @@ abstract class AbstractImageService implements ImageService {
         postImageSetListDto.setTitleImage(titleImage);
         postImageSetListDto.setImages(imageSetList);
         return postImageSetListDto;
-    }
-
-    @Override
-    public void update(ImageSet imageSet) {
-        imageRepository.update(imageSet);
     }
 
     @Override

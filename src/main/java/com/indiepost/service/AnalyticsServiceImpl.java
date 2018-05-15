@@ -84,14 +84,14 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
         TopStats stats = new TopStats();
         stats.setPeriod(periodDto);
-        stats.setTopPagesWebapp(statRepository.getTopPages(since, until, 10L));
-        stats.setTopPosts(statRepository.getTopPosts(since, until, 10L));
-        stats.setPageviewByAuthor(statRepository.getPageviewsByAuthor(since, until, 10L));
-        stats.setPageviewByCategory(statRepository.getPageviewsByCategory(since, until, 10L));
-        stats.setTopBrowser(visitorRepository.getTopWebBrowsers(since, until, 10L));
-        stats.setTopChannel(visitorRepository.getTopChannel(since, until, 10L));
-        stats.setTopReferrer(visitorRepository.getTopReferrers(since, until, 10L));
-        stats.setTopOs(visitorRepository.getTopOs(since, until, 10L));
+        stats.setTopPagesWebapp(statRepository.getTopPages(since, until, 10));
+        stats.setTopPosts(statRepository.getTopPosts(since, until, 10));
+        stats.setPageviewByAuthor(statRepository.getPageviewsByAuthor(since, until, 10));
+        stats.setPageviewByCategory(statRepository.getPageviewsByCategory(since, until, 10));
+        stats.setTopBrowser(visitorRepository.getTopWebBrowsers(since, until, 10));
+        stats.setTopChannel(visitorRepository.getTopChannel(since, until, 10));
+        stats.setTopReferrer(visitorRepository.getTopReferrers(since, until, 10));
+        stats.setTopOs(visitorRepository.getTopOs(since, until, 10));
         return stats;
     }
 
@@ -113,8 +113,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         RecentAndOldPostStats stats = new RecentAndOldPostStats();
         stats.setTrend(trend);
         stats.setPeriod(periodDto);
-        stats.setTopRecentPosts(statRepository.getTopRecentPosts(since, until, 10L));
-        stats.setTopOldPosts(statRepository.getTopOldPosts(since, until, 10L));
+        stats.setTopRecentPosts(statRepository.getTopRecentPosts(since, until, 10));
+        stats.setTopOldPosts(statRepository.getTopOldPosts(since, until, 10));
         return stats;
     }
 
@@ -138,7 +138,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         LocalDate endDate = periodDto.getEndDate();
         LocalDateTime since = startDate.atStartOfDay();
         LocalDateTime until = endDate.atTime(23, 59, 59);
-        List<PostStatDto> postStatDtoList = statRepository.getPostStatsOrderByPageviews(since, until, 3000L);
+        List<PostStatDto> postStatDtoList = statRepository.getPostStatsOrderByPageviews(since, until, 3000);
         return new PostStatsDto(LocalDateTime.now(), postStatDtoList, periodDto);
     }
 }

@@ -11,8 +11,6 @@ import java.util.List;
  */
 public class AdminPostSummaryDto {
 
-    private static final long serialVersionUID = 1L;
-
     private Long id;
 
     private Long originalId;

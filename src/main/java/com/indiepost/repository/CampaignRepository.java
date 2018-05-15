@@ -1,32 +1,23 @@
 package com.indiepost.repository;
 
 import com.indiepost.model.analytics.Campaign;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by jake on 8/10/17.
  */
-public interface CampaignRepository extends CrudRepository<Campaign, Long> {
-    @Query(nativeQuery = true,
-            value = "SELECT count(DISTINCT v.id) FROM Campaigns c " +
-                    "INNER JOIN Links l ON c.id = l.campaignId " +
-                    "INNER JOIN Stats s ON l.id = s.linkId " +
-                    "INNER JOIN Visitors v ON s.visitorId = v.id " +
-                    "WHERE s.class = 'Click' AND l.campaignId = :campaignId")
-    Long countAllClicksByCampaignId(@Param("campaignId") Long campaignId);
+public interface CampaignRepository {
 
-    @Query(nativeQuery = true,
-            value = "SELECT count(DISTINCT v.id) FROM Campaigns c " +
-                    "INNER JOIN Links l ON c.id = l.campaignId " +
-                    "INNER JOIN Stats s ON l.id = s.linkId " +
-                    "INNER JOIN Visitors v ON s.visitorId = v.id " +
-                    "WHERE s.class = 'Click' AND l.campaignId = :campaignId " +
-                    "AND s.timestamp BETWEEN c.startAt AND c.endAt")
-    Long countValidClicksByCampaignId(@Param("campaignId") Long campaignId);
+    void save(Campaign campaign);
 
-    List<Campaign> findAllByOrderByCreatedAtDesc();
+    Optional<Campaign> findOne(Long id);
+
+    void deleteById(Long id);
+
+    Long count();
+
+    Page<Campaign> find(Pageable pageable);
 }

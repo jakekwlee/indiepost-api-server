@@ -1,6 +1,7 @@
-package com.indiepost.repository;
+package com.indiepost.repository.jpa;
 
 import com.indiepost.model.Setting;
+import com.indiepost.repository.SettingRepository;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -10,7 +11,7 @@ import javax.persistence.PersistenceContext;
  * Created by jake on 8/31/17.
  */
 @Repository
-public class SettingRepositoryHibernate implements SettingRepository {
+public class SettingRepositoryJpa implements SettingRepository {
 
     @PersistenceContext
     private EntityManager entityManager;

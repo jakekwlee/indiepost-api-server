@@ -3,11 +3,12 @@ package com.indiepost.controller.api.admin;
 import com.indiepost.dto.CampaignDto;
 import com.indiepost.service.CampaignService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -25,8 +26,8 @@ public class AdminCampaignController {
     }
 
     @GetMapping
-    public List<CampaignDto> getCampaigns() {
-        return campaignService.findAll();
+    public Page<CampaignDto> getCampaigns(Pageable pageable) {
+        return campaignService.find(pageable);
     }
 
     @GetMapping(value = "/{id}")

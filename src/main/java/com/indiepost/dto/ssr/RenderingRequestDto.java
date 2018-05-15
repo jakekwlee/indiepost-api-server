@@ -14,9 +14,13 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RenderingRequestDto {
     private InitialData initialData;
+
     private List<PostSummaryDto> posts;
+
     private PostDto post;
+
     private StaticPageDto page;
+
     private String path;
 
     public RenderingRequestDto() {

@@ -1,8 +1,9 @@
-package com.indiepost.repository;
+package com.indiepost.repository.jpa;
 
 import com.indiepost.enums.Types;
 import com.indiepost.model.Contributor;
 import com.indiepost.model.QContributor;
+import com.indiepost.repository.ContributorRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class ContributorRepositoryHibernate implements ContributorRepository {
+public class ContributorRepositoryJpa implements ContributorRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -147,7 +148,6 @@ public class ContributorRepositoryHibernate implements ContributorRepository {
                 .where(c.contributorType.eq(contributorType))
                 .fetchCount();
     }
-
 
     private JPAQueryFactory getQueryFactory() {
         return new JPAQueryFactory(entityManager);

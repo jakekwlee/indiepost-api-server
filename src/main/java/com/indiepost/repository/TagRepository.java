@@ -22,7 +22,5 @@ public interface TagRepository {
 
     List<Tag> findByNameIn(List<String> tagNames);
 
-    void update(Tag tag);
-
     void delete(Tag tag);
 }

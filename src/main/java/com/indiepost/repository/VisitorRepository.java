@@ -14,8 +14,6 @@ import java.util.List;
 public interface VisitorRepository {
     Long save(Visitor visitor);
 
-    void update(Visitor visitor);
-
     void delete(Visitor visitor);
 
     Visitor findOne(Long id);
@@ -26,19 +24,19 @@ public interface VisitorRepository {
 
     List<TimeDomainStat> getVisitorTrend(LocalDateTime since, LocalDateTime until, Types.TimeDomainDuration duration);
 
-    List<ShareStat> getTopReferrers(LocalDateTime since, LocalDateTime until, Long limit);
+    List<ShareStat> getTopReferrers(LocalDateTime since, LocalDateTime until, Integer limit);
 
-    List<ShareStat> getTopReferrers(LocalDateTime since, LocalDateTime until, Long limit, String client);
+    List<ShareStat> getTopReferrers(LocalDateTime since, LocalDateTime until, Integer limit, String client);
 
-    List<ShareStat> getTopWebBrowsers(LocalDateTime since, LocalDateTime until, Long limit);
+    List<ShareStat> getTopWebBrowsers(LocalDateTime since, LocalDateTime until, Integer limit);
 
-    List<ShareStat> getTopWebBrowsers(LocalDateTime since, LocalDateTime until, Long limit, String client);
+    List<ShareStat> getTopWebBrowsers(LocalDateTime since, LocalDateTime until, Integer limit, String client);
 
-    List<ShareStat> getTopOs(LocalDateTime since, LocalDateTime until, Long limit);
+    List<ShareStat> getTopOs(LocalDateTime since, LocalDateTime until, Integer limit);
 
-    List<ShareStat> getTopOs(LocalDateTime since, LocalDateTime until, Long limit, String client);
+    List<ShareStat> getTopOs(LocalDateTime since, LocalDateTime until, Integer limit, String client);
 
-    List<ShareStat> getTopChannel(LocalDateTime since, LocalDateTime until, Long limit);
+    List<ShareStat> getTopChannel(LocalDateTime since, LocalDateTime until, Integer limit);
 
-    List<ShareStat> getTopChannel(LocalDateTime since, LocalDateTime until, Long limit, String client);
+    List<ShareStat> getTopChannel(LocalDateTime since, LocalDateTime until, Integer limit, String client);
 }

@@ -14,8 +14,6 @@ import java.time.Instant;
  */
 public class PostSummaryDto implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     private Long id;
 
     private boolean featured;

@@ -1,8 +1,9 @@
-package com.indiepost.repository;
+package com.indiepost.repository.jpa;
 
 import com.indiepost.enums.Types.UserRole;
 import com.indiepost.model.QRole;
 import com.indiepost.model.Role;
+import com.indiepost.repository.RoleRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 
@@ -13,9 +14,9 @@ import javax.persistence.PersistenceContext;
  * Created by jake on 8/4/16.
  */
 @Repository
-public class RoleRepositoryHibernate implements RoleRepository {
+public class RoleRepositoryJpa implements RoleRepository {
 
-    static final QRole qRole = QRole.role;
+    static final QRole r = QRole.role;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -37,7 +38,10 @@ public class RoleRepositoryHibernate implements RoleRepository {
 
     @Override
     public Role findById(Long id) {
-        return getQueryFactory().selectFrom(qRole).where(qRole.id.eq(id)).fetchOne();
+        return getQueryFactory()
+                .selectFrom(r)
+                .where(r.id.eq(id))
+                .fetchOne();
     }
 
     @Override
@@ -47,7 +51,10 @@ public class RoleRepositoryHibernate implements RoleRepository {
 
     @Override
     public Role findByUserRoleString(String role) {
-        return getQueryFactory().selectFrom(qRole).where(qRole.name.eq(role)).fetchOne();
+        return getQueryFactory()
+                .selectFrom(r)
+                .where(r.name.eq(role))
+                .fetchOne();
     }
 
     private JPAQueryFactory getQueryFactory() {

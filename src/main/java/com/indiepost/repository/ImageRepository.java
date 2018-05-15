@@ -17,13 +17,11 @@ public interface ImageRepository {
 
     ImageSet findByPrefix(String prefix);
 
-    List<ImageSet> findByIds(List<Long> ids);
+    List<ImageSet> findByIdsIn(List<Long> ids);
 
     List<ImageSet> findAll(Pageable pageable);
 
     List<ImageSet> findByPrefixes(Set<String> prefixes);
-
-    void update(ImageSet imageSet);
 
     void delete(ImageSet imageSet);
 
@@ -31,5 +29,4 @@ public interface ImageRepository {
 
     Long count();
 
-    ImageSet getReference(Long id);
 }

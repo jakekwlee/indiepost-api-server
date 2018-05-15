@@ -1,9 +1,10 @@
-package com.indiepost.repository;
+package com.indiepost.repository.jpa;
 
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.*;
+import com.indiepost.repository.PostRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -26,7 +27,7 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
  */
 @Repository
 @SuppressWarnings("unchecked")
-public class PostRepositoryHibernate implements PostRepository {
+public class PostRepositoryJpa implements PostRepository {
 
     @PersistenceContext
     private EntityManager entityManager;

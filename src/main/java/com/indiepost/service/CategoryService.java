@@ -11,8 +11,6 @@ import java.util.List;
 public interface CategoryService {
     void save(Category category);
 
-    void update(Category category);
-
     void delete(Category category);
 
     Category getReference(Long id);

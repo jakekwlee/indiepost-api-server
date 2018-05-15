@@ -1,4 +1,4 @@
-package com.indiepost.repository;
+package com.indiepost.repository.hibernate;
 
 import com.indiepost.dto.stat.PostStatDto;
 import com.indiepost.dto.stat.ShareStat;
@@ -7,9 +7,10 @@ import com.indiepost.dto.stat.TimeDomainStat;
 import com.indiepost.enums.Types.ClientType;
 import com.indiepost.enums.Types.TimeDomainDuration;
 import com.indiepost.model.analytics.Stat;
-import com.indiepost.repository.utils.PostStatsResultTransformer;
+import com.indiepost.model.analytics.Visitor;
+import com.indiepost.repository.StatRepository;
+import com.indiepost.repository.utils.ResultMapper;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -17,18 +18,17 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.indiepost.repository.utils.CriteriaUtils.*;
 import static com.indiepost.utils.DateUtil.localDateTimeToDate;
 import static com.indiepost.utils.DateUtil.normalizeTimeDomainStats;
 
 /**
  * Created by jake on 8/9/17.
  */
-@SuppressWarnings("JpaQueryApiInspection")
 @Repository
 public class StatRepositoryHibernate implements StatRepository {
 
@@ -37,17 +37,17 @@ public class StatRepositoryHibernate implements StatRepository {
 
     @Override
     public Long save(Stat stat) {
-        return (Long) getSession().save(stat);
-    }
-
-    @Override
-    public void update(Stat stat) {
-        getSession().update(stat);
+        if (stat.getVisitorId() != null) {
+            Visitor visitorReference = entityManager.getReference(Visitor.class, stat.getVisitorId());
+            stat.setVisitor(visitorReference);
+        }
+        entityManager.persist(stat);
+        return stat.getId();
     }
 
     @Override
     public void delete(Stat stat) {
-        getSession().delete(stat);
+        entityManager.remove(stat);
     }
 
     @Override
@@ -106,7 +106,7 @@ public class StatRepositoryHibernate implements StatRepository {
         Query query = getNamedQuery("@GET_TOTAL_UNIQUE_PAGEVIEWS");
         query.setParameter("since", localDateTimeToDate(since));
         query.setParameter("until", localDateTimeToDate(until));
-        return ((BigInteger) query.uniqueResult()).longValue();
+        return ((BigInteger) query.getSingleResult()).longValue();
     }
 
     @Override
@@ -115,7 +115,7 @@ public class StatRepositoryHibernate implements StatRepository {
         query.setParameter("client", client);
         query.setParameter("since", localDateTimeToDate(since));
         query.setParameter("until", localDateTimeToDate(until));
-        return ((BigInteger) query.uniqueResult()).longValue();
+        return ((BigInteger) query.getSingleResult()).longValue();
     }
 
     @Override
@@ -123,7 +123,7 @@ public class StatRepositoryHibernate implements StatRepository {
         Query query = getNamedQuery("@GET_TOTAL_UNIQUE_PAGEVIEWS_ON_POSTS");
         query.setParameter("since", localDateTimeToDate(since));
         query.setParameter("until", localDateTimeToDate(until));
-        return ((BigInteger) query.uniqueResult()).longValue();
+        return ((BigInteger) query.getSingleResult()).longValue();
     }
 
     @Override
@@ -132,7 +132,7 @@ public class StatRepositoryHibernate implements StatRepository {
         query.setParameter("client", client);
         query.setParameter("since", localDateTimeToDate(since));
         query.setParameter("until", localDateTimeToDate(until));
-        return ((BigInteger) query.uniqueResult()).longValue();
+        return ((BigInteger) query.getSingleResult()).longValue();
     }
 
     @Override
@@ -153,23 +153,23 @@ public class StatRepositoryHibernate implements StatRepository {
 
     private List<TimeDomainStat> getPageviewTrendHourly(LocalDateTime since, LocalDateTime until) {
         Query query = getNamedQuery("@GET_PAGEVIEW_TREND_HOURLY");
-        List<TimeDomainStat> trend = getTrend(query, TimeDomainDuration.HOURLY, since, until);
+        List<TimeDomainStat> trend = ResultMapper.toTimeDomainStatList(query, TimeDomainDuration.HOURLY, since, until);
         return normalizeTimeDomainStats(trend, since.toLocalDate(), until.toLocalDate());
     }
 
     private List<TimeDomainStat> getPageviewTrendDaily(LocalDateTime since, LocalDateTime until) {
         Query query = getNamedQuery("@GET_PAGEVIEW_TREND_DAILY");
-        return getTrend(query, TimeDomainDuration.DAILY, since, until);
+        return ResultMapper.toTimeDomainStatList(query, TimeDomainDuration.DAILY, since, until);
     }
 
     private List<TimeDomainStat> getPageviewTrendMonthly(LocalDateTime since, LocalDateTime until) {
         Query query = getNamedQuery("@GET_PAGEVIEW_TREND_MONTHLY");
-        return getTrend(query, TimeDomainDuration.MONTHLY, since, until);
+        return ResultMapper.toTimeDomainStatList(query, TimeDomainDuration.MONTHLY, since, until);
     }
 
     private List<TimeDomainStat> getPageviewTrendYearly(LocalDateTime since, LocalDateTime until) {
         Query query = getNamedQuery("@GET_PAGEVIEW_TREND_YEARLY");
-        return getTrend(query, TimeDomainDuration.YEARLY, since, until);
+        return ResultMapper.toTimeDomainStatList(query, TimeDomainDuration.YEARLY, since, until);
     }
 
     @Override
@@ -190,114 +190,112 @@ public class StatRepositoryHibernate implements StatRepository {
 
     private List<TimeDomainDoubleStat> getOldAndNewPageviewTrendHourly(LocalDateTime since, LocalDateTime until) {
         Query query = getNamedQuery("@GET_OLD_AND_NEW_PAGEVIEW_TREND_HOURLY");
-        return getDoubleTrend(query, TimeDomainDuration.HOURLY, since, until);
+        return ResultMapper.toTimeDomainDoubleStatList(query, TimeDomainDuration.HOURLY, since, until);
     }
 
     private List<TimeDomainDoubleStat> getOldAndNewPageviewTrendDaily(LocalDateTime since, LocalDateTime until) {
         Query query = getNamedQuery("@GET_OLD_AND_NEW_PAGEVIEW_TREND_DAILY");
-        return getDoubleTrend(query, TimeDomainDuration.DAILY, since, until);
+        return ResultMapper.toTimeDomainDoubleStatList(query, TimeDomainDuration.DAILY, since, until);
     }
 
     private List<TimeDomainDoubleStat> getOldAndNewPageviewTrendMonthly(LocalDateTime since, LocalDateTime until) {
         Query query = getNamedQuery("@GET_OLD_AND_NEW_PAGEVIEW_TREND_MONTHLY");
-        return getDoubleTrend(query, TimeDomainDuration.MONTHLY, since, until);
+        return ResultMapper.toTimeDomainDoubleStatList(query, TimeDomainDuration.MONTHLY, since, until);
     }
 
     private List<TimeDomainDoubleStat> getOldAndNewPageviewTrendYearly(LocalDateTime since, LocalDateTime until) {
         Query query = getNamedQuery("@GET_OLD_AND_NEW_PAGEVIEW_TREND_YEARLY");
-        return getDoubleTrend(query, TimeDomainDuration.YEARLY, since, until);
+        return ResultMapper.toTimeDomainDoubleStatList(query, TimeDomainDuration.YEARLY, since, until);
     }
 
     @Override
-    public List<PostStatDto> getPostStatsOrderByPageviews(LocalDateTime since, LocalDateTime until, Long limit) {
+    public List<PostStatDto> getPostStatsOrderByPageviews(LocalDateTime since, LocalDateTime until, Integer limit) {
         Query query = getNamedQuery("@GET_POST_STATS_ORDER_BY_PAGEVIEWS");
-        return getPostShare(query, since, until, limit);
+        return ResultMapper.toPostStatDtoList(query, since, until, limit);
     }
 
     @Override
     public List<PostStatDto> getAllPostStats() {
         Query query = getNamedQuery("@GET_ALL_POST_STATS");
-        query.setResultTransformer(new PostStatsResultTransformer());
-        return query.list();
+        return ResultMapper.toPostStatDtoList(query);
     }
 
     @Override
     public List<PostStatDto> getCachedPostStats() {
         Query query = getNamedQuery("@GET_ALL_POST_STATS_FROM_CACHE");
-        query.setResultTransformer(new PostStatsResultTransformer());
-        return query.list();
+        return ResultMapper.toPostStatDtoList(query);
     }
 
     @Override
-    public List<ShareStat> getPageviewsByCategory(LocalDateTime since, LocalDateTime until, Long limit) {
+    public List<ShareStat> getPageviewsByCategory(LocalDateTime since, LocalDateTime until, Integer limit) {
         Query query = getNamedQuery("@GET_PAGEVIEWS_ORDER_BY_CATEGORY");
-        return getShare(query, since, until, limit);
+        return ResultMapper.toShareStateList(query, since, until, limit);
     }
 
     @Override
-    public List<ShareStat> getPageviewsByAuthor(LocalDateTime since, LocalDateTime until, Long limit) {
+    public List<ShareStat> getPageviewsByAuthor(LocalDateTime since, LocalDateTime until, Integer limit) {
         Query query = getNamedQuery("@GET_PAGEVIEWS_ORDER_BY_AUTHOR");
-        return getShare(query, since, until, limit);
+        return ResultMapper.toShareStateList(query, since, until, limit);
     }
 
     @Override
-    public List<ShareStat> getTopPages(LocalDateTime since, LocalDateTime until, Long limit) {
+    public List<ShareStat> getTopPages(LocalDateTime since, LocalDateTime until, Integer limit) {
         Query query = getNamedQuery("@GET_TOP_PAGES");
-        return getShare(query, since, until, limit);
+        return ResultMapper.toShareStateList(query, since, until, limit);
     }
 
     @Override
-    public List<ShareStat> getTopPages(LocalDateTime since, LocalDateTime until, Long limit, String client) {
+    public List<ShareStat> getTopPages(LocalDateTime since, LocalDateTime until, Integer limit, String client) {
         Query query = getNamedQuery("@GET_TOP_PAGES_BY_CLINT_TYPE");
-        return getShare(query, since, until, limit, client);
+        return ResultMapper.toShareStateList(query, since, until, limit, client);
     }
 
     @Override
-    public List<ShareStat> getTopPosts(LocalDateTime since, LocalDateTime until, Long limit) {
+    public List<ShareStat> getTopPosts(LocalDateTime since, LocalDateTime until, Integer limit) {
         Query query = getNamedQuery("@GET_TOP_POSTS");
-        return getShare(query, since, until, limit);
+        return ResultMapper.toShareStateList(query, since, until, limit);
     }
 
     @Override
-    public List<ShareStat> getTopPosts(LocalDateTime since, LocalDateTime until, Long limit, String client) {
+    public List<ShareStat> getTopPosts(LocalDateTime since, LocalDateTime until, Integer limit, String client) {
         Query query = getNamedQuery("@GET_TOP_POSTS_BY_CLINT_TYPE");
-        return getShare(query, since, until, limit, client);
+        return ResultMapper.toShareStateList(query, since, until, limit, client);
     }
 
     @Override
-    public List<ShareStat> getTopLandingPages(LocalDateTime since, LocalDateTime until, Long limit) {
+    public List<ShareStat> getTopLandingPages(LocalDateTime since, LocalDateTime until, Integer limit) {
         Query query = getNamedQuery("@GET_TOP_LANDING_PAGE");
-        return getShare(query, since, until, limit);
+        return ResultMapper.toShareStateList(query, since, until, limit);
     }
 
     @Override
-    public List<ShareStat> getTopLandingPages(LocalDateTime since, LocalDateTime until, Long limit, String client) {
+    public List<ShareStat> getTopLandingPages(LocalDateTime since, LocalDateTime until, Integer limit, String client) {
         Query query = getNamedQuery("@GET_TOP_LANDING_PAGE_BY_CLINT_TYPE");
-        return getShare(query, since, until, limit, client);
+        return ResultMapper.toShareStateList(query, since, until, limit, client);
     }
 
     @Override
-    public List<ShareStat> getTopTags(LocalDateTime since, LocalDateTime until, Long limit) {
+    public List<ShareStat> getTopTags(LocalDateTime since, LocalDateTime until, Integer limit) {
         Query query = getNamedQuery("@GET_TOP_TAGS");
-        return getShare(query, since, until, limit, null);
+        return ResultMapper.toShareStateList(query, since, until, limit, null);
     }
 
     @Override
-    public List<ShareStat> getTopTags(LocalDateTime since, LocalDateTime until, Long limit, String client) {
+    public List<ShareStat> getTopTags(LocalDateTime since, LocalDateTime until, Integer limit, String client) {
         Query query = getNamedQuery("@GET_TOP_TAGS_BY_CLIENT");
-        return getShare(query, since, until, limit, client);
+        return ResultMapper.toShareStateList(query, since, until, limit, client);
     }
 
     @Override
-    public List<ShareStat> getTopRecentPosts(LocalDateTime since, LocalDateTime until, Long limit) {
+    public List<ShareStat> getTopRecentPosts(LocalDateTime since, LocalDateTime until, Integer limit) {
         Query query = getNamedQuery("@GET_TOP_RECENT_POSTS");
-        return getShare(query, since, until, limit, null);
+        return ResultMapper.toShareStateList(query, since, until, limit, null);
     }
 
     @Override
-    public List<ShareStat> getTopOldPosts(LocalDateTime since, LocalDateTime until, Long limit) {
+    public List<ShareStat> getTopOldPosts(LocalDateTime since, LocalDateTime until, Integer limit) {
         Query query = getNamedQuery("@GET_TOP_OLD_POSTS");
-        return getShare(query, since, until, limit, null);
+        return ResultMapper.toShareStateList(query, since, until, limit, null);
     }
 
     private Session getSession() {
@@ -305,7 +303,7 @@ public class StatRepositoryHibernate implements StatRepository {
     }
 
     private Query getNamedQuery(String queryName) {
-        return getSession().getNamedQuery(queryName);
+        return entityManager.createNamedQuery(queryName);
     }
 
     private Criteria createCriteria() {

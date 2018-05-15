@@ -1,9 +1,10 @@
-package com.indiepost.repository;
+package com.indiepost.repository.jpa;
 
 import com.indiepost.dto.StaticPageDto;
 import com.indiepost.enums.Types;
 import com.indiepost.model.QStaticPage;
 import com.indiepost.model.StaticPage;
+import com.indiepost.repository.StaticPageRepository;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
@@ -24,7 +25,7 @@ import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
  * Created by jake on 17. 3. 5.
  */
 @Repository
-public class StaticPageRepositoryHibernate implements StaticPageRepository {
+public class StaticPageRepositoryJpa implements StaticPageRepository {
 
     @PersistenceContext
     private EntityManager entityManager;

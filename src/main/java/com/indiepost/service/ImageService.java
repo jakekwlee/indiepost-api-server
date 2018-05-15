@@ -22,13 +22,9 @@ public interface ImageService {
 
     ImageSet findById(Long id);
 
-    ImageSet getReference(Long id);
-
     Page<ImageSetDto> findAll(Pageable pageable);
 
     PostImageSetListDto findImagesOnPost(Long postId);
-
-    void update(ImageSet imageSet);
 
     void delete(ImageSet imageSet) throws IOException;
 

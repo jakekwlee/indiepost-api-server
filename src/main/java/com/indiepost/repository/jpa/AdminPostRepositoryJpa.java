@@ -1,9 +1,10 @@
-package com.indiepost.repository;
+package com.indiepost.repository.jpa;
 
 import com.indiepost.dto.post.AdminPostSummaryDto;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.*;
+import com.indiepost.repository.AdminPostRepository;
 import com.indiepost.repository.utils.CriteriaUtils;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
@@ -27,22 +28,24 @@ import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
  */
 @Repository
 @SuppressWarnings("unchecked")
-public class AdminPostRepositoryHibernate implements AdminPostRepository {
+public class AdminPostRepositoryJpa implements AdminPostRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
     public Long persist(Post post) {
+        if (post.getCategoryId() != null) {
+            Category categoryReference = entityManager.getReference(Category.class, post.getCategoryId());
+            post.setCategory(categoryReference);
+        }
+        if (post.getTitleImageId() != null) {
+            ImageSet titleImageReference = entityManager.getReference(ImageSet.class, post.getTitleImageId());
+            post.setTitleImage(titleImageReference);
+        }
         entityManager.persist(post);
         return post.getId();
     }
-
-    @Override
-    public Object getReference(Class clazz, Long id) {
-        return entityManager.getReference(clazz, id);
-    }
-
 
     @Override
     public Post findOne(Long id) {
@@ -62,10 +65,8 @@ public class AdminPostRepositoryHibernate implements AdminPostRepository {
 
     @Override
     public void deleteById(Long id) {
-        Post post = findOne(id);
-        if (post != null) {
-            delete(post);
-        }
+        Post post = entityManager.getReference(Post.class, id);
+        entityManager.remove(post);
     }
 
     @Override

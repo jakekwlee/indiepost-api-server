@@ -7,8 +7,6 @@ import java.util.List;
  */
 public class AdminInitResponseDto {
 
-    private static final long serialVersionUID = 1L;
-
     private List<UserDto> authors;
 
     private List<String> authorNames;

@@ -27,7 +27,7 @@ public interface PostService {
 
     List<PostSummaryDto> findByTagName(String tagName, int page, int maxResults, boolean isDesc);
 
-    List<PostSummaryDto> findTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit);
+    List<PostSummaryDto> findTopRatedPosts(LocalDateTime since, LocalDateTime until, Integer limit);
 
     List<PostSummaryDto> findScheduledPosts();
 

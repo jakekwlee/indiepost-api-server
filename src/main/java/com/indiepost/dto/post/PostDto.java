@@ -11,8 +11,6 @@ import java.util.List;
  */
 public class PostDto extends PostSummaryDto implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     private String content;
 
     private List<String> tags = new ArrayList<>();

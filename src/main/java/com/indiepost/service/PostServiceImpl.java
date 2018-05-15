@@ -10,10 +10,8 @@ import com.indiepost.dto.stat.PostStatDto;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Post;
 import com.indiepost.model.elasticsearch.PostEs;
-import com.indiepost.repository.ImageRepository;
 import com.indiepost.repository.PostRepository;
 import com.indiepost.repository.StatRepository;
-import com.indiepost.repository.TagRepository;
 import com.indiepost.repository.elasticsearch.PostEsRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +43,9 @@ public class PostServiceImpl implements PostService {
     private final PostEsRepository postEsRepository;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository, ImageRepository imageRepository,
-                           TagRepository tagRepository,
-                           StatRepository statRepository, PostEsRepository postEsRepository) {
+    public PostServiceImpl(PostRepository postRepository,
+                           StatRepository statRepository,
+                           PostEsRepository postEsRepository) {
         this.postRepository = postRepository;
         this.postEsRepository = postEsRepository;
         this.statRepository = statRepository;
@@ -112,7 +110,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostSummaryDto> findTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit) {
+    public List<PostSummaryDto> findTopRatedPosts(LocalDateTime since, LocalDateTime until, Integer limit) {
         List<PostStatDto> topStats = statRepository.getPostStatsOrderByPageviews(since, until, limit);
         if (topStats == null || topStats.isEmpty()) {
             return new ArrayList<>();

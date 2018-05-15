@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class PostImageSetListDto {
     private ImageSet titleImage;
+
     private List<ImageSet> images;
 
     public ImageSet getTitleImage() {

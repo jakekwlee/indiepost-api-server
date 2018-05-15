@@ -8,7 +8,10 @@ import com.indiepost.dto.post.AdminPostResponseDto;
 import com.indiepost.dto.post.AdminPostSummaryDto;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types.PostStatus;
-import com.indiepost.model.*;
+import com.indiepost.model.Contributor;
+import com.indiepost.model.Post;
+import com.indiepost.model.Tag;
+import com.indiepost.model.User;
 import com.indiepost.model.elasticsearch.PostEs;
 import com.indiepost.repository.AdminPostRepository;
 import com.indiepost.repository.ContributorRepository;
@@ -74,8 +77,12 @@ public class AdminPostServiceImpl implements AdminPostService {
 
         copyDtoToPost(dto, post);
 
-        addTitleImage(post, dto.getTitleImageId());
-        addCategory(post, dto.getCategoryId());
+        if (dto.getTitleImageId() != null) {
+            post.setTitleImageId(dto.getTitleImageId());
+        }
+        if (dto.getCategoryId() != null) {
+            post.setCategoryId(dto.getCategoryId());
+        }
 
         post.setCreatedAt(LocalDateTime.now());
         post.setModifiedAt(LocalDateTime.now());
@@ -111,8 +118,12 @@ public class AdminPostServiceImpl implements AdminPostService {
         post.setAuthor(currentUser);
         post.setEditor(currentUser);
 
-        addTitleImage(post, dto.getTitleImageId());
-        addCategory(post, dto.getCategoryId());
+        if (dto.getTitleImageId() != null) {
+            post.setTitleImageId(dto.getTitleImageId());
+        }
+        if (dto.getCategoryId() != null) {
+            post.setCategoryId(dto.getCategoryId());
+        }
         post.setStatus(PostStatus.DRAFT);
         adminPostRepository.persist(post);
 
@@ -139,14 +150,21 @@ public class AdminPostServiceImpl implements AdminPostService {
         Post post = adminPostRepository.findOne(postId);
         copyDtoToPost(dto, post);
 
-        addTitleImage(post, dto.getTitleImageId());
-        addCategory(post, dto.getCategoryId());
+
+        if (dto.getTitleImageId() != null) {
+            post.setTitleImageId(dto.getTitleImageId());
+        }
+        if (dto.getCategoryId() != null) {
+            post.setCategoryId(dto.getCategoryId());
+        }
         addContributors(post, dto.getContributors());
         addTags(post, dto.getTags());
 
         User currentUser = userService.findCurrentUser();
         post.setEditor(currentUser);
         post.setModifiedAt(LocalDateTime.now());
+
+        adminPostRepository.persist(post);
     }
 
     @Override
@@ -157,14 +175,19 @@ public class AdminPostServiceImpl implements AdminPostService {
 
         copyDtoToPost(dto, post);
 
-        addTitleImage(post, dto.getTitleImageId());
-        addCategory(post, dto.getCategoryId());
+        if (dto.getTitleImageId() != null) {
+            post.setTitleImageId(dto.getTitleImageId());
+        }
+        if (dto.getCategoryId() != null) {
+            post.setCategoryId(dto.getCategoryId());
+        }
         addContributors(post, dto.getContributors());
         addTags(post, dto.getTags());
 
         post.setModifiedAt(LocalDateTime.now());
         post.setEditor(currentUser);
         post.setStatus(PostStatus.AUTOSAVE);
+
         adminPostRepository.persist(post);
     }
 
@@ -176,9 +199,8 @@ public class AdminPostServiceImpl implements AdminPostService {
 
     @Override
     public Long delete(Post post) {
-        Long id = post.getId();
         adminPostRepository.delete(post);
-        return id;
+        return post.getId();
     }
 
     // using
@@ -334,30 +356,6 @@ public class AdminPostServiceImpl implements AdminPostService {
             addTagsToPost(post, tags);
         }
 
-    }
-
-    private void addTitleImage(Post post, Long id) {
-        if (id != null
-                && !id.equals(post.getTitleImageId())) {
-            ImageSet titleImage = (ImageSet) adminPostRepository.getReference(ImageSet.class, id);
-            post.setTitleImage(titleImage);
-        }
-    }
-
-    private void addOriginal(Post post, Long id) {
-        if (id != null
-                && !id.equals(post.getOriginalId())) {
-            Post originalPost = (Post) adminPostRepository.getReference(Post.class, id);
-            post.setOriginal(originalPost);
-        }
-    }
-
-    private void addCategory(Post post, Long id) {
-        if (id != null) {
-            Category category = (Category) adminPostRepository.getReference(Category.class, id);
-            post.setCategoryId(id);
-            post.setCategory(category);
-        }
     }
 
     private AdminPostResponseDto toAdminPostResponseDto(Post post) {

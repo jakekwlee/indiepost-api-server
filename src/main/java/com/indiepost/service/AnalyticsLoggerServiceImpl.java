@@ -42,17 +42,14 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
 
     private final ClickRepository clickRepository;
 
-    private final PostRepository postRepository;
-
     private final UserService userService;
 
     @Autowired
     public AnalyticsLoggerServiceImpl(VisitorRepository visitorRepository, PageviewRepository pageviewRepository,
-                                      PostRepository postRepository, ActionRepository actionRepository,
+                                      ActionRepository actionRepository,
                                       UserService userService, LinkRepository linkRepository, ClickRepository clickRepository) {
         this.visitorRepository = visitorRepository;
         this.pageviewRepository = pageviewRepository;
-        this.postRepository = postRepository;
         this.actionRepository = actionRepository;
         this.userService = userService;
         this.linkRepository = linkRepository;
@@ -60,7 +57,7 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
     }
 
     @Override
-    public Visitor findVisitorById(Long id) {
+    public Visitor findOne(Long id) {
         return visitorRepository.findOne(id);
     }
 
@@ -198,15 +195,15 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
         visitor.setIpAddress(ipAddress);
         visitor.setTimestamp(LocalDateTime.now());
 
-        visitorRepository.save(visitor);
+        Long visitorId = visitorRepository.save(visitor);
 
-        Cookie cookie = new Cookie("visitorId", visitor.getId().toString());
+        Cookie cookie = new Cookie("visitorId", visitorId.toString());
         cookie.setMaxAge(1800); // expires after 30min
         res.addCookie(cookie);
         return visitor;
     }
 
-    private Long getVisitorId(HttpServletRequest request, Long userId) throws IOException {
+    private Long getVisitorId(HttpServletRequest request, Long userId) {
         Cookie[] cookieArray = request.getCookies();
         if (cookieArray == null) {
             return null;
@@ -225,7 +222,7 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
         }
 
         if (userId != null) {
-            Visitor visitor = this.findVisitorById(visitorId);
+            Visitor visitor = this.findOne(visitorId);
             if (visitor.getUserId() == null) {
                 visitor.setUserId(userId);
                 visitorRepository.save(visitor);

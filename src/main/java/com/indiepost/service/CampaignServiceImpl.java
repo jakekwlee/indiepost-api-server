@@ -3,7 +3,11 @@ package com.indiepost.service;
 import com.indiepost.dto.CampaignDto;
 import com.indiepost.model.analytics.Campaign;
 import com.indiepost.repository.CampaignRepository;
+import com.indiepost.repository.ClickRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -21,12 +25,12 @@ public class CampaignServiceImpl implements CampaignService {
 
     private final CampaignRepository campaignRepository;
 
-    private final LinkService linkService;
+    private final ClickRepository clickRepository;
 
     @Autowired
-    public CampaignServiceImpl(CampaignRepository campaignRepository, LinkService linkService) {
+    public CampaignServiceImpl(CampaignRepository campaignRepository, ClickRepository clickRepository) {
         this.campaignRepository = campaignRepository;
-        this.linkService = linkService;
+        this.clickRepository = clickRepository;
     }
 
     @Override
@@ -49,7 +53,7 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     public CampaignDto findById(Long id) {
-        Optional<Campaign> optional = campaignRepository.findById(id);
+        Optional<Campaign> optional = campaignRepository.findOne(id);
         if (optional.isPresent()) {
             Campaign campaign = optional.get();
             return campaignToDto(campaign);
@@ -59,11 +63,12 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public List<CampaignDto> findAll() {
-        List<Campaign> campaigns = campaignRepository.findAllByOrderByCreatedAtDesc();
-        return campaigns.stream()
+    public Page<CampaignDto> find(Pageable pageable) {
+        Page<Campaign> result = campaignRepository.find(pageable);
+        List<CampaignDto> dtoList = result.getContent().stream()
                 .map(campaign -> campaignToDto(campaign))
                 .collect(Collectors.toList());
+        return new PageImpl<>(dtoList, result.getPageable(), result.getTotalElements());
     }
 
     @Override
@@ -89,8 +94,9 @@ public class CampaignServiceImpl implements CampaignService {
         dto.setEndAt(campaign.getEndAt());
         dto.setGoal(campaign.getGoal());
 
-        Long allClicks = campaignRepository.countAllClicksByCampaignId(campaign.getId());
-        Long validClick = campaignRepository.countValidClicksByCampaignId(campaign.getId());
+        Long campaignId = campaign.getId();
+        Long allClicks = clickRepository.countAllClicksByCampaignId(campaignId);
+        Long validClick = clickRepository.countValidClicksByCampaignId(campaignId);
         dto.setAllClicks(allClicks);
         dto.setValidClicks(validClick);
         return dto;

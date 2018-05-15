@@ -16,8 +16,6 @@ public interface AdminPostRepository {
 
     Long persist(Post post);
 
-    Object getReference(Class clazz, Long id);
-
     Post findOne(Long id);
 
     void delete(Post post);

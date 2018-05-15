@@ -9,9 +9,7 @@ import java.util.List;
  */
 public interface CategoryRepository {
 
-    void save(Category category);
-
-    void update(Category category);
+    void persist(Category category);
 
     void delete(Category category);
 

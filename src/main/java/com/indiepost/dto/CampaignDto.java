@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
  */
 public class CampaignDto {
 
-    private static final long serialVersionUID = 1L;
-
     private Long id;
 
     @NotNull
