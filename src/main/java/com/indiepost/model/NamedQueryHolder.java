@@ -300,6 +300,20 @@ import javax.persistence.*;
                         "inner join Categories c on p.categoryId = c.id " +
                         "order by p.publishedAt desc"),
 
+        @NamedNativeQuery(name = "@GET_LINKS_BY_CAMPAIGN_ID_ORDER_BY_CLICKS",
+                query = "select l.id, l.campaignId, l.name, l.uid, l.url, l.createdAt, IFNULL(i.clicks, 0) validClicks " +
+                        "from Links l " +
+                        "inner join Campaigns c on c.id = l.campaignId " +
+                        "left outer join (" +
+                        "   select l.id, count(distinct s.visitorId) clicks " +
+                        "   from Campaigns c " +
+                        "   inner join Links l on c.id = l.campaignId " +
+                        "   inner join Stats s on l.id = s.linkId " +
+                        "   where c.id = :id " +
+                        "   and s.timestamp between c.startAt and c.endAt " +
+                        "   group by l.id) i on i.id = l.id " +
+                        "where c.id = :id " +
+                        "order by clicks desc"),
 })
 public class NamedQueryHolder {
     @Id

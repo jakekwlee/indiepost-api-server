@@ -1,6 +1,7 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.CampaignDto;
+import com.indiepost.dto.LinkDto;
+import com.indiepost.dto.stat.CampaignDto;
 import com.indiepost.model.analytics.Campaign;
 import com.indiepost.repository.CampaignRepository;
 import com.indiepost.repository.ClickRepository;
@@ -28,7 +29,8 @@ public class CampaignServiceImpl implements CampaignService {
     private final ClickRepository clickRepository;
 
     @Autowired
-    public CampaignServiceImpl(CampaignRepository campaignRepository, ClickRepository clickRepository) {
+    public CampaignServiceImpl(CampaignRepository campaignRepository,
+                               ClickRepository clickRepository) {
         this.campaignRepository = campaignRepository;
         this.clickRepository = clickRepository;
     }
@@ -56,7 +58,7 @@ public class CampaignServiceImpl implements CampaignService {
         Optional<Campaign> optional = campaignRepository.findOne(id);
         if (optional.isPresent()) {
             Campaign campaign = optional.get();
-            return campaignToDto(campaign);
+            return campaignToDto(campaign, true);
         } else {
             return null;
         }
@@ -85,6 +87,11 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     public CampaignDto campaignToDto(Campaign campaign) {
+        return this.campaignToDto(campaign, false);
+    }
+
+    @Override
+    public CampaignDto campaignToDto(Campaign campaign, boolean withLinks) {
         CampaignDto dto = new CampaignDto();
         dto.setId(campaign.getId());
         dto.setName(campaign.getName());
@@ -95,10 +102,14 @@ public class CampaignServiceImpl implements CampaignService {
         dto.setGoal(campaign.getGoal());
 
         Long campaignId = campaign.getId();
-        Long allClicks = clickRepository.countAllClicksByCampaignId(campaignId);
         Long validClick = clickRepository.countValidClicksByCampaignId(campaignId);
-        dto.setAllClicks(allClicks);
         dto.setValidClicks(validClick);
+        if (withLinks) {
+            Long allClicks = clickRepository.countAllClicksByCampaignId(campaignId);
+            dto.setAllClicks(allClicks);
+            List<LinkDto> links = campaignRepository.findCampaignLinksOrderByClicks(campaignId);
+            dto.setLinks(links);
+        }
         return dto;
     }
 }

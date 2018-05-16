@@ -1,9 +1,13 @@
-package com.indiepost.dto;
+package com.indiepost.dto.stat;
+
+import com.indiepost.dto.LinkDto;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by jake on 8/10/17.
@@ -36,6 +40,8 @@ public class CampaignDto {
     private Long validClicks = 0L;
 
     private Long allClicks = 0L;
+
+    private List<LinkDto> links = new ArrayList<>();
 
     public Long getAllClicks() {
         return allClicks;
@@ -109,4 +115,11 @@ public class CampaignDto {
         this.validClicks = validClicks;
     }
 
+    public List<LinkDto> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<LinkDto> links) {
+        this.links = links;
+    }
 }
