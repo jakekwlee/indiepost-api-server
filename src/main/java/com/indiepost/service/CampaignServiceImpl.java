@@ -37,6 +37,7 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     public CampaignDto save(CampaignDto campaignDto) {
+        // TODO
         Campaign campaign = dtoToCampaign(campaignDto);
         campaignRepository.save(campaign);
         return campaignToDto(campaign);
@@ -96,7 +97,7 @@ public class CampaignServiceImpl implements CampaignService {
         dto.setId(campaign.getId());
         dto.setName(campaign.getName());
         dto.setClientName(campaign.getClientName());
-        dto.setCreateAt(campaign.getCreatedAt());
+        dto.setCreatedAt(campaign.getCreatedAt());
         dto.setStartAt(campaign.getStartAt());
         dto.setEndAt(campaign.getEndAt());
         dto.setGoal(campaign.getGoal());

@@ -48,3 +48,22 @@ drop table Posts_Tags;
 alter table Posts_Tags1
 rename to Posts_Tags;
 
+alter table `indiepost`.`Links`
+  drop foreign key `FKooroqqq1o580hc0e5tvgrd3kq`;
+alter table `indiepost`.`Links`
+  add constraint `FKooroqqq1o580hc0e5tvgrd3kq`
+foreign key (`campaignId`)
+references `indiepost`.`Campaigns` (`id`)
+  on delete cascade
+  on update restrict;
+
+alter table `indiepost`.`Stats`
+  drop foreign key `FK8mw9x4ojti4a3nat2yk28r7k5`;
+alter table `indiepost`.`Stats`
+  add constraint `FK8mw9x4ojti4a3nat2yk28r7k5`
+foreign key (`linkId`)
+references `indiepost`.`Links` (`id`)
+  on delete set null;
+
+
+
