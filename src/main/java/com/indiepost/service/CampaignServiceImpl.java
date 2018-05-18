@@ -36,11 +36,11 @@ public class CampaignServiceImpl implements CampaignService {
     }
 
     @Override
-    public CampaignDto save(CampaignDto campaignDto) {
+    public Long save(CampaignDto campaignDto) {
         // TODO
         Campaign campaign = dtoToCampaign(campaignDto);
         campaignRepository.save(campaign);
-        return campaignToDto(campaign);
+        return campaign.getId();
     }
 
     @Override

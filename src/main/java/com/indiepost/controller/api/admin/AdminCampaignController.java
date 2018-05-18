@@ -1,5 +1,6 @@
 package com.indiepost.controller.api.admin;
 
+import com.indiepost.dto.CreateResponse;
 import com.indiepost.dto.stat.CampaignDto;
 import com.indiepost.service.CampaignService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,9 @@ public class AdminCampaignController {
     }
 
     @PostMapping
-    public CampaignDto createCampaign(@Valid CampaignDto campaignDto) {
-        return campaignService.save(campaignDto);
+    public CreateResponse createCampaign(@Valid @RequestBody CampaignDto campaignDto) {
+        Long id = campaignService.save(campaignDto);
+        return new CreateResponse(id);
     }
 
     @PutMapping(value = "/{id}")

@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
  * Created by jake on 8/10/17.
  */
 public interface CampaignService {
-    CampaignDto save(CampaignDto campaignDto);
+    Long save(CampaignDto campaignDto);
 
     void update(CampaignDto campaignDto);
 

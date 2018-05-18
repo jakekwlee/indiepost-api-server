@@ -2,9 +2,8 @@ package com.indiepost.dto.stat;
 
 import com.indiepost.dto.LinkDto;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +16,11 @@ public class CampaignDto {
     private Long id;
 
     @NotNull
-    @Min(2)
-    @Max(30)
+    @Size(min = 1, max = 30)
     private String clientName;
 
     @NotNull
-    @Min(2)
-    @Max(30)
+    @Size(min = 1, max = 30)
     private String name;
 
     @NotNull
