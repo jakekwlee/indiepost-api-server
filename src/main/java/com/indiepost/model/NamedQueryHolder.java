@@ -313,7 +313,7 @@ import javax.persistence.*;
                         "   and s.timestamp between c.startAt and c.endAt " +
                         "   group by l.id) i on i.id = l.id " +
                         "where c.id = :id " +
-                        "order by clicks desc"),
+                        "order by clicks desc, id asc"),
 })
 public class NamedQueryHolder {
     @Id

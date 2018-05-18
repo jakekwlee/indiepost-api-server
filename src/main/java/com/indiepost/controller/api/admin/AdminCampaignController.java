@@ -43,7 +43,7 @@ public class AdminCampaignController {
     }
 
     @PutMapping(value = "/{id}")
-    public void updateCampaign(@PathVariable Long id, @Valid CampaignDto campaignDto) {
+    public void updateCampaign(@PathVariable Long id, @Valid @RequestBody CampaignDto campaignDto) {
         if (!Objects.equals(id, campaignDto.getId())) {
             throw new ValidationException("REST resource ID and CampaignDto::id are not match.");
         }

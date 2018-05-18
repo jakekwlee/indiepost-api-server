@@ -1,8 +1,9 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.LinkDto;
 import com.indiepost.dto.stat.CampaignDto;
+import com.indiepost.dto.stat.LinkDto;
 import com.indiepost.model.analytics.Campaign;
+import com.indiepost.model.analytics.Link;
 import com.indiepost.repository.CampaignRepository;
 import com.indiepost.repository.ClickRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,16 +38,62 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     public Long save(CampaignDto campaignDto) {
-        // TODO
-        Campaign campaign = dtoToCampaign(campaignDto);
+        Campaign campaign = new Campaign();
+        campaign.setName(campaignDto.getName());
+        campaign.setClientName(campaignDto.getClientName());
+        campaign.setGoal(campaignDto.getGoal());
+        campaign.setStartAt(campaignDto.getStartAt());
+        campaign.setEndAt(campaignDto.getEndAt());
+        campaign.setCreatedAt(LocalDateTime.now());
+        List<LinkDto> dtoList = campaignDto.getLinks();
+        if (dtoList != null && dtoList.size() > 0) {
+            List<Link> newLinks = dtoList.stream()
+                    .filter(dto -> dto.getId() == null)
+                    .map(dto -> linkDtoToNewLink(dto, campaign))
+                    .collect(Collectors.toList());
+            campaign.setLinks(newLinks);
+        }
         campaignRepository.save(campaign);
         return campaign.getId();
     }
 
     @Override
     public void update(CampaignDto campaignDto) {
-        Campaign campaign = dtoToCampaign(campaignDto);
-        campaignRepository.save(campaign);
+        Optional<Campaign> optionalCampaign = campaignRepository.findOne(campaignDto.getId());
+        if (!optionalCampaign.isPresent()) {
+            //TODO
+            return;
+        }
+        Campaign campaign = optionalCampaign.get();
+        campaign.setName(campaignDto.getName());
+        campaign.setClientName(campaignDto.getClientName());
+        campaign.setGoal(campaignDto.getGoal());
+        campaign.setStartAt(campaignDto.getStartAt());
+        campaign.setEndAt(campaignDto.getEndAt());
+        campaign.setCreatedAt(LocalDateTime.now());
+        List<LinkDto> dtoList = campaignDto.getLinks();
+        if (dtoList == null || dtoList.size() == 0) {
+            return;
+        }
+        List<LinkDto> updatedLinks = dtoList.stream()
+                .filter(dto -> dto.isUpdated())
+                .collect(Collectors.toList());
+        for (LinkDto updatedLink : updatedLinks) {
+            for (Link link : campaign.getLinks()) {
+                if (link.getId().equals(updatedLink.getId())) {
+                    link.setName(updatedLink.getName());
+                    link.setUrl(updatedLink.getUrl());
+                }
+            }
+
+        }
+        List<Link> newLinks = dtoList.stream()
+                .filter(dto -> dto.getId() == null)
+                .map(dto -> linkDtoToNewLink(dto, campaign))
+                .collect(Collectors.toList());
+        if (newLinks.size() > 0) {
+            campaign.getLinks().addAll(newLinks);
+        }
     }
 
     @Override
@@ -112,5 +159,15 @@ public class CampaignServiceImpl implements CampaignService {
             dto.setLinks(links);
         }
         return dto;
+    }
+
+    private Link linkDtoToNewLink(LinkDto dto, Campaign campaign) {
+        Link link = new Link();
+        link.setCampaign(campaign);
+        link.setCreatedAt(LocalDateTime.now());
+        link.setName(dto.getName());
+        link.setUid(dto.getUid());
+        link.setUrl(dto.getUrl());
+        return link;
     }
 }

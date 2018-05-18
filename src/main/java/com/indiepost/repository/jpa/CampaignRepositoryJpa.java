@@ -1,6 +1,6 @@
 package com.indiepost.repository.jpa;
 
-import com.indiepost.dto.LinkDto;
+import com.indiepost.dto.stat.LinkDto;
 import com.indiepost.model.analytics.Campaign;
 import com.indiepost.model.analytics.QCampaign;
 import com.indiepost.repository.CampaignRepository;

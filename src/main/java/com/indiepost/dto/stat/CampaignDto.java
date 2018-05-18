@@ -1,7 +1,5 @@
 package com.indiepost.dto.stat;
 
-import com.indiepost.dto.LinkDto;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;

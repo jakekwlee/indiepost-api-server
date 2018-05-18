@@ -1,10 +1,9 @@
-package com.indiepost.dto;
+package com.indiepost.dto.stat;
 
 import org.hibernate.validator.constraints.URL;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 /**
@@ -15,8 +14,7 @@ public class LinkDto {
     private Long id;
 
     @NotNull
-    @Min(2)
-    @Max(30)
+    @Size(min = 2, max = 30)
     private String name;
 
     @NotNull
@@ -26,6 +24,8 @@ public class LinkDto {
     @NotNull
     private Long campaignId;
 
+    @NotNull
+    @Size(min = 8, max = 30)
     private String uid;
 
     private Long allClicks;
@@ -33,6 +33,8 @@ public class LinkDto {
     private Long validClicks;
 
     private LocalDateTime createdAt;
+
+    private boolean isUpdated;
 
     public Long getValidClicks() {
         return validClicks;
@@ -96,5 +98,13 @@ public class LinkDto {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public boolean isUpdated() {
+        return isUpdated;
+    }
+
+    public void setUpdated(boolean updated) {
+        isUpdated = updated;
     }
 }

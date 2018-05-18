@@ -1,7 +1,7 @@
 package com.indiepost.repository;
 
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.dto.LinkDto;
+import com.indiepost.dto.stat.LinkDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

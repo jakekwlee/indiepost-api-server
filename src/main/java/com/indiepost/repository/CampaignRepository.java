@@ -1,6 +1,6 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.LinkDto;
+import com.indiepost.dto.stat.LinkDto;
 import com.indiepost.model.analytics.Campaign;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
