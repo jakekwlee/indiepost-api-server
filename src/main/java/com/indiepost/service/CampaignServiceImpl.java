@@ -1,7 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.stat.CampaignDto;
-import com.indiepost.dto.stat.LinkDto;
+import com.indiepost.dto.stat.*;
 import com.indiepost.model.analytics.Campaign;
 import com.indiepost.model.analytics.Link;
 import com.indiepost.repository.CampaignRepository;
@@ -17,6 +16,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.indiepost.utils.DateUtil.normalizeTimeDomainStats;
 
 /**
  * Created by jake on 8/10/17.
@@ -159,6 +160,41 @@ public class CampaignServiceImpl implements CampaignService {
             dto.setLinks(links);
         }
         return dto;
+    }
+
+    @Override
+    public CampaignReport getReport(Long id) {
+        Optional<Campaign> optional = campaignRepository.findOne(id);
+        if (!optional.isPresent()) {
+            return new CampaignReport();
+        }
+        CampaignDto dto = campaignToDto(optional.get(), true);
+        List<ShareStat> byLinks = dto.getLinks()
+                .stream()
+                .map(link -> new ShareStat(link.getName(), link.getValidClicks()))
+                .collect(Collectors.toList());
+        dto.setLinks(null);
+
+        LocalDateTime start = dto.getStartAt();
+        LocalDateTime end = dto.getEndAt();
+        List<TimeDomainStat> trend = campaignRepository.getUniqueVisitorTrendHourly(id);
+        trend = normalizeTimeDomainStats(trend, start.toLocalDate(), end.toLocalDate());
+        List<ShareStat> byOs = campaignRepository.getUniqueVisitorGroupByOs(id);
+        List<ShareStat> byBrowsers = campaignRepository.getUniqueVisitorGroupByBrowser(id);
+
+        LocalDateTime since = dto.getEndAt().minusDays(60);
+        List<ShareStat> topPrevious = campaignRepository.getTopCampaigns(since, end, dto.getClientName(), 10);
+        List<RawDataReportRow> rawData = campaignRepository.getRawDataReport(id);
+
+        CampaignReport report = new CampaignReport();
+        report.setByOS(byOs);
+        report.setByLinks(byLinks);
+        report.setByBrowsers(byBrowsers);
+        report.setTopPrevious(topPrevious);
+        report.setTrend(trend);
+        report.setCampaign(dto);
+        report.setRawData(rawData);
+        return report;
     }
 
     private Link linkDtoToNewLink(LinkDto dto, Campaign campaign) {

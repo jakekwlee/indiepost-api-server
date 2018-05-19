@@ -2,6 +2,7 @@ package com.indiepost.controller.api.admin;
 
 import com.indiepost.dto.CreateResponse;
 import com.indiepost.dto.stat.CampaignDto;
+import com.indiepost.dto.stat.CampaignReport;
 import com.indiepost.service.CampaignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,11 @@ public class AdminCampaignController {
     @GetMapping(value = "/{id}")
     public CampaignDto getCampaign(@PathVariable Long id) {
         return campaignService.findById(id);
+    }
+
+    @GetMapping(value = "/_report/{id}")
+    public CampaignReport getCampaignReport(@PathVariable Long id) {
+        return campaignService.getReport(id);
     }
 
     @PostMapping

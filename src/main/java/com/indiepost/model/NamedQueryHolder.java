@@ -314,6 +314,19 @@ import javax.persistence.*;
                         "   group by l.id) i on i.id = l.id " +
                         "where c.id = :id " +
                         "order by clicks desc, id asc"),
+
+        @NamedNativeQuery(name = "@GET_UV_TREND_HOURLY_BY_HOUR_BY_CAMPAIGN_ID",
+                query = "select DATE_ADD(DATE(s.timestamp), interval HOUR(s.timestamp) hour) as statDateTime, " +
+                        "COUNT(distinct s.visitorId) as statValue " +
+                        "from Stats s " +
+                        "inner join " +
+                        "Links l on s.linkId = l.id " +
+                        "inner join " +
+                        "Campaigns c on c.id = l.campaignId " +
+                        "where c.id = :id and s.timestamp between c.startAt and c.endAt " +
+                        "group by DATE(s.timestamp) , HOUR(s.timestamp) " +
+                        "order by statDateTime"
+        )
 })
 public class NamedQueryHolder {
     @Id

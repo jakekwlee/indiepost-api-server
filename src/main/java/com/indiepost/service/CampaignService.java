@@ -1,6 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.stat.CampaignDto;
+import com.indiepost.dto.stat.CampaignReport;
 import com.indiepost.model.analytics.Campaign;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,4 +25,6 @@ public interface CampaignService {
     CampaignDto campaignToDto(Campaign campaign);
 
     CampaignDto campaignToDto(Campaign campaign, boolean withLinks);
+
+    CampaignReport getReport(Long id);
 }
