@@ -1,15 +1,16 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.CampaignDto;
+import com.indiepost.dto.stat.CampaignDto;
+import com.indiepost.dto.stat.CampaignReport;
 import com.indiepost.model.analytics.Campaign;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Created by jake on 8/10/17.
  */
 public interface CampaignService {
-    CampaignDto save(CampaignDto campaignDto);
+    Long save(CampaignDto campaignDto);
 
     void update(CampaignDto campaignDto);
 
@@ -17,9 +18,13 @@ public interface CampaignService {
 
     CampaignDto findById(Long id);
 
-    List<CampaignDto> findAll();
+    Page<CampaignDto> find(Pageable pageable);
 
     Campaign dtoToCampaign(CampaignDto campaignDto);
 
     CampaignDto campaignToDto(Campaign campaign);
+
+    CampaignDto campaignToDto(Campaign campaign, boolean withLinks);
+
+    CampaignReport getReport(Long id);
 }

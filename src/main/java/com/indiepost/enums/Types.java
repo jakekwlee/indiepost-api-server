@@ -6,12 +6,19 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  * Created by jake on 17. 4. 13.
  */
 public interface Types {
+
+    static boolean isPublicStatus(PostStatus status) {
+        return status.equals(PostStatus.PUBLISH)
+                || status.equals(PostStatus.FUTURE)
+                || status.equals(PostStatus.PENDING);
+    }
+
     enum ImageSize {
         THUMBNAIL, SMALL, OPTIMIZED, LARGE, ORIGINAL
     }
 
     enum PostStatus {
-        AUTOSAVE, DRAFT, PENDING, FUTURE, PUBLISH, TRASH
+        AUTOSAVE, DRAFT, TRASH, PENDING, FUTURE, PUBLISH
     }
 
     enum UserGender {

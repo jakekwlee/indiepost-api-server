@@ -57,12 +57,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<Tag> findAll(int page, int maxResults) {
-        return tagRepository.findAll(new PageRequest(page, maxResults, Sort.Direction.DESC, "id"));
-    }
-
-    @Override
-    public void update(Tag tag) {
-        tagRepository.update(tag);
+        return tagRepository.findAll(PageRequest.of(page, maxResults, Sort.Direction.DESC, "id"));
     }
 
     @Override

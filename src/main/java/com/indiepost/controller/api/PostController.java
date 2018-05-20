@@ -1,9 +1,15 @@
 package com.indiepost.controller.api;
 
-import com.indiepost.dto.*;
+import com.indiepost.dto.FullTextSearchQuery;
+import com.indiepost.dto.PostImageSetListDto;
+import com.indiepost.dto.post.PostDto;
+import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.PostSummaryDto;
+import com.indiepost.dto.post.RelatedPostsRequestDto;
 import com.indiepost.service.ImageService;
 import com.indiepost.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,19 +33,23 @@ public class PostController {
 
     @GetMapping("/{id}")
     public PostDto getPost(@PathVariable Long id) {
-        return postService.findById(id);
+        return postService.findOne(id);
     }
 
     @GetMapping
-    public List<PostSummary> getPosts(
+    public List<PostSummaryDto> getPosts(
             @RequestParam("p") int page,
             @RequestParam("m") int maxResults) {
+        return postService.find(page, maxResults, true);
+    }
 
-        return postService.findAll(page, maxResults, true);
+    @PostMapping
+    public List<PostSummaryDto> getPosts(@RequestBody PostQuery query) {
+        return postService.search(query, query.getPage(), query.getMaxResults(), false);
     }
 
     @GetMapping("/category/{id}")
-    public List<PostSummary> getPostsByCategoryId(
+    public List<PostSummaryDto> getPostsByCategoryId(
             @PathVariable Long id,
             @RequestParam("p") int page,
             @RequestParam("m") int maxResults) {
@@ -47,23 +57,26 @@ public class PostController {
     }
 
     @GetMapping("/tag/{tagName}")
-    public List<PostSummary> getPostsByTagName(
-            @PathVariable String tagName) {
-        return postService.findByTagName(tagName);
+    public List<PostSummaryDto> getPostsByTagName(
+            @PathVariable String tagName,
+            @RequestParam("p") int page,
+            @RequestParam("m") int maxResults) {
+        return postService.findByTagName(tagName, page, maxResults, true);
+    }
+
+    @GetMapping("/contributor/{fullName}")
+    public List<PostSummaryDto> getPostsByTagName(
+            @PathVariable String fullName, Pageable pageable) {
+        return postService.findByContributorFullName(fullName, pageable);
     }
 
     @PostMapping("/search")
-    public List<PostSummary> getPosts(@RequestBody FullTextSearchQuery query) {
+    public List<PostSummaryDto> fullTextSearch(@RequestBody FullTextSearchQuery query) {
         return postService.fullTextSearch(query);
     }
 
-    @PostMapping
-    public List<PostSummary> getPostsByQuery(@RequestBody PostQuery query) {
-        return postService.findByQuery(query, query.getPage(), query.getMaxResults(), true);
-    }
-
     @PostMapping("/related")
-    public List<PostSummary> getPostByIds(@RequestBody RelatedPostsRequestDto dto) {
+    public List<PostSummaryDto> getPostByIds(@RequestBody RelatedPostsRequestDto dto) {
         return postService.findByIds(dto.getPostIds());
     }
 
@@ -73,7 +86,7 @@ public class PostController {
     }
 
     @GetMapping(value = "/future")
-    public List<PostSummary> getScheduledPosts() {
-        return postService.getScheduledPosts();
+    public List<PostSummaryDto> getScheduledPosts() {
+        return postService.findScheduledPosts();
     }
 }

@@ -9,7 +9,6 @@ import javax.validation.constraints.Size;
  * Created by jake on 8/31/17.
  */
 public class SuggestionDto {
-    private static final long serialVersionUID = 1L;
 
     private Long userId;
 

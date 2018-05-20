@@ -1,9 +1,7 @@
 package com.indiepost.dto;
 
-import com.indiepost.enums.Types.UserGender;
-
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,8 +9,6 @@ import java.util.List;
  * Created by jake on 10/8/16.
  */
 public class UserDto {
-
-    private static final long serialVersionUID = 1L;
 
     private Long id;
 
@@ -22,7 +18,7 @@ public class UserDto {
 
     private String email;
 
-    private LocalDateTime joinedAt;
+    private Instant joinedAt;
 
     private LocalDate birthday;
 
@@ -30,7 +26,7 @@ public class UserDto {
 
     private String picture;
 
-    private UserGender gender;
+    private String gender;
 
     private List<String> roles;
 
@@ -66,11 +62,11 @@ public class UserDto {
         this.email = email;
     }
 
-    public LocalDateTime getJoinedAt() {
+    public Instant getJoinedAt() {
         return joinedAt;
     }
 
-    public void setJoinedAt(LocalDateTime joinedAt) {
+    public void setJoinedAt(Instant joinedAt) {
         this.joinedAt = joinedAt;
     }
 
@@ -98,11 +94,11 @@ public class UserDto {
         this.picture = picture;
     }
 
-    public UserGender getGender() {
+    public String getGender() {
         return gender;
     }
 
-    public void setGender(UserGender gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 

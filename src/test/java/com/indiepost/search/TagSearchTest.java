@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.dto.PostSummary;
+import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.service.PostService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +28,7 @@ public class TagSearchTest {
 
     @Test
     public void tagSearchShouldReturnPostsCorrectly() throws JsonProcessingException {
-        List<PostSummary> dtoList = postService.findByTagName("독립영화");
+        List<PostSummaryDto> dtoList = postService.findByTagName("독립영화", 0, 10, true);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Hibernate5Module());
         System.out.println("\n\n*** Start serialize PostsByTagName ***\n\n");

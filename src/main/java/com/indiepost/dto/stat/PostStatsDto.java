@@ -12,6 +12,8 @@ public class PostStatsDto {
 
     private List<PostStatDto> statData;
 
+    private PeriodDto period;
+
     public PostStatsDto() {
     }
 
@@ -22,6 +24,12 @@ public class PostStatsDto {
     public PostStatsDto(LocalDateTime lastUpdated, List<PostStatDto> statData) {
         this.lastUpdated = lastUpdated;
         this.statData = statData;
+    }
+
+    public PostStatsDto(LocalDateTime lastUpdated, List<PostStatDto> statData, PeriodDto period) {
+        this.lastUpdated = lastUpdated;
+        this.statData = statData;
+        this.period = period;
     }
 
     public LocalDateTime getLastUpdated() {
@@ -38,5 +46,13 @@ public class PostStatsDto {
 
     public void setStatData(List<PostStatDto> statData) {
         this.statData = statData;
+    }
+
+    public PeriodDto getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(PeriodDto period) {
+        this.period = period;
     }
 }

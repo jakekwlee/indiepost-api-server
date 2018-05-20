@@ -5,8 +5,6 @@ package com.indiepost.dto;
  */
 public class CategoryDto {
 
-    private static final long serialVersionUID = 1L;
-
     private Long id;
 
     private Long parentId;

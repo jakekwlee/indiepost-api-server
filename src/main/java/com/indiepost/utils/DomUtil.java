@@ -1,6 +1,6 @@
 package com.indiepost.utils;
 
-import com.indiepost.dto.RelatedPostsMatchingResult;
+import com.indiepost.dto.post.RelatedPostsMatchingResult;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -19,6 +19,11 @@ import java.util.regex.Pattern;
 public class DomUtil {
     public static Pattern relatedPostsPattern = Pattern.compile("<\\w+>[&;\\w\\s]*\\[{2}rel=\"[\\d,]+\"\\]{2}\\s*<\\/\\w+>");
     public static Pattern relatedIdsPattern = Pattern.compile("\\d+");
+
+    public static String htmlToText(String html) {
+        Document document = Jsoup.parseBodyFragment(html);
+        return document.text();
+    }
 
     public static Set<String> getImagePrefixes(String content) {
         Pattern pattern = Pattern.compile("\\d{4}/\\d{2}/(\\d{2}/)*\\w{6,8}");

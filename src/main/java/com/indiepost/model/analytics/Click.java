@@ -1,9 +1,6 @@
 package com.indiepost.model.analytics;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 /**
  * Created by jake on 8/7/17.
@@ -15,6 +12,17 @@ public class Click extends Stat {
     @ManyToOne
     @JoinColumn(name = "linkId")
     private Link link;
+
+    @Column(updatable = false, insertable = false)
+    private Long linkId;
+
+    public Long getLinkId() {
+        return linkId;
+    }
+
+    public void setLinkId(Long linkId) {
+        this.linkId = linkId;
+    }
 
     public Link getLink() {
         return link;

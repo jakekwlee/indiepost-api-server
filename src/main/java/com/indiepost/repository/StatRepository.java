@@ -16,8 +16,6 @@ import java.util.List;
 public interface StatRepository {
     Long save(Stat stat);
 
-    void update(Stat stat);
-
     void delete(Stat stat);
 
     Stat findOne(Long id);
@@ -42,34 +40,34 @@ public interface StatRepository {
 
     List<TimeDomainDoubleStat> getRecentAndOldPageviewTrend(LocalDateTime since, LocalDateTime until, TimeDomainDuration duration);
 
-    List<PostStatDto> getPostStatsOrderByPageviews(LocalDateTime since, LocalDateTime until, Long limit);
+    List<PostStatDto> getPostStatsOrderByPageviews(LocalDateTime since, LocalDateTime until, Integer limit);
 
     List<PostStatDto> getAllPostStats();
 
     List<PostStatDto> getCachedPostStats();
 
-    List<ShareStat> getPageviewsByCategory(LocalDateTime since, LocalDateTime until, Long limit);
+    List<ShareStat> getPageviewsByCategory(LocalDateTime since, LocalDateTime until, Integer limit);
 
-    List<ShareStat> getPageviewsByAuthor(LocalDateTime since, LocalDateTime until, Long limit);
+    List<ShareStat> getPageviewsByAuthor(LocalDateTime since, LocalDateTime until, Integer limit);
 
-    List<ShareStat> getTopPages(LocalDateTime since, LocalDateTime until, Long limit);
+    List<ShareStat> getTopPages(LocalDateTime since, LocalDateTime until, Integer limit);
 
-    List<ShareStat> getTopPages(LocalDateTime since, LocalDateTime until, Long limit, String client);
+    List<ShareStat> getTopPages(LocalDateTime since, LocalDateTime until, Integer limit, String client);
 
-    List<ShareStat> getTopPosts(LocalDateTime since, LocalDateTime until, Long limit);
+    List<ShareStat> getTopPosts(LocalDateTime since, LocalDateTime until, Integer limit);
 
-    List<ShareStat> getTopPosts(LocalDateTime since, LocalDateTime until, Long limit, String client);
+    List<ShareStat> getTopPosts(LocalDateTime since, LocalDateTime until, Integer limit, String client);
 
-    List<ShareStat> getTopLandingPages(LocalDateTime since, LocalDateTime until, Long limit);
+    List<ShareStat> getTopLandingPages(LocalDateTime since, LocalDateTime until, Integer limit);
 
-    List<ShareStat> getTopLandingPages(LocalDateTime since, LocalDateTime until, Long limit, String client);
+    List<ShareStat> getTopLandingPages(LocalDateTime since, LocalDateTime until, Integer limit, String client);
 
-    List<ShareStat> getTopTags(LocalDateTime since, LocalDateTime until, Long limit);
+    List<ShareStat> getTopTags(LocalDateTime since, LocalDateTime until, Integer limit);
 
-    List<ShareStat> getTopTags(LocalDateTime since, LocalDateTime until, Long limit, String client);
+    List<ShareStat> getTopTags(LocalDateTime since, LocalDateTime until, Integer limit, String client);
 
-    List<ShareStat> getTopRecentPosts(LocalDateTime since, LocalDateTime until, Long limit);
+    List<ShareStat> getTopRecentPosts(LocalDateTime since, LocalDateTime until, Integer limit);
 
-    List<ShareStat> getTopOldPosts(LocalDateTime since, LocalDateTime until, Long limit);
+    List<ShareStat> getTopOldPosts(LocalDateTime since, LocalDateTime until, Integer limit);
 
 }

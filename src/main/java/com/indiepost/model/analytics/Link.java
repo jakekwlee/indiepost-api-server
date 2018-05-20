@@ -36,10 +36,10 @@ public class Link {
     private List<Click> clicks;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "campaignId", nullable = false, updatable = false, insertable = false)
+    @JoinColumn(name = "campaignId")
     private Campaign campaign;
 
-    @Column(name = "campaignId")
+    @Column(name = "campaignId", nullable = false, updatable = false, insertable = false)
     private Long campaignId;
 
     public Campaign getCampaign() {

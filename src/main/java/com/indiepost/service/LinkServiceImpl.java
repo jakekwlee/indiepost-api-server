@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.LinkDto;
+import com.indiepost.dto.stat.LinkDto;
 import com.indiepost.model.analytics.Link;
 import com.indiepost.repository.ClickRepository;
 import com.indiepost.repository.LinkRepository;

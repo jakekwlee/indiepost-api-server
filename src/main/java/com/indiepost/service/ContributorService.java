@@ -18,6 +18,10 @@ public interface ContributorService {
 
     int count(Types.ContributorType type);
 
+    int count();
+
     Page<ContributorDto> find(Types.ContributorType type, Pageable pageable);
+
+    Page<ContributorDto> find(Pageable pageable);
 }
 

@@ -1,6 +1,6 @@
 package com.indiepost.controller.api.admin;
 
-import com.indiepost.dto.LinkDto;
+import com.indiepost.dto.stat.LinkDto;
 import com.indiepost.service.LinkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -35,12 +35,12 @@ public class AdminLinkController {
     }
 
     @PostMapping
-    public LinkDto createLink(@Valid LinkDto linkDto) {
+    public LinkDto createLink(@Valid @RequestBody LinkDto linkDto) {
         return linkService.save(linkDto);
     }
 
     @PutMapping(value = "/{id}")
-    public void updateLink(@PathVariable Long id, @Valid LinkDto linkDto) {
+    public void updateLink(@PathVariable Long id, @Valid @RequestBody LinkDto linkDto) {
         if (!Objects.equals(id, linkDto.getId())) {
             throw new ValidationException("REST resource ID and LinkDto::id are not match.");
         }

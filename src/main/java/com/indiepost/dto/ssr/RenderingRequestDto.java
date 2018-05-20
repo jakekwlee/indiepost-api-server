@@ -2,9 +2,9 @@ package com.indiepost.dto.ssr;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.indiepost.dto.InitialData;
-import com.indiepost.dto.PageDto;
-import com.indiepost.dto.PostDto;
-import com.indiepost.dto.PostSummary;
+import com.indiepost.dto.StaticPageDto;
+import com.indiepost.dto.post.PostDto;
+import com.indiepost.dto.post.PostSummaryDto;
 
 import java.util.List;
 
@@ -15,11 +15,11 @@ import java.util.List;
 public class RenderingRequestDto {
     private InitialData initialData;
 
-    private List<PostSummary> posts;
+    private List<PostSummaryDto> posts;
 
     private PostDto post;
 
-    private PageDto page;
+    private StaticPageDto page;
 
     private String path;
 
@@ -42,13 +42,13 @@ public class RenderingRequestDto {
         this.path = path;
     }
 
-    public RenderingRequestDto(InitialData initialData, PageDto page, String path) {
+    public RenderingRequestDto(InitialData initialData, StaticPageDto page, String path) {
         this.initialData = initialData;
         this.page = page;
         this.path = path;
     }
 
-    public RenderingRequestDto(InitialData initialData, List<PostSummary> posts, String path) {
+    public RenderingRequestDto(InitialData initialData, List<PostSummaryDto> posts, String path) {
         this.initialData = initialData;
         this.posts = posts;
         this.path = path;
@@ -62,11 +62,11 @@ public class RenderingRequestDto {
         this.initialData = initialData;
     }
 
-    public List<PostSummary> getPosts() {
+    public List<PostSummaryDto> getPosts() {
         return posts;
     }
 
-    public void setPosts(List<PostSummary> posts) {
+    public void setPosts(List<PostSummaryDto> posts) {
         this.posts = posts;
     }
 
@@ -86,11 +86,11 @@ public class RenderingRequestDto {
         this.path = path;
     }
 
-    public PageDto getPage() {
+    public StaticPageDto getPage() {
         return page;
     }
 
-    public void setPage(PageDto page) {
+    public void setPage(StaticPageDto page) {
         this.page = page;
     }
 }

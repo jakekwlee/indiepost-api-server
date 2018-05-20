@@ -95,4 +95,26 @@ public class DateUtil {
         }
         return results;
     }
+
+    public static List<TimeDomainStat> normalizeHoursOFTimeDomainStats(List<TimeDomainStat> list, LocalDate startDate, LocalDate endDate) {
+        Period period = Period.between(startDate, endDate);
+        long expectedHours = (period.getDays() + 1) * 24;
+
+        List<TimeDomainStat> results = new ArrayList<>();
+        // Zerofill
+        for (long h = 0; h < expectedHours; ++h) {
+            LocalDateTime ldt = startDate.atStartOfDay().plusHours(h);
+            TimeDomainStat timeDomainStat = new TimeDomainStat(ldt, 0L);
+            results.add(timeDomainStat);
+        }
+
+        for (TimeDomainStat stat : list) {
+            LocalDateTime statDateTime = stat.getStatDateTime();
+            LocalDate statDate = statDateTime.toLocalDate();
+            int days = Period.between(startDate, statDate).getDays();
+            int h = statDateTime.getHour() + (24 * days);
+            results.get(h).setStatValue(stat.getStatValue());
+        }
+        return results;
+    }
 }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.indiepost.enums.Types.UserGender;
 import com.indiepost.enums.Types.UserRole;
 import com.indiepost.enums.Types.UserState;
-import org.hibernate.validator.constraints.Email;
 
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
@@ -43,7 +42,6 @@ public class User implements Serializable {
 
     @Column(unique = true, nullable = false)
     @Size(min = 7, max = 50)
-    @Email
     private String email;
 
     @Pattern(regexp = "[_0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]{2,10}")

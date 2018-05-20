@@ -1,13 +1,16 @@
 package com.indiepost.controller.api.admin;
 
-import com.indiepost.dto.CampaignDto;
+import com.indiepost.dto.CreateResponse;
+import com.indiepost.dto.stat.CampaignDto;
+import com.indiepost.dto.stat.CampaignReport;
 import com.indiepost.service.CampaignService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -25,8 +28,8 @@ public class AdminCampaignController {
     }
 
     @GetMapping
-    public List<CampaignDto> getCampaigns() {
-        return campaignService.findAll();
+    public Page<CampaignDto> getCampaigns(Pageable pageable) {
+        return campaignService.find(pageable);
     }
 
     @GetMapping(value = "/{id}")
@@ -34,13 +37,19 @@ public class AdminCampaignController {
         return campaignService.findById(id);
     }
 
+    @GetMapping(value = "/_report/{id}")
+    public CampaignReport getCampaignReport(@PathVariable Long id) {
+        return campaignService.getReport(id);
+    }
+
     @PostMapping
-    public CampaignDto createCampaign(@Valid CampaignDto campaignDto) {
-        return campaignService.save(campaignDto);
+    public CreateResponse createCampaign(@Valid @RequestBody CampaignDto campaignDto) {
+        Long id = campaignService.save(campaignDto);
+        return new CreateResponse(id);
     }
 
     @PutMapping(value = "/{id}")
-    public void updateCampaign(@PathVariable Long id, @Valid CampaignDto campaignDto) {
+    public void updateCampaign(@PathVariable Long id, @Valid @RequestBody CampaignDto campaignDto) {
         if (!Objects.equals(id, campaignDto.getId())) {
             throw new ValidationException("REST resource ID and CampaignDto::id are not match.");
         }

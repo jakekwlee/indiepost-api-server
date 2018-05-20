@@ -1,9 +1,10 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.FullTextSearchQuery;
-import com.indiepost.dto.PostDto;
-import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.PostSummary;
+import com.indiepost.dto.post.PostDto;
+import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.PostSummaryDto;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,31 +14,33 @@ import java.util.List;
  */
 public interface PostService {
 
-    PostDto findById(Long id);
+    PostDto findOne(Long id);
 
     Long count();
 
     Long count(PostQuery query);
 
-    List<PostSummary> findByIds(List<Long> ids);
+    List<PostSummaryDto> findByIds(List<Long> ids);
 
-    List<PostSummary> findAll(int page, int maxResults, boolean isDesc);
+    List<PostSummaryDto> find(int page, int maxResults, boolean isDesc);
 
-    List<PostSummary> findByQuery(PostQuery query, int page, int maxResults, boolean isDesc);
+    List<PostSummaryDto> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc);
 
-    List<PostSummary> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc);
+    List<PostSummaryDto> findByTagName(String tagName, int page, int maxResults, boolean isDesc);
 
-    List<PostSummary> findByTagName(String tagName);
+    List<PostSummaryDto> findByContributorFullName(String fullName, Pageable pageable);
 
-    List<PostSummary> getTopRatedPosts(LocalDateTime since, LocalDateTime until, Long limit);
+    List<PostSummaryDto> findTopRatedPosts(LocalDateTime since, LocalDateTime until, Integer limit);
 
-    List<PostSummary> getScheduledPosts();
+    List<PostSummaryDto> findScheduledPosts();
 
-    List<PostSummary> fullTextSearch(FullTextSearchQuery query);
+    List<PostSummaryDto> search(PostQuery query, int page, int maxResults, boolean isDesc);
 
-    PostSummary findSplashPost();
+    List<PostSummaryDto> fullTextSearch(FullTextSearchQuery query);
 
-    PostSummary findFeaturePost();
+    PostSummaryDto findSplashPost();
 
-    List<PostSummary> findPickedPosts();
+    PostSummaryDto findFeaturePost();
+
+    List<PostSummaryDto> findPickedPosts();
 }

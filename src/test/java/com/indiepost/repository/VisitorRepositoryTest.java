@@ -60,7 +60,7 @@ public class VisitorRepositoryTest {
         PeriodDto dto = getOneDayPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
-        List<ShareStat> share = visitorRepository.getTopChannel(since, until, 10L);
+        List<ShareStat> share = visitorRepository.getTopChannel(since, until, 10);
         testSerializeAndPrintStats(share, dto, "Top Channel");
         Assert.assertTrue("Repository should return resultset", share.size() > 0);
     }
@@ -70,7 +70,7 @@ public class VisitorRepositoryTest {
         PeriodDto dto = getOneDayPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
-        List<ShareStat> share = visitorRepository.getTopReferrers(since, until, 10L);
+        List<ShareStat> share = visitorRepository.getTopReferrers(since, until, 10);
         testSerializeAndPrintStats(share, dto, "Top Referrer");
         Assert.assertTrue("Repository should return resultset", share.size() > 0);
     }
@@ -80,7 +80,7 @@ public class VisitorRepositoryTest {
         PeriodDto dto = getOneDayPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
-        List<ShareStat> share = visitorRepository.getTopOs(since, until, 10L);
+        List<ShareStat> share = visitorRepository.getTopOs(since, until, 10);
         testSerializeAndPrintStats(share, dto, "Top Os");
         Assert.assertTrue("Repository should return resultset", share.size() > 0);
     }
@@ -90,7 +90,7 @@ public class VisitorRepositoryTest {
         PeriodDto dto = getOneDayPeriod();
         LocalDateTime since = dto.getStartDate().atStartOfDay();
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
-        List<ShareStat> share = visitorRepository.getTopWebBrowsers(since, until, 10L);
+        List<ShareStat> share = visitorRepository.getTopWebBrowsers(since, until, 10);
         testSerializeAndPrintStats(share, dto, "Top Web Browsers");
         Assert.assertTrue("Repository should return resultset", share.size() > 0);
     }

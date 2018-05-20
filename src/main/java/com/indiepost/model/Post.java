@@ -1,9 +1,6 @@
 package com.indiepost.model;
 
 import com.indiepost.enums.Types;
-import com.indiepost.model.analytics.Pageview;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -20,10 +17,9 @@ import java.util.stream.Collectors;
  */
 @Entity
 @Table(name = "Posts")
-
 public class Post implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -1121960490475976481L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -35,14 +31,6 @@ public class Post implements Serializable {
 
     @Column(name = "originalId", nullable = false, insertable = false, updatable = false)
     private Long originalId;
-
-    @OneToMany(
-            mappedBy = "post",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    @OrderBy("priority")
-    private List<PostContributor> postContributors = new ArrayList<>();
 
     @Column(nullable = false)
     private boolean featured = false;
@@ -61,8 +49,8 @@ public class Post implements Serializable {
     private String content = "";
 
     @Column(nullable = false)
-    @Size(max = 300)
-    private String excerpt = "No Excerpt";
+    @Size(max = 400)
+    private String excerpt = "";
 
     @Column(nullable = false)
     @Size(max = 30)
@@ -78,7 +66,6 @@ public class Post implements Serializable {
     private LocalDateTime publishedAt;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "titleImageId")
     private ImageSet titleImage;
 
@@ -110,18 +97,21 @@ public class Post implements Serializable {
     @Column(name = "categoryId", nullable = false, insertable = false, updatable = false)
     private Long categoryId;
 
-    @ManyToMany
-    @OrderBy("id desc")
-    @JoinTable(
-            name = "Posts_Tags",
-            joinColumns = {@JoinColumn(name = "postId")},
-            inverseJoinColumns = {@JoinColumn(name = "tagId")}
+    @OneToMany(
+            mappedBy = "post",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
     )
-    private List<Tag> tags = new ArrayList<>();
+    @OrderBy("priority")
+    private List<PostTag> postTags = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("createdAt")
-    private List<Comment> comments;
+    @OneToMany(
+            mappedBy = "post",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @OrderBy("priority asc")
+    private List<PostContributor> postContributors = new ArrayList<>();
 
     @Column(nullable = false)
     @Min(0)
@@ -134,17 +124,6 @@ public class Post implements Serializable {
     @Column(nullable = false)
     @Min(0)
     private int likesCount = 0;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "post")
-    private List<Pageview> pageviews;
-
-    public List<Pageview> getPageviews() {
-        return pageviews;
-    }
-
-    public void setPageviews(List<Pageview> pageviews) {
-        this.pageviews = pageviews;
-    }
 
     public Long getId() {
         return id;
@@ -250,41 +229,44 @@ public class Post implements Serializable {
         this.category = category;
     }
 
+    public void addTag(Tag tag, int priority) {
+        PostTag postTag = new PostTag(this, tag, priority);
+        this.postTags.add(postTag);
+        tag.getPostTags().add(postTag);
+    }
+
+    public void removeTag(Tag tag) {
+        for (Iterator<PostTag> iterator = postTags.iterator();
+             iterator.hasNext(); ) {
+            PostTag postTag = iterator.next();
+
+            if (postTag.getPost().equals(this) &&
+                    postTag.getTag().equals(tag)) {
+                iterator.remove();
+                postTag.getTag().getPostTags().remove(postTag);
+                postTag.setPost(null);
+                postTag.setTag(null);
+            }
+        }
+    }
+
     public List<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
-    }
-
-    public void addTag(Tag tag) {
-        if (!this.tags.contains(tag)) {
-            this.tags.add(tag);
-            tag.addPost(this);
-        }
-    }
-
-    public Long removeTag(Tag tag) {
-        Long tagId = tag.getId();
-        if (this.tags.contains(tag)) {
-            this.tags.remove(tag);
-            tag.removePost(this);
-        }
-        return tagId;
+        return postTags.stream()
+                .map(postTag -> postTag.getTag())
+                .collect(Collectors.toList());
     }
 
     public void clearTags() {
-        this.tags.clear();
+        this.postTags.clear();
     }
 
     public void setPostContributors(List<PostContributor> postContributors) {
         this.postContributors = postContributors;
     }
 
-    public void addContributor(Contributor contributor, int prioity) {
+    public void addContributor(Contributor contributor, int priority) {
         PostContributor postContributor =
-                new PostContributor(this, contributor, prioity);
+                new PostContributor(this, contributor, priority);
         this.postContributors.add(postContributor);
         contributor.getPostContributors().add(postContributor);
     }
@@ -312,25 +294,6 @@ public class Post implements Serializable {
 
     public void clearContributors() {
         this.postContributors.clear();
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
-    public void addComment(Comment comment) {
-        this.comments.add(comment);
-    }
-
-    public Long removeComment(Comment comment) {
-        Long commentId = comment.getId();
-        this.comments.remove(comment);
-        return commentId;
     }
 
     public List<Like> getLikes() {

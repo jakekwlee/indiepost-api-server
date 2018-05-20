@@ -37,6 +37,17 @@ public class Image implements Serializable {
     @Enumerated(EnumType.STRING)
     private ImageSize sizeType;
 
+    @Column(name = "imageSetId", updatable = false, insertable = false)
+    private Long imageSetId;
+
+    public Long getImageSetId() {
+        return imageSetId;
+    }
+
+    public void setImageSetId(Long imageSetId) {
+        this.imageSetId = imageSetId;
+    }
+
     public Long getId() {
         return id;
     }

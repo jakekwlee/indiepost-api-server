@@ -48,7 +48,7 @@ public class HomeController {
 
     @GetMapping("/login")
     public String getLoginPage(Model model) {
-        // TODO
+        // TODO add server-side rendering
         model.addAttribute("res", new RenderingResponseDto());
         model.addAttribute("cdnUrl", config.getCdnUrl());
         return "index";
@@ -121,6 +121,6 @@ public class HomeController {
         return "User-agent: *\n" +
                 "Disallow: /admin/\n" +
                 "Disallow: /indiepost/\n" +
-                "Sitemap: http://www.indiepsot.co.kr/sitemap.xml";
+                "Sitemap: https://www.indiepsot.co.kr/sitemap.xml";
     }
 }

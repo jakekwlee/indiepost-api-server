@@ -1,53 +1,52 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.admin.AdminPostRequestDto;
-import com.indiepost.dto.admin.AdminPostResponseDto;
-import com.indiepost.dto.admin.AdminPostSummaryDto;
+import com.indiepost.dto.post.AdminPostRequestDto;
+import com.indiepost.dto.post.AdminPostResponseDto;
+import com.indiepost.dto.post.AdminPostSummaryDto;
+import com.indiepost.dto.post.PostQuery;
+import com.indiepost.enums.Types;
 import com.indiepost.model.Post;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * Created by jake on 17. 1. 14.
  */
 public interface AdminPostService {
-    Long save(Post post);
 
-    Post findById(Long id);
+    AdminPostResponseDto findOne(Long id);
 
-    AdminPostResponseDto getDtoById(Long id);
+    Long createDraft(AdminPostRequestDto dto);
 
-    void update(Post post);
+    Long createAutosave(AdminPostRequestDto requestDto);
 
-    void delete(Post post);
+    void update(AdminPostRequestDto postUpdateDto);
 
-    void deleteById(Long id);
+    void updateAutosave(AdminPostRequestDto requestDto);
 
-    List<AdminPostSummaryDto> find(int page, int maxResults, boolean isDesc);
+    Long deleteById(Long id);
 
-    List<AdminPostSummaryDto> findByQuery(PostQuery query, int page, int maxResults, boolean isDesc);
+    Long delete(Post post);
+
+    Page<AdminPostSummaryDto> find(Types.PostStatus status, Pageable pageable);
+
+    Page<AdminPostSummaryDto> findIdsIn(List<Long> ids, Pageable pageable);
+
+    Page<AdminPostSummaryDto> fullTextSearch(String text, Types.PostStatus status,
+                                             Pageable pageable);
 
     Long count();
 
     Long count(PostQuery query);
 
-    AdminPostResponseDto save(AdminPostRequestDto adminPostRequestDto);
+    List<String> findAllBylineNames();
 
-    AdminPostResponseDto createAutosave(AdminPostRequestDto adminPostRequestDto);
+    void bulkDeleteByStatus(Types.PostStatus status);
 
-    void updateAutosave(Long id, AdminPostRequestDto adminPostRequestDto);
+    void bulkDeleteByIds(List<Long> ids);
 
-    AdminPostResponseDto update(Long id, AdminPostRequestDto adminPostRequestDto);
+    void bulkStatusUpdate(List<Long> ids, Types.PostStatus changeTo);
 
-    AdminPostResponseDto getPostResponse(Long id);
-
-    List<AdminPostSummaryDto> getAdminPostTableDtoList(int page, int maxResults, boolean isDesc);
-
-    List<AdminPostSummaryDto> getLastUpdated(LocalDateTime dateFrom);
-
-    List<String> findAllDisplayNames();
-
-    void publishScheduledPosts();
 }

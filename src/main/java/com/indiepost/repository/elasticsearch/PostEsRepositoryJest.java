@@ -236,8 +236,8 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
         }
     }
 
+    //  Moved to AWS lambda function
     @Override
-    // TODO Move to lambda function
     public void bulkIndex(List<PostEs> posts) {
         if (posts.isEmpty()) {
             return;

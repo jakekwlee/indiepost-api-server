@@ -3,7 +3,7 @@ package com.indiepost.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.indiepost.dto.RelatedPostsMatchingResult;
+import com.indiepost.dto.post.RelatedPostsMatchingResult;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Test;

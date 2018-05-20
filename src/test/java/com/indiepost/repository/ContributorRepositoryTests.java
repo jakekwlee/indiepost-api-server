@@ -4,6 +4,7 @@ import com.indiepost.NewIndiepostApplication;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Contributor;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +15,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
@@ -22,10 +25,14 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
+@Transactional
 public class ContributorRepositoryTests {
 
     @Autowired
     private ContributorRepository contributorRepository;
+
+    private List<Long> insertedId = new ArrayList<>();
+
 
     @Before
     public void beforeTests() {
@@ -42,7 +49,8 @@ public class ContributorRepositoryTests {
         contributor.setLastUpdated(now);
         contributor.setCreated(now);
 
-        contributorRepository.save(contributor);
+        Long id = contributorRepository.save(contributor);
+        insertedId.add(id);
     }
 
     @Test
@@ -60,22 +68,32 @@ public class ContributorRepositoryTests {
         contributor.setLastUpdated(now);
         contributor.setCreated(now);
 
-        contributorRepository.save(contributor);
-        assertThat(contributor.getId()).isNotNull();
+        Long id = contributorRepository.save(contributor);
+        if (id != null) {
+            insertedId.add(id);
+        }
+        assertThat(id).isNotNull();
     }
 
     @Test
     public void delete_shouldDeleteContributorProperly() {
         List<Contributor> contributors = contributorRepository.findAll(
-                new PageRequest(0, 10, Sort.Direction.DESC, "id")
+                PageRequest.of(0, 10, Sort.Direction.DESC, "id")
         ).getContent();
-        if (contributors != null && contributors.size() > 0) {
+        if (contributors.size() > 0) {
             for (Contributor contributor : contributors) {
                 contributorRepository.delete(contributor);
             }
         }
         contributors = contributorRepository.findAll(
-                new PageRequest(0, 10, Sort.Direction.DESC, "id")).getContent();
+                PageRequest.of(0, 10, Sort.Direction.DESC, "id")).getContent();
         assertThat(contributors.size()).isEqualTo(0);
+    }
+
+    @After
+    public void afterTests() {
+        for (Long id : insertedId) {
+            contributorRepository.deleteById(id);
+        }
     }
 }

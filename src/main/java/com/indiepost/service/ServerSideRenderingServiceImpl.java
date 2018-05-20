@@ -1,7 +1,12 @@
 package com.indiepost.service;
 
 import com.indiepost.config.AppConfig;
-import com.indiepost.dto.*;
+import com.indiepost.dto.FullTextSearchQuery;
+import com.indiepost.dto.InitialData;
+import com.indiepost.dto.StaticPageDto;
+import com.indiepost.dto.post.PostDto;
+import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.dto.ssr.RenderingRequestDto;
 import com.indiepost.dto.ssr.RenderingResponseDto;
 import com.indiepost.enums.Types;
@@ -23,17 +28,23 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
 
     private final PostService postService;
 
-    private final PageService pageService;
+    private final StaticPageService staticPageService;
 
     private final RestTemplate restTemplate;
 
     private final AppConfig config;
 
     @Autowired
-    public ServerSideRenderingServiceImpl(InitialDataService initialDataService, PostService postService, PageService pageService, RestTemplate restTemplate, AppConfig config) {
+    public ServerSideRenderingServiceImpl(
+            InitialDataService initialDataService,
+            PostService postService,
+            StaticPageService staticPageService,
+            RestTemplate restTemplate,
+            AppConfig config
+    ) {
         this.initialDataService = initialDataService;
         this.postService = postService;
-        this.pageService = pageService;
+        this.staticPageService = staticPageService;
         this.restTemplate = restTemplate;
         this.config = config;
     }
@@ -50,7 +61,7 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
     @Override
     public void renderPost(Long postId, Model model, String servletPath) {
         InitialData initialData = initialDataService.getInitialData(false);
-        PostDto postDto = postService.findById(postId);
+        PostDto postDto = postService.findOne(postId);
         RenderingRequestDto rsRequest =
                 new RenderingRequestDto(initialData, postDto, servletPath);
         this.render(model, rsRequest);
@@ -60,9 +71,9 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
     @Override
     public void renderPage(String pageSlug, Model model, String servletPath) {
         InitialData initialData = initialDataService.getInitialData(false);
-        PageDto pageDto = pageService.findBySlug(pageSlug);
+        StaticPageDto staticPageDto = staticPageService.findBySlug(pageSlug);
         RenderingRequestDto rsRequest =
-                new RenderingRequestDto(initialData, pageDto, servletPath);
+                new RenderingRequestDto(initialData, staticPageDto, servletPath);
         this.render(model, rsRequest);
     }
 
@@ -71,16 +82,16 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
         InitialData initialData = initialDataService.getInitialData(false);
         PostQuery query = new PostQuery();
         query.setCategorySlug(categorySlug.toLowerCase());
-        List<PostSummary> posts = postService.findByQuery(query, 0, config.getFetchCount(), true);
+        List<PostSummaryDto> posts = postService.search(query, 0, config.getFetchCount(), true);
         RenderingRequestDto rsRequest =
                 new RenderingRequestDto(initialData, posts, servletPath);
-        this.render(model, rsRequest);
+        render(model, rsRequest);
     }
 
     @Override
     public void renderPostByTagPage(String tagName, Model model, String servletPath) {
         InitialData initialData = initialDataService.getInitialData(false);
-        List<PostSummary> posts = postService.findByTagName(tagName);
+        List<PostSummaryDto> posts = postService.findByTagName(tagName, 0, config.getFetchCount(), true);
         RenderingRequestDto rsRequest =
                 new RenderingRequestDto(initialData, posts, servletPath);
         this.render(model, rsRequest);
@@ -96,7 +107,7 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
                 0,
                 config.getFetchCount()
         );
-        List<PostSummary> posts = postService.fullTextSearch(query);
+        List<PostSummaryDto> posts = postService.fullTextSearch(query);
         RenderingRequestDto rsRequest =
                 new RenderingRequestDto(initialData, posts, servletPath);
         render(model, rsRequest);

@@ -1,6 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.config.AppConfig;
+import com.indiepost.dto.ImageSetDto;
 import com.indiepost.dto.PostImageSetListDto;
 import com.indiepost.enums.Types.ImageSize;
 import com.indiepost.model.Image;
@@ -13,8 +14,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.indiepost.mapper.PostMapper.imageSetToDto;
 
 /**
  * Created by jake on 8/17/16.
@@ -35,6 +38,7 @@ import java.util.Set;
 abstract class AbstractImageService implements ImageService {
 
     protected final AppConfig config;
+
     final ImageRepository imageRepository;
 
     private final PostRepository postRepository;
@@ -57,7 +61,7 @@ abstract class AbstractImageService implements ImageService {
     }
 
     @Override
-    public List<ImageSet> saveUploadedImages(MultipartFile[] multipartFiles) throws IOException, FileUploadException {
+    public List<ImageSetDto> saveUploadedImages(MultipartFile[] multipartFiles) throws IOException, FileUploadException {
         if (multipartFiles.length == 0) {
             throw new FileUploadException("File does not uploaded.");
         }
@@ -114,7 +118,9 @@ abstract class AbstractImageService implements ImageService {
             imageRepository.save(imageSet);
             imageSetList.add(imageSet);
         }
-        return imageSetList;
+        return imageSetList.stream()
+                .map(imageSet -> imageSetToDto(imageSet))
+                .collect(Collectors.toList());
     }
 
     private Image createImageObject(String filenamePrefix, int width, int height, String contentType, ImageSize sizeType) {
@@ -138,13 +144,14 @@ abstract class AbstractImageService implements ImageService {
     }
 
     @Override
-    public ImageSet getReference(Long id) {
-        return imageRepository.getReference(id);
-    }
-
-    @Override
-    public List<ImageSet> findAll(int page, int maxResults) {
-        return imageRepository.findAll(new PageRequest(page, maxResults, Sort.Direction.DESC, "uploadedAt"));
+    public Page<ImageSetDto> findAll(Pageable pageable) {
+        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, "id");
+        List<ImageSet> imageSetList = imageRepository.findAll(pageRequest);
+        List<ImageSetDto> dtoList = imageSetList.stream()
+                .map(imageSet -> imageSetToDto(imageSet))
+                .collect(Collectors.toList());
+        Long count = imageRepository.count();
+        return new PageImpl<>(dtoList, pageRequest, count);
     }
 
     @Override
@@ -163,11 +170,6 @@ abstract class AbstractImageService implements ImageService {
         postImageSetListDto.setTitleImage(titleImage);
         postImageSetListDto.setImages(imageSetList);
         return postImageSetListDto;
-    }
-
-    @Override
-    public void update(ImageSet imageSet) {
-        imageRepository.update(imageSet);
     }
 
     @Override

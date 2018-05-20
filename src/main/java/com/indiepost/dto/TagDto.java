@@ -5,11 +5,17 @@ package com.indiepost.dto;
  */
 public class TagDto {
 
-    private static final long serialVersionUID = 1L;
-
     private Long id;
 
     private String name;
+
+    public TagDto() {
+    }
+
+    public TagDto(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
     public Long getId() {
         return id;

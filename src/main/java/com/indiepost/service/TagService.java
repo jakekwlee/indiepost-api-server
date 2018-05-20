@@ -20,7 +20,5 @@ public interface TagService {
 
     List<Tag> findAll(int page, int maxResults);
 
-    void update(Tag tag);
-
     void delete(Tag tag);
 }

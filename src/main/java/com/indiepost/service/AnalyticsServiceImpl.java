@@ -62,26 +62,39 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         OverviewStats stats = new OverviewStats();
         stats.setPageviewTrend(pageviewTrend);
         stats.setVisitorTrend(visitorTrend);
+        stats.setPeriod(periodDto);
 
         stats.setTotalPageview(statRepository.getTotalPageviews(since, until));
         stats.setTotalUniquePageview(statRepository.getTotalUniquePageviews(since, until));
         stats.setTotalPostview(statRepository.getTotalPostviews(since, until));
         stats.setTotalUniquePostview(statRepository.getTotalUniquePostviews(since, until));
-        stats.setTopPagesWebapp(statRepository.getTopPages(since, until, 10L));
-        stats.setTopPosts(statRepository.getTopPosts(since, until, 10L));
-        stats.setPageviewByAuthor(statRepository.getPageviewsByAuthor(since, until, 100L));
-        stats.setPageviewByCategory(statRepository.getPageviewsByCategory(since, until, 30L));
-        stats.setTopTags(statRepository.getTopTags(since, until, 10L));
 
         stats.setTotalVisitor(visitorRepository.getTotalVisitors(since, until));
         stats.setTotalAppVisitor(visitorRepository.getTotalVisitors(since, until, ClientType.INDIEPOST_LEGACY_MOBILE_APP.toString()));
-        stats.setTopBrowser(visitorRepository.getTopWebBrowsers(since, until, 10L));
-        stats.setTopChannel(visitorRepository.getTopChannel(since, until, 10L));
-        stats.setTopReferrer(visitorRepository.getTopReferrers(since, until, 10L));
-        stats.setTopOs(visitorRepository.getTopOs(since, until, 10L));
 
         return stats;
     }
+
+    @Override
+    public TopStats getTopStats(PeriodDto periodDto) {
+        LocalDate startDate = periodDto.getStartDate();
+        LocalDate endDate = periodDto.getEndDate();
+        LocalDateTime since = startDate.atStartOfDay();
+        LocalDateTime until = endDate.atTime(23, 59, 59);
+
+        TopStats stats = new TopStats();
+        stats.setPeriod(periodDto);
+        stats.setTopPagesWebapp(statRepository.getTopPages(since, until, 10));
+        stats.setTopPosts(statRepository.getTopPosts(since, until, 10));
+        stats.setPageviewByAuthor(statRepository.getPageviewsByAuthor(since, until, 10));
+        stats.setPageviewByCategory(statRepository.getPageviewsByCategory(since, until, 10));
+        stats.setTopBrowser(visitorRepository.getTopWebBrowsers(since, until, 10));
+        stats.setTopChannel(visitorRepository.getTopChannel(since, until, 10));
+        stats.setTopReferrer(visitorRepository.getTopReferrers(since, until, 10));
+        stats.setTopOs(visitorRepository.getTopOs(since, until, 10));
+        return stats;
+    }
+
 
     @Override
     public RecentAndOldPostStats getRecentAndOldPostStats(PeriodDto periodDto) {
@@ -99,8 +112,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
         RecentAndOldPostStats stats = new RecentAndOldPostStats();
         stats.setTrend(trend);
-        stats.setTopRecentPosts(statRepository.getTopRecentPosts(since, until, 10L));
-        stats.setTopOldPosts(statRepository.getTopOldPosts(since, until, 10L));
+        stats.setPeriod(periodDto);
+        stats.setTopRecentPosts(statRepository.getTopRecentPosts(since, until, 10));
+        stats.setTopOldPosts(statRepository.getTopOldPosts(since, until, 10));
         return stats;
     }
 
@@ -119,11 +133,12 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     }
 
     @Override
-    public List<PostStatDto> getPostStats(PeriodDto periodDto) {
+    public PostStatsDto getPostStats(PeriodDto periodDto) {
         LocalDate startDate = periodDto.getStartDate();
         LocalDate endDate = periodDto.getEndDate();
         LocalDateTime since = startDate.atStartOfDay();
         LocalDateTime until = endDate.atTime(23, 59, 59);
-        return statRepository.getPostStatsOrderByPageviews(since, until, 3000L);
+        List<PostStatDto> postStatDtoList = statRepository.getPostStatsOrderByPageviews(since, until, 3000);
+        return new PostStatsDto(LocalDateTime.now(), postStatDtoList, periodDto);
     }
 }

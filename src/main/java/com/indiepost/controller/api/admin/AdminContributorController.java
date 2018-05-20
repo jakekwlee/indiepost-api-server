@@ -1,7 +1,7 @@
 package com.indiepost.controller.api.admin;
 
 import com.indiepost.dto.ContributorDto;
-import com.indiepost.dto.DeletedResponse;
+import com.indiepost.dto.DeleteResponse;
 import com.indiepost.enums.Types;
 import com.indiepost.service.ContributorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,10 @@ public class AdminContributorController {
 
     @GetMapping
     public Page<ContributorDto> get(@RequestParam String type, Pageable pageable) {
-        return contributorService.find(Types.ContributorType.valueOf(type), pageable);
+        if (type != null) {
+            return contributorService.find(Types.ContributorType.valueOf(type), pageable);
+        }
+        return contributorService.find(pageable);
     }
 
     @GetMapping("/{id}")
@@ -40,9 +43,9 @@ public class AdminContributorController {
     }
 
     @DeleteMapping("/{id}")
-    public DeletedResponse delete(@PathVariable Long id) {
+    public DeleteResponse delete(@PathVariable Long id) {
         Long deletedId = contributorService.deleteById(id);
-        return new DeletedResponse(deletedId);
+        return new DeleteResponse(deletedId);
     }
 
 }

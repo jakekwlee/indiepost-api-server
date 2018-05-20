@@ -5,8 +5,6 @@ import com.indiepost.service.AnalyticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
  * Created by jake on 17. 4. 29.
  */
@@ -26,6 +24,11 @@ public class AdminAnalyticsController {
         return analyticsService.getOverviewStats(periodDto);
     }
 
+    @PostMapping("/tops")
+    public TopStats getTopStats(@RequestBody PeriodDto periodDto) {
+        return analyticsService.getTopStats(periodDto);
+    }
+
     @PostMapping("/recent-and-old")
     public RecentAndOldPostStats getRecentAndOldPostStats(@RequestBody PeriodDto periodDto) {
         return analyticsService.getRecentAndOldPostStats(periodDto);
@@ -37,7 +40,7 @@ public class AdminAnalyticsController {
     }
 
     @PostMapping("/posts")
-    public List<PostStatDto> getPostStats(@RequestBody PeriodDto periodDto) {
+    public PostStatsDto getPostStats(@RequestBody PeriodDto periodDto) {
         return analyticsService.getPostStats(periodDto);
     }
 }

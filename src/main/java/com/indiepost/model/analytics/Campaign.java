@@ -3,6 +3,7 @@ package com.indiepost.model.analytics;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,7 +12,6 @@ import java.util.List;
 @Entity
 @Table(name = "Campaigns")
 public class Campaign {
-    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue
@@ -23,8 +23,8 @@ public class Campaign {
     @NotNull
     private String name;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "campaign")
-    private List<Link> links;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "campaign", cascade = CascadeType.ALL)
+    private List<Link> links = new ArrayList<>();
 
     @NotNull
     private LocalDateTime startAt;

@@ -57,7 +57,7 @@ public class ImageRepositoryTest {
         };
         Collections.addAll(prefixList, prefixArray);
         List<ImageSet> imageSetList = imageRepository.findByPrefixes(prefixList);
-        Assert.assertTrue(imageSetList.size() == 10);
+        Assert.assertEquals(10, imageSetList.size());
 
         for (ImageSet imageSet : imageSetList) {
             Set<Image> images = imageSet.getImages();

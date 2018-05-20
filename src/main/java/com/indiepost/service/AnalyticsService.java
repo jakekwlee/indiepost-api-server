@@ -2,8 +2,6 @@ package com.indiepost.service;
 
 import com.indiepost.dto.stat.*;
 
-import java.util.List;
-
 /**
  * Created by jake on 17. 4. 13.
  */
@@ -13,8 +11,9 @@ public interface AnalyticsService {
 
     RecentAndOldPostStats getRecentAndOldPostStats(PeriodDto periodDto);
 
-    List<PostStatDto> getPostStats(PeriodDto periodDto);
+    PostStatsDto getPostStats(PeriodDto periodDto);
 
     PostStatsDto getCachedPostStats();
 
+    TopStats getTopStats(PeriodDto periodDto);
 }

@@ -5,7 +5,9 @@ package com.indiepost.dto;
  */
 public class AccountCredentials {
     private String username;
+
     private String password;
+
     private boolean rememberMe;
 
     public String getUsername() {

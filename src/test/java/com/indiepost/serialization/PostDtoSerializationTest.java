@@ -6,9 +6,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.dto.PostDto;
-import com.indiepost.dto.PostSummary;
-import com.indiepost.dto.RelatedPostResponseDto;
+import com.indiepost.dto.post.PostDto;
+import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.service.PostService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +17,6 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,7 +37,7 @@ public class PostDtoSerializationTest {
      */
     @Test
     public void postDtoShouldSerializeCorrectly() throws JsonProcessingException {
-        PostDto postDto = postService.findById(347L);
+        PostDto postDto = postService.findOne(347L);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Hibernate5Module());
         System.out.println("*** Start serialize PostDto ***");
@@ -55,10 +53,10 @@ public class PostDtoSerializationTest {
      */
     @Test
     public void postSummaryListShouldSerializeCorrectly() throws JsonProcessingException {
-        List<PostSummary> postList = postService.findAll(3, 10, true);
+        List<PostSummaryDto> postList = postService.find(3, 10, true);
         ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).modules(new JavaTimeModule()).build();
         objectMapper.registerModule(new Hibernate5Module());
-        System.out.println("\n\n*** Start serialize List<PostSummary> ***\n\n");
+        System.out.println("\n\n*** Start serialize List<PostSummaryDto> ***\n\n");
         System.out.println("Result Length: " + postList.size());
         String result = objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true)
                 .writeValueAsString(postList);

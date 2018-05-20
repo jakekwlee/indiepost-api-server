@@ -1,5 +1,7 @@
 package com.indiepost.dto;
 
+import com.indiepost.dto.post.PostSummaryDto;
+
 import java.util.List;
 
 /**
@@ -13,17 +15,17 @@ public class InitialData {
 
     private UserDto currentUser;
 
-    private List<PostSummary> posts;
+    private List<PostSummaryDto> posts;
 
-    private List<PostSummary> topPosts;
+    private List<PostSummaryDto> topPosts;
 
-    private List<PostSummary> pickedPosts;
+    private List<PostSummaryDto> pickedPosts;
 
-    private PostSummary splash;
+    private PostSummaryDto splash;
 
-    private PostSummary featured;
+    private PostSummaryDto featured;
 
-    private List<PageDto> pages;
+    private List<StaticPageDto> pages;
 
     private boolean withLatestPosts;
 
@@ -43,43 +45,43 @@ public class InitialData {
         this.currentUser = currentUser;
     }
 
-    public List<PostSummary> getPosts() {
+    public List<PostSummaryDto> getPosts() {
         return posts;
     }
 
-    public void setPosts(List<PostSummary> posts) {
+    public void setPosts(List<PostSummaryDto> posts) {
         this.posts = posts;
     }
 
-    public List<PostSummary> getTopPosts() {
+    public List<PostSummaryDto> getTopPosts() {
         return topPosts;
     }
 
-    public void setTopPosts(List<PostSummary> topPosts) {
+    public void setTopPosts(List<PostSummaryDto> topPosts) {
         this.topPosts = topPosts;
     }
 
-    public List<PostSummary> getPickedPosts() {
+    public List<PostSummaryDto> getPickedPosts() {
         return pickedPosts;
     }
 
-    public void setPickedPosts(List<PostSummary> pickedPosts) {
+    public void setPickedPosts(List<PostSummaryDto> pickedPosts) {
         this.pickedPosts = pickedPosts;
     }
 
-    public PostSummary getSplash() {
+    public PostSummaryDto getSplash() {
         return splash;
     }
 
-    public void setSplash(PostSummary splash) {
+    public void setSplash(PostSummaryDto splash) {
         this.splash = splash;
     }
 
-    public PostSummary getFeatured() {
+    public PostSummaryDto getFeatured() {
         return featured;
     }
 
-    public void setFeatured(PostSummary featured) {
+    public void setFeatured(PostSummaryDto featured) {
         this.featured = featured;
     }
 
@@ -91,11 +93,11 @@ public class InitialData {
         this.withLatestPosts = withLatestPosts;
     }
 
-    public List<PageDto> getPages() {
+    public List<StaticPageDto> getPages() {
         return pages;
     }
 
-    public void setPages(List<PageDto> pages) {
+    public void setPages(List<StaticPageDto> pages) {
         this.pages = pages;
     }
 }

@@ -1,158 +1,61 @@
 package com.indiepost.repository.utils;
 
-import com.indiepost.dto.PostQuery;
-import com.indiepost.dto.stat.PostStatDto;
-import com.indiepost.dto.stat.ShareStat;
-import com.indiepost.dto.stat.TimeDomainDoubleStat;
-import com.indiepost.dto.stat.TimeDomainStat;
-import com.indiepost.enums.Types;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.criterion.Conjunction;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.transform.ResultTransformer;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import com.indiepost.dto.post.PostQuery;
+import com.indiepost.model.QPost;
+import com.querydsl.core.BooleanBuilder;
 
-import java.math.BigInteger;
-import java.sql.Date;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.List;
 
-import static com.indiepost.utils.DateUtil.localDateTimeToDate;
+import static com.indiepost.utils.DateUtil.instantToLocalDateTime;
 
 /**
  * Created by jake on 17. 1. 14.
  */
 public interface CriteriaUtils {
-    static Criteria setPageToCriteria(Criteria criteria, Pageable pageable) {
-        Sort sort = pageable.getSort();
-        if (sort != null) {
-            for (Sort.Order order : sort) {
-                if (order.getDirection().equals(Sort.Direction.ASC)) {
-                    criteria.addOrder(Order.asc(order.getProperty()));
-                } else {
-                    criteria.addOrder(Order.desc(order.getProperty()));
-                }
-            }
+    static BooleanBuilder addSearchConjunction(PostQuery search, BooleanBuilder builder) {
+        QPost post = QPost.post;
+        if (search.getStatus() != null) {
+            builder.and(post.status.eq(search.getStatus()));
         }
-        // TODO remove verbose casting
-        criteria.setFirstResult(new Long(pageable.getOffset()).intValue());
-        criteria.setMaxResults(pageable.getPageSize());
-        return criteria;
-    }
-
-    static void buildConjunction(PostQuery query, Conjunction conjunction) {
-        if (query.getAuthorId() != null) {
-            conjunction.add(Restrictions.eq("authorId", query.getAuthorId()));
+        if (search.getAuthorId() != null) {
+            builder.and(post.authorId.eq(search.getAuthorId()));
         }
-        if (query.getEditorId() != null) {
-            conjunction.add(Restrictions.eq("editorId", query.getEditorId()));
+        if (search.getEditorId() != null) {
+            builder.and(post.editorId.eq(search.getEditorId()));
         }
-        if (query.getCategoryId() != null) {
-            conjunction.add(Restrictions.eq("categoryId", query.getCategoryId()));
+        if (search.getCategoryId() != null) {
+            builder.and(post.categoryId.eq(search.getCategoryId()));
         }
-        if (StringUtils.isNotEmpty(query.getCategorySlug())) {
-            conjunction.add(Restrictions.ilike("category.slug", query.getCategorySlug()));
+        if (search.getCategorySlug() != null) {
+            builder.and(post.category.slug.eq(search.getCategorySlug()));
         }
-
-        if (query.getStatus() != null) {
-            conjunction.add(Restrictions.eq("status", query.getStatus()));
+        if (search.getPublishedAfter() != null) {
+            LocalDateTime publishedAfter = instantToLocalDateTime(search.getPublishedAfter());
+            builder.and(post.publishedAt.goe(publishedAfter));
         }
-        if (query.getDateFrom() != null) {
-            conjunction.add(Restrictions.ge("publishedAt", query.getDateFrom()));
+        if (search.getPublishedBefore() != null) {
+            LocalDateTime publishedBefore = instantToLocalDateTime(search.getPublishedBefore());
+            builder.and(post.publishedAt.loe(publishedBefore));
         }
-        if (query.getDateTo() != null) {
-            conjunction.add(Restrictions.le("publishedAt", query.getDateTo()));
+        if (search.getCreatedAfter() != null) {
+            LocalDateTime createdAfter = instantToLocalDateTime(search.getCreatedAfter());
+            builder.and(post.createdAt.goe(createdAfter));
         }
-        if (query.isSplash()) {
-            conjunction.add(Restrictions.eq("splash", query.isSplash()));
+        if (search.getCreatedBefore() != null) {
+            LocalDateTime createdBefore = instantToLocalDateTime(search.getCreatedBefore());
+            builder.and(post.createdAt.loe(createdBefore));
         }
-        if (query.isFeatured()) {
-            conjunction.add(Restrictions.eq("featured", query.isFeatured()));
+        if (search.getModifiedAfter() != null) {
+            LocalDateTime modifiedAfter = instantToLocalDateTime(search.getModifiedAfter());
+            builder.and(post.modifiedAt.goe(modifiedAfter));
         }
-        if (query.isPicked()) {
-            conjunction.add(Restrictions.eq("picked", query.isPicked()));
+        if (search.getModifiedBefore() != null) {
+            LocalDateTime modifiedBefore = instantToLocalDateTime(search.getModifiedBefore());
+            builder.and(post.modifiedAt.loe(modifiedBefore));
         }
-    }
-
-    static List<TimeDomainStat> getTrend(Query query, Types.TimeDomainDuration duration, LocalDateTime since, LocalDateTime until) {
-        query.setParameter("since", localDateTimeToDate(since));
-        query.setParameter("until", localDateTimeToDate(until));
-        query.setResultTransformer(new ResultTransformer() {
-            @Override
-            public Object transformTuple(Object[] tuple, String[] aliases) {
-                if (Types.TimeDomainDuration.HOURLY.equals(duration)) {
-                    return new TimeDomainStat(
-                            ((Timestamp) tuple[0]).toLocalDateTime(),
-                            ((BigInteger) tuple[1]).longValue()
-                    );
-                }
-                return new TimeDomainStat(
-                        ((Date) tuple[0]).toLocalDate().atStartOfDay(),
-                        ((BigInteger) tuple[1]).longValue()
-                );
-            }
-
-            @Override
-            public List transformList(List collection) {
-                return collection;
-            }
-        });
-        return query.list();
-    }
-
-    static List<TimeDomainDoubleStat> getDoubleTrend(Query query, Types.TimeDomainDuration duration, LocalDateTime since, LocalDateTime until) {
-        query.setParameter("since", localDateTimeToDate(since));
-        query.setParameter("until", localDateTimeToDate(until));
-        query.setResultTransformer(new ResultTransformer() {
-            @Override
-            public Object transformTuple(Object[] tuple, String[] aliases) {
-                if (Types.TimeDomainDuration.HOURLY.equals(duration)) {
-                    return new TimeDomainDoubleStat(
-                            ((Timestamp) tuple[0]).toLocalDateTime(),
-                            ((BigInteger) tuple[1]).longValue(),
-                            ((BigInteger) tuple[2]).longValue()
-                    );
-                }
-                return new TimeDomainDoubleStat(
-                        ((Date) tuple[0]).toLocalDate().atStartOfDay(),
-                        ((BigInteger) tuple[1]).longValue(),
-                        ((BigInteger) tuple[2]).longValue()
-                );
-            }
-
-            @Override
-            public List transformList(List collection) {
-                return collection;
-            }
-        });
-        return query.list();
-    }
-
-    static List<ShareStat> getShare(Query query, LocalDateTime since, LocalDateTime until, Long limit) {
-        return getShare(query, since, until, limit, null);
-    }
-
-    static List<ShareStat> getShare(Query query, LocalDateTime since, LocalDateTime until, Long limit, String client) {
-        query.setParameter("since", localDateTimeToDate(since));
-        query.setParameter("until", localDateTimeToDate(until));
-        query.setLong("limit", limit);
-        if (client != null) {
-            query.setParameter("client", client);
-        }
-        query.setResultTransformer(new ShareStatResultTransformer());
-        return query.list();
-    }
-
-    static List<PostStatDto> getPostShare(Query query, LocalDateTime since, LocalDateTime until, Long limit) {
-        query.setParameter("since", localDateTimeToDate(since));
-        query.setParameter("until", localDateTimeToDate(until));
-        query.setLong("limit", limit);
-        query.setResultTransformer(new PostStatsResultTransformer());
-        return query.list();
+        builder.and(post.splash.eq(search.isSplash()));
+        builder.and(post.featured.eq(search.isFeatured()));
+        builder.and(post.picked.eq(search.isPicked()));
+        return builder;
     }
 }
