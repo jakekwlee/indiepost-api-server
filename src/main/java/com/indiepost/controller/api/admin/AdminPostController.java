@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+
 /**
  * Created by jake on 10/8/16.
  */
@@ -78,7 +80,12 @@ public class AdminPostController {
     ) {
         Types.PostStatus postStatus = Types.PostStatus.valueOf(status.toUpperCase());
         if (StringUtils.isNotEmpty(query)) {
-            return adminPostService.fullTextSearch(query, postStatus, pageable);
+            try {
+                Long id = Long.parseLong(query);
+                return adminPostService.findIdsIn(Arrays.asList(id), pageable);
+            } catch (NumberFormatException e) {
+                return adminPostService.fullTextSearch(query, postStatus, pageable);
+            }
         }
         return adminPostService.find(postStatus, pageable);
     }

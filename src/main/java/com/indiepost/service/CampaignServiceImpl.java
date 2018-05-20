@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.indiepost.utils.DateUtil.normalizeTimeDomainStats;
+import static com.indiepost.utils.DateUtil.normalizeHoursOFTimeDomainStats;
 
 /**
  * Created by jake on 8/10/17.
@@ -178,7 +178,7 @@ public class CampaignServiceImpl implements CampaignService {
         LocalDateTime start = dto.getStartAt();
         LocalDateTime end = dto.getEndAt();
         List<TimeDomainStat> trend = campaignRepository.getUniqueVisitorTrendHourly(id);
-        trend = normalizeTimeDomainStats(trend, start.toLocalDate(), end.toLocalDate());
+        trend = normalizeHoursOFTimeDomainStats(trend, start.toLocalDate(), end.toLocalDate());
         List<ShareStat> byOs = campaignRepository.getUniqueVisitorGroupByOs(id);
         List<ShareStat> byBrowsers = campaignRepository.getUniqueVisitorGroupByBrowser(id);
 

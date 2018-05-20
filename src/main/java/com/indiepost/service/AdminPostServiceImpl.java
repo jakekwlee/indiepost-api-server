@@ -217,6 +217,15 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
+    public Page<AdminPostSummaryDto> findIdsIn(List<Long> ids, Pageable pageable) {
+        List<AdminPostSummaryDto> result = adminPostRepository.findByIdIn(ids);
+        if (result.isEmpty()) {
+            return new PageImpl<>(result, PageRequest.of(0, pageable.getPageSize()), 0);
+        }
+        return new PageImpl<>(result, PageRequest.of(0, pageable.getPageSize()), ids.size());
+    }
+
+    @Override
     public Page<AdminPostSummaryDto> fullTextSearch(String text, PostStatus status,
                                                     Pageable pageable) {
         User currentUser = userService.findCurrentUser();

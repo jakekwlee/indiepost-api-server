@@ -107,7 +107,7 @@ public class ContributorServiceImpl implements ContributorService {
         Page<Contributor> contributorList = contributorRepository.findAll(PageRequest.of(
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
-                Sort.Direction.ASC, "fullName"));
+                Sort.Direction.DESC, "id"));
         List<ContributorDto> dtoList = contributorList.getContent()
                 .stream()
                 .map(contributor -> toDto(contributor))

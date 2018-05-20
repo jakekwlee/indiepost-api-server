@@ -4,6 +4,7 @@ import com.indiepost.dto.FullTextSearchQuery;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,6 +27,8 @@ public interface PostService {
     List<PostSummaryDto> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc);
 
     List<PostSummaryDto> findByTagName(String tagName, int page, int maxResults, boolean isDesc);
+
+    List<PostSummaryDto> findByContributorFullName(String fullName, Pageable pageable);
 
     List<PostSummaryDto> findTopRatedPosts(LocalDateTime since, LocalDateTime until, Integer limit);
 

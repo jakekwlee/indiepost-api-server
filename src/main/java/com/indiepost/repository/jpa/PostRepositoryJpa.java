@@ -119,6 +119,25 @@ public class PostRepositoryJpa implements PostRepository {
     }
 
     @Override
+    public List<PostSummaryDto> findByContributorFullName(String fullName, Pageable pageable) {
+        JPAQuery query = getQueryFactory().from(post);
+        addProjections(query)
+                .innerJoin(post.category, QCategory.category)
+                .innerJoin(post.postContributors, QPostContributor.postContributor)
+                .innerJoin(QPostContributor.postContributor, QContributor.contributor)
+                .leftJoin(post.titleImage, QImageSet.imageSet)
+                .where(QContributor.contributor.fullName.eq(fullName).and(post.status.eq(PostStatus.PUBLISH)))
+                .orderBy(post.publishedAt.desc(), QPostContributor.postContributor.priority.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize()).distinct();
+        List<Tuple> result = query.fetch();
+        if (result.size() == 0) {
+            return new ArrayList<>();
+        }
+        return toDtoList(result);
+    }
+
+    @Override
     public List<PostSummaryDto> findByStatus(PostStatus status, Pageable pageable) {
         PostQuery query = new PostQuery();
         query.setStatus(status);

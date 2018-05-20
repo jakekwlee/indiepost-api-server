@@ -2,10 +2,14 @@ package com.indiepost.controller.api;
 
 import com.indiepost.dto.FullTextSearchQuery;
 import com.indiepost.dto.PostImageSetListDto;
-import com.indiepost.dto.post.*;
+import com.indiepost.dto.post.PostDto;
+import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.PostSummaryDto;
+import com.indiepost.dto.post.RelatedPostsRequestDto;
 import com.indiepost.service.ImageService;
 import com.indiepost.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -58,6 +62,12 @@ public class PostController {
             @RequestParam("p") int page,
             @RequestParam("m") int maxResults) {
         return postService.findByTagName(tagName, page, maxResults, true);
+    }
+
+    @GetMapping("/contributor/{fullName}")
+    public List<PostSummaryDto> getPostsByTagName(
+            @PathVariable String fullName, Pageable pageable) {
+        return postService.findByContributorFullName(fullName, pageable);
     }
 
     @PostMapping("/search")

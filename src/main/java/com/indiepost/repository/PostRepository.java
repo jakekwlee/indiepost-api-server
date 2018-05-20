@@ -28,6 +28,8 @@ public interface PostRepository {
 
     List<PostSummaryDto> findByTagName(String tagName, Pageable pageable);
 
+    List<PostSummaryDto> findByContributorFullName(String fullName, Pageable pageable);
+
     List<PostSummaryDto> findByStatus(Types.PostStatus status, Pageable pageable);
 
     List<PostSummaryDto> findScheduledPosts();

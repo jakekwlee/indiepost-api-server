@@ -110,6 +110,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public List<PostSummaryDto> findByContributorFullName(String fullName, Pageable pageable) {
+        return postRepository.findByContributorFullName(fullName, pageable);
+    }
+
+    @Override
     public List<PostSummaryDto> findTopRatedPosts(LocalDateTime since, LocalDateTime until, Integer limit) {
         List<PostStatDto> topStats = statRepository.getPostStatsOrderByPageviews(since, until, limit);
         if (topStats == null || topStats.isEmpty()) {
