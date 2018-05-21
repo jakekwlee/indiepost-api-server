@@ -2,6 +2,7 @@ package com.indiepost.repository.jpa;
 
 import com.indiepost.model.analytics.Click;
 import com.indiepost.model.analytics.QClick;
+import com.indiepost.model.analytics.Visitor;
 import com.indiepost.repository.ClickRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
@@ -19,6 +20,11 @@ public class ClickRepositoryJpa implements ClickRepository {
 
     @Override
     public void save(Click click) {
+        if (click.getVisitorId() != null) {
+            Long id = click.getVisitorId();
+            Visitor ref = entityManager.getReference(Visitor.class, id);
+            click.setVisitor(ref);
+        }
         entityManager.persist(click);
     }
 
