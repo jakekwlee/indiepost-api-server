@@ -11,6 +11,7 @@ import com.indiepost.dto.ssr.RenderingRequestDto;
 import com.indiepost.dto.ssr.RenderingResponseDto;
 import com.indiepost.enums.Types;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.client.RestClientException;
@@ -111,6 +112,16 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
         RenderingRequestDto rsRequest =
                 new RenderingRequestDto(initialData, posts, servletPath);
         render(model, rsRequest);
+    }
+
+    @Override
+    public void renderPostByContributorPage(String contributorName, Model model, String servletPath) {
+        InitialData initialData = initialDataService.getInitialData(false);
+        List<PostSummaryDto> posts =
+                postService.findByContributorFullName(contributorName, PageRequest.of(0, config.getFetchCount()));
+        RenderingRequestDto rsRequest =
+                new RenderingRequestDto(initialData, posts, servletPath);
+        this.render(model, rsRequest);
     }
 
     private void render(Model model, RenderingRequestDto requestDto) {

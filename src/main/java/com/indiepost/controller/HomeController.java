@@ -101,7 +101,7 @@ public class HomeController {
     @GetMapping("/contributor/{contributorName}")
     public String getPostsByContributorName(@PathVariable String contributorName, Model model, HttpServletRequest request) {
         if (config.isServerSideRendering()) {
-            serverSideRenderingService.renderPostByTagPage(contributorName, model, request.getServletPath());
+            serverSideRenderingService.renderPostByContributorPage(contributorName, model, request.getServletPath());
         } else {
             model.addAttribute("res", new RenderingResponseDto());
         }

@@ -17,4 +17,6 @@ public interface ServerSideRenderingService {
     void renderPostByTagPage(String tagName, Model model, String servletPath);
 
     void renderPostSearchResultsPage(String keyword, Model model, String servletPath);
+
+    void renderPostByContributorPage(String contributorName, Model model, String servletPath);
 }
