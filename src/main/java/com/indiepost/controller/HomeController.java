@@ -98,6 +98,17 @@ public class HomeController {
         return "index";
     }
 
+    @GetMapping("/contributor/{contributorName}")
+    public String getPostsByContributorName(@PathVariable String contributorName, Model model, HttpServletRequest request) {
+        if (config.isServerSideRendering()) {
+            serverSideRenderingService.renderPostByTagPage(contributorName, model, request.getServletPath());
+        } else {
+            model.addAttribute("res", new RenderingResponseDto());
+        }
+        model.addAttribute("cdnUrl", config.getCdnUrl());
+        return "index";
+    }
+
     @GetMapping("/search/{keyword}")
     public String search(@PathVariable String keyword, Model model, HttpServletRequest request) {
         if (config.isServerSideRendering()) {

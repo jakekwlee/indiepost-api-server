@@ -120,13 +120,18 @@ public class PostRepositoryJpa implements PostRepository {
 
     @Override
     public List<PostSummaryDto> findByContributorFullName(String fullName, Pageable pageable) {
+        QCategory ct = QCategory.category;
+        QPostContributor pc = QPostContributor.postContributor;
+        QContributor c = QContributor.contributor;
+        QImageSet i = QImageSet.imageSet;
+
         JPAQuery query = getQueryFactory().from(post);
         addProjections(query)
-                .innerJoin(post.category, QCategory.category)
-                .innerJoin(post.postContributors, QPostContributor.postContributor)
-                .innerJoin(QPostContributor.postContributor, QContributor.contributor)
-                .leftJoin(post.titleImage, QImageSet.imageSet)
-                .where(QContributor.contributor.fullName.eq(fullName).and(post.status.eq(PostStatus.PUBLISH)))
+                .innerJoin(post.category, ct)
+                .innerJoin(post.postContributors, pc)
+                .innerJoin(pc.contributor, c)
+                .leftJoin(post.titleImage, i)
+                .where(c.fullName.eq(fullName).and(post.status.eq(PostStatus.PUBLISH)))
                 .orderBy(post.publishedAt.desc(), QPostContributor.postContributor.priority.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize()).distinct();
