@@ -17,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -83,6 +84,9 @@ public class AdminPostRepositoryJpa implements AdminPostRepository {
 
         query.where(builder);
         List<Tuple> rows = query.fetch();
+        if (rows.size() == 0) {
+            return Collections.emptyList();
+        }
         List<AdminPostSummaryDto> posts = toDtoList(rows);
         return ids.stream().map(id -> {
             for (AdminPostSummaryDto post : posts) {

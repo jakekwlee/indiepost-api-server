@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -220,7 +221,7 @@ public class AdminPostServiceImpl implements AdminPostService {
     public Page<AdminPostSummaryDto> findIdsIn(List<Long> ids, Pageable pageable) {
         List<AdminPostSummaryDto> result = adminPostRepository.findByIdIn(ids);
         if (result.isEmpty()) {
-            return new PageImpl<>(result, PageRequest.of(0, pageable.getPageSize()), 0);
+            return new PageImpl<>(Collections.emptyList(), PageRequest.of(0, pageable.getPageSize()), 0);
         }
         return new PageImpl<>(result, PageRequest.of(0, pageable.getPageSize()), ids.size());
     }
