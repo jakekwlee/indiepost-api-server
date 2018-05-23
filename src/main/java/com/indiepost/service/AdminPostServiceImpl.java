@@ -227,6 +227,12 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
+    public Page<AdminPostSummaryDto> findText(String text, PostStatus status, Pageable pageable) {
+        User currentUser = userService.findCurrentUser();
+        return adminPostRepository.findText(text, currentUser, status, pageable);
+    }
+
+    @Override
     public Page<AdminPostSummaryDto> fullTextSearch(String text, PostStatus status,
                                                     Pageable pageable) {
         User currentUser = userService.findCurrentUser();

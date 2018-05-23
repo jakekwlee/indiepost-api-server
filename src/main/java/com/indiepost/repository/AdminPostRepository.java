@@ -5,6 +5,7 @@ import com.indiepost.dto.post.PostQuery;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Post;
 import com.indiepost.model.User;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -27,6 +28,8 @@ public interface AdminPostRepository {
     List<AdminPostSummaryDto> find(User currentUser, Pageable pageable);
 
     List<AdminPostSummaryDto> find(User currentUser, Types.PostStatus status, Pageable pageable);
+
+    Page<AdminPostSummaryDto> findText(String text, User currentUser, Types.PostStatus status, Pageable pageable);
 
     List<Long> findIds(User currentUser, Types.PostStatus status);
 

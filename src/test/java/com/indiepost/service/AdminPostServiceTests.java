@@ -3,12 +3,16 @@ package com.indiepost.service;
 import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
+import com.indiepost.dto.post.AdminPostSummaryDto;
+import com.indiepost.enums.Types;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -83,5 +87,14 @@ public class AdminPostServiceTests {
             AdminPostResponseDto dto = service.findOne(id);
             assertThat(dto.getContributors()).isEqualTo(Arrays.asList("유미래", "최은제", "이사민", "김유영"));
         }
+    }
+
+    @Test
+    @WithMockUser(username = "indiepost")
+    public void findText_shouldReturnResultProperly() {
+        Page<AdminPostSummaryDto> page =
+                service.findText("인스타그램", Types.PostStatus.PUBLISH, PageRequest.of(0, 500));
+        assertThat(page.getContent()).hasSize(16);
+
     }
 }

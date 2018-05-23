@@ -34,6 +34,8 @@ public interface AdminPostService {
 
     Page<AdminPostSummaryDto> findIdsIn(List<Long> ids, Pageable pageable);
 
+    Page<AdminPostSummaryDto> findText(String text, Types.PostStatus status, Pageable pageable);
+
     Page<AdminPostSummaryDto> fullTextSearch(String text, Types.PostStatus status,
                                              Pageable pageable);
 

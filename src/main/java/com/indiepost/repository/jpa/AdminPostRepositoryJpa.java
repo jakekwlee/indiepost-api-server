@@ -10,6 +10,8 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -121,6 +123,43 @@ public class AdminPostRepositoryJpa implements AdminPostRepository {
 
         query.where(builder);
         return toDtoList(query.fetch());
+    }
+
+    @Override
+    public Page<AdminPostSummaryDto> findText(String text, User currentUser, PostStatus status, Pageable pageable) {
+        String like = "%" + text + "%";
+        JPAQuery<Long> query = getQueryFactory()
+                .selectDistinct(post.id)
+                .from(post)
+                .leftJoin(post.postContributors, QPostContributor.postContributor)
+                .leftJoin(QPostContributor.postContributor.contributor, QContributor.contributor)
+                .leftJoin(post.postTags, QPostTag.postTag)
+                .leftJoin(QPostTag.postTag.tag, QTag.tag)
+                .orderBy(post.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize());
+
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(post.status.eq(status));
+        addPrivacyCriteria(builder, status, currentUser);
+        builder.and(post.title.like(like)
+                .or(post.excerpt.like(like))
+                .or(post.displayName.like(like))
+                .or(QTag.tag.name.like(like))
+                .or(QContributor.contributor.fullName.like(like))
+        );
+
+        query.where(builder);
+
+        Long count = query.fetchCount();
+        List<Long> ids = query.fetch();
+
+        if (ids.size() == 0) {
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
+        }
+
+        List<AdminPostSummaryDto> dtoList = findByIdIn(ids);
+        return new PageImpl<>(dtoList, pageable, count.intValue());
     }
 
     @Override

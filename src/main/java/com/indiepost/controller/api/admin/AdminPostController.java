@@ -84,7 +84,7 @@ public class AdminPostController {
                 Long id = Long.parseLong(query);
                 return adminPostService.findIdsIn(Arrays.asList(id), pageable);
             } catch (NumberFormatException e) {
-                return adminPostService.fullTextSearch(query, postStatus, pageable);
+                return adminPostService.findText(query, postStatus, pageable);
             }
         }
         return adminPostService.find(postStatus, pageable);
