@@ -4,9 +4,9 @@ import com.indiepost.filter.JWTAuthenticationFilter;
 import com.indiepost.repository.UserRepository;
 import com.indiepost.service.CustomUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
@@ -42,14 +42,14 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
 
-    private final Environment environment;
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
 
     @Autowired
-    public SpringSecurityConfigurer(PasswordEncoder passwordEncoder, UserRepository userRepository, JWTAuthenticationFilter jwtAuthenticationFilter, Environment environment) {
+    public SpringSecurityConfigurer(PasswordEncoder passwordEncoder, UserRepository userRepository, JWTAuthenticationFilter jwtAuthenticationFilter) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.environment = environment;
     }
 
     @Override
@@ -95,8 +95,7 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
         allowedOrigins.add("https://www.indiepost.co.kr");
         allowedOrigins.add("http://www.indiepost.co.kr");
 
-        boolean isDevelopmentMode = Arrays.asList(environment.getActiveProfiles()).contains("dev");
-        if (isDevelopmentMode) {
+        if (activeProfile.equals("dev")) {
             allowedOrigins.add("http://localhost");
         }
 
