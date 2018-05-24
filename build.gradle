@@ -18,7 +18,7 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'idea'
 
 group = 'com.indiepost'
-version = '1.9.14-SNAPSHOT'
+version = '1.9.15-SNAPSHOT'
 sourceCompatibility = 1.8
 
 springBoot {
