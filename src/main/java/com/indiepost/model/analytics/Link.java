@@ -1,5 +1,10 @@
 package com.indiepost.model.analytics;
 
+import com.indiepost.enums.Types.LinkType;
+import com.indiepost.model.Banner;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -33,6 +38,7 @@ public class Link {
     private LocalDateTime createdAt;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "link")
+    @LazyCollection(LazyCollectionOption.EXTRA)
     private List<Click> clicks;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -41,6 +47,27 @@ public class Link {
 
     @Column(name = "campaignId", nullable = false, updatable = false, insertable = false)
     private Long campaignId;
+
+    private LinkType linkType = LinkType.Standard;
+
+    @OneToOne(mappedBy = "link", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Banner banner;
+
+    public LinkType getLinkType() {
+        return linkType;
+    }
+
+    public void setLinkType(LinkType linkType) {
+        this.linkType = linkType;
+    }
+
+    public Banner getBanner() {
+        return banner;
+    }
+
+    public void setBanner(Banner banner) {
+        this.banner = banner;
+    }
 
     public Campaign getCampaign() {
         return campaign;

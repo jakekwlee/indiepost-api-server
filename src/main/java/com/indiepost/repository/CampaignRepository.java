@@ -4,6 +4,7 @@ import com.indiepost.dto.stat.LinkDto;
 import com.indiepost.dto.stat.RawDataReportRow;
 import com.indiepost.dto.stat.ShareStat;
 import com.indiepost.dto.stat.TimeDomainStat;
+import com.indiepost.model.Banner;
 import com.indiepost.model.analytics.Campaign;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +37,8 @@ public interface CampaignRepository {
     List<ShareStat> getTopCampaigns(LocalDateTime start, LocalDateTime end, String clientName, int limit);
 
     List<TimeDomainStat> getUniqueVisitorTrendHourly(Long campaignId);
+
+    List<Banner> findBannerOnCampaignPeriodByPriority();
 
     List<RawDataReportRow> getRawDataReport(Long campaignId);
 }

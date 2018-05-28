@@ -1,10 +1,13 @@
 package com.indiepost.service;
 
+import com.indiepost.dto.stat.BannerDto;
 import com.indiepost.dto.stat.CampaignDto;
 import com.indiepost.dto.stat.CampaignReport;
 import com.indiepost.model.analytics.Campaign;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 /**
  * Created by jake on 8/10/17.
@@ -21,6 +24,8 @@ public interface CampaignService {
     Page<CampaignDto> find(Pageable pageable);
 
     Campaign dtoToCampaign(CampaignDto campaignDto);
+
+    List<BannerDto> findBannersOnCampaignPeriod();
 
     CampaignDto campaignToDto(Campaign campaign);
 

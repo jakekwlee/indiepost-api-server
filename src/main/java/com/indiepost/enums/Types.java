@@ -62,4 +62,12 @@ public interface Types {
     enum ContributorDisplayType {
         HTML, TEXT
     }
+
+    enum LinkType {
+        Banner, Standard, FakeVideo
+    }
+
+    enum BannerType {
+        FullWidth, HalfWidth, Sidebar
+    }
 }

@@ -1,6 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.stat.*;
+import com.indiepost.model.Banner;
 import com.indiepost.model.analytics.Campaign;
 import com.indiepost.model.analytics.Link;
 import com.indiepost.repository.CampaignRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -132,6 +134,27 @@ public class CampaignServiceImpl implements CampaignService {
         campaign.setEndAt(campaignDto.getEndAt());
         campaign.setCreatedAt(LocalDateTime.now());
         return campaign;
+    }
+
+    @Override
+    public List<BannerDto> findBannersOnCampaignPeriod() {
+        List<Banner> bannerList = campaignRepository.findBannerOnCampaignPeriodByPriority();
+        if (bannerList == null) {
+            return new ArrayList<>();
+        }
+        String linkUriPath = "https://www.indiepost.co.kr/link/";
+        return bannerList.stream().map(banner -> {
+            BannerDto dto = new BannerDto();
+            dto.setId(banner.getId());
+            dto.setBannerType(banner.getBannerType().toString());
+            dto.setBgColor(banner.getBgColor());
+            dto.setCover(banner.isCover());
+            dto.setImageUrl(banner.getImageUrl());
+            dto.setOutLink(banner.isOutLink());
+            dto.setPriority(banner.getPriority());
+            dto.setLinkTo(linkUriPath + banner.getLink().getUid());
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     @Override

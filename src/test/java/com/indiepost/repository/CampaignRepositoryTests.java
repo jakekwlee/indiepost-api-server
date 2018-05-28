@@ -3,6 +3,7 @@ package com.indiepost.repository;
 import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.stat.LinkDto;
 import com.indiepost.dto.stat.ShareStat;
+import com.indiepost.model.Banner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,12 @@ public class CampaignRepositoryTests {
             assertThat(expected.getStatName()).isEqualTo(result.getStatName());
             assertThat(expected.getStatValue()).isEqualTo(result.getStatValue());
         }
+    }
+
+    @Test
+    public void findBannerOnCampaignPeriodByPriority_shouldWorkProperly() {
+        List<Banner> bannerList = repository.findBannerOnCampaignPeriodByPriority();
+        assertThat(bannerList).hasSize(1);
     }
 
 }

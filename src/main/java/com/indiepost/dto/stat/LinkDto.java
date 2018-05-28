@@ -1,5 +1,6 @@
 package com.indiepost.dto.stat;
 
+import com.indiepost.enums.Types.LinkType;
 import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.NotNull;
@@ -28,6 +29,11 @@ public class LinkDto {
     @Size(min = 8, max = 30)
     private String uid;
 
+    @NotNull
+    private String linkType = LinkType.Standard.toString();
+
+    private BannerDto banner;
+
     private Long allClicks;
 
     private Long validClicks;
@@ -35,6 +41,22 @@ public class LinkDto {
     private LocalDateTime createdAt;
 
     private boolean isUpdated;
+
+    public String getLinkType() {
+        return linkType;
+    }
+
+    public void setLinkType(String linkType) {
+        this.linkType = linkType;
+    }
+
+    public BannerDto getBanner() {
+        return banner;
+    }
+
+    public void setBanner(BannerDto banner) {
+        this.banner = banner;
+    }
 
     public Long getValidClicks() {
         return validClicks;

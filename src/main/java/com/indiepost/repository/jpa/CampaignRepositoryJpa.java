@@ -4,6 +4,8 @@ import com.indiepost.dto.stat.LinkDto;
 import com.indiepost.dto.stat.RawDataReportRow;
 import com.indiepost.dto.stat.ShareStat;
 import com.indiepost.dto.stat.TimeDomainStat;
+import com.indiepost.model.Banner;
+import com.indiepost.model.QBanner;
 import com.indiepost.model.analytics.*;
 import com.indiepost.repository.CampaignRepository;
 import com.querydsl.core.Tuple;
@@ -151,6 +153,21 @@ public class CampaignRepositoryJpa implements CampaignRepository {
 
                     return new TimeDomainStat(statDateTime, statValue);
                 }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Banner> findBannerOnCampaignPeriodByPriority() {
+        QLink l = QLink.link;
+        QBanner b = QBanner.banner;
+        LocalDateTime now = LocalDateTime.now();
+
+        return getQueryFactory()
+                .selectFrom(b)
+                .innerJoin(l).on(b.linkId.eq(l.id))
+                .innerJoin(c).on(l.campaignId.eq(c.id))
+                .where(c.startAt.loe(now).and(c.endAt.goe(now)))
+                .orderBy(b.priority.asc())
+                .fetch();
     }
 
     @Override
