@@ -2,6 +2,7 @@ package com.indiepost.dto.stat;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +23,10 @@ public class CampaignDto {
     private String name;
 
     @NotNull
-    private LocalDateTime startAt;
+    private Instant startAt;
 
     @NotNull
-    private LocalDateTime endAt;
+    private Instant endAt;
 
     private LocalDateTime createdAt;
 
@@ -70,19 +71,19 @@ public class CampaignDto {
         this.name = name;
     }
 
-    public LocalDateTime getStartAt() {
+    public Instant getStartAt() {
         return startAt;
     }
 
-    public void setStartAt(LocalDateTime startAt) {
+    public void setStartAt(Instant startAt) {
         this.startAt = startAt;
     }
 
-    public LocalDateTime getEndAt() {
+    public Instant getEndAt() {
         return endAt;
     }
 
-    public void setEndAt(LocalDateTime endAt) {
+    public void setEndAt(Instant endAt) {
         this.endAt = endAt;
     }
 

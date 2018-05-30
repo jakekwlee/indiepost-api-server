@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.indiepost.utils.DateUtil.normalizeHoursOFTimeDomainStats;
+import static com.indiepost.utils.DateUtil.*;
 
 /**
  * Created by jake on 8/10/17.
@@ -45,8 +45,8 @@ public class CampaignServiceImpl implements CampaignService {
         campaign.setName(campaignDto.getName());
         campaign.setClientName(campaignDto.getClientName());
         campaign.setGoal(campaignDto.getGoal());
-        campaign.setStartAt(campaignDto.getStartAt());
-        campaign.setEndAt(campaignDto.getEndAt());
+        campaign.setStartAt(instantToLocalDateTime(campaignDto.getStartAt()));
+        campaign.setEndAt(instantToLocalDateTime(campaignDto.getEndAt()));
         campaign.setCreatedAt(LocalDateTime.now());
         List<LinkDto> dtoList = campaignDto.getLinks();
         if (dtoList != null && dtoList.size() > 0) {
@@ -71,8 +71,8 @@ public class CampaignServiceImpl implements CampaignService {
         campaign.setName(campaignDto.getName());
         campaign.setClientName(campaignDto.getClientName());
         campaign.setGoal(campaignDto.getGoal());
-        campaign.setStartAt(campaignDto.getStartAt());
-        campaign.setEndAt(campaignDto.getEndAt());
+        campaign.setStartAt(instantToLocalDateTime(campaignDto.getStartAt()));
+        campaign.setEndAt(instantToLocalDateTime(campaignDto.getEndAt()));
         campaign.setCreatedAt(LocalDateTime.now());
         List<LinkDto> dtoList = campaignDto.getLinks();
         if (dtoList == null || dtoList.size() == 0) {
@@ -130,8 +130,8 @@ public class CampaignServiceImpl implements CampaignService {
         campaign.setName(campaignDto.getName());
         campaign.setClientName(campaignDto.getClientName());
         campaign.setGoal(campaignDto.getGoal());
-        campaign.setStartAt(campaignDto.getStartAt());
-        campaign.setEndAt(campaignDto.getEndAt());
+        campaign.setStartAt(instantToLocalDateTime(campaignDto.getStartAt()));
+        campaign.setEndAt(instantToLocalDateTime(campaignDto.getEndAt()));
         campaign.setCreatedAt(LocalDateTime.now());
         return campaign;
     }
@@ -169,8 +169,8 @@ public class CampaignServiceImpl implements CampaignService {
         dto.setName(campaign.getName());
         dto.setClientName(campaign.getClientName());
         dto.setCreatedAt(campaign.getCreatedAt());
-        dto.setStartAt(campaign.getStartAt());
-        dto.setEndAt(campaign.getEndAt());
+        dto.setStartAt(localDateTimeToInstant(campaign.getStartAt()));
+        dto.setEndAt(localDateTimeToInstant(campaign.getEndAt()));
         dto.setGoal(campaign.getGoal());
 
         Long campaignId = campaign.getId();
@@ -198,14 +198,14 @@ public class CampaignServiceImpl implements CampaignService {
                 .collect(Collectors.toList());
         dto.setLinks(null);
 
-        LocalDateTime start = dto.getStartAt();
-        LocalDateTime end = dto.getEndAt();
+        LocalDateTime start = instantToLocalDateTime(dto.getStartAt());
+        LocalDateTime end = instantToLocalDateTime(dto.getEndAt());
         List<TimeDomainStat> trend = campaignRepository.getUniqueVisitorTrendHourly(id);
         trend = normalizeHoursOFTimeDomainStats(trend, start.toLocalDate(), end.toLocalDate());
         List<ShareStat> byOs = campaignRepository.getUniqueVisitorGroupByOs(id);
         List<ShareStat> byBrowsers = campaignRepository.getUniqueVisitorGroupByBrowser(id);
 
-        LocalDateTime since = dto.getEndAt().minusDays(60);
+        LocalDateTime since = start.minusDays(60);
         List<ShareStat> topPrevious = campaignRepository.getTopCampaigns(since, end, dto.getClientName(), 10);
         List<RawDataReportRow> rawData = campaignRepository.getRawDataReport(id);
 
