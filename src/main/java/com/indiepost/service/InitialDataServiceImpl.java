@@ -4,6 +4,7 @@ import com.indiepost.config.AppConfig;
 import com.indiepost.dto.InitialData;
 import com.indiepost.dto.StaticPageDto;
 import com.indiepost.dto.post.PostSummaryDto;
+import com.indiepost.dto.stat.BannerDto;
 import com.indiepost.enums.Types;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,16 +31,19 @@ public class InitialDataServiceImpl implements InitialDataService {
 
     private final StaticPageService staticPageService;
 
+    private final CampaignService campaignService;
+
     private final AppConfig config;
 
     @Autowired
     public InitialDataServiceImpl(CategoryService categoryService, UserService userService,
-                                  PostService postService, StaticPageService staticPageService, AppConfig config) {
+                                  PostService postService, StaticPageService staticPageService, AppConfig config, CampaignService campaignService) {
         this.categoryService = categoryService;
         this.userService = userService;
         this.postService = postService;
         this.staticPageService = staticPageService;
         this.config = config;
+        this.campaignService = campaignService;
     }
 
     @Override
@@ -58,6 +62,11 @@ public class InitialDataServiceImpl implements InitialDataService {
 
         if (withLatestPosts) {
             initialData.setPosts(postService.find(0, config.getFetchCount(), true));
+        }
+
+        List<BannerDto> banners = campaignService.findBannersOnCampaignPeriod();
+        if (banners != null && banners.size() > 0) {
+            initialData.setBanners(banners);
         }
 
         LocalDateTime now = LocalDateTime.now();

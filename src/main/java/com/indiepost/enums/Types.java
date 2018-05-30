@@ -68,6 +68,6 @@ public interface Types {
     }
 
     enum BannerType {
-        FullWidth, HalfWidth, Sidebar
+        FullWidth, Grid, SidePanel,
     }
 }

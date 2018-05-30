@@ -1,6 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.stat.*;
+import com.indiepost.enums.Types;
 import com.indiepost.model.Banner;
 import com.indiepost.model.analytics.Campaign;
 import com.indiepost.model.analytics.Link;
@@ -146,13 +147,19 @@ public class CampaignServiceImpl implements CampaignService {
         return bannerList.stream().map(banner -> {
             BannerDto dto = new BannerDto();
             dto.setId(banner.getId());
+            dto.setTitle(banner.getTitle());
+            dto.setSubtitle(banner.getSubtitle());
             dto.setBannerType(banner.getBannerType().toString());
             dto.setBgColor(banner.getBgColor());
-            dto.setCover(banner.isCover());
+            dto.setInternalUrl(banner.getInternalUrl());
             dto.setImageUrl(banner.getImageUrl());
-            dto.setOutLink(banner.isOutLink());
+            dto.setInternalUrl(banner.getInternalUrl());
+            dto.setCover(banner.isCover());
             dto.setPriority(banner.getPriority());
-            dto.setLinkTo(linkUriPath + banner.getLink().getUid());
+            Link link = banner.getLink();
+            if (link != null) {
+                dto.setLinkTo(linkUriPath + link.getUid());
+            }
             return dto;
         }).collect(Collectors.toList());
     }
@@ -227,6 +234,19 @@ public class CampaignServiceImpl implements CampaignService {
         link.setName(dto.getName());
         link.setUid(dto.getUid());
         link.setUrl(dto.getUrl());
+        if (dto.getBanner() != null) {
+            BannerDto bannerDto = dto.getBanner();
+            Banner banner = new Banner();
+            banner.setTitle(bannerDto.getTitle());
+            banner.setSubtitle(bannerDto.getSubtitle());
+            banner.setBannerType(Types.BannerType.valueOf(bannerDto.getBannerType()));
+            banner.setBgColor(bannerDto.getBgColor());
+            banner.setInternalUrl(bannerDto.getInternalUrl());
+            banner.setImageUrl(bannerDto.getImageUrl());
+            banner.setPriority(bannerDto.getPriority());
+            link.setBanner(banner);
+        }
+
         return link;
     }
 }

@@ -14,6 +14,12 @@ public class Banner {
     @GeneratedValue
     private Long id;
 
+    @Size(max = 30)
+    private String title;
+
+    @Size(max = 30)
+    private String subtitle;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private BannerType bannerType;
@@ -22,32 +28,38 @@ public class Banner {
     @Size(max = 12)
     private String bgColor = "#ccc";
 
-    @Column(nullable = false)
     @Size(max = 500)
     private String imageUrl;
 
     @Column(nullable = false)
     private boolean cover;
 
-    @Column(nullable = false)
-    private boolean outLink;
+    private String internalUrl;
 
     @Column(nullable = false)
     private int priority;
 
-    @OneToOne(optional = false, fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "linkId")
     private Link link;
 
     @Column(name = "linkId", insertable = false, updatable = false)
     private Long linkId;
 
-    public boolean isOutLink() {
-        return outLink;
+    public String getTitle() {
+        return title;
     }
 
-    public void setOutLink(boolean outLink) {
-        this.outLink = outLink;
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
     }
 
     public Long getId() {
@@ -112,5 +124,13 @@ public class Banner {
 
     public void setLinkId(Long linkId) {
         this.linkId = linkId;
+    }
+
+    public String getInternalUrl() {
+        return internalUrl;
+    }
+
+    public void setInternalUrl(String internalUrl) {
+        this.internalUrl = internalUrl;
     }
 }

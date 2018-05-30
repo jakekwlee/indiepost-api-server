@@ -48,6 +48,7 @@ public class Link {
     @Column(name = "campaignId", nullable = false, updatable = false, insertable = false)
     private Long campaignId;
 
+    @Enumerated(EnumType.STRING)
     private LinkType linkType = LinkType.Standard;
 
     @OneToOne(mappedBy = "link", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

@@ -1,6 +1,7 @@
 package com.indiepost.dto;
 
 import com.indiepost.dto.post.PostSummaryDto;
+import com.indiepost.dto.stat.BannerDto;
 
 import java.util.List;
 
@@ -8,8 +9,6 @@ import java.util.List;
  * Created by jake on 17. 1. 22.
  */
 public class InitialData {
-
-    private static final long serialVersionUID = 1L;
 
     private List<CategoryDto> categories;
 
@@ -26,6 +25,8 @@ public class InitialData {
     private PostSummaryDto featured;
 
     private List<StaticPageDto> pages;
+
+    private List<BannerDto> banners;
 
     private boolean withLatestPosts;
 
@@ -99,5 +100,13 @@ public class InitialData {
 
     public void setPages(List<StaticPageDto> pages) {
         this.pages = pages;
+    }
+
+    public List<BannerDto> getBanners() {
+        return banners;
+    }
+
+    public void setBanners(List<BannerDto> banners) {
+        this.banners = banners;
     }
 }

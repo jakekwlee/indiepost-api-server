@@ -301,8 +301,10 @@ import javax.persistence.*;
                         "order by p.publishedAt desc"),
 
         @NamedNativeQuery(name = "@GET_LINKS_BY_CAMPAIGN_ID_ORDER_BY_CLICKS",
-                query = "select l.id, l.campaignId, l.name, l.uid, l.url, l.createdAt, IFNULL(i.clicks, 0) validClicks " +
+                query = "select l.id, l.campaignId, l.name, l.uid, l.url, l.createdAt, IFNULL(i.clicks, 0) validClicks, l.linkType, " +
+                        "b.id bannerId, b.bannerType, b.bgColor, b.imageUrl, b.internalUrl, b.cover,  b.title, b.subtitle " +
                         "from Links l " +
+                        "left join Banners b on b.linkId = l.id " +
                         "inner join Campaigns c on c.id = l.campaignId " +
                         "left outer join (" +
                         "   select l.id, count(distinct s.visitorId) clicks " +

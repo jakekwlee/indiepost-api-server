@@ -3,6 +3,10 @@ package com.indiepost.dto.stat;
 public class BannerDto {
     private Long id;
 
+    private String title;
+
+    private String subtitle;
+
     private String bannerType;
 
     private String bgColor = "#ccc";
@@ -11,20 +15,26 @@ public class BannerDto {
 
     private String linkTo;
 
-    private boolean outLink;
+    private String internalUrl;
 
     private boolean cover;
 
     private int priority;
 
-    private boolean updated;
-
-    public boolean isUpdated() {
-        return updated;
+    public String getTitle() {
+        return title;
     }
 
-    public void setUpdated(boolean updated) {
-        this.updated = updated;
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
     }
 
     public String getLinkTo() {
@@ -33,14 +43,6 @@ public class BannerDto {
 
     public void setLinkTo(String linkTo) {
         this.linkTo = linkTo;
-    }
-
-    public boolean isOutLink() {
-        return outLink;
-    }
-
-    public void setOutLink(boolean outLink) {
-        this.outLink = outLink;
     }
 
     public Long getId() {
@@ -91,4 +93,11 @@ public class BannerDto {
         this.priority = priority;
     }
 
+    public String getInternalUrl() {
+        return internalUrl;
+    }
+
+    public void setInternalUrl(String internalUrl) {
+        this.internalUrl = internalUrl;
+    }
 }

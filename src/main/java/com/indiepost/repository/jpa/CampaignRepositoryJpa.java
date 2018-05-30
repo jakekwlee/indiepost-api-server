@@ -1,9 +1,7 @@
 package com.indiepost.repository.jpa;
 
-import com.indiepost.dto.stat.LinkDto;
-import com.indiepost.dto.stat.RawDataReportRow;
-import com.indiepost.dto.stat.ShareStat;
-import com.indiepost.dto.stat.TimeDomainStat;
+import com.indiepost.dto.stat.*;
+import com.indiepost.enums.Types.LinkType;
 import com.indiepost.model.Banner;
 import com.indiepost.model.QBanner;
 import com.indiepost.model.analytics.*;
@@ -93,6 +91,7 @@ public class CampaignRepositoryJpa implements CampaignRepository {
                     String url = (String) objects[4];
                     LocalDateTime createdAt = ((Timestamp) objects[5]).toLocalDateTime();
                     Integer validClicks = ((BigInteger) objects[6]).intValue();
+                    String linkType = (String) objects[7];
 
                     LinkDto dto = new LinkDto();
                     dto.setId(id);
@@ -102,6 +101,29 @@ public class CampaignRepositoryJpa implements CampaignRepository {
                     dto.setUrl(url);
                     dto.setCreatedAt(createdAt);
                     dto.setValidClicks(validClicks.longValue());
+                    dto.setLinkType(linkType);
+                    if (linkType.equals(LinkType.Banner.toString()) && objects[8] != null) {
+                        Long bannerId = ((BigInteger) objects[8]).longValue();
+                        String bannerType = (String) objects[9];
+                        String bgColor = (String) objects[10];
+                        String imageUrl = (String) objects[11];
+                        String internalUrl = (String) objects[12];
+                        boolean isCover = (Boolean) objects[13];
+                        String title = (String) objects[14];
+                        String subtitle = (String) objects[15];
+
+                        BannerDto banner = new BannerDto();
+                        banner.setId(bannerId);
+                        banner.setBannerType(bannerType);
+                        banner.setBgColor(bgColor);
+                        banner.setInternalUrl(internalUrl);
+                        banner.setImageUrl(imageUrl);
+                        banner.setCover(isCover);
+                        banner.setTitle(title);
+                        banner.setSubtitle(subtitle);
+                        dto.setBanner(banner);
+                    }
+
                     return dto;
                 }).collect(Collectors.toList());
     }
@@ -163,10 +185,10 @@ public class CampaignRepositoryJpa implements CampaignRepository {
 
         return getQueryFactory()
                 .selectFrom(b)
-                .innerJoin(l).on(b.linkId.eq(l.id))
-                .innerJoin(c).on(l.campaignId.eq(c.id))
-                .where(c.startAt.loe(now).and(c.endAt.goe(now)))
-                .orderBy(b.priority.asc())
+                .leftJoin(l).on(b.linkId.eq(l.id))
+                .leftJoin(c).on(l.campaignId.eq(c.id))
+                .where(c.startAt.loe(now).and(c.endAt.goe(now)).or(b.linkId.isNull()))
+                .orderBy(b.priority.desc())
                 .fetch();
     }
 
