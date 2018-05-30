@@ -15,11 +15,11 @@ public class CampaignDto {
     private Long id;
 
     @NotNull
-    @Size(min = 1, max = 30)
+    @Size(min = 1, max = 100)
     private String clientName;
 
     @NotNull
-    @Size(min = 1, max = 30)
+    @Size(min = 1, max = 100)
     private String name;
 
     @NotNull
