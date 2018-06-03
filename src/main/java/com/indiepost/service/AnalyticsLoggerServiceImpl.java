@@ -10,6 +10,7 @@ import com.indiepost.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
@@ -43,6 +44,9 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
     private final ClickRepository clickRepository;
 
     private final UserService userService;
+
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
 
     @Autowired
     public AnalyticsLoggerServiceImpl(VisitorRepository visitorRepository, PageviewRepository pageviewRepository,
@@ -199,6 +203,12 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
 
         Cookie cookie = new Cookie("visitorId", visitorId.toString());
         cookie.setMaxAge(1800); // expires after 30min
+
+        if (activeProfile.equals("prod")) {
+            String domainName = req.getServerName();
+            String domainNamePrefix = domainName.substring(domainName.indexOf("."), domainName.length());
+            cookie.setDomain(domainNamePrefix);
+        }
         res.addCookie(cookie);
         return visitor;
     }

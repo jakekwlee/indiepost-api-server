@@ -135,6 +135,9 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
+    // TODO single post cache should evict if dto.status == publish or dto.originalPostStatus == publish
+    // TODO homepage cache should evict
+//    @CacheEvict
     public void update(AdminPostRequestDto dto) {
         PostStatus status = PostStatus.valueOf(dto.getStatus());
         disableCurrentFeaturePostIfNeeded(status, dto.isSplash(), dto.isFeatured());

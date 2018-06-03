@@ -4,6 +4,7 @@ import com.indiepost.filter.JWTAuthenticationFilter;
 import com.indiepost.repository.UserRepository;
 import com.indiepost.service.CustomUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,7 +22,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by jake on 7/26/16.
@@ -38,6 +41,9 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
     private final UserRepository userRepository;
 
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
+
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
 
     @Autowired
     public SpringSecurityConfigurer(PasswordEncoder passwordEncoder, UserRepository userRepository, JWTAuthenticationFilter jwtAuthenticationFilter) {
@@ -85,7 +91,15 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("https://www.indiepost.co.kr", "http://www.indiepost.co.kr"));
+        List<String> allowedOrigins = new ArrayList<>();
+        allowedOrigins.add("https://www.indiepost.co.kr");
+        allowedOrigins.add("http://www.indiepost.co.kr");
+
+        if (activeProfile.equals("dev")) {
+            allowedOrigins.add("http://localhost");
+        }
+
+        config.setAllowedOrigins(allowedOrigins);
         config.setAllowedHeaders(Arrays.asList("X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         source.registerCorsConfiguration("/**", config);
