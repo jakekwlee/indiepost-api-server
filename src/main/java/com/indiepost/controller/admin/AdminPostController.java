@@ -1,4 +1,4 @@
-package com.indiepost.controller.api.admin;
+package com.indiepost.controller.admin;
 
 import com.indiepost.dto.CreateResponse;
 import com.indiepost.dto.DeleteResponse;
@@ -20,7 +20,7 @@ import java.util.Arrays;
  * Created by jake on 10/8/16.
  */
 @RestController
-@RequestMapping(value = "/api/admin/posts", produces = {"application/json; charset=UTF-8"})
+@RequestMapping(value = "/admin/posts", produces = {"application/json; charset=UTF-8"})
 public class AdminPostController {
 
     private final AdminPostService adminPostService;

@@ -1,4 +1,4 @@
-package com.indiepost.controller.api.admin;
+package com.indiepost.controller.admin;
 
 import com.indiepost.dto.CreateResponse;
 import com.indiepost.dto.stat.CampaignDto;
@@ -17,7 +17,7 @@ import java.util.Objects;
  * Created by jake on 8/10/17.
  */
 @RestController
-@RequestMapping(value = "/api/admin/campaign", produces = {"application/json; charset=UTF-8"})
+@RequestMapping(value = "/admin/campaign", produces = {"application/json; charset=UTF-8"})
 public class AdminCampaignController {
 
     private final CampaignService campaignService;

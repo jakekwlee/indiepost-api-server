@@ -1,4 +1,4 @@
-package com.indiepost.controller.api;
+package com.indiepost.controller;
 
 import com.indiepost.dto.FullTextSearchQuery;
 import com.indiepost.dto.PostImageSetListDto;
@@ -18,7 +18,7 @@ import java.util.List;
  * Created by jake on 7/31/16.
  */
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping("/posts")
 public class PostController {
 
     private final PostService postService;

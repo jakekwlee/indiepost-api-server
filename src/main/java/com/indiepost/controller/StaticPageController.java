@@ -1,4 +1,4 @@
-package com.indiepost.controller.api;
+package com.indiepost.controller;
 
 import com.indiepost.dto.StaticPageDto;
 import com.indiepost.service.StaticPageService;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Created by jake on 17. 3. 5.
  */
 @RestController
-@RequestMapping("/api/pages")
+@RequestMapping("/pages")
 public class StaticPageController {
     private final StaticPageService staticPageService;
 

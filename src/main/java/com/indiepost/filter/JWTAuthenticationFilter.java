@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 @Component
 public class JWTAuthenticationFilter extends GenericFilterBean {
     private final JwtConfig jwtConfig;
+
     @Value("${jwt.token:ThisIsSecret}")
     private String secretKey;
 
@@ -37,7 +38,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         String token = req.getHeader(jwtConfig.getHttpHeaderName());
-        if (token == null || req.getRequestURI().equals("/api/auth/login")) {
+        if (token == null || req.getRequestURI().equals("/auth/login")) {
             chain.doFilter(request, response);
             return;
         }

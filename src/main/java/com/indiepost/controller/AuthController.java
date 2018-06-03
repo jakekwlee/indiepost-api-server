@@ -1,7 +1,7 @@
-package com.indiepost.controller.api;
+package com.indiepost.controller;
 
 import com.indiepost.dto.AccountCredentials;
-import com.indiepost.dto.UserDto;
+import com.indiepost.dto.LoginSuccessResponse;
 import com.indiepost.service.TokenAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
  * Created by jake on 7/22/17.
  */
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
     private final TokenAuthenticationService tokenAuthenticationService;
 
@@ -22,13 +22,13 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public UserDto login(HttpServletResponse response, @RequestBody AccountCredentials credentials) {
+    public LoginSuccessResponse login(HttpServletResponse response, @RequestBody AccountCredentials credentials) {
         return tokenAuthenticationService.authenticate(response, credentials);
     }
 
 
     @GetMapping("/renew")
-    public UserDto renew(HttpServletResponse response) {
+    public LoginSuccessResponse renew(HttpServletResponse response) {
         return tokenAuthenticationService.renewAuthentication(response);
     }
 }

@@ -1,4 +1,4 @@
-package com.indiepost.controller.api;
+package com.indiepost.controller;
 
 import com.indiepost.dto.InitialData;
 import com.indiepost.service.InitialDataService;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Created by jake on 17. 1. 22.
  */
 @RestController
-@RequestMapping("/api/init")
+@RequestMapping("/init")
 public class InitialDataController {
 
     private final InitialDataService initialDataService;

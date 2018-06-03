@@ -1,4 +1,4 @@
-package com.indiepost.controller.api.admin;
+package com.indiepost.controller.admin;
 
 import com.indiepost.dto.DeleteResponse;
 import com.indiepost.dto.StaticPageDto;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
  * Created by jake on 17. 3. 5.
  */
 @RestController
-@RequestMapping(value = "/api/admin/pages", produces = {"application/json; charset=UTF-8"})
+@RequestMapping(value = "/admin/pages", produces = {"application/json; charset=UTF-8"})
 public class AdminStaticPageController {
 
     private final StaticPageService staticPageService;

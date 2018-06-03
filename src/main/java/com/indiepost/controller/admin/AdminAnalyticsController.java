@@ -1,4 +1,4 @@
-package com.indiepost.controller.api.admin;
+package com.indiepost.controller.admin;
 
 import com.indiepost.dto.stat.*;
 import com.indiepost.service.AnalyticsService;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
  * Created by jake on 17. 4. 29.
  */
 @RestController
-@RequestMapping(value = "/api/admin/stat", produces = {"application/json; charset=UTF-8"})
+@RequestMapping(value = "/admin/stat", produces = {"application/json; charset=UTF-8"})
 public class AdminAnalyticsController {
 
     private final AnalyticsService analyticsService;

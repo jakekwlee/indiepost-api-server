@@ -1,4 +1,4 @@
-package com.indiepost.controller.api.admin;
+package com.indiepost.controller.admin;
 
 import com.indiepost.dto.DeleteResponse;
 import com.indiepost.dto.ImageSetDto;
@@ -17,7 +17,7 @@ import java.util.List;
  * Created by jake on 10/8/16.
  */
 @RestController
-@RequestMapping(value = "/api/admin/images", produces = {"application/json; charset=UTF-8"})
+@RequestMapping(value = "/admin/images", produces = {"application/json; charset=UTF-8"})
 public class ImageController {
 
     private final ImageService imageService;

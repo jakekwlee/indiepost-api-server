@@ -2,6 +2,7 @@ package com.indiepost.service;
 
 import com.indiepost.config.JwtConfig;
 import com.indiepost.dto.AccountCredentials;
+import com.indiepost.dto.LoginSuccessResponse;
 import com.indiepost.dto.UserDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -29,8 +30,11 @@ import java.util.stream.Collectors;
 @Service
 public class JwtTokenAuthenticationService implements TokenAuthenticationService {
     private final JwtConfig jwtConfig;
+
     private final AuthenticationManager authenticationManager;
+
     private final UserService userService;
+
     @Value("${jwt.token:ThisIsSecret}")
     private String secretKey;
 
@@ -41,7 +45,7 @@ public class JwtTokenAuthenticationService implements TokenAuthenticationService
         this.userService = userService;
     }
 
-    public UserDto authenticate(HttpServletResponse res, AccountCredentials credentials) throws AuthenticationException {
+    public LoginSuccessResponse authenticate(HttpServletResponse res, AccountCredentials credentials) throws AuthenticationException {
         try {
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -51,10 +55,10 @@ public class JwtTokenAuthenticationService implements TokenAuthenticationService
                     )
             );
             SecurityContextHolder.getContext().setAuthentication(auth);
+            UserDto user = userService.getCurrentUserDto();
             String token = makeToken(auth.getName(), auth, credentials.isRememberMe());
-            res.addHeader(jwtConfig.getHttpHeaderName(), jwtConfig.getTokenPrefix() + " " + token);
             res.setStatus(HttpServletResponse.SC_OK);
-            return userService.getCurrentUserDto();
+            return new LoginSuccessResponse(user, token);
         } catch (BadCredentialsException e) {
             res.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return null;
@@ -62,13 +66,13 @@ public class JwtTokenAuthenticationService implements TokenAuthenticationService
     }
 
     @Override
-    public UserDto renewAuthentication(HttpServletResponse res) {
+    public LoginSuccessResponse renewAuthentication(HttpServletResponse res) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth.isAuthenticated()) {
+            UserDto user = userService.getCurrentUserDto();
             String token = makeToken(auth.getName(), auth, false);
-            res.addHeader(jwtConfig.getHttpHeaderName(), jwtConfig.getTokenPrefix() + " " + token);
             res.setStatus(HttpServletResponse.SC_OK);
-            return userService.getCurrentUserDto();
+            return new LoginSuccessResponse(user, token);
         }
         res.setStatus(HttpServletResponse.SC_FORBIDDEN);
         return null;

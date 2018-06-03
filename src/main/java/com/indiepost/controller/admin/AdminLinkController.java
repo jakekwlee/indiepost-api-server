@@ -1,4 +1,4 @@
-package com.indiepost.controller.api.admin;
+package com.indiepost.controller.admin;
 
 import com.indiepost.dto.stat.LinkDto;
 import com.indiepost.service.LinkService;
@@ -14,7 +14,7 @@ import java.util.Objects;
  * Created by jake on 8/10/17.
  */
 @RestController
-@RequestMapping(value = "/api/admin/link", produces = {"application/json; charset=UTF-8"})
+@RequestMapping(value = "/admin/link", produces = {"application/json; charset=UTF-8"})
 public class AdminLinkController {
 
     private final LinkService linkService;

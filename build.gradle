@@ -18,7 +18,7 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'idea'
 
 group = 'com.indiepost'
-version = '1.9.19-SNAPSHOT'
+version = '1.9.20-SNAPSHOT'
 sourceCompatibility = 1.8
 
 springBoot {
@@ -72,7 +72,6 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('org.springframework.boot:spring-boot-starter-mail')
     compile('org.springframework.boot:spring-boot-starter-security')
-    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
     compile('org.springframework.boot:spring-boot-starter-validation')
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: '2.0.0.RELEASE'
     runtime('org.springframework.boot:spring-boot-devtools')
@@ -87,8 +86,6 @@ dependencies {
     compile group: "io.jsonwebtoken", name: "jjwt", version: "0.7.0"
     compile group: "io.searchbox", name: "jest", version: "5.3.3"
     compile group: "net.sourceforge.nekohtml", name: "nekohtml", version: "1.9.22"
-    compile group: "org.thymeleaf.extras", name: "thymeleaf-extras-springsecurity4", version: "2.1.2.RELEASE"
-    compile group: "org.thymeleaf.extras", name: "thymeleaf-extras-java8time", version: "2.1.0.RELEASE"
     compile group: "commons-codec", name: "commons-codec", version: "1.10"
     compile group: "commons-io", name: "commons-io", version: "2.5"
     compile group: "org.apache.commons", name: "commons-lang3", version: "3.5"

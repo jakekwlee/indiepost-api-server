@@ -1,4 +1,4 @@
-package com.indiepost.controller.api;
+package com.indiepost.controller;
 
 import com.indiepost.dto.stat.ActionDto;
 import com.indiepost.dto.stat.PageviewDto;
@@ -17,7 +17,7 @@ import java.io.IOException;
  * Created by jake on 17. 3. 5.
  */
 @RestController
-@RequestMapping("/api/stat")
+@RequestMapping("/stat")
 public class AnalyticsLoggingApiController {
     private final AnalyticsLoggerService analyticsLoggerService;
 

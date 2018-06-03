@@ -1,4 +1,4 @@
-package com.indiepost.controller.api.admin;
+package com.indiepost.controller.admin;
 
 import com.indiepost.dto.ContributorDto;
 import com.indiepost.dto.DeleteResponse;
@@ -10,11 +10,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/admin/contributors")
+@RequestMapping("/admin/contributors")
 public class AdminContributorController {
 
+    private final ContributorService contributorService;
+
     @Autowired
-    private ContributorService contributorService;
+    public AdminContributorController(ContributorService contributorService) {
+        this.contributorService = contributorService;
+    }
 
     @GetMapping
     public Page<ContributorDto> get(@RequestParam String type, Pageable pageable) {

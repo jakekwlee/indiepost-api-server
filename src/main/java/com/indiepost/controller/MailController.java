@@ -1,4 +1,4 @@
-package com.indiepost.controller.api;
+package com.indiepost.controller;
 
 import com.indiepost.dto.InquiryDto;
 import com.indiepost.dto.SuggestionDto;
@@ -15,7 +15,7 @@ import javax.validation.Valid;
  * Created by jake on 8/31/17.
  */
 @RestController
-@RequestMapping("/api/mail")
+@RequestMapping("/mail")
 public class MailController {
 
     private final MailService mailService;
