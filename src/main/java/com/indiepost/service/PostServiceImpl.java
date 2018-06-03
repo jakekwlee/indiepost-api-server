@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.indiepost.mapper.PostMapper.postToPostDto;
-import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
 
 /**
  * Created by jake on 7/30/16.
@@ -93,25 +92,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostSummaryDto> find(int page, int maxResults, boolean isDesc) {
-        Pageable pageable = getPageable(page, maxResults, isDesc);
-        return postRepository.findByStatus(PostStatus.PUBLISH, pageable);
+    public List<PostSummaryDto> find(Pageable pageable) {
+        return postRepository.findByStatus(PostStatus.PUBLISH, getPageable(pageable));
     }
 
     @Override
-    public List<PostSummaryDto> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc) {
-        Pageable pageable = getPageable(page, maxResults, isDesc);
-        return postRepository.findByCategoryId(categoryId, pageable);
+    public List<PostSummaryDto> findByCategorySlug(String slug, Pageable pageable) {
+        return postRepository.findByCategorySlug(slug, getPageable(pageable));
     }
 
     @Override
-    public List<PostSummaryDto> findByTagName(String tagName, int page, int maxResults, boolean isDesc) {
-        return postRepository.findByTagName(tagName, PageRequest.of(page, maxResults));
+    public List<PostSummaryDto> findByTagName(String tagName, Pageable pageable) {
+        return postRepository.findByTagName(tagName, getPageable(pageable));
     }
 
     @Override
     public List<PostSummaryDto> findByContributorFullName(String fullName, Pageable pageable) {
-        return postRepository.findByContributorFullName(fullName, pageable);
+        return postRepository.findByContributorFullName(fullName, getPageable(pageable));
     }
 
     @Override
@@ -133,9 +130,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostSummaryDto> search(PostQuery query, int page, int maxResults, boolean isDesc) {
-        Pageable pageable = getPageable(page, maxResults, isDesc);
-        return postRepository.search(query, pageable);
+    public List<PostSummaryDto> search(PostQuery query, int page, int size) {
+        return postRepository.search(query, getPageable(page, size));
     }
 
     @Override
@@ -144,7 +140,7 @@ public class PostServiceImpl implements PostService {
         if (text.length() > 30) {
             text = text.substring(0, 30);
         }
-        Pageable pageable = getPageable(query.getPage(), query.getMaxResults(), true);
+        Pageable pageable = getPageable(PageRequest.of(query.getPage(), query.getMaxResults()));
         List<PostEs> postEsList = postEsRepository.search(text, PostStatus.PUBLISH, pageable);
         if (postEsList.isEmpty()) {
             return new ArrayList<>();
@@ -173,14 +169,14 @@ public class PostServiceImpl implements PostService {
     public List<PostSummaryDto> findPickedPosts() {
         PostQuery query = new PostQuery();
         query.setPicked(true);
-        return search(query, 0, 8, true);
+        return search(query, 0, 8);
     }
 
     @Override
     public PostSummaryDto findSplashPost() {
         PostQuery query = new PostQuery();
         query.setSplash(true);
-        List<PostSummaryDto> posts = search(query, 0, 1, true);
+        List<PostSummaryDto> posts = search(query, 0, 1);
         return posts.isEmpty() ? null : posts.get(0);
     }
 
@@ -188,40 +184,25 @@ public class PostServiceImpl implements PostService {
     public PostSummaryDto findFeaturePost() {
         PostQuery query = new PostQuery();
         query.setFeatured(true);
-        List<PostSummaryDto> posts = search(query, 0, 1, true);
+        List<PostSummaryDto> posts = search(query, 0, 1);
         return posts.isEmpty() ? null : posts.get(0);
     }
 
-    private List<PostSummaryDto> toPostSummaryDtoList(List<Post> posts) {
-        return posts.stream()
-                .map(post -> toPostSummaryDto(post))
-                .collect(Collectors.toList());
+    private Pageable getPageable(Pageable pageable) {
+        return PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.Direction.DESC,
+                "publishedAt"
+        );
     }
 
-    private PostSummaryDto toPostSummaryDto(Post post) {
-        PostSummaryDto dto = new PostSummaryDto();
-        dto.setId(post.getId());
-        dto.setTitle(post.getTitle());
-        dto.setCategoryId(post.getCategoryId());
-        dto.setCategoryName(post.getCategory().getName());
-        dto.setDisplayName(post.getDisplayName());
-        dto.setLikesCount(post.getLikesCount());
-        dto.setPublishedAt(localDateTimeToInstant(post.getPublishedAt()));
-        dto.setSplash(post.isSplash());
-        dto.setFeatured(post.isFeatured());
-        dto.setPicked(post.isPicked());
-        if (post.getCategory() != null) {
-            dto.setCategoryName(post.getCategory().getSlug());
-        }
-        if (post.getTitleImageId() != null) {
-            dto.setTitleImage(post.getTitleImage());
-        }
-        return dto;
-    }
-
-    private Pageable getPageable(int page, int maxResults, boolean isDesc) {
-        return isDesc ?
-                PageRequest.of(page, maxResults, Sort.Direction.DESC, "publishedAt") :
-                PageRequest.of(page, maxResults, Sort.Direction.ASC, "publishedAt");
+    private Pageable getPageable(int page, int size) {
+        return PageRequest.of(
+                page,
+                size,
+                Sort.Direction.DESC,
+                "publishedAt"
+        );
     }
 }

@@ -37,36 +37,27 @@ public class PostController {
     }
 
     @GetMapping
-    public List<PostSummaryDto> getPosts(
-            @RequestParam("p") int page,
-            @RequestParam("m") int maxResults) {
-        return postService.find(page, maxResults, true);
+    public List<PostSummaryDto> getPosts(Pageable pageable) {
+        return postService.find(pageable);
     }
 
     @PostMapping
     public List<PostSummaryDto> getPosts(@RequestBody PostQuery query) {
-        return postService.search(query, query.getPage(), query.getMaxResults(), false);
+        return postService.search(query, query.getPage(), query.getMaxResults());
     }
 
-    @GetMapping("/category/{id}")
-    public List<PostSummaryDto> getPostsByCategoryId(
-            @PathVariable Long id,
-            @RequestParam("p") int page,
-            @RequestParam("m") int maxResults) {
-        return postService.findByCategoryId(id, page, maxResults, true);
+    @GetMapping("/category/{slug}")
+    public List<PostSummaryDto> getPostsByCategoryName(@PathVariable String slug, Pageable pageable) {
+        return postService.findByCategorySlug(slug, pageable);
     }
 
     @GetMapping("/tag/{tagName}")
-    public List<PostSummaryDto> getPostsByTagName(
-            @PathVariable String tagName,
-            @RequestParam("p") int page,
-            @RequestParam("m") int maxResults) {
-        return postService.findByTagName(tagName, page, maxResults, true);
+    public List<PostSummaryDto> getPostsByTagName(@PathVariable String tagName, Pageable pageable) {
+        return postService.findByTagName(tagName, pageable);
     }
 
     @GetMapping("/contributor/{fullName}")
-    public List<PostSummaryDto> getPostsByTagName(
-            @PathVariable String fullName, Pageable pageable) {
+    public List<PostSummaryDto> getPostsByContributorName(@PathVariable String fullName, Pageable pageable) {
         return postService.findByContributorFullName(fullName, pageable);
     }
 

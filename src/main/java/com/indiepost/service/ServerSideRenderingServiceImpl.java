@@ -83,7 +83,7 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
         InitialData initialData = initialDataService.getInitialData(false);
         PostQuery query = new PostQuery();
         query.setCategorySlug(categorySlug.toLowerCase());
-        List<PostSummaryDto> posts = postService.search(query, 0, config.getFetchCount(), true);
+        List<PostSummaryDto> posts = postService.search(query, 0, config.getFetchCount());
         RenderingRequestDto rsRequest =
                 new RenderingRequestDto(initialData, posts, servletPath);
         render(model, rsRequest);
@@ -92,7 +92,7 @@ public class ServerSideRenderingServiceImpl implements ServerSideRenderingServic
     @Override
     public void renderPostByTagPage(String tagName, Model model, String servletPath) {
         InitialData initialData = initialDataService.getInitialData(false);
-        List<PostSummaryDto> posts = postService.findByTagName(tagName, 0, config.getFetchCount(), true);
+        List<PostSummaryDto> posts = postService.findByTagName(tagName, PageRequest.of(0, config.getFetchCount()));
         RenderingRequestDto rsRequest =
                 new RenderingRequestDto(initialData, posts, servletPath);
         this.render(model, rsRequest);

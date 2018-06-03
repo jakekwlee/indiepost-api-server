@@ -22,19 +22,19 @@ public interface PostService {
 
     List<PostSummaryDto> findByIds(List<Long> ids);
 
-    List<PostSummaryDto> find(int page, int maxResults, boolean isDesc);
+    List<PostSummaryDto> find(Pageable pageable);
 
-    List<PostSummaryDto> findByCategoryId(Long categoryId, int page, int maxResults, boolean isDesc);
+    List<PostSummaryDto> findByCategorySlug(String slug, Pageable pageable);
 
-    List<PostSummaryDto> findByTagName(String tagName, int page, int maxResults, boolean isDesc);
+    List<PostSummaryDto> findByTagName(String tagName, Pageable pageable);
 
     List<PostSummaryDto> findByContributorFullName(String fullName, Pageable pageable);
+
+    List<PostSummaryDto> search(PostQuery query, int page, int size);
 
     List<PostSummaryDto> findTopRatedPosts(LocalDateTime since, LocalDateTime until, Integer limit);
 
     List<PostSummaryDto> findScheduledPosts();
-
-    List<PostSummaryDto> search(PostQuery query, int page, int maxResults, boolean isDesc);
 
     List<PostSummaryDto> fullTextSearch(FullTextSearchQuery query);
 

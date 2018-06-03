@@ -61,7 +61,7 @@ public class InitialDataServiceImpl implements InitialDataService {
         initialData.setPickedPosts(postService.findPickedPosts());
 
         if (withLatestPosts) {
-            initialData.setPosts(postService.find(0, config.getFetchCount(), true));
+            initialData.setPosts(postService.find(PageRequest.of(0, config.getFetchCount())));
         }
 
         List<BannerDto> banners = campaignService.findBannersOnCampaignPeriod();
