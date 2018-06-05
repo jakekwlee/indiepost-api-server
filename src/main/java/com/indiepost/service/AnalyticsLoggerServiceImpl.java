@@ -205,9 +205,7 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
         cookie.setMaxAge(1800); // expires after 30min
 
         if (activeProfile.equals("prod")) {
-            String domainName = req.getServerName();
-            String domainNamePrefix = domainName.substring(domainName.indexOf("."), domainName.length());
-            cookie.setDomain(domainNamePrefix);
+            cookie.setDomain("indiepost.co.kr");
         }
         res.addCookie(cookie);
         return visitor;

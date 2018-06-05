@@ -99,6 +99,8 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
         config.setAllowedOrigins(allowedOrigins);
         config.setAllowedHeaders(Arrays.asList("X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowCredentials(true);
+        config.setMaxAge(600L);
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
