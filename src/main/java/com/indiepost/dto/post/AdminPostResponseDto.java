@@ -31,7 +31,6 @@ public class AdminPostResponseDto extends AdminPostRequestDto {
 
     private String editorName;
 
-    private String categoryName;
 
     public String getAuthorName() {
         return authorName;
@@ -111,14 +110,6 @@ public class AdminPostResponseDto extends AdminPostRequestDto {
 
     public void setEditorId(Long editorId) {
         this.editorId = editorId;
-    }
-
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
     }
 
     public String getOriginalStatus() {

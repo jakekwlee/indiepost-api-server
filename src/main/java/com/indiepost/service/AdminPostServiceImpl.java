@@ -18,6 +18,8 @@ import com.indiepost.repository.ContributorRepository;
 import com.indiepost.repository.TagRepository;
 import com.indiepost.repository.elasticsearch.PostEsRepository;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -135,9 +137,11 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
-    // TODO single post cache should evict if dto.status == publish or dto.originalPostStatus == publish
-    // TODO homepage cache should evict
-//    @CacheEvict
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "post::rendered", key = "#dto.id"),
+            @CacheEvict(cacheNames = "home::rendered", allEntries = true),
+            @CacheEvict(cacheNames = "category::rendered", key = "#dto.categoryName.toLowerCase()")
+    })
     public void update(AdminPostRequestDto dto) {
         PostStatus status = PostStatus.valueOf(dto.getStatus());
         disableCurrentFeaturePostIfNeeded(status, dto.isSplash(), dto.isFeatured());

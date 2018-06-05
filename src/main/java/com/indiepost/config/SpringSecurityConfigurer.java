@@ -33,9 +33,6 @@ import java.util.List;
 @EnableWebSecurity
 public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
-    private static final String SPRING_SECURITY_EXPRESSION =
-            "hasAuthority('Editor')";
-
     private final PasswordEncoder passwordEncoder;
 
     private final UserRepository userRepository;
@@ -61,7 +58,7 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                .antMatchers("/admin/**").access(SPRING_SECURITY_EXPRESSION)
+                .antMatchers("/admin/**").access("hasAuthority('Editor')")
                 .antMatchers("/**").permitAll()
                 .anyRequest().authenticated()
                 .and()

@@ -4,6 +4,8 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: org.mariadb.jdbc.Driver
+  cache:
+    type: redis
   servlet:
     multipart:
       max-file-size: 20MB
@@ -57,8 +59,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  thymeleaf:
-    cache: false
+  redis:
+    host: 127.0.0.1
+    port: 6379
 logging:
   level:
     org:
@@ -78,8 +81,9 @@ spring:
     properties:
       hibernate:
         format_sql: false
-  thymeleaf:
-    cache: true
+  redis:
+    host: redis.indiepost.vpc
+    port: 6379
 logging:
   level:
     org:

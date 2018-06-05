@@ -18,7 +18,7 @@ apply plugin: 'io.spring.dependency-management'
 apply plugin: 'idea'
 
 group = 'com.indiepost'
-version = '1.9.20-SNAPSHOT'
+version = '1.9.21-SNAPSHOT'
 sourceCompatibility = 1.8
 
 springBoot {
@@ -73,6 +73,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-mail')
     compile('org.springframework.boot:spring-boot-starter-security')
     compile('org.springframework.boot:spring-boot-starter-validation')
+    compile('org.springframework.boot:spring-boot-starter-data-redis')
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: '2.0.0.RELEASE'
     runtime('org.springframework.boot:spring-boot-devtools')
     compileOnly('org.springframework.boot:spring-boot-configuration-processor')

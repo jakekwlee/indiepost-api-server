@@ -6,6 +6,8 @@ import com.indiepost.model.StaticPage;
 import com.indiepost.model.User;
 import com.indiepost.repository.StaticPageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,14 +38,15 @@ public class StaticPageServiceImpl implements StaticPageService {
     }
 
     @Override
-    public Long save(StaticPageDto staticPageDto) {
+    @CacheEvict(cacheNames = "static-page::rendered", key = "#dto.slug")
+    public Long save(StaticPageDto dto) {
         StaticPage staticPage = new StaticPage();
-        staticPage.setTitle(staticPageDto.getTitle());
-        staticPage.setContent(staticPageDto.getContent());
-        staticPage.setSlug(staticPageDto.getSlug());
-        staticPage.setDisplayOrder(staticPageDto.getDisplayOrder());
-        staticPage.setType(staticPageDto.getType());
-        staticPage.setStatus(staticPageDto.getStatus());
+        staticPage.setTitle(dto.getTitle());
+        staticPage.setContent(dto.getContent());
+        staticPage.setSlug(dto.getSlug());
+        staticPage.setDisplayOrder(dto.getDisplayOrder());
+        staticPage.setType(dto.getType());
+        staticPage.setStatus(dto.getStatus());
 
         User currentUser = userService.findCurrentUser();
         staticPage.setAuthor(currentUser);
@@ -54,14 +57,18 @@ public class StaticPageServiceImpl implements StaticPageService {
     }
 
     @Override
-    public void update(StaticPageDto staticPageDto) {
-        StaticPage staticPage = staticPageRepository.findById(staticPageDto.getId());
-        staticPage.setTitle(staticPageDto.getTitle());
-        staticPage.setContent(staticPageDto.getContent());
-        staticPage.setSlug(staticPageDto.getSlug());
-        staticPage.setDisplayOrder(staticPageDto.getDisplayOrder());
-        staticPage.setType(staticPageDto.getType());
-        staticPage.setStatus(staticPageDto.getStatus());
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "static-page::rendered", key = "#dto.slug"),
+            @CacheEvict(cacheNames = "home::rendered", allEntries = true)
+    })
+    public void update(StaticPageDto dto) {
+        StaticPage staticPage = staticPageRepository.findById(dto.getId());
+        staticPage.setTitle(dto.getTitle());
+        staticPage.setContent(dto.getContent());
+        staticPage.setSlug(dto.getSlug());
+        staticPage.setDisplayOrder(dto.getDisplayOrder());
+        staticPage.setType(dto.getType());
+        staticPage.setStatus(dto.getStatus());
 
         staticPage.setModifiedAt(LocalDateTime.now());
         staticPageRepository.update(staticPage);

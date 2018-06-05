@@ -35,6 +35,8 @@ public class AdminPostRequestDto {
 
     private boolean splash;
 
+    private String categoryName;
+
     private List<String> tags = new ArrayList<>();
 
     private List<String> contributors = new ArrayList<>();
@@ -157,5 +159,13 @@ public class AdminPostRequestDto {
 
     public void setSplash(boolean splash) {
         this.splash = splash;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 }
