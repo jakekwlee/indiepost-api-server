@@ -9,8 +9,8 @@ import com.indiepost.repository.StatRepository;
 import com.indiepost.repository.VisitorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.Optional;
  * Created by jake on 17. 4. 13.
  */
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class AnalyticsServiceImpl implements AnalyticsService {
 
     private final MetadataRepository metadataRepository;

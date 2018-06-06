@@ -51,7 +51,7 @@ logging:
 spring:
   profiles: dev
   datasource:
-    url: jdbc:mariadb://localhost:3306/indiepost?useUnicode=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&characterEncoding=UTF-8&sessionVariables=sql_mode=''&useSSL=false
+    url: jdbc:mariadb://localhost:3306/indiepost?useUnicode=true&characterEncoding=utf8mb4&autoReconnect=true&useSSL=false
     username: indiepost
     password: indiepost
   jpa:
@@ -73,7 +73,7 @@ logging:
 spring:
   profiles: prod
   datasource:
-    url: jdbc:mariadb://rds.indiepost.vpc:3306/indiepost?useUnicode=true&autoReconnect=true&zeroDateTimeBehavior=convertToNull&characterEncoding=UTF-8&sessionVariables=sql_mode=''&useSSL=false
+    url: jdbc:mariadb:aurora://rds_cluster.indiepost.vpc:3306/indiepost?useUnicode=true&characterEncoding=utf8mb4&autoReconnect=true&useSSL=false
     username: indiepost
     password: indiepost
   jpa:

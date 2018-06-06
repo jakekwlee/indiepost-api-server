@@ -88,6 +88,8 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
+        config.setMaxAge(600L);
+
         List<String> allowedOrigins = new ArrayList<>();
         allowedOrigins.add("https://www.indiepost.co.kr");
         allowedOrigins.add("http://www.indiepost.co.kr");
@@ -99,8 +101,6 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
         config.setAllowedOrigins(allowedOrigins);
         config.setAllowedHeaders(Arrays.asList("X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowCredentials(true);
-        config.setMaxAge(600L);
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
