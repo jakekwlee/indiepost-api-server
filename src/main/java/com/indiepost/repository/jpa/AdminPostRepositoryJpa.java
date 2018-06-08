@@ -73,6 +73,15 @@ public class AdminPostRepositoryJpa implements AdminPostRepository {
     }
 
     @Override
+    public boolean isExists(Long id) {
+        Long count = getQueryFactory()
+                .selectFrom(post)
+                .where(post.id.eq(id))
+                .fetchCount();
+        return count == 0;
+    }
+
+    @Override
     public List<AdminPostSummaryDto> findByIdIn(List<Long> ids) {
         JPAQuery query = getQueryFactory().selectFrom(post);
         addProjections(query)

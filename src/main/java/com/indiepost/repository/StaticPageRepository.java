@@ -36,4 +36,6 @@ public interface StaticPageRepository {
     void bulkDeleteByIds(List<Long> ids);
 
     void bulkDeleteByStatus(Types.PostStatus status);
+
+    boolean isExists(Long id);
 }

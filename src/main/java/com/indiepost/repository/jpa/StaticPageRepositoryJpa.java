@@ -152,6 +152,14 @@ public class StaticPageRepositoryJpa implements StaticPageRepository {
                 .execute();
     }
 
+    @Override
+    public boolean isExists(Long id) {
+        return getQueryFactory()
+                .selectFrom(staticPage)
+                .where(staticPage.id.eq(id))
+                .fetchCount() > 1;
+    }
+
     private JPAQueryFactory getQueryFactory() {
         return new JPAQueryFactory(entityManager);
     }

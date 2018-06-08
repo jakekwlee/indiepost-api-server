@@ -23,6 +23,8 @@ public interface AdminPostRepository {
 
     void deleteById(Long id);
 
+    boolean isExists(Long id);
+
     List<AdminPostSummaryDto> findByIdIn(List<Long> id);
 
     List<AdminPostSummaryDto> find(User currentUser, Pageable pageable);
