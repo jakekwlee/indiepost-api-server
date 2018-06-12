@@ -188,7 +188,7 @@ public class CampaignRepositoryJpa implements CampaignRepository {
                 .leftJoin(l).on(b.linkId.eq(l.id))
                 .leftJoin(c).on(l.campaignId.eq(c.id))
                 .where(c.startAt.loe(now).and(c.endAt.goe(now)).or(b.linkId.isNull()))
-                .orderBy(b.priority.desc())
+                .orderBy(b.priority.asc())
                 .fetch();
     }
 

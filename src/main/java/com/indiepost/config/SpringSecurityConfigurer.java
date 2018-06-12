@@ -66,7 +66,7 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
     @Bean
     @Override
-    public UserDetailsService userDetailsServiceBean() throws Exception {
+    public UserDetailsService userDetailsServiceBean() {
         return new CustomUserDetailService(userRepository);
     }
 

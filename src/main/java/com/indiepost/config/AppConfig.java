@@ -16,10 +16,6 @@ public class AppConfig {
 
     private String baseUrl;
 
-    private String renderingServerUrl;
-
-    private boolean serverSideRendering;
-
     private String cdnUrl;
 
     private String staticRootPath;
@@ -42,22 +38,6 @@ public class AppConfig {
 
     public void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
-    }
-
-    public String getRenderingServerUrl() {
-        return renderingServerUrl;
-    }
-
-    public void setRenderingServerUrl(String renderingServerUrl) {
-        this.renderingServerUrl = renderingServerUrl;
-    }
-
-    public boolean isServerSideRendering() {
-        return serverSideRendering;
-    }
-
-    public void setServerSideRendering(boolean serverSideRendering) {
-        this.serverSideRendering = serverSideRendering;
     }
 
     public String getCdnUrl() {
