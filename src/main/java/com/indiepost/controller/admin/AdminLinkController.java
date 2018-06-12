@@ -1,10 +1,10 @@
 package com.indiepost.controller.admin;
 
-import com.indiepost.dto.stat.LinkDto;
+import com.indiepost.dto.analytics.LinkDto;
 import com.indiepost.service.LinkService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.util.List;
@@ -19,7 +19,7 @@ public class AdminLinkController {
 
     private final LinkService linkService;
 
-    @Autowired
+    @Inject
     public AdminLinkController(LinkService linkService) {
         this.linkService = linkService;
     }

@@ -13,7 +13,7 @@ import java.util.List;
 @Table(name = "Roles")
 public class Role implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 7196256370247012643L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

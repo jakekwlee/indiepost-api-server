@@ -1,6 +1,6 @@
 package com.indiepost.utils;
 
-import com.indiepost.dto.stat.TimeDomainStat;
+import com.indiepost.dto.analytics.TimeDomainStat;
 import org.junit.Test;
 
 import java.time.LocalDate;

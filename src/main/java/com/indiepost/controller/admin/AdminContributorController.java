@@ -4,10 +4,11 @@ import com.indiepost.dto.ContributorDto;
 import com.indiepost.dto.DeleteResponse;
 import com.indiepost.enums.Types;
 import com.indiepost.service.ContributorService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+
+import javax.inject.Inject;
 
 @RestController
 @RequestMapping("/admin/contributors")
@@ -15,7 +16,7 @@ public class AdminContributorController {
 
     private final ContributorService contributorService;
 
-    @Autowired
+    @Inject
     public AdminContributorController(ContributorService contributorService) {
         this.contributorService = contributorService;
     }

@@ -1,9 +1,9 @@
 package com.indiepost.repository.utils;
 
-import com.indiepost.dto.stat.PostStatDto;
-import com.indiepost.dto.stat.ShareStat;
-import com.indiepost.dto.stat.TimeDomainDoubleStat;
-import com.indiepost.dto.stat.TimeDomainStat;
+import com.indiepost.dto.analytics.PostStatDto;
+import com.indiepost.dto.analytics.ShareStat;
+import com.indiepost.dto.analytics.TimeDomainDoubleStat;
+import com.indiepost.dto.analytics.TimeDomainStat;
 import com.indiepost.enums.Types;
 
 import javax.persistence.Query;

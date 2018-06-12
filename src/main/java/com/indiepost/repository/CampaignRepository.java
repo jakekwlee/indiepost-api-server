@@ -1,9 +1,9 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.stat.LinkDto;
-import com.indiepost.dto.stat.RawDataReportRow;
-import com.indiepost.dto.stat.ShareStat;
-import com.indiepost.dto.stat.TimeDomainStat;
+import com.indiepost.dto.analytics.LinkDto;
+import com.indiepost.dto.analytics.RawDataReportRow;
+import com.indiepost.dto.analytics.ShareStat;
+import com.indiepost.dto.analytics.TimeDomainStat;
 import com.indiepost.model.Banner;
 import com.indiepost.model.analytics.Campaign;
 import org.springframework.data.domain.Page;

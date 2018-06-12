@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.stat.*;
+import com.indiepost.dto.analytics.*;
 
 /**
  * Created by jake on 17. 4. 13.

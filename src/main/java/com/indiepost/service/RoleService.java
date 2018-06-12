@@ -9,6 +9,7 @@ import java.util.List;
  * Created by jake on 8/4/16.
  */
 public interface RoleService {
+
     void save(UserRole role);
 
     void update(UserRole role);

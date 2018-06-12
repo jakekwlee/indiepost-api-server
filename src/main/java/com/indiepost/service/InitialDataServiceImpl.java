@@ -3,16 +3,16 @@ package com.indiepost.service;
 import com.indiepost.config.AppConfig;
 import com.indiepost.dto.InitialData;
 import com.indiepost.dto.StaticPageDto;
+import com.indiepost.dto.analytics.BannerDto;
 import com.indiepost.dto.post.PostSummaryDto;
-import com.indiepost.dto.stat.BannerDto;
 import com.indiepost.enums.Types;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class InitialDataServiceImpl implements InitialDataService {
 
     private final AppConfig config;
 
-    @Autowired
+    @Inject
     public InitialDataServiceImpl(CategoryService categoryService, UserService userService,
                                   PostService postService, StaticPageService staticPageService, AppConfig config, CampaignService campaignService) {
         this.categoryService = categoryService;

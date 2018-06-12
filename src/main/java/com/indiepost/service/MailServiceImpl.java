@@ -1,18 +1,18 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.InquiryDto;
-import com.indiepost.dto.SuggestionDto;
+import com.indiepost.dto.Inquiry;
+import com.indiepost.dto.Suggestion;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Setting;
 import com.indiepost.model.User;
 import com.indiepost.repository.SettingRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -31,11 +31,7 @@ public class MailServiceImpl implements MailService {
 
     private final UserService userService;
 
-    private final String INQUIRY_REPLY_BODY_TEMPLATE = "담당자: %s\n\n회사(이벤트)명: %s\n\n홈페이지: %s\n\n연락처: %s\n\n문의 내용:\n\n%s";
-
-    private final String INQUIRY_REPLY_SUBJECT_TEMPLATE = "%s (%s) 님의 문의 사항";
-
-    @Autowired
+    @Inject
     public MailServiceImpl(SettingRepository settingRepository, UserService userService) {
         this.settingRepository = settingRepository;
         this.userService = userService;
@@ -60,7 +56,7 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public void sendSuggestion(SuggestionDto dto) {
+    public void sendSuggestion(Suggestion dto) {
         Setting setting = settingRepository.get();
         String subject = sanitize(dto.getSubject());
         String proposerName = dto.getProposer() != null ? sanitize(dto.getProposer()) : "Anonymous";
@@ -84,7 +80,7 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public void sendInquiry(InquiryDto dto) {
+    public void sendInquiry(Inquiry dto) {
         Setting setting = settingRepository.get();
         String inquirer = sanitize(dto.getInquirer());
         String clientName = dto.getClientName() != null ? sanitize(dto.getClientName()) : "";
@@ -111,10 +107,12 @@ public class MailServiceImpl implements MailService {
     }
 
     private String formatInquirySubject(String inquirer, String clientName) {
+        String INQUIRY_REPLY_SUBJECT_TEMPLATE = "%s (%s) 님의 문의 사항";
         return String.format(INQUIRY_REPLY_SUBJECT_TEMPLATE, inquirer, clientName);
     }
 
     private String formatInquiryBody(String inquirer, String clientName, String url, String contact, String content) {
+        String INQUIRY_REPLY_BODY_TEMPLATE = "담당자: %s\n\n회사(이벤트)명: %s\n\n홈페이지: %s\n\n연락처: %s\n\n문의 내용:\n\n%s";
         return String.format(INQUIRY_REPLY_BODY_TEMPLATE, inquirer, clientName, url, contact, content);
     }
 

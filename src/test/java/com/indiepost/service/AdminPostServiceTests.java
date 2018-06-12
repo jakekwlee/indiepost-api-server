@@ -9,7 +9,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +16,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import javax.inject.Inject;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +28,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
 public class AdminPostServiceTests {
-    @Autowired
+
+    @Inject
     private AdminPostService service;
 
     private List<Long> insertedIds = new ArrayList<>();
@@ -94,7 +95,7 @@ public class AdminPostServiceTests {
     public void findText_shouldReturnResultProperly() {
         Page<AdminPostSummaryDto> page =
                 service.findText("인스타그램", Types.PostStatus.PUBLISH, PageRequest.of(0, 500));
-        assertThat(page.getContent()).hasSize(16);
+        assertThat(page.getContent()).hasSize(18);
 
     }
 }

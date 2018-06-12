@@ -1,7 +1,6 @@
 package com.indiepost.dto;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +19,7 @@ public class UserDto {
 
     private Instant joinedAt;
 
-    private LocalDate birthday;
+    private Instant updatedAt;
 
     private String profile;
 
@@ -29,6 +28,14 @@ public class UserDto {
     private String gender;
 
     private List<String> roles;
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 
     public Long getId() {
         return id;
@@ -68,14 +75,6 @@ public class UserDto {
 
     public void setJoinedAt(Instant joinedAt) {
         this.joinedAt = joinedAt;
-    }
-
-    public LocalDate getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
     }
 
     public String getProfile() {

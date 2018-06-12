@@ -6,11 +6,11 @@ import com.indiepost.dto.UserDto;
 import com.indiepost.enums.Types.UserRole;
 import com.indiepost.model.Tag;
 import com.indiepost.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,7 +34,7 @@ public class AdminServiceImpl implements AdminService {
 
     private final ContributorService contributorService;
 
-    @Autowired
+    @Inject
     public AdminServiceImpl(AdminPostService adminPostService, CategoryService categoryService,
                             UserService userService, TagService tagService, ContributorService contributorService) {
         this.adminPostService = adminPostService;

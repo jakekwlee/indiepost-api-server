@@ -20,8 +20,6 @@ public interface UserRepository {
 
     User findByUsername(String username);
 
-    User findByUsernameAndPassword(String username, String password);
-
     User findCurrentUser();
 
     User findByEmail(String email);

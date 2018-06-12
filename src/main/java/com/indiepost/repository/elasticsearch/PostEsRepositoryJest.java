@@ -17,10 +17,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +40,7 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
 
     private final String indexSettings;
 
-    @Autowired
+    @Inject
     public PostEsRepositoryJest(JestClientFactory clientFactory, String indexSettings) {
         this.clientFactory = clientFactory;
         this.indexSettings = indexSettings;

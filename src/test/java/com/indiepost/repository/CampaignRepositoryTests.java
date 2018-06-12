@@ -1,16 +1,16 @@
 package com.indiepost.repository;
 
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.dto.stat.LinkDto;
-import com.indiepost.dto.stat.ShareStat;
+import com.indiepost.dto.analytics.LinkDto;
+import com.indiepost.dto.analytics.ShareStat;
 import com.indiepost.model.Banner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,8 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 @WebAppConfiguration
 @Transactional
 public class CampaignRepositoryTests {
-    @Autowired
+
+    @Inject
     private CampaignRepository repository;
 
     @Test
@@ -68,7 +69,7 @@ public class CampaignRepositoryTests {
     @Test
     public void findBannerOnCampaignPeriodByPriority_shouldWorkProperly() {
         List<Banner> bannerList = repository.findBannerOnCampaignPeriodByPriority();
-        assertThat(bannerList).hasSize(1);
+        assertThat(bannerList).hasSize(0);
     }
 
 }

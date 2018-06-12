@@ -1,7 +1,7 @@
 package com.indiepost.repository.jpa;
 
-import com.indiepost.dto.stat.ShareStat;
-import com.indiepost.dto.stat.TimeDomainStat;
+import com.indiepost.dto.analytics.ShareStat;
+import com.indiepost.dto.analytics.TimeDomainStat;
 import com.indiepost.enums.Types.TimeDomainDuration;
 import com.indiepost.model.User;
 import com.indiepost.model.analytics.QVisitor;

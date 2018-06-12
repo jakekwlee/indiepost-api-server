@@ -6,13 +6,16 @@ import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * Created by jake on 8/31/17.
  */
 @Entity
 @Table(name = "Settings")
-public class Setting {
+public class Setting implements Serializable {
+
+    private static final long serialVersionUID = -564094387641842243L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

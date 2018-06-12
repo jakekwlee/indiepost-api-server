@@ -4,14 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.dto.stat.*;
+import com.indiepost.dto.analytics.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +25,8 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
 public class AnalyticsServiceTest {
-    @Autowired
+
+    @Inject
     private AnalyticsService analyticsService;
 
     @Test

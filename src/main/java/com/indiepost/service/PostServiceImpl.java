@@ -3,10 +3,10 @@ package com.indiepost.service;
 import com.indiepost.dto.ContributorDto;
 import com.indiepost.dto.FullTextSearchQuery;
 import com.indiepost.dto.Highlight;
+import com.indiepost.dto.analytics.PostStatDto;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
-import com.indiepost.dto.stat.PostStatDto;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Post;
 import com.indiepost.model.elasticsearch.PostEs;
@@ -14,13 +14,13 @@ import com.indiepost.repository.PostRepository;
 import com.indiepost.repository.StatRepository;
 import com.indiepost.repository.elasticsearch.PostEsRepository;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ public class PostServiceImpl implements PostService {
 
     private final PostEsRepository postEsRepository;
 
-    @Autowired
+    @Inject
     public PostServiceImpl(PostRepository postRepository,
                            StatRepository statRepository,
                            PostEsRepository postEsRepository) {

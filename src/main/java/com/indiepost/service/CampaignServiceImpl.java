@@ -1,18 +1,18 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.stat.*;
+import com.indiepost.dto.analytics.*;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Banner;
 import com.indiepost.model.analytics.Campaign;
 import com.indiepost.model.analytics.Link;
 import com.indiepost.repository.CampaignRepository;
 import com.indiepost.repository.ClickRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class CampaignServiceImpl implements CampaignService {
 
     private final ClickRepository clickRepository;
 
-    @Autowired
+    @Inject
     public CampaignServiceImpl(CampaignRepository campaignRepository,
                                ClickRepository clickRepository) {
         this.campaignRepository = campaignRepository;

@@ -1,7 +1,7 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.InquiryDto;
-import com.indiepost.dto.SuggestionDto;
+import com.indiepost.dto.Inquiry;
+import com.indiepost.dto.Suggestion;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Setting;
 import org.jsoup.Jsoup;
@@ -12,6 +12,7 @@ import org.springframework.mail.SimpleMailMessage;
  * Created by jake on 8/31/17.
  */
 public interface MailService {
+
     static String formatAddress(String mailSenderName, String mailAddress) {
         return mailSenderName.concat(" <").concat(mailAddress).concat(">");
     }
@@ -26,7 +27,7 @@ public interface MailService {
 
     String[] getMailReceivers(Types.UserRole role);
 
-    void sendSuggestion(SuggestionDto dto);
+    void sendSuggestion(Suggestion dto);
 
-    void sendInquiry(InquiryDto dto);
+    void sendInquiry(Inquiry dto);
 }

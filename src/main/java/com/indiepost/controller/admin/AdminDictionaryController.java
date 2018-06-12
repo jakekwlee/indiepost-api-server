@@ -2,9 +2,9 @@ package com.indiepost.controller.admin;
 
 import com.indiepost.model.Word;
 import com.indiepost.service.DictionaryService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.inject.Inject;
 import java.util.List;
 
 @RestController
@@ -13,7 +13,7 @@ public class AdminDictionaryController {
 
     private final DictionaryService dictionaryService;
 
-    @Autowired
+    @Inject
     public AdminDictionaryController(DictionaryService dictionaryService) {
         this.dictionaryService = dictionaryService;
     }

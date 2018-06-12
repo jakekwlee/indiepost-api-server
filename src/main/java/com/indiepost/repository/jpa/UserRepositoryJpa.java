@@ -65,15 +65,6 @@ public class UserRepositoryJpa implements UserRepository {
     }
 
     @Override
-    public User findByUsernameAndPassword(String username, String password) {
-        return getQueryFactory()
-                .selectFrom(u)
-                .where(u.username.eq(username)
-                        .and(u.password.eq(password)))
-                .fetchOne();
-    }
-
-    @Override
     public User findByEmail(String email) {
         return getQueryFactory()
                 .selectFrom(u)

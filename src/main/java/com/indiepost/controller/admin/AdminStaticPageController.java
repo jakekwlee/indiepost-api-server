@@ -5,10 +5,11 @@ import com.indiepost.dto.StaticPageDto;
 import com.indiepost.dto.post.BulkStatusUpdateDto;
 import com.indiepost.enums.Types;
 import com.indiepost.service.StaticPageService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+
+import javax.inject.Inject;
 
 /**
  * Created by jake on 17. 3. 5.
@@ -19,7 +20,7 @@ public class AdminStaticPageController {
 
     private final StaticPageService staticPageService;
 
-    @Autowired
+    @Inject
     public AdminStaticPageController(StaticPageService staticPageService) {
         this.staticPageService = staticPageService;
     }

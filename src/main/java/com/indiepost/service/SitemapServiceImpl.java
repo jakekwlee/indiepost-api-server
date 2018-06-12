@@ -9,12 +9,12 @@ import com.indiepost.repository.PostRepository;
 import com.indiepost.repository.StaticPageRepository;
 import cz.jiripinkas.jsitemapgenerator.WebPageBuilder;
 import cz.jiripinkas.jsitemapgenerator.generator.SitemapGenerator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -24,10 +24,12 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class SitemapServiceImpl implements SitemapService {
     private final PostRepository postRepository;
+
     private final CategoryRepository categoryRepository;
+
     private final StaticPageRepository staticPageRepository;
 
-    @Autowired
+    @Inject
     public SitemapServiceImpl(PostRepository postRepository, CategoryRepository categoryRepository, StaticPageRepository staticPageRepository) {
         this.postRepository = postRepository;
         this.categoryRepository = categoryRepository;

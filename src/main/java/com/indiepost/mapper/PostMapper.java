@@ -53,7 +53,6 @@ public class PostMapper {
         postSummaryDto.setPicked(post.isPicked());
         postSummaryDto.setTitle(post.getTitle());
         postSummaryDto.setExcerpt(post.getExcerpt());
-        postSummaryDto.setLikesCount(post.getLikesCount());
         postSummaryDto.setDisplayName(post.getDisplayName());
         return postSummaryDto;
     }

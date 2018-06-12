@@ -13,6 +13,7 @@ import java.util.List;
  * Created by jake on 7/27/16.
  */
 public interface UserService {
+
     void save(User user);
 
     void update(User user);
@@ -24,8 +25,6 @@ public interface UserService {
     User findById(Long id);
 
     User findByUsername(String username);
-
-    User findByUsername(String username, String password);
 
     boolean isUsernameExist(String username);
 

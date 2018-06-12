@@ -408,7 +408,6 @@ public class AdminPostServiceImpl implements AdminPostService {
 
         if (post.getAuthor() != null) {
             responseDto.setAuthorName(post.getAuthor().getDisplayName());
-
         }
         if (post.getEditor() != null) {
             responseDto.setEditorName(post.getEditor().getDisplayName());

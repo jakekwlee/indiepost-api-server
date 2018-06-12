@@ -4,8 +4,8 @@ package com.indiepost.service;
  * Created by jake on 17. 5. 25.
  */
 
-import com.indiepost.dto.stat.ActionDto;
-import com.indiepost.dto.stat.PageviewDto;
+import com.indiepost.dto.analytics.ActionDto;
+import com.indiepost.dto.analytics.PageviewDto;
 import com.indiepost.model.analytics.Visitor;
 
 import javax.servlet.http.HttpServletRequest;

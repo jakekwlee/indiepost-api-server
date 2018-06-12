@@ -1,7 +1,7 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.stat.ShareStat;
-import com.indiepost.dto.stat.TimeDomainStat;
+import com.indiepost.dto.analytics.ShareStat;
+import com.indiepost.dto.analytics.TimeDomainStat;
 import com.indiepost.enums.Types;
 import com.indiepost.model.analytics.Visitor;
 
@@ -12,6 +12,7 @@ import java.util.List;
  * Created by jake on 17. 4. 9.
  */
 public interface VisitorRepository {
+
     Long save(Visitor visitor);
 
     void delete(Visitor visitor);

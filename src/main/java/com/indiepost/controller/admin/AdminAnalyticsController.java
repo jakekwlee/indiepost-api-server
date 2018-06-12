@@ -1,9 +1,10 @@
 package com.indiepost.controller.admin;
 
-import com.indiepost.dto.stat.*;
+import com.indiepost.dto.analytics.*;
 import com.indiepost.service.AnalyticsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.inject.Inject;
 
 /**
  * Created by jake on 17. 4. 29.
@@ -14,7 +15,7 @@ public class AdminAnalyticsController {
 
     private final AnalyticsService analyticsService;
 
-    @Autowired
+    @Inject
     public AdminAnalyticsController(AnalyticsService analyticsService) {
         this.analyticsService = analyticsService;
     }

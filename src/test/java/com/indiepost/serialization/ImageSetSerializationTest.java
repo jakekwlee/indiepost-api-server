@@ -8,13 +8,13 @@ import com.indiepost.dto.ImageSetDto;
 import com.indiepost.service.ImageService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -25,7 +25,7 @@ import java.util.List;
 @WebAppConfiguration
 public class ImageSetSerializationTest {
 
-    @Autowired
+    @Inject
     private ImageService imageService;
 
     /**

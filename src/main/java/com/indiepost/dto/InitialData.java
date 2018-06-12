@@ -1,7 +1,7 @@
 package com.indiepost.dto;
 
 import com.indiepost.dto.post.PostSummaryDto;
-import com.indiepost.dto.stat.BannerDto;
+import com.indiepost.dto.analytics.BannerDto;
 
 import java.util.List;
 

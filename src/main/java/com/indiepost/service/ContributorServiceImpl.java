@@ -5,10 +5,10 @@ import com.indiepost.enums.Types;
 import com.indiepost.mapper.ContributorMapper;
 import com.indiepost.model.Contributor;
 import com.indiepost.repository.ContributorRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -25,7 +25,7 @@ public class ContributorServiceImpl implements ContributorService {
 
     private final ContributorRepository contributorRepository;
 
-    @Autowired
+    @Inject
     public ContributorServiceImpl(ContributorRepository contributorRepository) {
         this.contributorRepository = contributorRepository;
     }

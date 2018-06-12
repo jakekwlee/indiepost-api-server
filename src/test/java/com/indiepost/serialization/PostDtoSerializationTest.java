@@ -11,12 +11,13 @@ import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.service.PostService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -27,7 +28,7 @@ import java.util.List;
 @WebAppConfiguration
 public class PostDtoSerializationTest {
 
-    @Autowired
+    @Inject
     private PostService postService;
 
     /**
@@ -53,7 +54,7 @@ public class PostDtoSerializationTest {
      */
     @Test
     public void postSummaryListShouldSerializeCorrectly() throws JsonProcessingException {
-        List<PostSummaryDto> postList = postService.find(3, 10, true);
+        List<PostSummaryDto> postList = postService.find(PageRequest.of(3, 10));
         ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).modules(new JavaTimeModule()).build();
         objectMapper.registerModule(new Hibernate5Module());
         System.out.println("\n\n*** Start serialize List<PostSummaryDto> ***\n\n");

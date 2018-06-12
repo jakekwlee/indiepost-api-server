@@ -13,11 +13,11 @@ import com.indiepost.repository.ImageRepository;
 import com.indiepost.repository.PostRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.imageio.ImageIO;
+import javax.inject.Inject;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -34,9 +34,10 @@ import java.util.stream.Collectors;
 public class ImageServiceAws extends AbstractImageService implements ImageService {
 
     private static final Logger log = LoggerFactory.getLogger(ImageServiceAws.class);
+
     private final AwsConfig awsConfig;
 
-    @Autowired
+    @Inject
     public ImageServiceAws(ImageRepository imageRepository, PostRepository postRepository, AppConfig appConfig, AwsConfig awsConfig) {
         super(imageRepository, postRepository, appConfig);
         this.awsConfig = awsConfig;

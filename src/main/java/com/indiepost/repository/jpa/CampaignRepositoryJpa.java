@@ -1,6 +1,6 @@
 package com.indiepost.repository.jpa;
 
-import com.indiepost.dto.stat.*;
+import com.indiepost.dto.analytics.*;
 import com.indiepost.enums.Types.LinkType;
 import com.indiepost.model.Banner;
 import com.indiepost.model.QBanner;

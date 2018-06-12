@@ -5,10 +5,11 @@ import com.indiepost.dto.post.PostDto;
 import com.indiepost.utils.DomUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import javax.inject.Inject;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
@@ -20,7 +21,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 @WebAppConfiguration
 public class PostServiceTest {
 
-    @Autowired
+    @Inject
     private PostService postService;
 
     @Test

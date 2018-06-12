@@ -4,9 +4,9 @@ import com.google.common.collect.Lists;
 import com.indiepost.model.Word;
 import com.indiepost.repository.DictionaryRepository;
 import com.indiepost.repository.elasticsearch.PostEsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.List;
 
 @Service
@@ -16,7 +16,7 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     private final PostEsRepository postEsRepository;
 
-    @Autowired
+    @Inject
     public DictionaryServiceImpl(DictionaryRepository dictionaryRepository, PostEsRepository postEsRepository) {
         this.dictionaryRepository = dictionaryRepository;
         this.postEsRepository = postEsRepository;

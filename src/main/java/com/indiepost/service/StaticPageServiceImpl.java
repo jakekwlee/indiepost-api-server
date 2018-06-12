@@ -5,7 +5,6 @@ import com.indiepost.enums.Types;
 import com.indiepost.model.StaticPage;
 import com.indiepost.model.User;
 import com.indiepost.repository.StaticPageRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
@@ -15,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class StaticPageServiceImpl implements StaticPageService {
 
     private final UserService userService;
 
-    @Autowired
+    @Inject
     public StaticPageServiceImpl(StaticPageRepository staticPageRepository, UserService userService) {
         this.staticPageRepository = staticPageRepository;
         this.userService = userService;

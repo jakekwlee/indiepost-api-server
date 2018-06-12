@@ -1,7 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.ImageSetDto;
-import com.indiepost.dto.PostImageSetListDto;
+import com.indiepost.dto.PostImageSetDto;
 import com.indiepost.model.ImageSet;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.data.domain.Page;
@@ -24,7 +24,7 @@ public interface ImageService {
 
     Page<ImageSetDto> findAll(Pageable pageable);
 
-    PostImageSetListDto findImagesOnPost(Long postId);
+    PostImageSetDto findImagesOnPost(Long postId);
 
     void delete(ImageSet imageSet) throws IOException;
 

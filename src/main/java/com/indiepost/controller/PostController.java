@@ -1,17 +1,17 @@
 package com.indiepost.controller;
 
 import com.indiepost.dto.FullTextSearchQuery;
-import com.indiepost.dto.PostImageSetListDto;
+import com.indiepost.dto.PostImageSetDto;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.dto.post.RelatedPostsRequestDto;
 import com.indiepost.service.ImageService;
 import com.indiepost.service.PostService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -25,7 +25,7 @@ public class PostController {
 
     private final ImageService imageService;
 
-    @Autowired
+    @Inject
     public PostController(PostService postService, ImageService imageService) {
         this.postService = postService;
         this.imageService = imageService;
@@ -72,7 +72,7 @@ public class PostController {
     }
 
     @GetMapping(value = "/images/{id}")
-    public PostImageSetListDto getImagesOnPost(@PathVariable Long id) {
+    public PostImageSetDto getImagesOnPost(@PathVariable Long id) {
         return imageService.findImagesOnPost(id);
     }
 

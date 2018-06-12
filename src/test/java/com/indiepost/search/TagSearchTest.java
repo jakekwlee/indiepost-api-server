@@ -9,11 +9,12 @@ import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.service.PostService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -23,12 +24,13 @@ import java.util.List;
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
 public class TagSearchTest {
-    @Autowired
+
+    @Inject
     private PostService postService;
 
     @Test
     public void tagSearchShouldReturnPostsCorrectly() throws JsonProcessingException {
-        List<PostSummaryDto> dtoList = postService.findByTagName("독립영화", 0, 10, true);
+        List<PostSummaryDto> dtoList = postService.findByTagName("독립영화", PageRequest.of(0, 10));
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Hibernate5Module());
         System.out.println("\n\n*** Start serialize PostsByTagName ***\n\n");

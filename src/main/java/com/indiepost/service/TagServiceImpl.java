@@ -2,12 +2,12 @@ package com.indiepost.service;
 
 import com.indiepost.model.Tag;
 import com.indiepost.repository.TagRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
 
-    @Autowired
+    @Inject
     public TagServiceImpl(TagRepository tagRepository) {
         this.tagRepository = tagRepository;
     }

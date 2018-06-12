@@ -11,12 +11,13 @@ import com.indiepost.enums.Types;
 import com.indiepost.service.AdminPostService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import javax.inject.Inject;
 
 /**
  * Created by jake on 17. 1. 22.
@@ -26,7 +27,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @WebAppConfiguration
 public class AdminPostDtoSerializationTests {
 
-    @Autowired
+    @Inject
     private AdminPostService adminPostService;
 
     /**

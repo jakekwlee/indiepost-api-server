@@ -6,6 +6,7 @@ import com.indiepost.model.Role;
 import com.indiepost.model.User;
 import org.springframework.beans.BeanUtils;
 
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,7 @@ public class UserMapper {
         user.setDisplayName(userDto.getDisplayName());
         user.setEmail(userDto.getEmail());
         user.setPicture(userDto.getPicture());
-//        user.setUpdatedAt(userDto.getUpdatedAt());
+        user.setUpdatedAt(userDto.getUpdatedAt().atZone(ZoneId.systemDefault()).toLocalDateTime());
         if (userDto.getGender() == null) {
             userDto.setGender("UNIDENTIFIED");
         }

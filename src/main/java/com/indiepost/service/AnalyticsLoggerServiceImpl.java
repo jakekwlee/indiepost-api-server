@@ -1,7 +1,7 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.stat.ActionDto;
-import com.indiepost.dto.stat.PageviewDto;
+import com.indiepost.dto.analytics.ActionDto;
+import com.indiepost.dto.analytics.PageviewDto;
 import com.indiepost.enums.Types.Channel;
 import com.indiepost.enums.Types.ClientType;
 import com.indiepost.model.UserAgent;
@@ -9,10 +9,10 @@ import com.indiepost.model.analytics.*;
 import com.indiepost.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,7 +48,7 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
     @Value("${spring.profiles.active}")
     private String activeProfile;
 
-    @Autowired
+    @Inject
     public AnalyticsLoggerServiceImpl(VisitorRepository visitorRepository, PageviewRepository pageviewRepository,
                                       ActionRepository actionRepository,
                                       UserService userService, LinkRepository linkRepository, ClickRepository clickRepository) {

@@ -9,11 +9,11 @@ import com.indiepost.dto.post.BulkStatusUpdateDto;
 import com.indiepost.enums.Types;
 import com.indiepost.service.AdminPostService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 
 /**
@@ -25,7 +25,7 @@ public class AdminPostController {
 
     private final AdminPostService adminPostService;
 
-    @Autowired
+    @Inject
     public AdminPostController(AdminPostService adminPostService) {
         this.adminPostService = adminPostService;
     }

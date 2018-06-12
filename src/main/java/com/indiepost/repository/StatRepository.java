@@ -1,9 +1,9 @@
 package com.indiepost.repository;
 
-import com.indiepost.dto.stat.PostStatDto;
-import com.indiepost.dto.stat.ShareStat;
-import com.indiepost.dto.stat.TimeDomainDoubleStat;
-import com.indiepost.dto.stat.TimeDomainStat;
+import com.indiepost.dto.analytics.PostStatDto;
+import com.indiepost.dto.analytics.ShareStat;
+import com.indiepost.dto.analytics.TimeDomainDoubleStat;
+import com.indiepost.dto.analytics.TimeDomainStat;
 import com.indiepost.enums.Types.TimeDomainDuration;
 import com.indiepost.model.analytics.Stat;
 
@@ -14,6 +14,7 @@ import java.util.List;
  * Created by jake on 8/9/17.
  */
 public interface StatRepository {
+
     Long save(Stat stat);
 
     void delete(Stat stat);

@@ -10,14 +10,13 @@ import com.indiepost.model.User;
 import com.indiepost.repository.RoleRepository;
 import com.indiepost.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,13 +37,10 @@ public class UserServiceImpl implements UserService {
 
     private final RoleRepository roleRepository;
 
-    private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    @Inject
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -75,12 +71,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
-    }
-
-    @Override
-    public User findByUsername(String username, String password) {
-        String encodedPassword = passwordEncoder.encode(password);
-        return userRepository.findByUsernameAndPassword(username, encodedPassword);
     }
 
     @Override
@@ -181,7 +171,7 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             user = userDtoToUser(dto);
             user.setJoinedAt(now);
-//            user.setLastLogin(now);
+            user.setLastLogin(now);
             addRolesToUser(user, dto.getRoles());
             userRepository.save(user);
             return new UserProfileDto(true, userToUserDto(user));
@@ -192,7 +182,7 @@ public class UserServiceImpl implements UserService {
             return null;
         }
 
-//        user.setLastLogin(now);
+        user.setLastLogin(now);
         List<String> originalRoles = user.getRoles()
                 .stream()
                 .map(role -> role.getName())
@@ -201,7 +191,7 @@ public class UserServiceImpl implements UserService {
         // if user roles have changed
         if (!equalLists(originalRoles, dto.getRoles())) {
             addRolesToUser(user, dto.getRoles());
-//            user.setUpdatedAt(now);
+            user.setUpdatedAt(now);
             userRepository.save(user);
         }
         return new UserProfileDto(false, userToUserDto(user));

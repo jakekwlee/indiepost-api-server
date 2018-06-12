@@ -42,8 +42,6 @@ public class PostSummaryDto implements Serializable {
 
     private int commentsCount;
 
-    private int likesCount;
-
     private Highlight highlight;
 
     public Highlight getHighlight() {
@@ -132,14 +130,6 @@ public class PostSummaryDto implements Serializable {
 
     public void setCommentsCount(int commentsCount) {
         this.commentsCount = commentsCount;
-    }
-
-    public int getLikesCount() {
-        return likesCount;
-    }
-
-    public void setLikesCount(int likesCount) {
-        this.likesCount = likesCount;
     }
 
     public Long getTitleImageId() {

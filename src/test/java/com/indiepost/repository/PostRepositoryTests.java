@@ -4,12 +4,12 @@ import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.post.PostSummaryDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -20,7 +20,8 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 @WebAppConfiguration
 @Transactional
 public class PostRepositoryTests {
-    @Autowired
+
+    @Inject
     private PostRepository postRepository;
 
     @Test

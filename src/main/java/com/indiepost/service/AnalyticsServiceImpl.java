@@ -1,16 +1,16 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.stat.*;
+import com.indiepost.dto.analytics.*;
 import com.indiepost.enums.Types;
 import com.indiepost.enums.Types.ClientType;
 import com.indiepost.model.Metadata;
 import com.indiepost.repository.MetadataRepository;
 import com.indiepost.repository.StatRepository;
 import com.indiepost.repository.VisitorRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,7 +29,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     private final VisitorRepository visitorRepository;
 
-    @Autowired
+    @Inject
     public AnalyticsServiceImpl(MetadataRepository metadataRepository,
                                 StatRepository statRepository,
                                 VisitorRepository visitorRepository) {

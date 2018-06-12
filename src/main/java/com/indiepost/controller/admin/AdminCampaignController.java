@@ -1,14 +1,14 @@
 package com.indiepost.controller.admin;
 
 import com.indiepost.dto.CreateResponse;
-import com.indiepost.dto.stat.CampaignDto;
-import com.indiepost.dto.stat.CampaignReport;
+import com.indiepost.dto.analytics.CampaignDto;
+import com.indiepost.dto.analytics.CampaignReport;
 import com.indiepost.service.CampaignService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.util.Objects;
@@ -22,7 +22,7 @@ public class AdminCampaignController {
 
     private final CampaignService campaignService;
 
-    @Autowired
+    @Inject
     public AdminCampaignController(CampaignService campaignService) {
         this.campaignService = campaignService;
     }

@@ -1,6 +1,5 @@
 package com.indiepost.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.indiepost.enums.Types.UserGender;
 import com.indiepost.enums.Types.UserRole;
 import com.indiepost.enums.Types.UserState;
@@ -9,8 +8,8 @@ import javax.persistence.*;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,20 +19,15 @@ import java.util.List;
 @Table(name = "Users")
 public class User implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -1147949899202777107L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(nullable = false, unique = true)
-    @Size(min = 4, max = 30)
+    @Size(min = 4, max = 200)
     private String username;
-
-    @Column(nullable = false)
-    @Size(min = 3, max = 50)
-    @JsonIgnore
-    private String password;
 
     @Size(max = 300)
     private String profile;
@@ -44,43 +38,33 @@ public class User implements Serializable {
     @Size(min = 7, max = 50)
     private String email;
 
-    @Pattern(regexp = "[_0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]{2,10}")
-    @Size(min = 2, max = 20)
+    @Pattern(regexp = "[_0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣\\s]{2,30}")
+    @Size(min = 2, max = 30)
     private String displayName;
 
     @Column(nullable = false)
     private LocalDateTime joinedAt;
 
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
+    @Column(nullable = false)
+    private LocalDateTime lastLogin;
+
     @Pattern(regexp = "^01[\\d]{8,9}")
     @Size(min = 7, max = 15)
     private String phone;
 
-    @Size(max = 500)
-    private String uid;
-
-    @Column(columnDefinition = "DATETIME")
-    private LocalDate birthday;
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private UserState state;
+    private UserState state = UserState.ACTIVATED;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UserGender gender;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<Like> likes;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "author")
-    private List<Post> authoredPosts;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "editor")
-    private List<Post> editedPosts;
-
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Comment> comments;
+    private List<Bookmark> bookmarks;
 
     @Column(nullable = false)
     @ManyToMany(cascade = CascadeType.ALL)
@@ -89,7 +73,7 @@ public class User implements Serializable {
             joinColumns = @JoinColumn(name = "userId"),
             inverseJoinColumns = @JoinColumn(name = "roleId")
     )
-    private List<Role> roles;
+    private List<Role> roles = new ArrayList<>();
 
     public UserRole getHighestRole() {
         int userLevel = 1;
@@ -114,20 +98,12 @@ public class User implements Serializable {
         }
     }
 
-    public List<Like> getLikes() {
-        return likes;
+    public List<Bookmark> getBookmarks() {
+        return bookmarks;
     }
 
-    public void setLikes(List<Like> likes) {
-        this.likes = likes;
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
+    public void setBookmarks(List<Bookmark> bookmarks) {
+        this.bookmarks = bookmarks;
     }
 
     public List<Role> getRoles() {
@@ -152,14 +128,6 @@ public class User implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getEmail() {
@@ -194,44 +162,12 @@ public class User implements Serializable {
         this.phone = phone;
     }
 
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    public LocalDate getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
-    }
-
     public UserState getState() {
         return state;
     }
 
     public void setState(UserState state) {
         this.state = state;
-    }
-
-    public List<Post> getAuthoredPosts() {
-        return authoredPosts;
-    }
-
-    public void setAuthoredPosts(List<Post> authoredPosts) {
-        this.authoredPosts = authoredPosts;
-    }
-
-    public List<Post> getEditedPosts() {
-        return editedPosts;
-    }
-
-    public void setEditedPosts(List<Post> editedPosts) {
-        this.editedPosts = editedPosts;
     }
 
     public UserGender getGender() {
@@ -260,5 +196,21 @@ public class User implements Serializable {
 
     public void setPicture(String picture) {
         this.picture = picture;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public LocalDateTime getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(LocalDateTime lastLogin) {
+        this.lastLogin = lastLogin;
     }
 }

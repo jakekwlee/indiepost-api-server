@@ -3,7 +3,6 @@ package com.indiepost.config;
 import com.indiepost.filter.JWTAuthenticationFilter;
 import com.indiepost.repository.UserRepository;
 import com.indiepost.service.CustomUserDetailService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,12 +15,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,8 +32,6 @@ import java.util.List;
 @EnableWebSecurity
 public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
-    private final PasswordEncoder passwordEncoder;
-
     private final UserRepository userRepository;
 
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
@@ -42,9 +39,8 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Value("${spring.profiles.active}")
     private String activeProfile;
 
-    @Autowired
-    public SpringSecurityConfigurer(PasswordEncoder passwordEncoder, UserRepository userRepository, JWTAuthenticationFilter jwtAuthenticationFilter) {
-        this.passwordEncoder = passwordEncoder;
+    @Inject
+    public SpringSecurityConfigurer(UserRepository userRepository, JWTAuthenticationFilter jwtAuthenticationFilter) {
         this.userRepository = userRepository;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
@@ -57,18 +53,15 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
                 .cors()
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                .antMatchers("/admin/**").access("hasAuthority('Editor')")
-                .antMatchers("/**").permitAll()
+                .antMatchers("/admin/**")
+                .access("hasAuthority('Editor')")
+                .antMatchers(HttpMethod.PUT, "/user/**")
+                .access("hasAuthority('User')")
+                .antMatchers("/**")
+                .permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-    }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(this.userDetailsServiceBean())
-                .passwordEncoder(passwordEncoder);
     }
 
     @Bean
@@ -81,6 +74,11 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
+    }
+
+    @Inject
+    public void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsServiceBean());
     }
 
     @Bean
@@ -105,8 +103,4 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
         return new CorsFilter(source);
     }
 
-    @Autowired
-    public void registerAuthentication(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsServiceBean());
-    }
 }

@@ -1,8 +1,8 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.stat.BannerDto;
-import com.indiepost.dto.stat.CampaignDto;
-import com.indiepost.dto.stat.CampaignReport;
+import com.indiepost.dto.analytics.BannerDto;
+import com.indiepost.dto.analytics.CampaignDto;
+import com.indiepost.dto.analytics.CampaignReport;
 import com.indiepost.model.analytics.Campaign;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

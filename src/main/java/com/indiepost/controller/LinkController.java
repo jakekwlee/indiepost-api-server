@@ -1,12 +1,12 @@
 package com.indiepost.controller;
 
 import com.indiepost.service.AnalyticsLoggerService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -18,9 +18,10 @@ import java.security.Principal;
 @Controller
 @RequestMapping("/link")
 public class LinkController {
+
     private final AnalyticsLoggerService analyticsLoggerService;
 
-    @Autowired
+    @Inject
     public LinkController(AnalyticsLoggerService analyticsLoggerService) {
         this.analyticsLoggerService = analyticsLoggerService;
     }

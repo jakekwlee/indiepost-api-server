@@ -2,10 +2,11 @@ package com.indiepost.controller.admin;
 
 import com.indiepost.dto.AdminInitResponseDto;
 import com.indiepost.service.AdminService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.inject.Inject;
 
 /**
  * Created by jake on 10/8/16.
@@ -16,7 +17,7 @@ public class AdminInitialDataController {
 
     private final AdminService adminService;
 
-    @Autowired
+    @Inject
     public AdminInitialDataController(AdminService adminService) {
         this.adminService = adminService;
     }

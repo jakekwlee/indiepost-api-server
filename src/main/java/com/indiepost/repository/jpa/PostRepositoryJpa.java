@@ -189,8 +189,7 @@ public class PostRepositoryJpa implements PostRepository {
     private JPAQuery addProjections(JPAQuery query) {
         return query.select(
                 post.id, post.categoryId, post.category.name, post.category.slug, post.splash, post.picked, post.featured,
-                post.displayName, post.title, post.publishedAt, post.excerpt, post.titleImage,
-                post.likesCount);
+                post.displayName, post.title, post.publishedAt, post.excerpt, post.titleImage);
     }
 
 

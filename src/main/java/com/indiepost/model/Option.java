@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Table(name = "Options")
 public class Option implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -6249744799288631153L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

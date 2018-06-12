@@ -3,7 +3,6 @@ package com.indiepost.model;
 import com.indiepost.enums.Types;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -113,17 +112,20 @@ public class Post implements Serializable {
     @OrderBy("priority asc")
     private List<PostContributor> postContributors = new ArrayList<>();
 
-    @Column(nullable = false)
-    @Min(0)
-    private int commentsCount = 0;
+    @OneToMany(
+            mappedBy = "post",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Bookmark> bookmarks;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("likedAt DESC")
-    private List<Like> likes;
+    public List<Bookmark> getBookmarks() {
+        return bookmarks;
+    }
 
-    @Column(nullable = false)
-    @Min(0)
-    private int likesCount = 0;
+    public void setBookmarks(List<Bookmark> bookmarks) {
+        this.bookmarks = bookmarks;
+    }
 
     public Long getId() {
         return id;
@@ -195,22 +197,6 @@ public class Post implements Serializable {
 
     public void setExcerpt(String excerpt) {
         this.excerpt = excerpt;
-    }
-
-    public int getLikesCount() {
-        return likesCount;
-    }
-
-    public void setLikesCount(int likesCount) {
-        this.likesCount = likesCount;
-    }
-
-    public int getCommentsCount() {
-        return commentsCount;
-    }
-
-    public void setCommentsCount(int commentsCount) {
-        this.commentsCount = commentsCount;
     }
 
     public Types.PostStatus getStatus() {
@@ -294,14 +280,6 @@ public class Post implements Serializable {
 
     public void clearContributors() {
         this.postContributors.clear();
-    }
-
-    public List<Like> getLikes() {
-        return likes;
-    }
-
-    public void setLikes(List<Like> likes) {
-        this.likes = likes;
     }
 
     public LocalDateTime getCreatedAt() {

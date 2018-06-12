@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -17,15 +18,15 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "ImageSets")
-public class ImageSet {
+public class ImageSet implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -6176638635434014551L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Fetch(FetchMode.SUBSELECT)
+    @Fetch(FetchMode.JOIN)
     @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
     @Cascade({CascadeType.ALL, CascadeType.SAVE_UPDATE})
     @JoinColumn(name = "imageSetId")

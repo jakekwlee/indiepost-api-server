@@ -2,7 +2,7 @@ package com.indiepost.service;
 
 import com.indiepost.config.AppConfig;
 import com.indiepost.dto.ImageSetDto;
-import com.indiepost.dto.PostImageSetListDto;
+import com.indiepost.dto.PostImageSetDto;
 import com.indiepost.enums.Types.ImageSize;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
@@ -13,12 +13,12 @@ import com.indiepost.utils.DomUtil;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.imgscalr.Scalr;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import javax.inject.Inject;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -43,7 +43,7 @@ abstract class AbstractImageService implements ImageService {
 
     private final PostRepository postRepository;
 
-    @Autowired
+    @Inject
     public AbstractImageService(ImageRepository imageRepository, PostRepository postRepository, AppConfig config) {
         this.imageRepository = imageRepository;
         this.config = config;
@@ -155,9 +155,9 @@ abstract class AbstractImageService implements ImageService {
     }
 
     @Override
-    public PostImageSetListDto findImagesOnPost(Long postId) {
+    public PostImageSetDto findImagesOnPost(Long postId) {
         Post post = postRepository.findById(postId);
-        PostImageSetListDto postImageSetListDto = new PostImageSetListDto();
+        PostImageSetDto PostImageSetDto = new PostImageSetDto();
         if (post == null) {
             return null;
         }
@@ -167,9 +167,9 @@ abstract class AbstractImageService implements ImageService {
         int size = titleImage.getImages().size();
         Set<String> prefixList = DomUtil.getImagePrefixes(content);
         List<ImageSet> imageSetList = imageRepository.findByPrefixes(prefixList);
-        postImageSetListDto.setTitleImage(titleImage);
-        postImageSetListDto.setImages(imageSetList);
-        return postImageSetListDto;
+        PostImageSetDto.setTitleImage(titleImage);
+        PostImageSetDto.setImages(imageSetList);
+        return PostImageSetDto;
     }
 
     @Override

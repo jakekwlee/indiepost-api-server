@@ -1,14 +1,14 @@
 package com.indiepost.controller;
 
-import com.indiepost.dto.stat.ActionDto;
-import com.indiepost.dto.stat.PageviewDto;
+import com.indiepost.dto.analytics.ActionDto;
+import com.indiepost.dto.analytics.PageviewDto;
 import com.indiepost.service.AnalyticsLoggerService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -19,9 +19,10 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/stat")
 public class AnalyticsLoggingApiController {
+
     private final AnalyticsLoggerService analyticsLoggerService;
 
-    @Autowired
+    @Inject
     public AnalyticsLoggingApiController(AnalyticsLoggerService analyticsLoggerService) {
         this.analyticsLoggerService = analyticsLoggerService;
     }
