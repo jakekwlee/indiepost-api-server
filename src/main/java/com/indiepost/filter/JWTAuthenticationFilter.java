@@ -48,7 +48,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
         String accessToken = token.replace(TOKEN_PREFIX, "").replace(" ", "");
         Algorithm algorithm = Algorithm.HMAC256(SIGNING_SECRET);
         JWTVerifier jwtVerifier = JWT.require(algorithm)
-                .withIssuer("https://indiepost.auth0.com/")
+                .withIssuer("https://auth.indiepost.co.kr/")
                 .withAudience("https://api.indiepost.co.kr/")
                 .acceptLeeway(60)
                 .build();

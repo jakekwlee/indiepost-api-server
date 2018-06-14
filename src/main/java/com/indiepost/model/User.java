@@ -29,12 +29,13 @@ public class User implements Serializable {
     @Size(min = 4, max = 200)
     private String username;
 
-    @Size(max = 300)
+    @Size(max = 500)
     private String profile;
 
+    @Size(max = 500)
     private String picture;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     @Size(min = 7, max = 50)
     private String email;
 
