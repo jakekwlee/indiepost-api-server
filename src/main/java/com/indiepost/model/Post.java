@@ -117,14 +117,14 @@ public class Post implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<Bookmark> bookmarks;
+    private List<UserReading> userReadings;
 
-    public List<Bookmark> getBookmarks() {
-        return bookmarks;
+    public List<UserReading> getUserReadings() {
+        return userReadings;
     }
 
-    public void setBookmarks(List<Bookmark> bookmarks) {
-        this.bookmarks = bookmarks;
+    public void setUserReadings(List<UserReading> userReadings) {
+        this.userReadings = userReadings;
     }
 
     public Long getId() {

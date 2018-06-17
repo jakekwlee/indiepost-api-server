@@ -2,13 +2,13 @@ package com.indiepost.mapper;
 
 import com.indiepost.dto.UserDto;
 import com.indiepost.enums.Types;
-import com.indiepost.model.Role;
 import com.indiepost.model.User;
-import org.springframework.beans.BeanUtils;
 
 import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
 
 /**
  * Created by jake on 17. 1. 14.
@@ -32,16 +32,23 @@ public class UserMapper {
         }
         Types.UserGender gender = Types.UserGender.valueOf(userDto.getGender());
         user.setGender(gender);
-        // do not map roles
+        // TODO do not map roles. why???
     }
 
     public static UserDto userToUserDto(User user) {
         UserDto userDto = new UserDto();
-        BeanUtils.copyProperties(user, userDto);
-        List<String> roles = user.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toList());
+        userDto.setId(user.getId());
+        userDto.setUsername(user.getUsername());
+        userDto.setDisplayName(user.getDisplayName());
+        userDto.setEmail(user.getEmail());
         userDto.setGender(user.getGender().toString());
+        userDto.setPicture(user.getPicture());
+        userDto.setProfile(user.getProfile());
+        userDto.setJoinedAt(localDateTimeToInstant(user.getJoinedAt()));
+        userDto.setUpdatedAt(localDateTimeToInstant(user.getUpdatedAt()));
+        List<String> roles = user.getRoles().stream()
+                .map(role -> role.getName())
+                .collect(Collectors.toList());
         userDto.setRoles(roles);
         return userDto;
     }

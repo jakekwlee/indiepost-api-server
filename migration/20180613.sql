@@ -26,3 +26,5 @@ references `indiepost`.`Users` (`id`)
 
 alter table `indiepost`.`Users`
   change column `username` `username` varchar(200) character set 'utf8' not null;
+
+drop table `indiepost`.`Bookmarks`;

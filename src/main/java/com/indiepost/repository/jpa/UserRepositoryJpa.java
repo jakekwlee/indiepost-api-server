@@ -31,6 +31,7 @@ public class UserRepositoryJpa implements UserRepository {
     @Override
     public void save(User user) {
         entityManager.persist(user);
+        entityManager.flush();
     }
 
     @Override
