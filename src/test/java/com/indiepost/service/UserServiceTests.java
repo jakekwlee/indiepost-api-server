@@ -50,7 +50,6 @@ public class UserServiceTests {
         dto.setUsername("auth0|5a88547af5c8213cb27caf41");
 
         dto.setDisplayName("Test Name");
-        dto.setEmail("sysadmin@indiepost.co.kr");
         dto.setGender("MALE");
         dto.setPicture("https://www.google.co.kr/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png");
 

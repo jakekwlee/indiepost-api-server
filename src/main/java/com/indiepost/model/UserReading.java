@@ -2,7 +2,7 @@ package com.indiepost.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 /**
  * Created by jake on 7/25/16.
@@ -32,9 +32,18 @@ public class UserReading implements Serializable {
     private Long postId;
 
     @Column(nullable = false)
-    private Instant lastRead;
+    private LocalDateTime firstRead;
 
-    private boolean bookmarked;
+    @Column(nullable = false)
+    private LocalDateTime lastRead;
+
+    private LocalDateTime bookmarkedAt;
+
+    @Column(nullable = false)
+    private int readCount = 1;
+
+    @Column(nullable = false)
+    private boolean bookmarked = false;
 
     private boolean visible = true;
 
@@ -70,11 +79,11 @@ public class UserReading implements Serializable {
         this.post = post;
     }
 
-    public Instant getLastRead() {
+    public LocalDateTime getLastRead() {
         return lastRead;
     }
 
-    public void setLastRead(Instant lastRead) {
+    public void setLastRead(LocalDateTime lastRead) {
         this.lastRead = lastRead;
     }
 
@@ -100,5 +109,33 @@ public class UserReading implements Serializable {
 
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    public LocalDateTime getFirstRead() {
+        return firstRead;
+    }
+
+    public void setFirstRead(LocalDateTime firstRead) {
+        this.firstRead = firstRead;
+    }
+
+    public int getReadCount() {
+        return readCount;
+    }
+
+    public void setReadCount(int readCount) {
+        this.readCount = readCount;
+    }
+
+    public void increaseReadCount() {
+        this.readCount++;
+    }
+
+    public LocalDateTime getBookmarkedAt() {
+        return bookmarkedAt;
+    }
+
+    public void setBookmarkedAt(LocalDateTime bookmarkedAt) {
+        this.bookmarkedAt = bookmarkedAt;
     }
 }

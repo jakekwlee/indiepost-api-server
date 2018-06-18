@@ -18,24 +18,24 @@ import java.io.IOException;
  */
 @RestController
 @RequestMapping("/stat")
-public class AnalyticsLoggingApiController {
+public class AnalyticsLoggerController {
 
     private final AnalyticsLoggerService analyticsLoggerService;
 
     @Inject
-    public AnalyticsLoggingApiController(AnalyticsLoggerService analyticsLoggerService) {
+    public AnalyticsLoggerController(AnalyticsLoggerService analyticsLoggerService) {
         this.analyticsLoggerService = analyticsLoggerService;
     }
 
     @GetMapping("/pageview")
-    public void pageview(HttpServletRequest request,
-                         HttpServletResponse response,
-                         @RequestParam(name = "n") String appName,
-                         @RequestParam(name = "v") String appVersion,
-                         @RequestParam(name = "h") String path,
-                         @RequestParam(name = "p", required = false) Long postId,
-                         @RequestParam(name = "r", required = false) String referrer,
-                         @RequestParam(name = "u", required = false) Long userId
+    public void logPageview(HttpServletRequest request,
+                            HttpServletResponse response,
+                            @RequestParam(name = "n") String appName,
+                            @RequestParam(name = "v") String appVersion,
+                            @RequestParam(name = "h") String path,
+                            @RequestParam(name = "p", required = false) Long postId,
+                            @RequestParam(name = "r", required = false) String referrer,
+                            @RequestParam(name = "u", required = false) Long userId
     ) throws IOException {
         PageviewDto dto = new PageviewDto();
         dto.setAppName(appName);
@@ -49,15 +49,15 @@ public class AnalyticsLoggingApiController {
 
 
     @GetMapping("/action")
-    public void action(HttpServletRequest request,
-                       HttpServletResponse response,
-                       @RequestParam(name = "n") String appName,
-                       @RequestParam(name = "v") String appVersion,
-                       @RequestParam(name = "a") String actionType,
-                       @RequestParam(name = "l") String label,
-                       @RequestParam(name = "h") String path,
-                       @RequestParam(name = "i") Integer value,
-                       @RequestParam(name = "u", required = false) Long userId
+    public void logAction(HttpServletRequest request,
+                          HttpServletResponse response,
+                          @RequestParam(name = "n") String appName,
+                          @RequestParam(name = "v") String appVersion,
+                          @RequestParam(name = "a") String actionType,
+                          @RequestParam(name = "l") String label,
+                          @RequestParam(name = "h") String path,
+                          @RequestParam(name = "i") Integer value,
+                          @RequestParam(name = "u", required = false) Long userId
     ) throws IOException {
         ActionDto dto = new ActionDto();
         dto.setAppName(appName);

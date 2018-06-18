@@ -6,7 +6,7 @@ public interface UserReadingService {
 
     void setUserReadingInvisible(Long userId, Long postId);
 
-    void setAllUserReadingInvisible(Long userId);
+    void setInvisibleAll(Long userId);
 
     void addBookmark(Long userId, Long postId);
 
