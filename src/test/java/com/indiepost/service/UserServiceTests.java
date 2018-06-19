@@ -72,6 +72,6 @@ public class UserServiceTests {
         assertThat(resultDto.getUsername()).isEqualTo(dto.getUsername());
         assertThat(resultDto.getUpdatedAt()).isEqualTo(dto.getUpdatedAt());
 
-        assertThat(resultDto.getRoles()).containsSequence(dto.getRoles());
+        assertThat(resultDto.getRoles()).containsOnlyElementsOf(dto.getRoles());
     }
 }

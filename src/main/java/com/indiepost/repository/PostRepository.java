@@ -37,4 +37,8 @@ public interface PostRepository {
     List<PostSummaryDto> search(PostQuery search, Pageable pageable);
 
     Types.PostStatus getStatusById(Long postId);
+
+    List<PostSummaryDto> findUserReadByUserId(Long userId, Pageable pageable);
+
+    List<PostSummaryDto> findUserBookmarksByUserId(Long userId, Pageable pageable);
 }

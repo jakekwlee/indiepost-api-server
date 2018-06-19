@@ -117,14 +117,14 @@ public class Post implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<UserReading> userReadings;
+    private List<UserRead> userReads;
 
-    public List<UserReading> getUserReadings() {
-        return userReadings;
+    public List<UserRead> getUserReads() {
+        return userReads;
     }
 
-    public void setUserReadings(List<UserReading> userReadings) {
-        this.userReadings = userReadings;
+    public void setUserReads(List<UserRead> userReads) {
+        this.userReads = userReads;
     }
 
     public Long getId() {

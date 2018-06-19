@@ -1,7 +1,7 @@
 package com.indiepost.repository;
 
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.model.UserReading;
+import com.indiepost.model.UserRead;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,19 +22,18 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
 @Transactional
-public class UserReadingRepositoryTests {
+public class UserReadRepositoryTests {
     @Inject
-    private UserReadingRepository repository;
+    private UserReadRepository repository;
 
     private List<Long> insertedIds = new ArrayList<>();
 
     @Before
     public void beforeTest() {
-        UserReading userReading = new UserReading();
-        userReading.setFirstRead(LocalDateTime.now());
-        userReading.setLastRead(LocalDateTime.now());
-        repository.save(userReading, 1L, 500L);
-        Long id = userReading.getId();
+        UserRead userRead = new UserRead();
+        userRead.setFirstRead(LocalDateTime.now());
+        userRead.setLastRead(LocalDateTime.now());
+        Long id = repository.save(userRead, 1L, 500L);
         insertedIds.add(id);
     }
 
@@ -47,20 +46,13 @@ public class UserReadingRepositoryTests {
 
     @Test
     public void findOneByUserIdAndPostId_shouldReturnAnUserReadingProperly() {
-        UserReading userReading = repository.findOneByUserIdAndPostId(1L, 500L);
-        assertThat(userReading).isNotNull();
+        UserRead userRead = repository.findOneByUserIdAndPostId(1L, 500L);
+        assertThat(userRead).isNotNull();
     }
 
     @Test
     public void findOne_shouldReturnAnUserReadingProperly() {
-        UserReading userReading = repository.findOne(insertedIds.get(0));
-        assertThat(userReading).isNotNull();
-    }
-
-    @Test
-    public void setAllReadingInvisible_shouldUpdateUserReadingProperly() {
-        repository.setInvisibleAll(1L);
-        UserReading userReading = repository.findOne(insertedIds.get(insertedIds.size() - 1));
-        assertThat(userReading.isVisible()).isFalse();
+        UserRead userRead = repository.findOne(insertedIds.get(0));
+        assertThat(userRead).isNotNull();
     }
 }

@@ -7,6 +7,8 @@ import com.indiepost.model.*;
 import com.indiepost.repository.PostRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Pageable;
@@ -184,6 +186,53 @@ public class PostRepositoryJpa implements PostRepository {
                 .from(post)
                 .where(post.id.eq(postId))
                 .fetchOne();
+    }
+
+    @Override
+    public List<PostSummaryDto> findUserReadByUserId(Long userId, Pageable pageable) {
+        return findUserReadByUserId(userId, pageable, false);
+    }
+
+    @Override
+    public List<PostSummaryDto> findUserBookmarksByUserId(Long userId, Pageable pageable) {
+        return findUserReadByUserId(userId, pageable, true);
+    }
+
+    private List<PostSummaryDto> findUserReadByUserId(Long userId, Pageable pageable, boolean bookmarked) {
+        QCategory ct = QCategory.category;
+        QImageSet i = QImageSet.imageSet;
+        QUserRead ur = QUserRead.userRead;
+
+        BooleanExpression whereClause;
+        OrderSpecifier orderClause;
+
+        if (bookmarked) {
+            whereClause = post.status.eq(PostStatus.PUBLISH)
+                    .and(ur.bookmarked.isTrue())
+                    .and(ur.userId.eq(userId));
+            orderClause = ur.bookmarkedAt.desc();
+        } else {
+            whereClause = post.status.eq(PostStatus.PUBLISH)
+                    .and(ur.visible.isTrue())
+                    .and(ur.userId.eq(userId));
+            orderClause = ur.lastRead.desc();
+        }
+
+        JPAQuery query = getQueryFactory().from(post);
+        addProjections(query)
+                .innerJoin(post.category, ct)
+                .innerJoin(post.userReads, ur)
+                .innerJoin(ur.post, post)
+                .leftJoin(post.titleImage, i)
+                .where(whereClause)
+                .orderBy(orderClause)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize()).distinct();
+        List<Tuple> result = query.fetch();
+        if (result.size() == 0) {
+            return new ArrayList<>();
+        }
+        return toDtoList(result);
     }
 
     private JPAQuery addProjections(JPAQuery query) {

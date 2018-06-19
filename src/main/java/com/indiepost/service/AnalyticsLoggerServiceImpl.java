@@ -114,9 +114,7 @@ public class AnalyticsLoggerServiceImpl implements AnalyticsLoggerService {
         if (isNotEmpty(actionDto.getLabel())) {
             action.setLabel(actionDto.getLabel());
         }
-        if (actionDto.getValue() != null) {
-            action.setValue(actionDto.getValue());
-        }
+        action.setValue(actionDto.getValue());
         action.setTimestamp(LocalDateTime.now());
         actionRepository.save(action);
     }

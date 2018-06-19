@@ -30,6 +30,10 @@ public interface PostService {
 
     List<PostSummaryDto> findByContributorFullName(String fullName, Pageable pageable);
 
+    List<PostSummaryDto> findUserReadByUserId(Long userId, Pageable pageable);
+
+    List<PostSummaryDto> findUserBookmarksByUserId(Long userId, Pageable pageable);
+
     List<PostSummaryDto> search(PostQuery query, int page, int size);
 
     List<PostSummaryDto> findTopRatedPosts(LocalDateTime since, LocalDateTime until, Integer limit);

@@ -1,10 +1,10 @@
 package com.indiepost.repository.jpa;
 
 import com.indiepost.model.Post;
-import com.indiepost.model.QUserReading;
+import com.indiepost.model.QUserRead;
 import com.indiepost.model.User;
-import com.indiepost.model.UserReading;
-import com.indiepost.repository.UserReadingRepository;
+import com.indiepost.model.UserRead;
+import com.indiepost.repository.UserReadRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 
@@ -12,20 +12,20 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 @Repository
-public class UserReadingRepositoryJpa implements UserReadingRepository {
+public class UserReadRepositoryJpa implements UserReadRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    private QUserReading ur = QUserReading.userReading;
+    private QUserRead ur = QUserRead.userRead;
 
     @Override
-    public UserReading findOne(Long id) {
-        return getQueryFactory().selectFrom(ur).fetchOne();
+    public UserRead findOne(Long id) {
+        return entityManager.find(UserRead.class, id);
     }
 
     @Override
-    public UserReading findOneByUserIdAndPostId(Long userId, Long postId) {
+    public UserRead findOneByUserIdAndPostId(Long userId, Long postId) {
         return getQueryFactory().selectFrom(ur).where(
                 ur.userId.eq(userId).and(
                         ur.postId.eq(postId))
@@ -33,17 +33,19 @@ public class UserReadingRepositoryJpa implements UserReadingRepository {
     }
 
     @Override
-    public void save(UserReading userReading) {
-        entityManager.persist(userReading);
+    public void save(UserRead userRead) {
+        entityManager.persist(userRead);
     }
 
     @Override
-    public void save(UserReading userReading, Long userId, Long postId) {
+    public Long save(UserRead userRead, Long userId, Long postId) {
         User userRef = entityManager.getReference(User.class, userId);
         Post postRef = entityManager.getReference(Post.class, postId);
-        userReading.setUser(userRef);
-        userReading.setPost(postRef);
-        save(userReading);
+        userRead.setUser(userRef);
+        userRead.setPost(postRef);
+        save(userRead);
+        entityManager.flush();
+        return userRead.getId();
     }
 
     @Override
@@ -55,8 +57,8 @@ public class UserReadingRepositoryJpa implements UserReadingRepository {
 
     @Override
     public void deleteById(Long id) {
-        UserReading userReading = entityManager.getReference(UserReading.class, id);
-        entityManager.remove(userReading);
+        UserRead userRead = entityManager.getReference(UserRead.class, id);
+        entityManager.remove(userRead);
     }
 
     private JPAQueryFactory getQueryFactory() {

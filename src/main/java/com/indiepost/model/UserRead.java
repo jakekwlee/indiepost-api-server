@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
  * Created by jake on 7/25/16.
  */
 @Entity
-@Table(name = "UserReadings")
-public class UserReading implements Serializable {
+@Table(name = "UserReads")
+public class UserRead implements Serializable {
 
     private static final long serialVersionUID = 5793341286387473902L;
 
@@ -17,14 +17,14 @@ public class UserReading implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(name = "user_id", insertable = false, updatable = false)
     private Long userId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 

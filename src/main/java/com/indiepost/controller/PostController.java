@@ -2,12 +2,14 @@ package com.indiepost.controller;
 
 import com.indiepost.dto.FullTextSearchQuery;
 import com.indiepost.dto.PostImageSetDto;
+import com.indiepost.dto.UserReadDto;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.dto.post.RelatedPostsRequestDto;
 import com.indiepost.service.ImageService;
 import com.indiepost.service.PostService;
+import com.indiepost.service.UserReadService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,10 +27,13 @@ public class PostController {
 
     private final ImageService imageService;
 
+    private final UserReadService userReadService;
+
     @Inject
-    public PostController(PostService postService, ImageService imageService) {
+    public PostController(PostService postService, ImageService imageService, UserReadService userReadService) {
         this.postService = postService;
         this.imageService = imageService;
+        this.userReadService = userReadService;
     }
 
     @GetMapping("/{id}")
@@ -59,6 +64,36 @@ public class PostController {
     @GetMapping("/contributor/{fullName}")
     public List<PostSummaryDto> getPostsByContributorName(@PathVariable String fullName, Pageable pageable) {
         return postService.findByContributorFullName(fullName, pageable);
+    }
+
+    @GetMapping("/read/{userId}")
+    public List<PostSummaryDto> getUserReadPostsByUserId(@PathVariable Long userId, Pageable pageable) {
+        return postService.findUserReadByUserId(userId, pageable);
+    }
+
+    @DeleteMapping("/read")
+    public void setUserReadPostsInvisible(@RequestBody UserReadDto dto) {
+        userReadService.setInvisible(dto.getUserId(), dto.getPostId());
+    }
+
+    @DeleteMapping("/read/{userId}")
+    public void setAllUserReadPostsInvisible(@PathVariable Long userId) {
+        userReadService.setInvisibleAllByUserId(userId);
+    }
+
+    @GetMapping("/bookmark/{userId}")
+    public List<PostSummaryDto> getBookmarkedPostsByUserId(@PathVariable Long userId, Pageable pageable) {
+        return postService.findUserBookmarksByUserId(userId, pageable);
+    }
+
+    @PutMapping("/bookmark")
+    public void addBookmark(@RequestBody UserReadDto dto) {
+        userReadService.setBookmark(dto.getUserId(), dto.getPostId());
+    }
+
+    @DeleteMapping("/bookmark")
+    public void removeBookmark(@RequestBody UserReadDto dto) {
+        userReadService.unsetBookmark(dto.getUserId(), dto.getPostId());
     }
 
     @PostMapping("/search")

@@ -112,6 +112,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public List<PostSummaryDto> findUserReadByUserId(Long userId, Pageable pageable) {
+        return postRepository.findUserReadByUserId(userId, getPageable(pageable));
+    }
+
+    @Override
+    public List<PostSummaryDto> findUserBookmarksByUserId(Long userId, Pageable pageable) {
+        return postRepository.findUserBookmarksByUserId(userId, getPageable(pageable));
+    }
+
+    @Override
     public List<PostSummaryDto> findTopRatedPosts(LocalDateTime since, LocalDateTime until, Integer limit) {
         List<PostStatDto> topStats = statRepository.getPostStatsOrderByPageviews(since, until, limit);
         if (topStats == null || topStats.isEmpty()) {
