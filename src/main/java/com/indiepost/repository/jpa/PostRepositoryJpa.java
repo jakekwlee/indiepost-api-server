@@ -11,12 +11,15 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.indiepost.model.QPost.post;
@@ -87,22 +90,14 @@ public class PostRepositoryJpa implements PostRepository {
     }
 
     @Override
-    public List<PostSummaryDto> findByCategoryId(Long categoryId, Pageable pageable) {
-        PostQuery query = new PostQuery();
-        query.setCategoryId(categoryId);
-        return this.search(query, pageable);
-    }
-
-    @SuppressWarnings("JpaQlInspection")
-    @Override
-    public List<PostSummaryDto> findByCategorySlug(String slug, Pageable pageable) {
+    public Page<PostSummaryDto> findByCategorySlug(String slug, Pageable pageable) {
         PostQuery query = new PostQuery();
         query.setCategorySlug(slug);
-        return this.search(query, pageable);
+        return this.query(query, pageable);
     }
 
     @Override
-    public List<PostSummaryDto> findByTagName(String tagName, Pageable pageable) {
+    public Page<PostSummaryDto> findByTagName(String tagName, Pageable pageable) {
         JPAQuery query = getQueryFactory().from(post);
         addProjections(query)
                 .innerJoin(post.category, QCategory.category)
@@ -115,13 +110,19 @@ public class PostRepositoryJpa implements PostRepository {
                 .limit(pageable.getPageSize()).distinct();
         List<Tuple> result = query.fetch();
         if (result.size() == 0) {
-            return new ArrayList<>();
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
-        return toDtoList(result);
+        Long total = getQueryFactory().selectFrom(post)
+                .innerJoin(post.postTags, QPostTag.postTag)
+                .innerJoin(QPostTag.postTag.tag, QTag.tag)
+                .where(QTag.tag.name.eq(tagName).and(post.status.eq(PostStatus.PUBLISH)))
+                .fetchCount();
+        List<PostSummaryDto> dtoList = toDtoList(result);
+        return new PageImpl<>(dtoList, pageable, total);
     }
 
     @Override
-    public List<PostSummaryDto> findByContributorFullName(String fullName, Pageable pageable) {
+    public Page<PostSummaryDto> findByContributorFullName(String fullName, Pageable pageable) {
         QCategory ct = QCategory.category;
         QPostContributor pc = QPostContributor.postContributor;
         QContributor c = QContributor.contributor;
@@ -139,16 +140,22 @@ public class PostRepositoryJpa implements PostRepository {
                 .limit(pageable.getPageSize()).distinct();
         List<Tuple> result = query.fetch();
         if (result.size() == 0) {
-            return new ArrayList<>();
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
-        return toDtoList(result);
+        Long total = getQueryFactory().selectFrom(post)
+                .innerJoin(post.postContributors, pc)
+                .innerJoin(pc.contributor, c)
+                .where(c.fullName.eq(fullName).and(post.status.eq(PostStatus.PUBLISH)))
+                .fetchCount();
+        List<PostSummaryDto> dtoList = toDtoList(result);
+        return new PageImpl<>(dtoList, pageable, total);
     }
 
     @Override
-    public List<PostSummaryDto> findByStatus(PostStatus status, Pageable pageable) {
+    public Page<PostSummaryDto> findByStatus(PostStatus status, Pageable pageable) {
         PostQuery query = new PostQuery();
         query.setStatus(status);
-        return this.search(query, pageable);
+        return this.query(query, pageable);
     }
 
     @Override
@@ -165,9 +172,9 @@ public class PostRepositoryJpa implements PostRepository {
     }
 
     @Override
-    public List<PostSummaryDto> search(PostQuery search, Pageable pageable) {
+    public Page<PostSummaryDto> query(PostQuery postQuery, Pageable pageable) {
         JPAQuery query = getQueryFactory().from(post);
-        BooleanBuilder builder = addSearchConjunction(search, new BooleanBuilder());
+        BooleanBuilder builder = addSearchConjunction(postQuery, new BooleanBuilder());
         addProjections(query)
                 .innerJoin(post.category, QCategory.category)
                 .leftJoin(post.titleImage, QImageSet.imageSet)
@@ -176,7 +183,10 @@ public class PostRepositoryJpa implements PostRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize()).distinct();
         List<Tuple> result = query.fetch();
-        return toDtoList(result);
+        Long total = count(postQuery);
+        List<PostSummaryDto> dtoList = toDtoList(result);
+        return new PageImpl<>(dtoList, pageable, total);
+
     }
 
     @Override
@@ -189,16 +199,16 @@ public class PostRepositoryJpa implements PostRepository {
     }
 
     @Override
-    public List<PostSummaryDto> findUserReadByUserId(Long userId, Pageable pageable) {
+    public Page<PostSummaryDto> findReadingHistoryByUserId(Long userId, Pageable pageable) {
         return findUserReadByUserId(userId, pageable, false);
     }
 
     @Override
-    public List<PostSummaryDto> findUserBookmarksByUserId(Long userId, Pageable pageable) {
+    public Page<PostSummaryDto> findBookmarksByUserId(Long userId, Pageable pageable) {
         return findUserReadByUserId(userId, pageable, true);
     }
 
-    private List<PostSummaryDto> findUserReadByUserId(Long userId, Pageable pageable, boolean bookmarked) {
+    private Page<PostSummaryDto> findUserReadByUserId(Long userId, Pageable pageable, boolean bookmarked) {
         QCategory ct = QCategory.category;
         QImageSet i = QImageSet.imageSet;
         QUserRead ur = QUserRead.userRead;
@@ -230,9 +240,15 @@ public class PostRepositoryJpa implements PostRepository {
                 .limit(pageable.getPageSize()).distinct();
         List<Tuple> result = query.fetch();
         if (result.size() == 0) {
-            return new ArrayList<>();
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
-        return toDtoList(result);
+        List<PostSummaryDto> dtoList = toDtoList(result);
+        Long total = getQueryFactory().selectFrom(post)
+                .innerJoin(post.userReads, ur)
+                .innerJoin(ur.post, post)
+                .where(whereClause)
+                .fetchCount();
+        return new PageImpl<>(dtoList, pageable, total);
     }
 
     private JPAQuery addProjections(JPAQuery query) {

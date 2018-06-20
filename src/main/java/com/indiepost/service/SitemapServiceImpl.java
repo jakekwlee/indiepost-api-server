@@ -43,7 +43,7 @@ public class SitemapServiceImpl implements SitemapService {
         List<PostSummaryDto> posts = postRepository.findByStatus(
                 PostStatus.PUBLISH,
                 PageRequest.of(0, 9999, Sort.Direction.DESC, "publishedAt")
-        );
+        ).getContent();
 
         for (PostSummaryDto postSummaryDto : posts) {
             sitemapGenerator.addPage(new WebPageBuilder()

@@ -10,6 +10,7 @@ import com.indiepost.dto.post.RelatedPostsRequestDto;
 import com.indiepost.service.ImageService;
 import com.indiepost.service.PostService;
 import com.indiepost.service.UserReadService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,33 +43,33 @@ public class PostController {
     }
 
     @GetMapping
-    public List<PostSummaryDto> getPosts(Pageable pageable) {
+    public Page<PostSummaryDto> getPosts(Pageable pageable) {
         return postService.find(pageable);
     }
 
     @PostMapping
-    public List<PostSummaryDto> getPosts(@RequestBody PostQuery query) {
-        return postService.search(query, query.getPage(), query.getMaxResults());
+    public Page<PostSummaryDto> getPosts(@RequestBody PostQuery query) {
+        return postService.query(query, query.getPage(), query.getMaxResults());
     }
 
     @GetMapping("/category/{slug}")
-    public List<PostSummaryDto> getPostsByCategoryName(@PathVariable String slug, Pageable pageable) {
+    public Page<PostSummaryDto> getPostsByCategoryName(@PathVariable String slug, Pageable pageable) {
         return postService.findByCategorySlug(slug, pageable);
     }
 
     @GetMapping("/tag/{tagName}")
-    public List<PostSummaryDto> getPostsByTagName(@PathVariable String tagName, Pageable pageable) {
+    public Page<PostSummaryDto> getPostsByTagName(@PathVariable String tagName, Pageable pageable) {
         return postService.findByTagName(tagName, pageable);
     }
 
     @GetMapping("/contributor/{fullName}")
-    public List<PostSummaryDto> getPostsByContributorName(@PathVariable String fullName, Pageable pageable) {
+    public Page<PostSummaryDto> getPostsByContributorName(@PathVariable String fullName, Pageable pageable) {
         return postService.findByContributorFullName(fullName, pageable);
     }
 
     @GetMapping("/read/{userId}")
-    public List<PostSummaryDto> getUserReadPostsByUserId(@PathVariable Long userId, Pageable pageable) {
-        return postService.findUserReadByUserId(userId, pageable);
+    public Page<PostSummaryDto> getUserReadPostsByUserId(@PathVariable Long userId, Pageable pageable) {
+        return postService.findReadingHistoryByUserId(userId, pageable);
     }
 
     @DeleteMapping("/read")
@@ -82,8 +83,8 @@ public class PostController {
     }
 
     @GetMapping("/bookmark/{userId}")
-    public List<PostSummaryDto> getBookmarkedPostsByUserId(@PathVariable Long userId, Pageable pageable) {
-        return postService.findUserBookmarksByUserId(userId, pageable);
+    public Page<PostSummaryDto> getBookmarkedPostsByUserId(@PathVariable Long userId, Pageable pageable) {
+        return postService.findBookmarksByUserId(userId, pageable);
     }
 
     @PutMapping("/bookmark")
@@ -97,7 +98,7 @@ public class PostController {
     }
 
     @PostMapping("/search")
-    public List<PostSummaryDto> fullTextSearch(@RequestBody FullTextSearchQuery query) {
+    public Page<PostSummaryDto> fullTextSearch(@RequestBody FullTextSearchQuery query) {
         return postService.fullTextSearch(query);
     }
 

@@ -35,7 +35,7 @@ public interface Types {
     }
 
     enum StatType {
-        ACTION, POST, PAGE, HOME, SEARCH, TAG, CONTRIBUTOR, CATEGORY, NOTICE
+        ACTION, POST, PAGE, HOME, SEARCH, TAG, CONTRIBUTOR, CATEGORY, READING_HISTORY, BOOKMARK, NOTICE
     }
 
     enum ActionType {

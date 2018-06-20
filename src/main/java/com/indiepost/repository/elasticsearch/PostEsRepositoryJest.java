@@ -187,9 +187,14 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
     }
 
     @Override
+    public Integer count(String text, Types.PostStatus status) {
+        return count(text, status, null);
+    }
+
+    @Override
     public Integer count(String text, Types.PostStatus status, User currentUser) {
         try {
-            String countJSON = buildCount(text, status, currentUser);
+            String countJSON = currentUser != null ? buildCount(text, status, currentUser) : buildCount(text, status);
             Count count = new Count.Builder()
                     .query(countJSON)
                     .addIndex(INDEX_NAME)
@@ -603,6 +608,20 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
                                 .put("categoryName", new JSONObject())
                                 .put("creatorName", new JSONObject())
                                 .put("modifiedUserName", new JSONObject())
+                        )
+                )
+                .toString();
+    }
+
+    private String buildCount(String text, Types.PostStatus status) {
+        JSONArray filterContext = getFilterContext(status);
+        JSONArray queryContext = getQueryContext(text);
+
+        return new JSONObject()
+                .put("query", new JSONObject()
+                        .put("bool", new JSONObject()
+                                .put("filter", filterContext)
+                                .put("must", queryContext)
                         )
                 )
                 .toString();

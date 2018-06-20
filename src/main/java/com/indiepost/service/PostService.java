@@ -4,6 +4,7 @@ import com.indiepost.dto.FullTextSearchQuery;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
@@ -20,31 +21,31 @@ public interface PostService {
 
     Long count(PostQuery query);
 
+    Page<PostSummaryDto> find(Pageable pageable);
+
+    Page<PostSummaryDto> findByCategorySlug(String slug, Pageable pageable);
+
+    Page<PostSummaryDto> findByTagName(String tagName, Pageable pageable);
+
+    Page<PostSummaryDto> findByContributorFullName(String fullName, Pageable pageable);
+
+    Page<PostSummaryDto> findReadingHistoryByUserId(Long userId, Pageable pageable);
+
+    Page<PostSummaryDto> findBookmarksByUserId(Long userId, Pageable pageable);
+
+    Page<PostSummaryDto> query(PostQuery postQuery, int page, int size);
+
+    Page<PostSummaryDto> fullTextSearch(FullTextSearchQuery query);
+
     List<PostSummaryDto> findByIds(List<Long> ids);
-
-    List<PostSummaryDto> find(Pageable pageable);
-
-    List<PostSummaryDto> findByCategorySlug(String slug, Pageable pageable);
-
-    List<PostSummaryDto> findByTagName(String tagName, Pageable pageable);
-
-    List<PostSummaryDto> findByContributorFullName(String fullName, Pageable pageable);
-
-    List<PostSummaryDto> findUserReadByUserId(Long userId, Pageable pageable);
-
-    List<PostSummaryDto> findUserBookmarksByUserId(Long userId, Pageable pageable);
-
-    List<PostSummaryDto> search(PostQuery query, int page, int size);
 
     List<PostSummaryDto> findTopRatedPosts(LocalDateTime since, LocalDateTime until, Integer limit);
 
     List<PostSummaryDto> findScheduledPosts();
 
-    List<PostSummaryDto> fullTextSearch(FullTextSearchQuery query);
+    List<PostSummaryDto> findPickedPosts();
 
     PostSummaryDto findSplashPost();
 
     PostSummaryDto findFeaturePost();
-
-    List<PostSummaryDto> findPickedPosts();
 }

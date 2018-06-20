@@ -4,6 +4,7 @@ import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Post;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -19,26 +20,23 @@ public interface PostRepository {
 
     Long count(PostQuery query);
 
+    Types.PostStatus getStatusById(Long postId);
+
     List<PostSummaryDto> findByIds(List<Long> ids);
-
-    List<PostSummaryDto> findByCategoryId(Long categoryId, Pageable pageable);
-
-    @SuppressWarnings("JpaQlInspection")
-    List<PostSummaryDto> findByCategorySlug(String slug, Pageable pageable);
-
-    List<PostSummaryDto> findByTagName(String tagName, Pageable pageable);
-
-    List<PostSummaryDto> findByContributorFullName(String fullName, Pageable pageable);
-
-    List<PostSummaryDto> findByStatus(Types.PostStatus status, Pageable pageable);
 
     List<PostSummaryDto> findScheduledPosts();
 
-    List<PostSummaryDto> search(PostQuery search, Pageable pageable);
+    Page<PostSummaryDto> query(PostQuery postQuery, Pageable pageable);
 
-    Types.PostStatus getStatusById(Long postId);
+    Page<PostSummaryDto> findByCategorySlug(String slug, Pageable pageable);
 
-    List<PostSummaryDto> findUserReadByUserId(Long userId, Pageable pageable);
+    Page<PostSummaryDto> findByTagName(String tagName, Pageable pageable);
 
-    List<PostSummaryDto> findUserBookmarksByUserId(Long userId, Pageable pageable);
+    Page<PostSummaryDto> findByContributorFullName(String fullName, Pageable pageable);
+
+    Page<PostSummaryDto> findByStatus(Types.PostStatus status, Pageable pageable);
+
+    Page<PostSummaryDto> findReadingHistoryByUserId(Long userId, Pageable pageable);
+
+    Page<PostSummaryDto> findBookmarksByUserId(Long userId, Pageable pageable);
 }

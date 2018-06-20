@@ -1,7 +1,8 @@
 package com.indiepost.dto;
 
-import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.dto.analytics.BannerDto;
+import com.indiepost.dto.post.PostSummaryDto;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public class InitialData {
 
     private UserDto currentUser;
 
-    private List<PostSummaryDto> posts;
+    private Page<PostSummaryDto> posts;
 
     private List<PostSummaryDto> topPosts;
 
@@ -46,11 +47,11 @@ public class InitialData {
         this.currentUser = currentUser;
     }
 
-    public List<PostSummaryDto> getPosts() {
+    public Page<PostSummaryDto> getPosts() {
         return posts;
     }
 
-    public void setPosts(List<PostSummaryDto> posts) {
+    public void setPosts(Page<PostSummaryDto> posts) {
         this.posts = posts;
     }
 

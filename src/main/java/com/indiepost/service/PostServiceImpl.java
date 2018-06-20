@@ -14,15 +14,14 @@ import com.indiepost.repository.PostRepository;
 import com.indiepost.repository.StatRepository;
 import com.indiepost.repository.elasticsearch.PostEsRepository;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -92,33 +91,33 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostSummaryDto> find(Pageable pageable) {
+    public Page<PostSummaryDto> find(Pageable pageable) {
         return postRepository.findByStatus(PostStatus.PUBLISH, getPageable(pageable));
     }
 
     @Override
-    public List<PostSummaryDto> findByCategorySlug(String slug, Pageable pageable) {
+    public Page<PostSummaryDto> findByCategorySlug(String slug, Pageable pageable) {
         return postRepository.findByCategorySlug(slug, getPageable(pageable));
     }
 
     @Override
-    public List<PostSummaryDto> findByTagName(String tagName, Pageable pageable) {
+    public Page<PostSummaryDto> findByTagName(String tagName, Pageable pageable) {
         return postRepository.findByTagName(tagName, getPageable(pageable));
     }
 
     @Override
-    public List<PostSummaryDto> findByContributorFullName(String fullName, Pageable pageable) {
+    public Page<PostSummaryDto> findByContributorFullName(String fullName, Pageable pageable) {
         return postRepository.findByContributorFullName(fullName, getPageable(pageable));
     }
 
     @Override
-    public List<PostSummaryDto> findUserReadByUserId(Long userId, Pageable pageable) {
-        return postRepository.findUserReadByUserId(userId, getPageable(pageable));
+    public Page<PostSummaryDto> findReadingHistoryByUserId(Long userId, Pageable pageable) {
+        return postRepository.findReadingHistoryByUserId(userId, getPageable(pageable));
     }
 
     @Override
-    public List<PostSummaryDto> findUserBookmarksByUserId(Long userId, Pageable pageable) {
-        return postRepository.findUserBookmarksByUserId(userId, getPageable(pageable));
+    public Page<PostSummaryDto> findBookmarksByUserId(Long userId, Pageable pageable) {
+        return postRepository.findBookmarksByUserId(userId, getPageable(pageable));
     }
 
     @Override
@@ -140,12 +139,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostSummaryDto> search(PostQuery query, int page, int size) {
-        return postRepository.search(query, getPageable(page, size));
+    public Page<PostSummaryDto> query(PostQuery postQuery, int page, int size) {
+        return postRepository.query(postQuery, getPageable(page, size));
     }
 
     @Override
-    public List<PostSummaryDto> fullTextSearch(FullTextSearchQuery query) {
+    public Page<PostSummaryDto> fullTextSearch(FullTextSearchQuery query) {
         String text = query.getText();
         if (text.length() > 30) {
             text = text.substring(0, 30);
@@ -153,8 +152,9 @@ public class PostServiceImpl implements PostService {
         Pageable pageable = getPageable(PageRequest.of(query.getPage(), query.getMaxResults()));
         List<PostEs> postEsList = postEsRepository.search(text, PostStatus.PUBLISH, pageable);
         if (postEsList.isEmpty()) {
-            return new ArrayList<>();
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
+        Long total = postEsRepository.count(text, PostStatus.PUBLISH).longValue();
         List<Long> ids = postEsList.stream()
                 .map(p -> p.getId())
                 .collect(Collectors.toList());
@@ -172,21 +172,21 @@ public class PostServiceImpl implements PostService {
             dto.setHighlight(highlight);
             index = index + 1;
         }
-        return posts;
+        return new PageImpl<>(posts, pageable, total);
     }
 
     @Override
     public List<PostSummaryDto> findPickedPosts() {
         PostQuery query = new PostQuery();
         query.setPicked(true);
-        return search(query, 0, 8);
+        return query(query, 0, 8).getContent();
     }
 
     @Override
     public PostSummaryDto findSplashPost() {
         PostQuery query = new PostQuery();
         query.setSplash(true);
-        List<PostSummaryDto> posts = search(query, 0, 1);
+        List<PostSummaryDto> posts = query(query, 0, 1).getContent();
         return posts.isEmpty() ? null : posts.get(0);
     }
 
@@ -194,7 +194,7 @@ public class PostServiceImpl implements PostService {
     public PostSummaryDto findFeaturePost() {
         PostQuery query = new PostQuery();
         query.setFeatured(true);
-        List<PostSummaryDto> posts = search(query, 0, 1);
+        List<PostSummaryDto> posts = query(query, 0, 1).getContent();
         return posts.isEmpty() ? null : posts.get(0);
     }
 

@@ -61,7 +61,7 @@ public class PostEsRepositoryTests {
         List<PostEs> postEsList = postEsRepository.search(
                 text,
                 Types.PostStatus.PUBLISH,
-                new PageRequest(0, 24)
+                PageRequest.of(0, 24)
         );
         assertThat(postEsList).isNotNull().hasSize(1);
         PostEs post = postEsList.get(0);
@@ -89,7 +89,7 @@ public class PostEsRepositoryTests {
                 text,
                 Types.PostStatus.PUBLISH,
                 currentUser,
-                new PageRequest(0, 20)
+                PageRequest.of(0, 20)
         );
         printToJson(postEsList);
         assertThat(postEsList).hasSize(2);
@@ -108,7 +108,7 @@ public class PostEsRepositoryTests {
         Types.PostStatus status = Types.PostStatus.PUBLISH;
         String text = "인디 음악";
         Integer count = postEsRepository.count(text, status, currentUser);
-        List<PostEs> posts = postEsRepository.search(text, status, currentUser, new PageRequest(0, 10000));
+        List<PostEs> posts = postEsRepository.search(text, status, currentUser, PageRequest.of(0, 10000));
         assertThat(count).isNotZero().isEqualTo(posts.size());
         printToJson(count);
     }

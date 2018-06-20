@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -33,7 +34,7 @@ public class PostServiceTests {
 
     @Test
     public void postsShouldHaveUniqueId() {
-        List<PostSummaryDto> posts = postService.find(PageRequest.of(0, 10));
+        List<PostSummaryDto> posts = postService.find(PageRequest.of(0, 10)).getContent();
         Long id = -1L;
         for (PostSummaryDto post : posts) {
             Assert.assertNotEquals(id, post.getId());
@@ -44,14 +45,11 @@ public class PostServiceTests {
 
     @Test
     public void findPostsShouldReturnDtoListProperly() {
-        int expectedResultLength = 50;
-        List<PostSummaryDto> posts = postService.find(PageRequest.of(0, expectedResultLength));
-
-        Assert.assertEquals(
-                "Size of List<PostSummaryDto> should same as expected",
-                expectedResultLength,
-                posts.size()
-        );
+        int expected = 50;
+        Page<PostSummaryDto> page = postService.find(PageRequest.of(0, expected));
+        List<PostSummaryDto> posts = page.getContent();
+        assertThat(posts.size()).isEqualTo(expected);
+        assertThat(page.getSize()).isEqualTo(expected);
         printToJson(posts);
     }
 
@@ -59,8 +57,10 @@ public class PostServiceTests {
     public void fullTextSearchWorksAsExpected() {
         String text = "단편 영화";
         FullTextSearchQuery query = new FullTextSearchQuery(text, Types.PostStatus.PUBLISH.toString(), 0, 5);
-        List<PostSummaryDto> posts = postService.fullTextSearch(query);
+        Page<PostSummaryDto> page = postService.fullTextSearch(query);
+        List<PostSummaryDto> posts = page.getContent();
         assertThat(posts).isNotNull().hasSize(5);
+        assertThat(page.getTotalElements()).isEqualTo(5);
         for (PostSummaryDto dto : posts) {
             Highlight highlight = dto.getHighlight();
             String titleAndExcerpt = highlight.getTitle() + highlight.getExcerpt();
@@ -72,8 +72,10 @@ public class PostServiceTests {
 
     @Test
     public void testFindByTagName() {
-        List<PostSummaryDto> dtoList = postService.findByTagName("일러스트", PageRequest.of(0, 100));
+        Page<PostSummaryDto> page = postService.findByTagName("일러스트", PageRequest.of(0, 100));
+        List<PostSummaryDto> dtoList = page.getContent();
         assertThat(dtoList.size()).isEqualTo(9);
+        assertThat(page.getTotalElements()).isEqualTo(9);
         printToJson(dtoList);
     }
 }

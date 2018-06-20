@@ -12,13 +12,13 @@ import com.indiepost.service.PostService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
-import java.util.List;
 
 /**
  * Created by jake on 17. 1. 18.
@@ -53,14 +53,14 @@ public class PostDtoSerializationTest {
      * @throws JsonProcessingException
      */
     @Test
-    public void postSummaryListShouldSerializeCorrectly() throws JsonProcessingException {
-        List<PostSummaryDto> postList = postService.find(PageRequest.of(3, 10));
+    public void PagedPostSummaryDtoListShouldSerializeCorrectly() throws JsonProcessingException {
+        Page<PostSummaryDto> pagedResult = postService.find(PageRequest.of(3, 10));
         ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).modules(new JavaTimeModule()).build();
         objectMapper.registerModule(new Hibernate5Module());
         System.out.println("\n\n*** Start serialize List<PostSummaryDto> ***\n\n");
-        System.out.println("Result Length: " + postList.size());
+        System.out.println("Result Length: " + pagedResult.getContent().size());
         String result = objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true)
-                .writeValueAsString(postList);
+                .writeValueAsString(pagedResult);
         System.out.println(result);
     }
 
