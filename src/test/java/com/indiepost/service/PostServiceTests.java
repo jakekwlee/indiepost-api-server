@@ -1,11 +1,8 @@
 package com.indiepost.service;
 
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.dto.FullTextSearchQuery;
 import com.indiepost.dto.Highlight;
 import com.indiepost.dto.post.PostSummaryDto;
-import com.indiepost.enums.Types;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,10 +32,11 @@ public class PostServiceTests {
     @Test
     public void postsShouldHaveUniqueId() {
         List<PostSummaryDto> posts = postService.find(PageRequest.of(0, 10)).getContent();
-        Long id = -1L;
+        Long prevId = -1L;
         for (PostSummaryDto post : posts) {
-            Assert.assertNotEquals(id, post.getId());
-            id = post.getId();
+            assertThat(post.getId()).isNotNull();
+            assertThat(post.getId()).isNotEqualTo(prevId);
+            prevId = post.getId();
         }
         printToJson(posts);
     }
@@ -56,8 +54,7 @@ public class PostServiceTests {
     @Test
     public void fullTextSearchWorksAsExpected() {
         String text = "단편 영화";
-        FullTextSearchQuery query = new FullTextSearchQuery(text, Types.PostStatus.PUBLISH.toString(), 0, 5);
-        Page<PostSummaryDto> page = postService.fullTextSearch(query);
+        Page<PostSummaryDto> page = postService.fullTextSearch(text, PageRequest.of(0, 5));
         List<PostSummaryDto> posts = page.getContent();
         assertThat(posts).isNotNull().hasSize(5);
         assertThat(page.getTotalElements()).isEqualTo(5);

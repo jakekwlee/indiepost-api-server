@@ -1,6 +1,5 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.FullTextSearchQuery;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
@@ -33,9 +32,9 @@ public interface PostService {
 
     Page<PostSummaryDto> findBookmarksByUserId(Long userId, Pageable pageable);
 
-    Page<PostSummaryDto> query(PostQuery postQuery, int page, int size);
+    Page<PostSummaryDto> query(PostQuery postQuery, Pageable pageable);
 
-    Page<PostSummaryDto> fullTextSearch(FullTextSearchQuery query);
+    Page<PostSummaryDto> fullTextSearch(String text, Pageable pageable);
 
     List<PostSummaryDto> findByIds(List<Long> ids);
 

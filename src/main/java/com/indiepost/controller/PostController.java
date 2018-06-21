@@ -1,12 +1,12 @@
 package com.indiepost.controller;
 
-import com.indiepost.dto.FullTextSearchQuery;
 import com.indiepost.dto.PostImageSetDto;
 import com.indiepost.dto.UserReadDto;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.dto.post.RelatedPostsRequestDto;
+import com.indiepost.enums.Types;
 import com.indiepost.service.ImageService;
 import com.indiepost.service.PostService;
 import com.indiepost.service.UserReadService;
@@ -43,13 +43,16 @@ public class PostController {
     }
 
     @GetMapping
-    public Page<PostSummaryDto> getPosts(Pageable pageable) {
-        return postService.find(pageable);
-    }
-
-    @PostMapping
-    public Page<PostSummaryDto> getPosts(@RequestBody PostQuery query) {
-        return postService.query(query, query.getPage(), query.getMaxResults());
+    public Page<PostSummaryDto> getPosts(@RequestParam Boolean splash,
+                                         @RequestParam Boolean featured,
+                                         @RequestParam Boolean picked,
+                                         Pageable pageable) {
+        PostQuery postQuery = new PostQuery.Builder(Types.PostStatus.PUBLISH)
+                .splash(splash)
+                .featured(featured)
+                .picked(picked)
+                .build();
+        return postService.query(postQuery, pageable);
     }
 
     @GetMapping("/category/{slug}")
@@ -67,17 +70,17 @@ public class PostController {
         return postService.findByContributorFullName(fullName, pageable);
     }
 
-    @GetMapping("/read/{userId}")
+    @GetMapping("/readingHistory/{userId}")
     public Page<PostSummaryDto> getUserReadPostsByUserId(@PathVariable Long userId, Pageable pageable) {
         return postService.findReadingHistoryByUserId(userId, pageable);
     }
 
-    @DeleteMapping("/read")
+    @DeleteMapping("/readingHistory")
     public void setUserReadPostsInvisible(@RequestBody UserReadDto dto) {
         userReadService.setInvisible(dto.getUserId(), dto.getPostId());
     }
 
-    @DeleteMapping("/read/{userId}")
+    @DeleteMapping("/readingHistory/{userId}")
     public void setAllUserReadPostsInvisible(@PathVariable Long userId) {
         userReadService.setInvisibleAllByUserId(userId);
     }
@@ -97,9 +100,9 @@ public class PostController {
         userReadService.unsetBookmark(dto.getUserId(), dto.getPostId());
     }
 
-    @PostMapping("/search")
-    public Page<PostSummaryDto> fullTextSearch(@RequestBody FullTextSearchQuery query) {
-        return postService.fullTextSearch(query);
+    @GetMapping("/search/{searchText}")
+    public Page<PostSummaryDto> fullTextSearch(@PathVariable String searchText, Pageable pageable) {
+        return postService.fullTextSearch(searchText, pageable);
     }
 
     @PostMapping("/related")

@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.indiepost.model.QPost.post;
-import static com.indiepost.repository.utils.CriteriaUtils.addSearchConjunction;
+import static com.indiepost.repository.utils.CriteriaUtils.addConjunction;
 import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 
@@ -57,7 +57,7 @@ public class PostRepositoryJpa implements PostRepository {
 
     @Override
     public Long count(PostQuery search) {
-        BooleanBuilder builder = addSearchConjunction(search, new BooleanBuilder());
+        BooleanBuilder builder = addConjunction(search, new BooleanBuilder());
         return getQueryFactory()
                 .selectFrom(post)
                 .where(builder)
@@ -91,8 +91,9 @@ public class PostRepositoryJpa implements PostRepository {
 
     @Override
     public Page<PostSummaryDto> findByCategorySlug(String slug, Pageable pageable) {
-        PostQuery query = new PostQuery();
-        query.setCategorySlug(slug);
+        PostQuery query = new PostQuery.Builder(PostStatus.PUBLISH)
+                .category(slug)
+                .build();
         return this.query(query, pageable);
     }
 
@@ -153,8 +154,7 @@ public class PostRepositoryJpa implements PostRepository {
 
     @Override
     public Page<PostSummaryDto> findByStatus(PostStatus status, Pageable pageable) {
-        PostQuery query = new PostQuery();
-        query.setStatus(status);
+        PostQuery query = new PostQuery.Builder(status).build();
         return this.query(query, pageable);
     }
 
@@ -174,7 +174,7 @@ public class PostRepositoryJpa implements PostRepository {
     @Override
     public Page<PostSummaryDto> query(PostQuery postQuery, Pageable pageable) {
         JPAQuery query = getQueryFactory().from(post);
-        BooleanBuilder builder = addSearchConjunction(postQuery, new BooleanBuilder());
+        BooleanBuilder builder = addConjunction(postQuery, new BooleanBuilder());
         addProjections(query)
                 .innerJoin(post.category, QCategory.category)
                 .leftJoin(post.titleImage, QImageSet.imageSet)

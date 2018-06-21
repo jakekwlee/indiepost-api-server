@@ -207,7 +207,7 @@ public class AdminPostRepositoryJpa implements AdminPostRepository {
     @Override
     public Long count(PostQuery search) {
         JPAQuery query = getQueryFactory().selectFrom(post);
-        BooleanBuilder builder = CriteriaUtils.addSearchConjunction(search, new BooleanBuilder());
+        BooleanBuilder builder = CriteriaUtils.addConjunction(search, new BooleanBuilder());
         query.where(builder);
         return query.fetchCount();
     }

@@ -1,7 +1,6 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.ContributorDto;
-import com.indiepost.dto.FullTextSearchQuery;
 import com.indiepost.dto.Highlight;
 import com.indiepost.dto.analytics.PostStatDto;
 import com.indiepost.dto.post.PostDto;
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -92,39 +90,39 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<PostSummaryDto> find(Pageable pageable) {
-        return postRepository.findByStatus(PostStatus.PUBLISH, getPageable(pageable));
+        return postRepository.findByStatus(PostStatus.PUBLISH, getPageRequest(pageable));
     }
 
     @Override
     public Page<PostSummaryDto> findByCategorySlug(String slug, Pageable pageable) {
-        return postRepository.findByCategorySlug(slug, getPageable(pageable));
+        return postRepository.findByCategorySlug(slug, getPageRequest(pageable));
     }
 
     @Override
     public Page<PostSummaryDto> findByTagName(String tagName, Pageable pageable) {
-        return postRepository.findByTagName(tagName, getPageable(pageable));
+        return postRepository.findByTagName(tagName, getPageRequest(pageable));
     }
 
     @Override
     public Page<PostSummaryDto> findByContributorFullName(String fullName, Pageable pageable) {
-        return postRepository.findByContributorFullName(fullName, getPageable(pageable));
+        return postRepository.findByContributorFullName(fullName, getPageRequest(pageable));
     }
 
     @Override
     public Page<PostSummaryDto> findReadingHistoryByUserId(Long userId, Pageable pageable) {
-        return postRepository.findReadingHistoryByUserId(userId, getPageable(pageable));
+        return postRepository.findReadingHistoryByUserId(userId, getPageRequest(pageable));
     }
 
     @Override
     public Page<PostSummaryDto> findBookmarksByUserId(Long userId, Pageable pageable) {
-        return postRepository.findBookmarksByUserId(userId, getPageable(pageable));
+        return postRepository.findBookmarksByUserId(userId, getPageRequest(pageable));
     }
 
     @Override
     public List<PostSummaryDto> findTopRatedPosts(LocalDateTime since, LocalDateTime until, Integer limit) {
         List<PostStatDto> topStats = statRepository.getPostStatsOrderByPageviews(since, until, limit);
         if (topStats == null || topStats.isEmpty()) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
         List<Long> topPostIds = topStats.stream()
                 .map(postStat -> postStat.getId())
@@ -139,20 +137,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<PostSummaryDto> query(PostQuery postQuery, int page, int size) {
-        return postRepository.query(postQuery, getPageable(page, size));
+    public Page<PostSummaryDto> query(PostQuery postQuery, Pageable pageable) {
+        return postRepository.query(postQuery, getPageRequest(pageable));
     }
 
     @Override
-    public Page<PostSummaryDto> fullTextSearch(FullTextSearchQuery query) {
-        String text = query.getText();
+    public Page<PostSummaryDto> fullTextSearch(String text, Pageable pageable) {
         if (text.length() > 30) {
             text = text.substring(0, 30);
         }
-        Pageable pageable = getPageable(PageRequest.of(query.getPage(), query.getMaxResults()));
-        List<PostEs> postEsList = postEsRepository.search(text, PostStatus.PUBLISH, pageable);
+        Pageable pageRequest = getPageRequest(pageable);
+        List<PostEs> postEsList = postEsRepository.search(text, PostStatus.PUBLISH, pageRequest);
         if (postEsList.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList(), pageable, 0);
+            return new PageImpl<>(Collections.emptyList(), pageRequest, 0);
         }
         Long total = postEsRepository.count(text, PostStatus.PUBLISH).longValue();
         List<Long> ids = postEsList.stream()
@@ -172,45 +169,39 @@ public class PostServiceImpl implements PostService {
             dto.setHighlight(highlight);
             index = index + 1;
         }
-        return new PageImpl<>(posts, pageable, total);
+        return new PageImpl<>(posts, pageRequest, total);
     }
 
     @Override
     public List<PostSummaryDto> findPickedPosts() {
-        PostQuery query = new PostQuery();
-        query.setPicked(true);
-        return query(query, 0, 8).getContent();
+        PostQuery postQuery = new PostQuery.Builder(PostStatus.PUBLISH)
+                .picked(true)
+                .build();
+        return query(postQuery, PageRequest.of(0, 4)).getContent();
     }
 
     @Override
     public PostSummaryDto findSplashPost() {
-        PostQuery query = new PostQuery();
-        query.setSplash(true);
-        List<PostSummaryDto> posts = query(query, 0, 1).getContent();
+        PostQuery postQuery = new PostQuery.Builder(PostStatus.PUBLISH)
+                .splash(true)
+                .build();
+        List<PostSummaryDto> posts = query(postQuery, PageRequest.of(0, 1)).getContent();
         return posts.isEmpty() ? null : posts.get(0);
     }
 
     @Override
     public PostSummaryDto findFeaturePost() {
-        PostQuery query = new PostQuery();
-        query.setFeatured(true);
-        List<PostSummaryDto> posts = query(query, 0, 1).getContent();
+        PostQuery postQuery = new PostQuery.Builder(PostStatus.PUBLISH)
+                .featured(true)
+                .build();
+        List<PostSummaryDto> posts = query(postQuery, PageRequest.of(0, 1)).getContent();
         return posts.isEmpty() ? null : posts.get(0);
     }
 
-    private Pageable getPageable(Pageable pageable) {
+    private Pageable getPageRequest(Pageable pageable) {
         return PageRequest.of(
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
-                Sort.Direction.DESC,
-                "publishedAt"
-        );
-    }
-
-    private Pageable getPageable(int page, int size) {
-        return PageRequest.of(
-                page,
-                size,
                 Sort.Direction.DESC,
                 "publishedAt"
         );

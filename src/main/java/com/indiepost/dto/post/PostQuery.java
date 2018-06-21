@@ -1,171 +1,203 @@
 package com.indiepost.dto.post;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 import static com.indiepost.enums.Types.PostStatus;
+import static com.indiepost.utils.DateUtil.instantToLocalDateTime;
 
 /**
  * Created by jake on 17. 1. 10.
  */
 public class PostQuery {
 
-    private int page;
+    private String category;
 
-    private int maxResults;
+    private String displayName;
 
-    private Long authorId;
+    private String text;
 
-    private Long editorId;
+    private PostStatus status;
 
-    private Long categoryId;
+    private Boolean featured;
 
-    private String categorySlug;
+    private Boolean picked;
 
-    private Instant createdAfter;
+    private Boolean splash;
 
-    private Instant createdBefore;
+    private LocalDateTime modifiedAfter;
 
-    private Instant modifiedAfter;
+    private LocalDateTime modifiedBefore;
 
-    private Instant modifiedBefore;
+    private LocalDateTime publishedAfter;
 
-    private Instant publishedAfter;
+    private LocalDateTime publishedBefore;
 
-    private Instant publishedBefore;
-
-    private PostStatus status = PostStatus.PUBLISH;
-
-    private boolean featured = false;
-
-    private boolean picked = false;
-
-    private boolean splash = false;
-
-    public int getPage() {
-        return page;
+    private PostQuery() {
     }
 
-    public void setPage(int page) {
-        this.page = page;
+    public String getCategory() {
+        return category;
     }
 
-    public int getMaxResults() {
-        return maxResults;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setMaxResults(int maxResults) {
-        this.maxResults = maxResults;
-    }
-
-    public Instant getCreatedAfter() {
-        return createdAfter;
-    }
-
-    public void setCreatedAfter(Instant createdAfter) {
-        this.createdAfter = createdAfter;
-    }
-
-    public Instant getCreatedBefore() {
-        return createdBefore;
-    }
-
-    public void setCreatedBefore(Instant createdBefore) {
-        this.createdBefore = createdBefore;
-    }
-
-    public Instant getModifiedAfter() {
-        return modifiedAfter;
-    }
-
-    public void setModifiedAfter(Instant modifiedAfter) {
-        this.modifiedAfter = modifiedAfter;
-    }
-
-    public Instant getModifiedBefore() {
-        return modifiedBefore;
-    }
-
-    public void setModifiedBefore(Instant modifiedBefore) {
-        this.modifiedBefore = modifiedBefore;
-    }
-
-    public Instant getPublishedAfter() {
-        return publishedAfter;
-    }
-
-    public void setPublishedAfter(Instant publishedAfter) {
-        this.publishedAfter = publishedAfter;
-    }
-
-    public Instant getPublishedBefore() {
-        return publishedBefore;
-    }
-
-    public void setPublishedBefore(Instant publishedBefore) {
-        this.publishedBefore = publishedBefore;
-    }
-
-    public Long getAuthorId() {
-        return authorId;
-    }
-
-    public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
-    }
-
-    public Long getEditorId() {
-        return editorId;
-    }
-
-    public void setEditorId(Long editorId) {
-        this.editorId = editorId;
-    }
-
-    public Long getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public String getCategorySlug() {
-        return categorySlug;
-    }
-
-    public void setCategorySlug(String categorySlug) {
-        this.categorySlug = categorySlug;
+    public String getText() {
+        return text;
     }
 
     public PostStatus getStatus() {
         return status;
     }
 
-    public void setStatus(PostStatus status) {
-        this.status = status;
-    }
-
-    public boolean isFeatured() {
+    public Boolean getFeatured() {
         return featured;
     }
 
-    public void setFeatured(boolean featured) {
-        this.featured = featured;
-    }
-
-    public boolean isPicked() {
+    public Boolean getPicked() {
         return picked;
     }
 
-    public void setPicked(boolean picked) {
-        this.picked = picked;
-    }
-
-    public boolean isSplash() {
+    public Boolean getSplash() {
         return splash;
     }
 
-    public void setSplash(boolean splash) {
-        this.splash = splash;
+    public LocalDateTime getModifiedAfter() {
+        return modifiedAfter;
+    }
+
+    public LocalDateTime getModifiedBefore() {
+        return modifiedBefore;
+    }
+
+    public LocalDateTime getPublishedAfter() {
+        return publishedAfter;
+    }
+
+    public LocalDateTime getPublishedBefore() {
+        return publishedBefore;
+    }
+
+    public static class Builder {
+        private PostStatus status;
+
+        private String category;
+
+        private String displayName;
+
+        private String text;
+
+        private Boolean featured;
+
+        private Boolean picked;
+
+        private Boolean splash;
+
+        private Instant modifiedAfter;
+
+        private Instant modifiedBefore;
+
+        private Instant publishedAfter;
+
+        private Instant publishedBefore;
+
+        public Builder(PostStatus status) {
+            this.status = status;
+        }
+
+        public Builder(String status) {
+            this.status = PostStatus.valueOf(status);
+        }
+
+        public Builder category(String category) {
+            this.category = category;
+            return this;
+        }
+
+        public Builder displayName(String displayName) {
+            this.displayName = displayName;
+            return this;
+        }
+
+        public Builder searchText(String text) {
+            this.text = text;
+            return this;
+        }
+
+        public Builder featured(boolean isFeatured) {
+            this.featured = isFeatured;
+            return this;
+        }
+
+        public Builder picked(boolean isPicked) {
+            this.picked = isPicked;
+            return this;
+        }
+
+        public Builder splash(boolean isSplash) {
+            this.splash = isSplash;
+            return this;
+        }
+
+        public Builder publishedAfter(Instant publishedAfter) {
+            this.publishedAfter = publishedAfter;
+            return this;
+        }
+
+        public Builder publishedBefore(Instant publishedBefore) {
+            this.publishedBefore = publishedBefore;
+            return this;
+        }
+
+        public Builder modifiedAfter(Instant modifiedAfter) {
+            this.modifiedAfter = modifiedAfter;
+            return this;
+        }
+
+        public Builder modifiedBefore(Instant modifiedBefore) {
+            this.modifiedBefore = modifiedBefore;
+            return this;
+        }
+
+        public PostQuery build() {
+            PostQuery query = new PostQuery();
+
+            // Required
+            query.status = status;
+
+            if (category != null) {
+                query.category = category;
+            }
+            if (displayName != null) {
+                query.displayName = displayName;
+            }
+            if (text != null) {
+                query.text = text;
+            }
+            if (featured != null) {
+                query.featured = featured;
+            }
+            if (picked != null) {
+                query.picked = picked;
+            }
+            if (splash != null) {
+                query.splash = splash;
+            }
+            if (publishedAfter != null) {
+                query.publishedAfter = instantToLocalDateTime(publishedAfter);
+            }
+            if (publishedBefore != null) {
+                query.publishedBefore = instantToLocalDateTime(publishedBefore);
+            }
+            if (modifiedAfter != null) {
+                query.modifiedAfter = instantToLocalDateTime(modifiedAfter);
+            }
+            if (modifiedBefore != null) {
+                query.modifiedBefore = instantToLocalDateTime(modifiedBefore);
+            }
+            return query;
+        }
     }
 }
