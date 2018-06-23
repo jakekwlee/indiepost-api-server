@@ -1,5 +1,7 @@
 package com.indiepost.repository.jpa;
 
+import com.indiepost.dto.Timeline;
+import com.indiepost.dto.TimelineRequest;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
@@ -18,12 +20,14 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static com.indiepost.model.QPost.post;
 import static com.indiepost.repository.utils.CriteriaUtils.addConjunction;
+import static com.indiepost.utils.DateUtil.instantToLocalDateTime;
 import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 
@@ -199,56 +203,65 @@ public class PostRepositoryJpa implements PostRepository {
     }
 
     @Override
-    public Page<PostSummaryDto> findReadingHistoryByUserId(Long userId, Pageable pageable) {
-        return findUserReadByUserId(userId, pageable, false);
+    public Timeline<PostSummaryDto> findReadingHistoryByUserId(Long userId, TimelineRequest request) {
+        return findUserReadByUserId(userId, request, false);
     }
 
     @Override
-    public Page<PostSummaryDto> findBookmarksByUserId(Long userId, Pageable pageable) {
-        return findUserReadByUserId(userId, pageable, true);
+    public Timeline<PostSummaryDto> findBookmarksByUserId(Long userId, TimelineRequest request) {
+        return findUserReadByUserId(userId, request, true);
     }
 
-    private Page<PostSummaryDto> findUserReadByUserId(Long userId, Pageable pageable, boolean bookmarked) {
+    private Timeline<PostSummaryDto> findUserReadByUserId(Long userId, TimelineRequest request, boolean bookmarked) {
         QCategory ct = QCategory.category;
         QImageSet i = QImageSet.imageSet;
-        QUserRead ur = QUserRead.userRead;
+        QUserReading ur = QUserReading.userReading;
 
         BooleanExpression whereClause;
         OrderSpecifier orderClause;
+        boolean isAfter = request.isAfter();
+        LocalDateTime timepoint = instantToLocalDateTime(request.getTimepoint());
 
         if (bookmarked) {
             whereClause = post.status.eq(PostStatus.PUBLISH)
                     .and(ur.bookmarked.isTrue())
-                    .and(ur.userId.eq(userId));
+                    .and(ur.userId.eq(userId))
+                    .and(isAfter ?
+                            ur.bookmarkedAt.after(timepoint) :
+                            ur.bookmarkedAt.before(timepoint)
+                    );
             orderClause = ur.bookmarkedAt.desc();
         } else {
             whereClause = post.status.eq(PostStatus.PUBLISH)
                     .and(ur.visible.isTrue())
-                    .and(ur.userId.eq(userId));
-            orderClause = ur.lastRead.desc();
+                    .and(ur.userId.eq(userId))
+                    .and(isAfter ?
+                            ur.created.after(timepoint) :
+                            ur.created.before(timepoint)
+                    );
+            orderClause = ur.created.desc();
         }
 
         JPAQuery query = getQueryFactory().from(post);
         addProjections(query)
                 .innerJoin(post.category, ct)
-                .innerJoin(post.userReads, ur)
+                .innerJoin(post.userReadings, ur)
                 .innerJoin(ur.post, post)
                 .leftJoin(post.titleImage, i)
                 .where(whereClause)
                 .orderBy(orderClause)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize()).distinct();
+                .limit(request.getSize()).distinct();
         List<Tuple> result = query.fetch();
         if (result.size() == 0) {
-            return new PageImpl<>(Collections.emptyList(), pageable, 0);
+            return new Timeline<>(Collections.emptyList(), request, 0);
         }
         List<PostSummaryDto> dtoList = toDtoList(result);
         Long total = getQueryFactory().selectFrom(post)
-                .innerJoin(post.userReads, ur)
+                .innerJoin(post.userReadings, ur)
                 .innerJoin(ur.post, post)
                 .where(whereClause)
                 .fetchCount();
-        return new PageImpl<>(dtoList, pageable, total);
+        return new Timeline<>(dtoList, request, total.intValue());
     }
 
     private JPAQuery addProjections(JPAQuery query) {

@@ -3,7 +3,7 @@ package com.indiepost.controller;
 import com.indiepost.dto.analytics.ActionDto;
 import com.indiepost.dto.analytics.PageviewDto;
 import com.indiepost.service.AnalyticsLoggerService;
-import com.indiepost.service.UserReadService;
+import com.indiepost.service.UserReadingService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,12 +23,12 @@ public class AnalyticsLoggerController {
 
     private final AnalyticsLoggerService analyticsLoggerService;
 
-    private final UserReadService userReadService;
+    private final UserReadingService userReadingService;
 
     @Inject
-    public AnalyticsLoggerController(AnalyticsLoggerService analyticsLoggerService, UserReadService userReadService) {
+    public AnalyticsLoggerController(AnalyticsLoggerService analyticsLoggerService, UserReadingService userReadingService) {
         this.analyticsLoggerService = analyticsLoggerService;
-        this.userReadService = userReadService;
+        this.userReadingService = userReadingService;
     }
 
     @GetMapping("/pageview")
@@ -51,7 +51,7 @@ public class AnalyticsLoggerController {
         analyticsLoggerService.logPageview(request, response, dto);
 
         if (userId != null && postId != null) {
-            userReadService.add(userId, postId);
+            userReadingService.add(userId, postId);
         }
     }
 

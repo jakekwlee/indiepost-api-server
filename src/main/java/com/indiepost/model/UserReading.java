@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
  * Created by jake on 7/25/16.
  */
 @Entity
-@Table(name = "UserReads")
-public class UserRead implements Serializable {
+@Table(name = "UserReadings")
+public class UserReading implements Serializable {
 
     private static final long serialVersionUID = 5793341286387473902L;
 
@@ -32,7 +32,7 @@ public class UserRead implements Serializable {
     private Long postId;
 
     @Column(nullable = false)
-    private LocalDateTime firstRead;
+    private LocalDateTime created;
 
     @Column(nullable = false)
     private LocalDateTime lastRead;
@@ -111,12 +111,12 @@ public class UserRead implements Serializable {
         this.visible = visible;
     }
 
-    public LocalDateTime getFirstRead() {
-        return firstRead;
+    public LocalDateTime getCreated() {
+        return created;
     }
 
-    public void setFirstRead(LocalDateTime firstRead) {
-        this.firstRead = firstRead;
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
     }
 
     public int getReadCount() {

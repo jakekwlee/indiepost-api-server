@@ -1,7 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.model.UserRead;
+import com.indiepost.model.UserReading;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,19 +20,19 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
-public class UserReadServiceTests {
+public class UserReadingServiceTests {
 
     @Inject
-    private UserReadService service;
+    private UserReadingService service;
 
     private List<Long> insertedIds = new ArrayList<>();
 
     @Before
     public void beforeTest() {
-        UserRead userRead = new UserRead();
-        userRead.setFirstRead(LocalDateTime.now());
-        userRead.setLastRead(LocalDateTime.now());
-        userRead.setBookmarked(false);
+        UserReading userReading = new UserReading();
+        userReading.setCreated(LocalDateTime.now());
+        userReading.setLastRead(LocalDateTime.now());
+        userReading.setBookmarked(false);
         Long id = service.add(1L, 500L);
         insertedIds.add(id);
     }
@@ -47,30 +47,31 @@ public class UserReadServiceTests {
     @Test
     public void setBookmark_shouldAddUserReadingProperlyAndReturnId() {
         service.setBookmark(1L, 500L);
-        UserRead userRead = service.findOne(insertedIds.get(0));
-        assertThat(userRead.isBookmarked()).isTrue();
-        assertThat(userRead.getBookmarkedAt()).isNotNull();
+        UserReading userReading = service.findOne(insertedIds.get(0));
+        assertThat(userReading.isBookmarked()).isTrue();
+        assertThat(userReading.getBookmarkedAt()).isNotNull();
     }
 
     @Test
     public void setInvisibleByUserIdAndPostId_shouldAddUserReadingProperly() {
         service.setInvisible(1L, 500L);
-        UserRead userRead = service.findOne(insertedIds.get(0));
-        assertThat(userRead.isVisible()).isFalse();
+        UserReading userReading = service.findOne(insertedIds.get(0));
+        assertThat(userReading.isVisible()).isFalse();
     }
 
     @Test
     public void setInvisibleAllByUserId_shouldAddUserReadingProperly() {
         service.setInvisibleAllByUserId(1L);
-        UserRead userRead = service.findOne(insertedIds.get(0));
-        assertThat(userRead.isVisible()).isFalse();
+        UserReading userReading = service.findOne(insertedIds.get(0));
+        assertThat(userReading.isVisible()).isFalse();
+        service.setVisibleAllByUserId(1L);
     }
 
     @Test
     public void setInvisibleAllByUserId_shouldAddUserReadingProperlyAndReturnId() {
         service.setInvisibleAllByUserId(1L);
-        UserRead userRead = service.findOne(insertedIds.get(0));
-        assertThat(userRead.isVisible()).isFalse();
+        UserReading userReading = service.findOne(insertedIds.get(0));
+        assertThat(userReading.isVisible()).isFalse();
     }
 
     @After

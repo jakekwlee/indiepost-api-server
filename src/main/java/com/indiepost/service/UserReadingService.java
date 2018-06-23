@@ -1,18 +1,20 @@
 package com.indiepost.service;
 
-import com.indiepost.model.UserRead;
+import com.indiepost.model.UserReading;
 
-public interface UserReadService {
+public interface UserReadingService {
 
     Long add(Long userId, Long postId);
 
-    UserRead findOne(Long id);
+    UserReading findOne(Long id);
 
-    UserRead findOneByUserIdAndPostId(Long userId, Long postId);
+    UserReading findOneByUserIdAndPostId(Long userId, Long postId);
 
     void setInvisible(Long userId, Long postId);
 
     void setInvisibleAllByUserId(Long userId);
+
+    void setVisibleAllByUserId(Long userId);
 
     void setBookmark(Long userId, Long postId);
 

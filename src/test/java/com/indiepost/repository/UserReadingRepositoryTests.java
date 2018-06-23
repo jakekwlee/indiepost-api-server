@@ -1,7 +1,7 @@
 package com.indiepost.repository;
 
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.model.UserRead;
+import com.indiepost.model.UserReading;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,18 +22,18 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
 @Transactional
-public class UserReadRepositoryTests {
+public class UserReadingRepositoryTests {
     @Inject
-    private UserReadRepository repository;
+    private UserReadingRepository repository;
 
     private List<Long> insertedIds = new ArrayList<>();
 
     @Before
     public void beforeTest() {
-        UserRead userRead = new UserRead();
-        userRead.setFirstRead(LocalDateTime.now());
-        userRead.setLastRead(LocalDateTime.now());
-        Long id = repository.save(userRead, 1L, 500L);
+        UserReading userReading = new UserReading();
+        userReading.setCreated(LocalDateTime.now());
+        userReading.setLastRead(LocalDateTime.now());
+        Long id = repository.save(userReading, 1L, 500L);
         insertedIds.add(id);
     }
 
@@ -46,13 +46,13 @@ public class UserReadRepositoryTests {
 
     @Test
     public void findOneByUserIdAndPostId_shouldReturnAnUserReadingProperly() {
-        UserRead userRead = repository.findOneByUserIdAndPostId(1L, 500L);
-        assertThat(userRead).isNotNull();
+        UserReading userReading = repository.findOneByUserIdAndPostId(1L, 500L);
+        assertThat(userReading).isNotNull();
     }
 
     @Test
     public void findOne_shouldReturnAnUserReadingProperly() {
-        UserRead userRead = repository.findOne(insertedIds.get(0));
-        assertThat(userRead).isNotNull();
+        UserReading userReading = repository.findOne(insertedIds.get(0));
+        assertThat(userReading).isNotNull();
     }
 }

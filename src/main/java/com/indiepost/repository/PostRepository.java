@@ -1,5 +1,7 @@
 package com.indiepost.repository;
 
+import com.indiepost.dto.Timeline;
+import com.indiepost.dto.TimelineRequest;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types;
@@ -36,7 +38,7 @@ public interface PostRepository {
 
     Page<PostSummaryDto> findByStatus(Types.PostStatus status, Pageable pageable);
 
-    Page<PostSummaryDto> findReadingHistoryByUserId(Long userId, Pageable pageable);
+    Timeline<PostSummaryDto> findReadingHistoryByUserId(Long userId, TimelineRequest request);
 
-    Page<PostSummaryDto> findBookmarksByUserId(Long userId, Pageable pageable);
+    Timeline<PostSummaryDto> findBookmarksByUserId(Long userId, TimelineRequest request);
 }

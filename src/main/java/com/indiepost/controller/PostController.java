@@ -1,6 +1,8 @@
 package com.indiepost.controller;
 
 import com.indiepost.dto.PostImageSetDto;
+import com.indiepost.dto.Timeline;
+import com.indiepost.dto.TimelineRequest;
 import com.indiepost.dto.UserReadDto;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostQuery;
@@ -9,7 +11,7 @@ import com.indiepost.dto.post.RelatedPostsRequestDto;
 import com.indiepost.enums.Types;
 import com.indiepost.service.ImageService;
 import com.indiepost.service.PostService;
-import com.indiepost.service.UserReadService;
+import com.indiepost.service.UserReadingService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -28,13 +30,13 @@ public class PostController {
 
     private final ImageService imageService;
 
-    private final UserReadService userReadService;
+    private final UserReadingService userReadingService;
 
     @Inject
-    public PostController(PostService postService, ImageService imageService, UserReadService userReadService) {
+    public PostController(PostService postService, ImageService imageService, UserReadingService userReadingService) {
         this.postService = postService;
         this.imageService = imageService;
-        this.userReadService = userReadService;
+        this.userReadingService = userReadingService;
     }
 
     @GetMapping("/{id}")
@@ -71,33 +73,33 @@ public class PostController {
     }
 
     @GetMapping("/readingHistory/{userId}")
-    public Page<PostSummaryDto> getUserReadPostsByUserId(@PathVariable Long userId, Pageable pageable) {
-        return postService.findReadingHistoryByUserId(userId, pageable);
+    public Timeline<PostSummaryDto> getUserReadPostsByUserId(@PathVariable Long userId, TimelineRequest request) {
+        return postService.findReadingHistoryByUserId(userId, request);
     }
 
     @DeleteMapping("/readingHistory")
     public void setUserReadPostsInvisible(@RequestBody UserReadDto dto) {
-        userReadService.setInvisible(dto.getUserId(), dto.getPostId());
+        userReadingService.setInvisible(dto.getUserId(), dto.getPostId());
     }
 
     @DeleteMapping("/readingHistory/{userId}")
     public void setAllUserReadPostsInvisible(@PathVariable Long userId) {
-        userReadService.setInvisibleAllByUserId(userId);
+        userReadingService.setInvisibleAllByUserId(userId);
     }
 
     @GetMapping("/bookmark/{userId}")
-    public Page<PostSummaryDto> getBookmarkedPostsByUserId(@PathVariable Long userId, Pageable pageable) {
-        return postService.findBookmarksByUserId(userId, pageable);
+    public Timeline<PostSummaryDto> getBookmarkedPostsByUserId(@PathVariable Long userId, TimelineRequest request) {
+        return postService.findBookmarksByUserId(userId, request);
     }
 
     @PutMapping("/bookmark")
     public void addBookmark(@RequestBody UserReadDto dto) {
-        userReadService.setBookmark(dto.getUserId(), dto.getPostId());
+        userReadingService.setBookmark(dto.getUserId(), dto.getPostId());
     }
 
     @DeleteMapping("/bookmark")
     public void removeBookmark(@RequestBody UserReadDto dto) {
-        userReadService.unsetBookmark(dto.getUserId(), dto.getPostId());
+        userReadingService.unsetBookmark(dto.getUserId(), dto.getPostId());
     }
 
     @GetMapping("/search/{searchText}")

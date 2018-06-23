@@ -2,6 +2,8 @@ package com.indiepost.service;
 
 import com.indiepost.dto.ContributorDto;
 import com.indiepost.dto.Highlight;
+import com.indiepost.dto.Timeline;
+import com.indiepost.dto.TimelineRequest;
 import com.indiepost.dto.analytics.PostStatDto;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostQuery;
@@ -109,13 +111,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<PostSummaryDto> findReadingHistoryByUserId(Long userId, Pageable pageable) {
-        return postRepository.findReadingHistoryByUserId(userId, getPageRequest(pageable));
+    public Timeline<PostSummaryDto> findReadingHistoryByUserId(Long userId, TimelineRequest request) {
+        return postRepository.findReadingHistoryByUserId(userId, request);
     }
 
     @Override
-    public Page<PostSummaryDto> findBookmarksByUserId(Long userId, Pageable pageable) {
-        return postRepository.findBookmarksByUserId(userId, getPageRequest(pageable));
+    public Timeline<PostSummaryDto> findBookmarksByUserId(Long userId, TimelineRequest request) {
+        return postRepository.findBookmarksByUserId(userId, request);
     }
 
     @Override
