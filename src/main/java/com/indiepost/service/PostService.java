@@ -34,9 +34,9 @@ public interface PostService {
 
     Page<PostSummaryDto> fullTextSearch(String text, Pageable pageable);
 
-    Timeline<PostSummaryDto> findReadingHistoryByUserId(Long userId, TimelineRequest request);
+    Timeline<PostSummaryDto> findReadingHistory(TimelineRequest request);
 
-    Timeline<PostSummaryDto> findBookmarksByUserId(Long userId, TimelineRequest request);
+    Timeline<PostSummaryDto> findBookmarks(TimelineRequest request);
 
     List<PostSummaryDto> findByIds(List<Long> ids);
 

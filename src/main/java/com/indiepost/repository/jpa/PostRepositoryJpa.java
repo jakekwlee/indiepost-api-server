@@ -20,6 +20,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -204,50 +205,51 @@ public class PostRepositoryJpa implements PostRepository {
 
     @Override
     public Timeline<PostSummaryDto> findReadingHistoryByUserId(Long userId, TimelineRequest request) {
-        return findUserReadByUserId(userId, request, false);
+        return findPostInteraction(userId, request, false);
     }
 
     @Override
     public Timeline<PostSummaryDto> findBookmarksByUserId(Long userId, TimelineRequest request) {
-        return findUserReadByUserId(userId, request, true);
+        return findPostInteraction(userId, request, true);
     }
 
-    private Timeline<PostSummaryDto> findUserReadByUserId(Long userId, TimelineRequest request, boolean bookmarked) {
+    private Timeline<PostSummaryDto> findPostInteraction(Long userId, TimelineRequest request, boolean bookmarked) {
         QCategory ct = QCategory.category;
-        QImageSet i = QImageSet.imageSet;
-        QUserReading ur = QUserReading.userReading;
+        QImageSet im = QImageSet.imageSet;
+        QPostInteraction it = QPostInteraction.postInteraction;
 
         BooleanExpression whereClause;
         OrderSpecifier orderClause;
         boolean isAfter = request.isAfter();
-        LocalDateTime timepoint = instantToLocalDateTime(request.getTimepoint());
+        Instant instant = Instant.ofEpochSecond(request.getTimepoint());
+        LocalDateTime timepoint = instantToLocalDateTime(instant);
 
         if (bookmarked) {
             whereClause = post.status.eq(PostStatus.PUBLISH)
-                    .and(ur.bookmarked.isTrue())
-                    .and(ur.userId.eq(userId))
+                    .and(it.bookmarked.isNotNull())
+                    .and(it.userId.eq(userId))
                     .and(isAfter ?
-                            ur.bookmarkedAt.after(timepoint) :
-                            ur.bookmarkedAt.before(timepoint)
+                            it.bookmarked.after(timepoint) :
+                            it.bookmarked.before(timepoint)
                     );
-            orderClause = ur.bookmarkedAt.desc();
+            orderClause = it.bookmarked.desc();
         } else {
             whereClause = post.status.eq(PostStatus.PUBLISH)
-                    .and(ur.visible.isTrue())
-                    .and(ur.userId.eq(userId))
+                    .and(it.visible.isTrue())
+                    .and(it.userId.eq(userId))
                     .and(isAfter ?
-                            ur.created.after(timepoint) :
-                            ur.created.before(timepoint)
+                            it.lastRead.after(timepoint) :
+                            it.lastRead.before(timepoint)
                     );
-            orderClause = ur.created.desc();
+            orderClause = it.lastRead.desc();
         }
 
         JPAQuery query = getQueryFactory().from(post);
         addProjections(query)
                 .innerJoin(post.category, ct)
-                .innerJoin(post.userReadings, ur)
-                .innerJoin(ur.post, post)
-                .leftJoin(post.titleImage, i)
+                .innerJoin(post.postInteractions, it)
+                .innerJoin(it.post, post)
+                .leftJoin(post.titleImage, im)
                 .where(whereClause)
                 .orderBy(orderClause)
                 .limit(request.getSize()).distinct();
@@ -257,8 +259,8 @@ public class PostRepositoryJpa implements PostRepository {
         }
         List<PostSummaryDto> dtoList = toDtoList(result);
         Long total = getQueryFactory().selectFrom(post)
-                .innerJoin(post.userReadings, ur)
-                .innerJoin(ur.post, post)
+                .innerJoin(post.postInteractions, it)
+                .innerJoin(it.post, post)
                 .where(whereClause)
                 .fetchCount();
         return new Timeline<>(dtoList, request, total.intValue());
@@ -284,7 +286,6 @@ public class PostRepositoryJpa implements PostRepository {
             dto.setFeatured(row.get(post.featured));
             dto.setPicked(row.get(post.picked));
             dto.setCategoryName(row.get(post.category.slug));
-            dto.setCategoryId(row.get(post.categoryId));
             ImageSet titleImage = row.get(post.titleImage);
             if (titleImage != null) {
                 dto.setTitleImage(titleImage);

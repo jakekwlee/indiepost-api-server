@@ -16,6 +16,10 @@ public class Timeline<T> {
 
     private final boolean after;
 
+    private final Instant oldest;
+
+    private final Instant newest;
+
     private final Instant timepoint;
 
     public Timeline(List<T> content, TimelineRequest request, int total) {
@@ -25,7 +29,21 @@ public class Timeline<T> {
         this.last = total == content.size();
         this.size = request.getSize();
         this.after = request.isAfter();
-        this.timepoint = request.getTimepoint();
+        this.timepoint = Instant.ofEpochSecond(request.getTimepoint());
+        this.oldest = null;
+        this.newest = null;
+    }
+
+    public Timeline(List<T> content, TimelineRequest request, Instant newest, Instant oldest, int total) {
+        this.content = content;
+        this.totalElements = total;
+        this.numberOfElements = content.size();
+        this.last = total == content.size();
+        this.size = request.getSize();
+        this.after = request.isAfter();
+        this.oldest = oldest;
+        this.newest = newest;
+        this.timepoint = Instant.ofEpochSecond(request.getTimepoint());
     }
 
     public List<T> getContent() {
@@ -54,5 +72,13 @@ public class Timeline<T> {
 
     public Instant getTimepoint() {
         return timepoint;
+    }
+
+    public Instant getNewest() {
+        return newest;
+    }
+
+    public Instant getOldest() {
+        return oldest;
     }
 }

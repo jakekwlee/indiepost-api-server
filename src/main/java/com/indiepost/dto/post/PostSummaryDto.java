@@ -32,15 +32,15 @@ public class PostSummaryDto implements Serializable {
 
     private ImageSet titleImage;
 
-    private Long titleImageId;
-
     private PostStatus status;
-
-    private Long categoryId;
 
     private String categoryName;
 
     private int commentsCount;
+
+    private PostInteractionDto interactions;
+
+    private boolean interactionFetched;
 
     private Highlight highlight;
 
@@ -116,28 +116,12 @@ public class PostSummaryDto implements Serializable {
         this.status = status;
     }
 
-    public Long getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
-    }
-
     public int getCommentsCount() {
         return commentsCount;
     }
 
     public void setCommentsCount(int commentsCount) {
         this.commentsCount = commentsCount;
-    }
-
-    public Long getTitleImageId() {
-        return titleImageId;
-    }
-
-    public void setTitleImageId(Long titleImageId) {
-        this.titleImageId = titleImageId;
     }
 
     public boolean isPicked() {
@@ -185,5 +169,21 @@ public class PostSummaryDto implements Serializable {
                 .append(categoryName)
                 .append(getStatus())
                 .toHashCode();
+    }
+
+    public PostInteractionDto getInteractions() {
+        return interactions;
+    }
+
+    public void setInteractions(PostInteractionDto interactions) {
+        this.interactions = interactions;
+    }
+
+    public boolean isInteractionFetched() {
+        return interactionFetched;
+    }
+
+    public void setInteractionFetched(boolean interactionFetched) {
+        this.interactionFetched = interactionFetched;
     }
 }

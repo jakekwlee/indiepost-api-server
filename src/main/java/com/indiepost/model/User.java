@@ -65,7 +65,7 @@ public class User implements Serializable {
     private UserGender gender;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<UserReading> userReadings;
+    private List<PostInteraction> postInteractions;
 
     @Column(nullable = false)
     @ManyToMany(cascade = CascadeType.ALL)
@@ -99,12 +99,12 @@ public class User implements Serializable {
         }
     }
 
-    public List<UserReading> getUserReadings() {
-        return userReadings;
+    public List<PostInteraction> getPostInteractions() {
+        return postInteractions;
     }
 
-    public void setUserReadings(List<UserReading> userReadings) {
-        this.userReadings = userReadings;
+    public void setPostInteractions(List<PostInteraction> postInteractions) {
+        this.postInteractions = postInteractions;
     }
 
     public List<Role> getRoles() {

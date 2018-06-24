@@ -6,13 +6,18 @@ import com.indiepost.dto.Timeline;
 import com.indiepost.dto.TimelineRequest;
 import com.indiepost.dto.analytics.PostStatDto;
 import com.indiepost.dto.post.PostDto;
+import com.indiepost.dto.post.PostInteractionDto;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Post;
+import com.indiepost.model.PostInteraction;
+import com.indiepost.model.User;
 import com.indiepost.model.elasticsearch.PostEs;
+import com.indiepost.repository.PostInteractionRepository;
 import com.indiepost.repository.PostRepository;
 import com.indiepost.repository.StatRepository;
+import com.indiepost.repository.UserRepository;
 import com.indiepost.repository.elasticsearch.PostEsRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.*;
@@ -20,12 +25,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.indiepost.mapper.PostMapper.postToPostDto;
+import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
 
 /**
  * Created by jake on 7/30/16.
@@ -40,13 +47,21 @@ public class PostServiceImpl implements PostService {
 
     private final PostEsRepository postEsRepository;
 
+    private final PostInteractionRepository postInteractionRepository;
+
+    private final UserRepository userRepository;
+
     @Inject
     public PostServiceImpl(PostRepository postRepository,
                            StatRepository statRepository,
-                           PostEsRepository postEsRepository) {
+                           PostEsRepository postEsRepository,
+                           PostInteractionRepository postInteractionRepository,
+                           UserRepository userRepository) {
         this.postRepository = postRepository;
         this.postEsRepository = postEsRepository;
         this.statRepository = statRepository;
+        this.postInteractionRepository = postInteractionRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -71,6 +86,14 @@ public class PostServiceImpl implements PostService {
                     })
                     .collect(Collectors.toList());
             dto.setContributors(contributors);
+        }
+        User user = userRepository.findCurrentUser();
+        if (user != null) {
+            PostInteraction postInteraction = postInteractionRepository.findOneByUserIdAndPostId(user.getId(), dto.getId());
+            dto.setInteractionFetched(true);
+            if (postInteraction != null) {
+                dto.setInteractions(toPostInteractionDto(postInteraction));
+            }
         }
         return dto;
     }
@@ -111,13 +134,25 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Timeline<PostSummaryDto> findReadingHistoryByUserId(Long userId, TimelineRequest request) {
-        return postRepository.findReadingHistoryByUserId(userId, request);
+    public Timeline<PostSummaryDto> findReadingHistory(TimelineRequest request) {
+        User currentUser = userRepository.findCurrentUser();
+        if (currentUser == null) {
+            return new Timeline<>(Collections.emptyList(), request, 0);
+        }
+        Long userId = currentUser.getId();
+        Timeline<PostSummaryDto> result = postRepository.findReadingHistoryByUserId(userId, request);
+        return addInteraction(result, request, userId, false);
     }
 
     @Override
-    public Timeline<PostSummaryDto> findBookmarksByUserId(Long userId, TimelineRequest request) {
-        return postRepository.findBookmarksByUserId(userId, request);
+    public Timeline<PostSummaryDto> findBookmarks(TimelineRequest request) {
+        User currentUser = userRepository.findCurrentUser();
+        if (currentUser == null) {
+            return new Timeline<>(Collections.emptyList(), request, 0);
+        }
+        Long userId = currentUser.getId();
+        Timeline<PostSummaryDto> result = postRepository.findBookmarksByUserId(userId, request);
+        return addInteraction(result, request, userId, true);
     }
 
     @Override
@@ -198,6 +233,50 @@ public class PostServiceImpl implements PostService {
                 .build();
         List<PostSummaryDto> posts = query(postQuery, PageRequest.of(0, 1)).getContent();
         return posts.isEmpty() ? null : posts.get(0);
+    }
+
+    private Timeline<PostSummaryDto> addInteraction(Timeline<PostSummaryDto> timeline, TimelineRequest request,
+                                                    Long userId, boolean bookmarked) {
+        if (timeline.getContent().isEmpty() || userId == null) {
+            return timeline;
+        }
+        List<PostSummaryDto> posts = timeline.getContent();
+        List<Long> ids = posts.stream()
+                .map(post -> post.getId())
+                .collect(Collectors.toList());
+        List<PostInteraction> postInteractions = postInteractionRepository.findByUserIdAndPostIds(userId, ids);
+        for (PostInteraction postInteraction : postInteractions) {
+            for (PostSummaryDto post : posts) {
+                if (postInteraction.getPostId().equals(post.getId())) {
+                    post.setInteractionFetched(true);
+                    post.setInteractions(toPostInteractionDto(postInteraction));
+                    break;
+                }
+            }
+        }
+        Instant oldest;
+        Instant newest;
+        PostInteractionDto oldestPostInteraction = posts.get(posts.size() - 1).getInteractions();
+        PostInteractionDto newestPostInteraction = posts.get(0).getInteractions();
+        if (bookmarked) {
+            oldest = oldestPostInteraction.getBookmarked();
+            newest = newestPostInteraction.getBookmarked();
+        } else {
+            oldest = oldestPostInteraction.getLastRead();
+            newest = newestPostInteraction.getLastRead();
+        }
+        return new Timeline<>(posts, request, newest, oldest, timeline.getTotalElements());
+
+
+    }
+
+    private PostInteractionDto toPostInteractionDto(PostInteraction postInteraction) {
+        PostInteractionDto dto = new PostInteractionDto(postInteraction.getPostId());
+        dto.setLastRead(localDateTimeToInstant(postInteraction.getLastRead()));
+        if (postInteraction.getBookmarked() != null) {
+            dto.setBookmarked(localDateTimeToInstant(postInteraction.getBookmarked()));
+        }
+        return dto;
     }
 
     private Pageable getPageRequest(Pageable pageable) {

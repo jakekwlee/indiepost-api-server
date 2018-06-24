@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
  * Created by jake on 7/25/16.
  */
 @Entity
-@Table(name = "UserReadings")
-public class UserReading implements Serializable {
+@Table(name = "PostInteractions")
+public class PostInteraction implements Serializable {
 
     private static final long serialVersionUID = 5793341286387473902L;
 
@@ -37,13 +37,10 @@ public class UserReading implements Serializable {
     @Column(nullable = false)
     private LocalDateTime lastRead;
 
-    private LocalDateTime bookmarkedAt;
+    private LocalDateTime bookmarked;
 
     @Column(nullable = false)
     private int readCount = 1;
-
-    @Column(nullable = false)
-    private boolean bookmarked = false;
 
     private boolean visible = true;
 
@@ -95,14 +92,6 @@ public class UserReading implements Serializable {
         this.id = id;
     }
 
-    public boolean isBookmarked() {
-        return bookmarked;
-    }
-
-    public void setBookmarked(boolean bookmarked) {
-        this.bookmarked = bookmarked;
-    }
-
     public boolean isVisible() {
         return visible;
     }
@@ -131,11 +120,11 @@ public class UserReading implements Serializable {
         this.readCount++;
     }
 
-    public LocalDateTime getBookmarkedAt() {
-        return bookmarkedAt;
+    public LocalDateTime getBookmarked() {
+        return bookmarked;
     }
 
-    public void setBookmarkedAt(LocalDateTime bookmarkedAt) {
-        this.bookmarkedAt = bookmarkedAt;
+    public void setBookmarked(LocalDateTime bookmarked) {
+        this.bookmarked = bookmarked;
     }
 }

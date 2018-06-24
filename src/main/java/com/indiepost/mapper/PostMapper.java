@@ -3,7 +3,6 @@ package com.indiepost.mapper;
 import com.indiepost.dto.ImageSetDto;
 import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.PostDto;
-import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.dto.post.RelatedPostsMatchingResult;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Contributor;
@@ -42,19 +41,6 @@ public class PostMapper {
         destPost.setFeatured(srcPost.isFeatured());
         destPost.setPicked(srcPost.isPicked());
         return destPost;
-    }
-
-    public static PostSummaryDto toSummaryDto(Post post) {
-        PostSummaryDto postSummaryDto = new PostSummaryDto();
-        postSummaryDto.setId(post.getId());
-        postSummaryDto.setCategoryId(post.getCategoryId());
-        postSummaryDto.setFeatured(post.isFeatured());
-        postSummaryDto.setSplash(post.isSplash());
-        postSummaryDto.setPicked(post.isPicked());
-        postSummaryDto.setTitle(post.getTitle());
-        postSummaryDto.setExcerpt(post.getExcerpt());
-        postSummaryDto.setDisplayName(post.getDisplayName());
-        return postSummaryDto;
     }
 
     public static void copyDtoToPost(AdminPostRequestDto requestDto, Post post) {
