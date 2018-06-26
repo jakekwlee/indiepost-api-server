@@ -2,16 +2,22 @@ package com.indiepost.service;
 
 import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.Highlight;
+import com.indiepost.dto.Timeline;
+import com.indiepost.dto.TimelineRequest;
+import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostSummaryDto;
+import com.indiepost.utils.DomUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 
@@ -74,5 +80,28 @@ public class PostServiceTests {
         assertThat(dtoList.size()).isEqualTo(9);
         assertThat(page.getTotalElements()).isEqualTo(9);
         printToJson(dtoList);
+    }
+
+    @Test
+    public void findById_shouldReturnPostDtoWithRelatedPostsProperly() {
+        PostDto post = postService.findOne(908L);
+        assertThat(post).isNotNull();
+        assertThat(post.getRelatedPostIds()).isNotNull();
+        assertThat(post.getRelatedPostIds().size()).isGreaterThan(1);
+        assertThat(DomUtil.relatedPostsPattern.matcher(post.getContent()).find()).isFalse();
+    }
+
+    @Test
+    @WithMockUser("auth0|5b213cd8064de34cde981b47")
+    public void findReadingHistory_shouldReturnResultProperly() {
+        TimelineRequest request = new TimelineRequest();
+        request.setSize(100);
+        request.setTimepoint(Instant.now().toEpochMilli() / 1000);
+        long startTime = System.nanoTime();
+        Timeline<PostSummaryDto> result = postService.findReadingHistory(request);
+        long endTime = System.nanoTime();
+        assertThat(result.getContent().size()).isEqualTo(result.getNumberOfElements());
+        assertThat(result.getContent().size()).isEqualTo(35);
+        System.out.println("Running Time: " + ((endTime - startTime) / 1000000) + "milliseconds");
     }
 }

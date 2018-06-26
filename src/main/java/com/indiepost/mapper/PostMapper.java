@@ -3,12 +3,10 @@ package com.indiepost.mapper;
 import com.indiepost.dto.ImageSetDto;
 import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.PostDto;
+import com.indiepost.dto.post.PostInteractionDto;
 import com.indiepost.dto.post.RelatedPostsMatchingResult;
 import com.indiepost.enums.Types.PostStatus;
-import com.indiepost.model.Contributor;
-import com.indiepost.model.ImageSet;
-import com.indiepost.model.Post;
-import com.indiepost.model.Tag;
+import com.indiepost.model.*;
 import com.indiepost.model.elasticsearch.PostEs;
 import org.springframework.beans.BeanUtils;
 
@@ -144,6 +142,15 @@ public class PostMapper {
         postEs.setTags(tags);
         postEs.setContent(htmlToText(post.getContent()));
         return postEs;
+    }
+
+    public static PostInteractionDto toPostInteractionDto(PostInteraction postInteraction) {
+        PostInteractionDto dto = new PostInteractionDto(postInteraction.getPostId());
+        dto.setLastRead(localDateTimeToInstant(postInteraction.getLastRead()));
+        if (postInteraction.getBookmarked() != null) {
+            dto.setBookmarked(localDateTimeToInstant(postInteraction.getBookmarked()));
+        }
+        return dto;
     }
 
     public static ImageSetDto imageSetToDto(ImageSet imageSet) {

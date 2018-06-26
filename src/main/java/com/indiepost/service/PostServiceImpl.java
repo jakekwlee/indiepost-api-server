@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.indiepost.mapper.PostMapper.postToPostDto;
-import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
+import static com.indiepost.mapper.PostMapper.toPostInteractionDto;
 
 /**
  * Created by jake on 7/30/16.
@@ -244,6 +244,7 @@ public class PostServiceImpl implements PostService {
         List<Long> ids = posts.stream()
                 .map(post -> post.getId())
                 .collect(Collectors.toList());
+
         List<PostInteraction> postInteractions = postInteractionRepository.findByUserIdAndPostIds(userId, ids);
         for (PostInteraction postInteraction : postInteractions) {
             for (PostSummaryDto post : posts) {
@@ -258,6 +259,7 @@ public class PostServiceImpl implements PostService {
         Instant newest;
         PostInteractionDto oldestPostInteraction = posts.get(posts.size() - 1).getInteractions();
         PostInteractionDto newestPostInteraction = posts.get(0).getInteractions();
+
         if (bookmarked) {
             oldest = oldestPostInteraction.getBookmarked();
             newest = newestPostInteraction.getBookmarked();
@@ -268,15 +270,6 @@ public class PostServiceImpl implements PostService {
         return new Timeline<>(posts, request, newest, oldest, timeline.getTotalElements());
 
 
-    }
-
-    private PostInteractionDto toPostInteractionDto(PostInteraction postInteraction) {
-        PostInteractionDto dto = new PostInteractionDto(postInteraction.getPostId());
-        dto.setLastRead(localDateTimeToInstant(postInteraction.getLastRead()));
-        if (postInteraction.getBookmarked() != null) {
-            dto.setBookmarked(localDateTimeToInstant(postInteraction.getBookmarked()));
-        }
-        return dto;
     }
 
     private Pageable getPageRequest(Pageable pageable) {
