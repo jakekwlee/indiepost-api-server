@@ -23,5 +23,7 @@ public interface PostInteractionService {
 
     void unsetBookmark(Long postId);
 
+    void clearAllBookmarks();
+
     void deleteById(Long id);
 }

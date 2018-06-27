@@ -18,12 +18,12 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = "/admin/images", produces = {"application/json; charset=UTF-8"})
-public class ImageController {
+public class AdminImageController {
 
     private final ImageService imageService;
 
     @Inject
-    public ImageController(ImageService imageService) {
+    public AdminImageController(ImageService imageService) {
         this.imageService = imageService;
     }
 

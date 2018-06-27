@@ -17,6 +17,8 @@ public interface PostInteractionRepository {
 
     void setVisibility(Long userId, boolean visible);
 
+    void clearAllBookmarks(Long userId);
+
     void deleteById(Long id);
 
 }

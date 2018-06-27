@@ -74,4 +74,8 @@ public class UserController {
         postInteractionService.unsetBookmark(postId);
     }
 
+    @DeleteMapping("/bookmark")
+    public void removeAllBookmarks() {
+        postInteractionService.clearAllBookmarks();
+    }
 }

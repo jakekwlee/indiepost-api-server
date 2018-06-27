@@ -34,6 +34,7 @@ public class PostInteractionServiceImpl implements PostInteractionService {
         if (postInteraction != null) {
             postInteraction.setLastRead(now);
             postInteraction.increaseReadCount();
+            postInteraction.setVisible(true);
             return postInteraction.getId();
         }
         postInteraction = new PostInteraction();
@@ -124,6 +125,15 @@ public class PostInteractionServiceImpl implements PostInteractionService {
         }
         PostInteraction postInteraction = postInteractionRepository.findOneByUserIdAndPostId(userId, postId);
         postInteraction.setBookmarked(null);
+    }
+
+    @Override
+    public void clearAllBookmarks() {
+        Long userId = getCurrentUserId();
+        if (userId == null) {
+            return;
+        }
+        postInteractionRepository.clearAllBookmarks(userId);
     }
 
     @Override

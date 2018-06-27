@@ -65,6 +65,13 @@ public class PostInteractionRepositoryJpa implements PostInteractionRepository {
     }
 
     @Override
+    public void clearAllBookmarks(Long userId) {
+        getQueryFactory().update(interaction).setNull(interaction.bookmarked)
+                .where(interaction.userId.eq(userId).and(interaction.id.goe(1)))
+                .execute();
+    }
+
+    @Override
     public void deleteById(Long id) {
         PostInteraction postInteraction = entityManager.getReference(PostInteraction.class, id);
         entityManager.remove(postInteraction);
