@@ -2,6 +2,7 @@ package com.indiepost.service;
 
 import com.indiepost.dto.StaticPageDto;
 import com.indiepost.enums.Types;
+import com.indiepost.exceptions.ResourceNotFoundException;
 import com.indiepost.model.StaticPage;
 import com.indiepost.model.User;
 import com.indiepost.repository.StaticPageRepository;
@@ -83,6 +84,9 @@ public class StaticPageServiceImpl implements StaticPageService {
     @Override
     public StaticPageDto findBySlug(String slug) {
         StaticPage staticPage = staticPageRepository.findBySlug(slug);
+        if (staticPage == null) {
+            throw new ResourceNotFoundException();
+        }
         return pageToPageDto(staticPage);
     }
 

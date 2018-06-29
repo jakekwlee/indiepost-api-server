@@ -10,6 +10,7 @@ import com.indiepost.dto.post.PostInteractionDto;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
+import com.indiepost.exceptions.ResourceNotFoundException;
 import com.indiepost.model.Post;
 import com.indiepost.model.PostInteraction;
 import com.indiepost.model.User;
@@ -67,6 +68,9 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDto findOne(Long id) {
         Post post = postRepository.findById(id);
+        if (post == null) {
+            throw new ResourceNotFoundException();
+        }
         // TODO I will find better solution!
         post.getTags();
         post.getContributors();
