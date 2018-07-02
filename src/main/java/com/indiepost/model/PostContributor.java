@@ -12,11 +12,11 @@ public class PostContributor {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "postId")
     private Post post;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "contributor_id")
+    @JoinColumn(name = "contributorId")
     private Contributor contributor;
 
     @NotNull

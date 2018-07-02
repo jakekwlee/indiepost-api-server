@@ -66,16 +66,16 @@ public class UserController {
 
     @PutMapping("/bookmark/{postId}")
     public void addBookmark(@PathVariable Long postId) {
-        postInteractionService.setBookmark(postId);
+        postInteractionService.addBookmark(postId);
     }
 
     @DeleteMapping("/bookmark/{postId}")
     public void removeBookmark(@PathVariable Long postId) {
-        postInteractionService.unsetBookmark(postId);
+        postInteractionService.removeBookmark(postId);
     }
 
     @DeleteMapping("/bookmark")
     public void removeAllBookmarks() {
-        postInteractionService.clearAllBookmarks();
+        postInteractionService.removeAllUsersBookmarks();
     }
 }

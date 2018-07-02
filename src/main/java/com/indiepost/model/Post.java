@@ -117,14 +117,21 @@ public class Post implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<PostInteraction> postInteractions;
+    private List<PostReading> postReadings;
 
-    public List<PostInteraction> getPostInteractions() {
-        return postInteractions;
+    @OneToMany(
+            mappedBy = "post",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Bookmark> postBookmarks;
+
+    public List<PostReading> getPostReadings() {
+        return postReadings;
     }
 
-    public void setPostInteractions(List<PostInteraction> postInteractions) {
-        this.postInteractions = postInteractions;
+    public void setPostReadings(List<PostReading> postReadings) {
+        this.postReadings = postReadings;
     }
 
     public Long getId() {
@@ -368,5 +375,13 @@ public class Post implements Serializable {
 
     public void setSplash(boolean splash) {
         this.splash = splash;
+    }
+
+    public List<Bookmark> getPostBookmarks() {
+        return postBookmarks;
+    }
+
+    public void setPostBookmarks(List<Bookmark> postBookmarks) {
+        this.postBookmarks = postBookmarks;
     }
 }

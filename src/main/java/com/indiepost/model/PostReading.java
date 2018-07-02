@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
  * Created by jake on 7/25/16.
  */
 @Entity
-@Table(name = "PostInteractions")
-public class PostInteraction implements Serializable {
+@Table(name = "PostReadings")
+public class PostReading implements Serializable {
 
     private static final long serialVersionUID = 5793341286387473902L;
 
@@ -18,17 +18,17 @@ public class PostInteraction implements Serializable {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    @Column(name = "user_id", insertable = false, updatable = false)
+    @Column(name = "userId", insertable = false, updatable = false)
     private Long userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
+    @JoinColumn(name = "postId", nullable = false)
     private Post post;
 
-    @Column(name = "post_id", insertable = false, updatable = false)
+    @Column(name = "postId", insertable = false, updatable = false)
     private Long postId;
 
     @Column(nullable = false)
@@ -36,8 +36,6 @@ public class PostInteraction implements Serializable {
 
     @Column(nullable = false)
     private LocalDateTime lastRead;
-
-    private LocalDateTime bookmarked;
 
     @Column(nullable = false)
     private int readCount = 1;
@@ -118,13 +116,5 @@ public class PostInteraction implements Serializable {
 
     public void increaseReadCount() {
         this.readCount++;
-    }
-
-    public LocalDateTime getBookmarked() {
-        return bookmarked;
-    }
-
-    public void setBookmarked(LocalDateTime bookmarked) {
-        this.bookmarked = bookmarked;
     }
 }

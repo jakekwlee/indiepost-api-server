@@ -205,18 +205,9 @@ public class PostRepositoryJpa implements PostRepository {
 
     @Override
     public Timeline<PostSummaryDto> findReadingHistoryByUserId(Long userId, TimelineRequest request) {
-        return findPostInteraction(userId, request, false);
-    }
-
-    @Override
-    public Timeline<PostSummaryDto> findBookmarksByUserId(Long userId, TimelineRequest request) {
-        return findPostInteraction(userId, request, true);
-    }
-
-    private Timeline<PostSummaryDto> findPostInteraction(Long userId, TimelineRequest request, boolean bookmarked) {
         QCategory ct = QCategory.category;
         QImageSet im = QImageSet.imageSet;
-        QPostInteraction it = QPostInteraction.postInteraction;
+        QPostReading r = QPostReading.postReading;
 
         BooleanExpression whereClause;
         OrderSpecifier orderClause;
@@ -224,31 +215,20 @@ public class PostRepositoryJpa implements PostRepository {
         Instant instant = Instant.ofEpochSecond(request.getTimepoint());
         LocalDateTime timepoint = instantToLocalDateTime(instant);
 
-        if (bookmarked) {
-            whereClause = post.status.eq(PostStatus.PUBLISH)
-                    .and(it.bookmarked.isNotNull())
-                    .and(it.userId.eq(userId))
-                    .and(isAfter ?
-                            it.bookmarked.after(timepoint) :
-                            it.bookmarked.before(timepoint)
-                    );
-            orderClause = it.bookmarked.desc();
-        } else {
-            whereClause = post.status.eq(PostStatus.PUBLISH)
-                    .and(it.visible.isTrue())
-                    .and(it.userId.eq(userId))
-                    .and(isAfter ?
-                            it.lastRead.after(timepoint) :
-                            it.lastRead.before(timepoint)
-                    );
-            orderClause = it.lastRead.desc();
-        }
+        whereClause = post.status.eq(PostStatus.PUBLISH)
+                .and(r.visible.isTrue())
+                .and(r.userId.eq(userId))
+                .and(isAfter ?
+                        r.lastRead.after(timepoint) :
+                        r.lastRead.before(timepoint)
+                );
+        orderClause = r.lastRead.desc();
 
         JPAQuery query = getQueryFactory().from(post);
         addProjections(query)
                 .innerJoin(post.category, ct)
-                .innerJoin(post.postInteractions, it)
-                .innerJoin(it.post, post)
+                .innerJoin(post.postReadings, r)
+                .innerJoin(r.post, post)
                 .leftJoin(post.titleImage, im)
                 .where(whereClause)
                 .orderBy(orderClause)
@@ -259,8 +239,50 @@ public class PostRepositoryJpa implements PostRepository {
         }
         List<PostSummaryDto> dtoList = toDtoList(result);
         Long total = getQueryFactory().selectFrom(post)
-                .innerJoin(post.postInteractions, it)
-                .innerJoin(it.post, post)
+                .innerJoin(post.postReadings, r)
+                .innerJoin(r.post, post)
+                .where(whereClause)
+                .fetchCount();
+        return new Timeline<>(dtoList, request, total.intValue());
+    }
+
+    @Override
+    public Timeline<PostSummaryDto> findBookmarksByUserId(Long userId, TimelineRequest request) {
+        QCategory ct = QCategory.category;
+        QImageSet im = QImageSet.imageSet;
+        QBookmark b = QBookmark.bookmark;
+
+        BooleanExpression whereClause;
+        OrderSpecifier orderClause;
+        boolean isAfter = request.isAfter();
+        Instant instant = Instant.ofEpochSecond(request.getTimepoint());
+        LocalDateTime timepoint = instantToLocalDateTime(instant);
+
+        whereClause = post.status.eq(PostStatus.PUBLISH)
+                .and(b.userId.eq(userId))
+                .and(isAfter ?
+                        b.created.after(timepoint) :
+                        b.created.before(timepoint)
+                );
+        orderClause = b.created.desc();
+
+        JPAQuery query = getQueryFactory().from(post);
+        addProjections(query)
+                .innerJoin(post.category, ct)
+                .innerJoin(post.postBookmarks, b)
+                .innerJoin(b.post, post)
+                .leftJoin(post.titleImage, im)
+                .where(whereClause)
+                .orderBy(orderClause)
+                .limit(request.getSize()).distinct();
+        List<Tuple> result = query.fetch();
+        if (result.size() == 0) {
+            return new Timeline<>(Collections.emptyList(), request, 0);
+        }
+        List<PostSummaryDto> dtoList = toDtoList(result);
+        Long total = getQueryFactory().selectFrom(post)
+                .innerJoin(post.postBookmarks, b)
+                .innerJoin(b.post, post)
                 .where(whereClause)
                 .fetchCount();
         return new Timeline<>(dtoList, request, total.intValue());

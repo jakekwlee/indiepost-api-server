@@ -1,7 +1,7 @@
 package com.indiepost.repository;
 
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.model.PostInteraction;
+import com.indiepost.model.PostReading;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,18 +22,18 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
 @Transactional
-public class PostInteractionRepositoryTests {
+public class PostReadingRepositoryTests {
     @Inject
-    private PostInteractionRepository repository;
+    private PostReadingRepository repository;
 
     private List<Long> insertedIds = new ArrayList<>();
 
     @Before
     public void beforeTest() {
-        PostInteraction postInteraction = new PostInteraction();
-        postInteraction.setCreated(LocalDateTime.now());
-        postInteraction.setLastRead(LocalDateTime.now());
-        Long id = repository.save(postInteraction, 1L, 500L);
+        PostReading postReading = new PostReading();
+        postReading.setCreated(LocalDateTime.now());
+        postReading.setLastRead(LocalDateTime.now());
+        Long id = repository.save(postReading, 1L, 500L);
         insertedIds.add(id);
     }
 
@@ -46,13 +46,13 @@ public class PostInteractionRepositoryTests {
 
     @Test
     public void findOneByUserIdAndPostId_shouldReturnAnUserReadingProperly() {
-        PostInteraction postInteraction = repository.findOneByUserIdAndPostId(1L, 500L);
-        assertThat(postInteraction).isNotNull();
+        PostReading postReading = repository.findOneByUserIdAndPostId(1L, 500L);
+        assertThat(postReading).isNotNull();
     }
 
     @Test
     public void findOne_shouldReturnAnUserReadingProperly() {
-        PostInteraction postInteraction = repository.findOne(insertedIds.get(0));
-        assertThat(postInteraction).isNotNull();
+        PostReading postReading = repository.findOne(insertedIds.get(0));
+        assertThat(postReading).isNotNull();
     }
 }

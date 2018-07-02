@@ -15,12 +15,12 @@ public class PostTag implements Serializable {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "postId")
     private Post post;
 
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "tag_id")
+    @JoinColumn(name = "tagId")
     private Tag tag;
 
     @NotNull

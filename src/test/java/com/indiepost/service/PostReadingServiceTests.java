@@ -1,7 +1,7 @@
 package com.indiepost.service;
 
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.model.PostInteraction;
+import com.indiepost.model.PostReading;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +20,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
-public class PostInteractionServiceTests {
+public class PostReadingServiceTests {
 
     @Inject
     private PostInteractionService service;
@@ -29,9 +29,9 @@ public class PostInteractionServiceTests {
 
     @Before
     public void beforeTest() {
-        PostInteraction postInteraction = new PostInteraction();
-        postInteraction.setCreated(LocalDateTime.now());
-        postInteraction.setLastRead(LocalDateTime.now());
+        PostReading postReading = new PostReading();
+        postReading.setCreated(LocalDateTime.now());
+        postReading.setLastRead(LocalDateTime.now());
         Long id = service.add(1L, 500L);
         insertedIds.add(id);
     }
@@ -44,32 +44,25 @@ public class PostInteractionServiceTests {
     }
 
     @Test
-    public void setBookmark_shouldAddUserReadingProperlyAndReturnId() {
-        service.setBookmark(500L);
-        PostInteraction postInteraction = service.findOne(insertedIds.get(0));
-        assertThat(postInteraction.getBookmarked()).isNotNull();
-    }
-
-    @Test
     public void setInvisibleByUserIdAndPostId_shouldAddUserReadingProperly() {
         service.setInvisible(500L);
-        PostInteraction postInteraction = service.findOne(insertedIds.get(0));
-        assertThat(postInteraction.isVisible()).isFalse();
+        PostReading postReading = service.findOne(insertedIds.get(0));
+        assertThat(postReading.isVisible()).isFalse();
     }
 
     @Test
     public void setInvisibleAllByUserId_shouldAddUserReadingProperly() {
         service.setInvisibleAll();
-        PostInteraction postInteraction = service.findOne(insertedIds.get(0));
-        assertThat(postInteraction.isVisible()).isFalse();
+        PostReading postReading = service.findOne(insertedIds.get(0));
+        assertThat(postReading.isVisible()).isFalse();
         service.setVisibleAll();
     }
 
     @Test
     public void setInvisibleAllByUserId_shouldAddUserReadingProperlyAndReturnId() {
         service.setInvisibleAll();
-        PostInteraction postInteraction = service.findOne(insertedIds.get(0));
-        assertThat(postInteraction.isVisible()).isFalse();
+        PostReading postReading = service.findOne(insertedIds.get(0));
+        assertThat(postReading.isVisible()).isFalse();
     }
 
     @After

@@ -11,14 +11,12 @@ import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.exceptions.ResourceNotFoundException;
+import com.indiepost.model.Bookmark;
 import com.indiepost.model.Post;
-import com.indiepost.model.PostInteraction;
+import com.indiepost.model.PostReading;
 import com.indiepost.model.User;
 import com.indiepost.model.elasticsearch.PostEs;
-import com.indiepost.repository.PostInteractionRepository;
-import com.indiepost.repository.PostRepository;
-import com.indiepost.repository.StatRepository;
-import com.indiepost.repository.UserRepository;
+import com.indiepost.repository.*;
 import com.indiepost.repository.elasticsearch.PostEsRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.*;
@@ -34,6 +32,7 @@ import java.util.stream.Collectors;
 
 import static com.indiepost.mapper.PostMapper.postToPostDto;
 import static com.indiepost.mapper.PostMapper.toPostInteractionDto;
+import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
 
 /**
  * Created by jake on 7/30/16.
@@ -48,7 +47,9 @@ public class PostServiceImpl implements PostService {
 
     private final PostEsRepository postEsRepository;
 
-    private final PostInteractionRepository postInteractionRepository;
+    private final PostReadingRepository postReadingRepository;
+
+    private final BookmarkRepository bookmarkRepository;
 
     private final UserRepository userRepository;
 
@@ -56,12 +57,14 @@ public class PostServiceImpl implements PostService {
     public PostServiceImpl(PostRepository postRepository,
                            StatRepository statRepository,
                            PostEsRepository postEsRepository,
-                           PostInteractionRepository postInteractionRepository,
+                           PostReadingRepository postReadingRepository,
+                           BookmarkRepository bookmarkRepository,
                            UserRepository userRepository) {
         this.postRepository = postRepository;
         this.postEsRepository = postEsRepository;
         this.statRepository = statRepository;
-        this.postInteractionRepository = postInteractionRepository;
+        this.postReadingRepository = postReadingRepository;
+        this.bookmarkRepository = bookmarkRepository;
         this.userRepository = userRepository;
     }
 
@@ -71,7 +74,7 @@ public class PostServiceImpl implements PostService {
         if (post == null) {
             throw new ResourceNotFoundException();
         }
-        // TODO I will find better solution!
+        // TODO I will find a better solution!
         post.getTags();
         post.getContributors();
         PostDto dto = postToPostDto(post);
@@ -93,10 +96,15 @@ public class PostServiceImpl implements PostService {
         }
         User user = userRepository.findCurrentUser();
         if (user != null) {
-            PostInteraction postInteraction = postInteractionRepository.findOneByUserIdAndPostId(user.getId(), dto.getId());
+            PostReading postReading = postReadingRepository.findOneByUserIdAndPostId(user.getId(), dto.getId());
+            Bookmark bookmark = bookmarkRepository.findOneByUserIdAndPostId(user.getId(), dto.getId());
             dto.setInteractionFetched(true);
-            if (postInteraction != null) {
-                dto.setInteractions(toPostInteractionDto(postInteraction));
+            if (postReading != null) {
+                PostInteractionDto interaction = toPostInteractionDto(postReading);
+                if (bookmark != null) {
+                    interaction.setBookmarked(localDateTimeToInstant(bookmark.getCreated()));
+                }
+                dto.setInteractions(interaction);
             }
         }
         return dto;
@@ -249,12 +257,12 @@ public class PostServiceImpl implements PostService {
                 .map(post -> post.getId())
                 .collect(Collectors.toList());
 
-        List<PostInteraction> postInteractions = postInteractionRepository.findByUserIdAndPostIds(userId, ids);
-        for (PostInteraction postInteraction : postInteractions) {
+        List<PostReading> postReadings = postReadingRepository.findByUserIdAndPostIds(userId, ids);
+        for (PostReading postReading : postReadings) {
             for (PostSummaryDto post : posts) {
-                if (postInteraction.getPostId().equals(post.getId())) {
+                if (postReading.getPostId().equals(post.getId())) {
                     post.setInteractionFetched(true);
-                    post.setInteractions(toPostInteractionDto(postInteraction));
+                    post.setInteractions(toPostInteractionDto(postReading));
                     break;
                 }
             }

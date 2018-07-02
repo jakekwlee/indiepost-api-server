@@ -1,10 +1,10 @@
 package com.indiepost.repository.jpa;
 
 import com.indiepost.model.Post;
-import com.indiepost.model.PostInteraction;
-import com.indiepost.model.QPostInteraction;
+import com.indiepost.model.PostReading;
+import com.indiepost.model.QPostReading;
 import com.indiepost.model.User;
-import com.indiepost.repository.PostInteractionRepository;
+import com.indiepost.repository.PostReadingRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 
@@ -13,20 +13,20 @@ import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Repository
-public class PostInteractionRepositoryJpa implements PostInteractionRepository {
+public class PostReadingRepositoryJpa implements PostReadingRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    private QPostInteraction interaction = QPostInteraction.postInteraction;
+    private QPostReading interaction = QPostReading.postReading;
 
     @Override
-    public PostInteraction findOne(Long id) {
-        return entityManager.find(PostInteraction.class, id);
+    public PostReading findOne(Long id) {
+        return entityManager.find(PostReading.class, id);
     }
 
     @Override
-    public PostInteraction findOneByUserIdAndPostId(Long userId, Long postId) {
+    public PostReading findOneByUserIdAndPostId(Long userId, Long postId) {
         return getQueryFactory().selectFrom(interaction).where(
                 interaction.userId.eq(userId).and(
                         interaction.postId.eq(postId))
@@ -34,7 +34,7 @@ public class PostInteractionRepositoryJpa implements PostInteractionRepository {
     }
 
     @Override
-    public List<PostInteraction> findByUserIdAndPostIds(Long userId, List<Long> postIds) {
+    public List<PostReading> findByUserIdAndPostIds(Long userId, List<Long> postIds) {
         return getQueryFactory().selectFrom(interaction)
                 .where(interaction.userId.eq(userId).and(interaction.postId.in(postIds)))
                 .orderBy(interaction.lastRead.desc())
@@ -42,19 +42,19 @@ public class PostInteractionRepositoryJpa implements PostInteractionRepository {
     }
 
     @Override
-    public void save(PostInteraction postInteraction) {
-        entityManager.persist(postInteraction);
+    public void save(PostReading postReading) {
+        entityManager.persist(postReading);
     }
 
     @Override
-    public Long save(PostInteraction postInteraction, Long userId, Long postId) {
+    public Long save(PostReading postReading, Long userId, Long postId) {
         User userRef = entityManager.getReference(User.class, userId);
         Post postRef = entityManager.getReference(Post.class, postId);
-        postInteraction.setUser(userRef);
-        postInteraction.setPost(postRef);
-        save(postInteraction);
+        postReading.setUser(userRef);
+        postReading.setPost(postRef);
+        save(postReading);
         entityManager.flush();
-        return postInteraction.getId();
+        return postReading.getId();
     }
 
     @Override
@@ -65,16 +65,9 @@ public class PostInteractionRepositoryJpa implements PostInteractionRepository {
     }
 
     @Override
-    public void clearAllBookmarks(Long userId) {
-        getQueryFactory().update(interaction).setNull(interaction.bookmarked)
-                .where(interaction.userId.eq(userId).and(interaction.id.goe(1)))
-                .execute();
-    }
-
-    @Override
     public void deleteById(Long id) {
-        PostInteraction postInteraction = entityManager.getReference(PostInteraction.class, id);
-        entityManager.remove(postInteraction);
+        PostReading postReading = entityManager.getReference(PostReading.class, id);
+        entityManager.remove(postReading);
     }
 
     private JPAQueryFactory getQueryFactory() {

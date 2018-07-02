@@ -144,12 +144,9 @@ public class PostMapper {
         return postEs;
     }
 
-    public static PostInteractionDto toPostInteractionDto(PostInteraction postInteraction) {
-        PostInteractionDto dto = new PostInteractionDto(postInteraction.getPostId());
-        dto.setLastRead(localDateTimeToInstant(postInteraction.getLastRead()));
-        if (postInteraction.getBookmarked() != null) {
-            dto.setBookmarked(localDateTimeToInstant(postInteraction.getBookmarked()));
-        }
+    public static PostInteractionDto toPostInteractionDto(PostReading postReading) {
+        PostInteractionDto dto = new PostInteractionDto(postReading.getPostId());
+        dto.setLastRead(localDateTimeToInstant(postReading.getLastRead()));
         return dto;
     }
 

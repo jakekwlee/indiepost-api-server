@@ -1,9 +1,11 @@
 package com.indiepost.service;
 
 import com.indiepost.dto.post.PostInteractionDto;
-import com.indiepost.model.PostInteraction;
+import com.indiepost.model.Bookmark;
+import com.indiepost.model.PostReading;
 import com.indiepost.model.User;
-import com.indiepost.repository.PostInteractionRepository;
+import com.indiepost.repository.BookmarkRepository;
+import com.indiepost.repository.PostReadingRepository;
 import com.indiepost.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,36 +19,39 @@ import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
 @Transactional
 public class PostInteractionServiceImpl implements PostInteractionService {
 
-    private final PostInteractionRepository postInteractionRepository;
+    private final PostReadingRepository postReadingRepository;
+
+    private final BookmarkRepository bookmarkRepository;
 
     private final UserRepository userRepository;
 
     @Inject
-    public PostInteractionServiceImpl(PostInteractionRepository postInteractionRepository, UserRepository userRepository) {
-        this.postInteractionRepository = postInteractionRepository;
+    public PostInteractionServiceImpl(PostReadingRepository postReadingRepository, UserRepository userRepository, BookmarkRepository bookmarkRepository) {
+        this.postReadingRepository = postReadingRepository;
+        this.bookmarkRepository = bookmarkRepository;
         this.userRepository = userRepository;
     }
 
     @Override
     public Long add(Long userId, Long postId) {
-        PostInteraction postInteraction = postInteractionRepository.findOneByUserIdAndPostId(userId, postId);
+        PostReading postReading = postReadingRepository.findOneByUserIdAndPostId(userId, postId);
         LocalDateTime now = LocalDateTime.now();
-        if (postInteraction != null) {
-            postInteraction.setLastRead(now);
-            postInteraction.increaseReadCount();
-            postInteraction.setVisible(true);
-            return postInteraction.getId();
+        if (postReading != null) {
+            postReading.setLastRead(now);
+            postReading.increaseReadCount();
+            postReading.setVisible(true);
+            return postReading.getId();
         }
-        postInteraction = new PostInteraction();
-        postInteraction.setCreated(now);
-        postInteraction.setLastRead(now);
-        postInteractionRepository.save(postInteraction, userId, postId);
-        return postInteraction.getId();
+        postReading = new PostReading();
+        postReading.setCreated(now);
+        postReading.setLastRead(now);
+        postReadingRepository.save(postReading, userId, postId);
+        return postReading.getId();
     }
 
     @Override
-    public PostInteraction findOne(Long id) {
-        return postInteractionRepository.findOne(id);
+    public PostReading findOne(Long id) {
+        return postReadingRepository.findOne(id);
     }
 
     @Override
@@ -55,24 +60,30 @@ public class PostInteractionServiceImpl implements PostInteractionService {
         if (userId == null) {
             return null;
         }
-        PostInteraction postInteraction = postInteractionRepository.findOneByUserIdAndPostId(userId, postId);
+        PostReading postReading = postReadingRepository.findOneByUserIdAndPostId(userId, postId);
+        Bookmark bookmark = bookmarkRepository.findOneByUserIdAndPostId(userId, postId);
         PostInteractionDto dto = new PostInteractionDto(postId);
-        if (postInteraction != null) {
-            dto.setLastRead(localDateTimeToInstant(postInteraction.getLastRead()));
-            if (postInteraction.getBookmarked() != null) {
-                dto.setBookmarked(localDateTimeToInstant(postInteraction.getBookmarked()));
-            }
+        if (postReading != null) {
+            dto.setLastRead(localDateTimeToInstant(postReading.getLastRead()));
+        }
+        if (bookmark != null) {
+            dto.setBookmarked(localDateTimeToInstant(bookmark.getCreated()));
         }
         return dto;
     }
 
     @Override
-    public PostInteraction findOneByPostId(Long postId) {
+    public PostReading findOneByPostId(Long postId) {
         Long userId = getCurrentUserId();
         if (userId == null) {
             return null;
         }
-        return postInteractionRepository.findOneByUserIdAndPostId(userId, postId);
+        return postReadingRepository.findOneByUserIdAndPostId(userId, postId);
+    }
+
+    @Override
+    public Bookmark findBookmark(Long userId, Long postId) {
+        return bookmarkRepository.findOneByUserIdAndPostId(userId, postId);
     }
 
     @Override
@@ -81,12 +92,12 @@ public class PostInteractionServiceImpl implements PostInteractionService {
         if (userId == null) {
             return;
         }
-        PostInteraction postInteraction = postInteractionRepository.findOneByUserIdAndPostId(userId, postId);
-        if (postInteraction == null) {
+        PostReading postReading = postReadingRepository.findOneByUserIdAndPostId(userId, postId);
+        if (postReading == null) {
             // TODO throw error
             return;
         }
-        postInteraction.setVisible(false);
+        postReading.setVisible(false);
     }
 
     @Override
@@ -95,7 +106,7 @@ public class PostInteractionServiceImpl implements PostInteractionService {
         if (userId == null) {
             return;
         }
-        postInteractionRepository.setVisibility(userId, false);
+        postReadingRepository.setVisibility(userId, false);
     }
 
     @Override
@@ -104,41 +115,42 @@ public class PostInteractionServiceImpl implements PostInteractionService {
         if (userId == null) {
             return;
         }
-        postInteractionRepository.setVisibility(userId, true);
+        postReadingRepository.setVisibility(userId, true);
     }
 
     @Override
-    public void setBookmark(Long postId) {
+    public void addBookmark(Long postId) {
         Long userId = getCurrentUserId();
         if (userId == null) {
             return;
         }
-        PostInteraction postInteraction = postInteractionRepository.findOneByUserIdAndPostId(userId, postId);
-        postInteraction.setBookmarked(LocalDateTime.now());
+        bookmarkRepository.create(userId, postId);
     }
 
     @Override
-    public void unsetBookmark(Long postId) {
+    public void removeBookmark(Long postId) {
         Long userId = getCurrentUserId();
         if (userId == null) {
             return;
         }
-        PostInteraction postInteraction = postInteractionRepository.findOneByUserIdAndPostId(userId, postId);
-        postInteraction.setBookmarked(null);
+        Bookmark bookmark = bookmarkRepository.findOneByUserIdAndPostId(userId, postId);
+        if (bookmark != null) {
+            bookmarkRepository.delete(bookmark);
+        }
     }
 
     @Override
-    public void clearAllBookmarks() {
+    public void removeAllUsersBookmarks() {
         Long userId = getCurrentUserId();
         if (userId == null) {
             return;
         }
-        postInteractionRepository.clearAllBookmarks(userId);
+        bookmarkRepository.removeAllBookmarksByUserId(userId);
     }
 
     @Override
     public void deleteById(Long id) {
-        postInteractionRepository.deleteById(id);
+        postReadingRepository.deleteById(id);
     }
 
     private Long getCurrentUserId() {
