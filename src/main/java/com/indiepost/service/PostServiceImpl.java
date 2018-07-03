@@ -6,7 +6,6 @@ import com.indiepost.dto.Timeline;
 import com.indiepost.dto.TimelineRequest;
 import com.indiepost.dto.analytics.PostStatDto;
 import com.indiepost.dto.post.PostDto;
-import com.indiepost.dto.post.PostInteractionDto;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.enums.Types.PostStatus;
@@ -31,7 +30,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.indiepost.mapper.PostMapper.postToPostDto;
-import static com.indiepost.mapper.PostMapper.toPostInteractionDto;
 import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
 
 /**
@@ -98,14 +96,13 @@ public class PostServiceImpl implements PostService {
         if (user != null) {
             PostReading postReading = postReadingRepository.findOneByUserIdAndPostId(user.getId(), dto.getId());
             Bookmark bookmark = bookmarkRepository.findOneByUserIdAndPostId(user.getId(), dto.getId());
-            dto.setInteractionFetched(true);
             if (postReading != null) {
-                PostInteractionDto interaction = toPostInteractionDto(postReading);
-                if (bookmark != null) {
-                    interaction.setBookmarked(localDateTimeToInstant(bookmark.getCreated()));
-                }
-                dto.setInteractions(interaction);
+                dto.setLastRead(localDateTimeToInstant(postReading.getLastRead()));
             }
+            if (bookmark != null) {
+                dto.setBookmarked(localDateTimeToInstant(bookmark.getCreated()));
+            }
+            dto.setInteractionFetched(true);
         }
         return dto;
     }
@@ -247,8 +244,7 @@ public class PostServiceImpl implements PostService {
         return posts.isEmpty() ? null : posts.get(0);
     }
 
-    private Timeline<PostSummaryDto> addInteraction(Timeline<PostSummaryDto> timeline, TimelineRequest request,
-                                                    Long userId, boolean bookmarked) {
+    private Timeline<PostSummaryDto> addInteraction(Timeline<PostSummaryDto> timeline, TimelineRequest request, Long userId, boolean bookmarked) {
         if (timeline.getContent().isEmpty() || userId == null) {
             return timeline;
         }
@@ -262,26 +258,32 @@ public class PostServiceImpl implements PostService {
             for (PostSummaryDto post : posts) {
                 if (postReading.getPostId().equals(post.getId())) {
                     post.setInteractionFetched(true);
-                    post.setInteractions(toPostInteractionDto(postReading));
+                    post.setLastRead(localDateTimeToInstant(postReading.getLastRead()));
                     break;
                 }
             }
         }
         Instant oldest;
         Instant newest;
-        PostInteractionDto oldestPostInteraction = posts.get(posts.size() - 1).getInteractions();
-        PostInteractionDto newestPostInteraction = posts.get(0).getInteractions();
 
         if (bookmarked) {
-            oldest = oldestPostInteraction.getBookmarked();
-            newest = newestPostInteraction.getBookmarked();
+            List<Bookmark> bookmarks = bookmarkRepository.findByUserIdAndPostIds(userId, ids);
+            for (Bookmark bookmark : bookmarks) {
+                for (PostSummaryDto post : posts) {
+                    if (bookmark.getPostId().equals(post.getId())) {
+                        post.setBookmarked(localDateTimeToInstant(bookmark.getCreated()));
+                        break;
+                    }
+                }
+            }
+            oldest = posts.get(posts.size() - 1).getBookmarked();
+            newest = posts.get(0).getBookmarked();
         } else {
-            oldest = oldestPostInteraction.getLastRead();
-            newest = newestPostInteraction.getLastRead();
+            oldest = posts.get(posts.size() - 1).getLastRead();
+            newest = posts.get(0).getLastRead();
         }
+
         return new Timeline<>(posts, request, newest, oldest, timeline.getTotalElements());
-
-
     }
 
     private Pageable getPageRequest(Pageable pageable) {

@@ -38,7 +38,9 @@ public class PostSummaryDto implements Serializable {
 
     private int commentsCount;
 
-    private PostInteractionDto interactions;
+    private Instant lastRead;
+
+    private Instant bookmarked;
 
     private boolean interactionFetched;
 
@@ -148,6 +150,29 @@ public class PostSummaryDto implements Serializable {
         this.categoryName = categoryName;
     }
 
+    public Instant getLastRead() {
+        return lastRead;
+    }
+
+    public void setLastRead(Instant lastRead) {
+        this.lastRead = lastRead;
+    }
+
+    public Instant getBookmarked() {
+        return bookmarked;
+    }
+
+    public void setBookmarked(Instant bookmarked) {
+        this.bookmarked = bookmarked;
+    }
+
+    public boolean isInteractionFetched() {
+        return interactionFetched;
+    }
+
+    public void setInteractionFetched(boolean interactionFetched) {
+        this.interactionFetched = interactionFetched;
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -171,19 +196,4 @@ public class PostSummaryDto implements Serializable {
                 .toHashCode();
     }
 
-    public PostInteractionDto getInteractions() {
-        return interactions;
-    }
-
-    public void setInteractions(PostInteractionDto interactions) {
-        this.interactions = interactions;
-    }
-
-    public boolean isInteractionFetched() {
-        return interactionFetched;
-    }
-
-    public void setInteractionFetched(boolean interactionFetched) {
-        this.interactionFetched = interactionFetched;
-    }
 }

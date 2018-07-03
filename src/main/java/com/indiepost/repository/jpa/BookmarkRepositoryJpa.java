@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 @Repository
 public class BookmarkRepositoryJpa implements BookmarkRepository {
@@ -45,6 +46,15 @@ public class BookmarkRepositoryJpa implements BookmarkRepository {
                 .selectFrom(b)
                 .where(b.userId.eq(userId).and(b.postId.eq(postId)))
                 .fetchOne();
+    }
+
+    @Override
+    public List<Bookmark> findByUserIdAndPostIds(Long userId, List<Long> postIds) {
+        QBookmark b = QBookmark.bookmark;
+        return getQueryFactory()
+                .selectFrom(b)
+                .where(b.userId.eq(userId).and(b.postId.in(postIds)))
+                .fetch();
     }
 
     @Override
