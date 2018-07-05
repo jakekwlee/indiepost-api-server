@@ -39,6 +39,7 @@ public class User implements Serializable {
     @Size(min = 7, max = 50)
     private String email;
 
+    @Column(nullable = false)
     @Pattern(regexp = "[_0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣\\s]{2,30}")
     @Size(min = 2, max = 30)
     private String displayName;

@@ -23,7 +23,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class PostReadingServiceTests {
 
     @Inject
-    private PostInteractionService service;
+    private PostUserInteractionService service;
 
     private List<Long> insertedIds = new ArrayList<>();
 

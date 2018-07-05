@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.post.PostInteractionDto;
+import com.indiepost.dto.post.PostUserInteraction;
 import com.indiepost.model.Bookmark;
 import com.indiepost.model.PostReading;
 import com.indiepost.model.User;
@@ -17,7 +17,7 @@ import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
 
 @Service
 @Transactional
-public class PostInteractionServiceImpl implements PostInteractionService {
+public class PostUserInteractionServiceImpl implements PostUserInteractionService {
 
     private final PostReadingRepository postReadingRepository;
 
@@ -26,7 +26,7 @@ public class PostInteractionServiceImpl implements PostInteractionService {
     private final UserRepository userRepository;
 
     @Inject
-    public PostInteractionServiceImpl(PostReadingRepository postReadingRepository, UserRepository userRepository, BookmarkRepository bookmarkRepository) {
+    public PostUserInteractionServiceImpl(PostReadingRepository postReadingRepository, UserRepository userRepository, BookmarkRepository bookmarkRepository) {
         this.postReadingRepository = postReadingRepository;
         this.bookmarkRepository = bookmarkRepository;
         this.userRepository = userRepository;
@@ -55,14 +55,14 @@ public class PostInteractionServiceImpl implements PostInteractionService {
     }
 
     @Override
-    public PostInteractionDto findUsersByPostId(Long postId) {
+    public PostUserInteraction findUsersByPostId(Long postId) {
         Long userId = getCurrentUserId();
         if (userId == null) {
             return null;
         }
         PostReading postReading = postReadingRepository.findOneByUserIdAndPostId(userId, postId);
         Bookmark bookmark = bookmarkRepository.findOneByUserIdAndPostId(userId, postId);
-        PostInteractionDto dto = new PostInteractionDto(postId);
+        PostUserInteraction dto = new PostUserInteraction(postId);
         if (postReading != null) {
             dto.setLastRead(localDateTimeToInstant(postReading.getLastRead()));
         }

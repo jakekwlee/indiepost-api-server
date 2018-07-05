@@ -2,7 +2,7 @@ package com.indiepost.dto.post;
 
 import java.time.Instant;
 
-public class PostInteractionDto {
+public class PostUserInteraction {
 
     private final Long postId;
 
@@ -10,7 +10,7 @@ public class PostInteractionDto {
 
     private Instant bookmarked;
 
-    public PostInteractionDto(Long postId) {
+    public PostUserInteraction(Long postId) {
         this.postId = postId;
     }
 

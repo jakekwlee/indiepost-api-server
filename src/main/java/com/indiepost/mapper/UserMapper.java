@@ -1,6 +1,6 @@
 package com.indiepost.mapper;
 
-import com.indiepost.dto.UserDto;
+import com.indiepost.dto.user.UserDto;
 import com.indiepost.enums.Types;
 import com.indiepost.model.User;
 

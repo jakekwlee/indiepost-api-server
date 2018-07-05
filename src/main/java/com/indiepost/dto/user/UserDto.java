@@ -1,4 +1,4 @@
-package com.indiepost.dto;
+package com.indiepost.dto.user;
 
 import java.time.Instant;
 import java.util.ArrayList;

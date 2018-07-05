@@ -1,8 +1,8 @@
 package com.indiepost.service;
 
 import com.indiepost.NewIndiepostApplication;
-import com.indiepost.dto.UserDto;
-import com.indiepost.dto.UserProfileDto;
+import com.indiepost.dto.user.SyncAuthorizationResponse;
+import com.indiepost.dto.user.UserDto;
 import com.indiepost.model.User;
 import com.indiepost.utils.DateUtil;
 import org.junit.Assert;
@@ -58,10 +58,10 @@ public class UserServiceTests {
         dto.setGender("FEMALE");
         dto.setRoles(Arrays.asList("Administrator", "Editor", "User"));
 
-        UserProfileDto userProfileDto = userService.sync(dto);
-        UserDto resultDto = userProfileDto.getUser();
+        SyncAuthorizationResponse syncAuthorizationResponse = userService.syncAuthorization(dto);
+        UserDto resultDto = syncAuthorizationResponse.getUser();
 
-        assertThat(userProfileDto.isNewlyJoined()).isFalse();
+        assertThat(syncAuthorizationResponse.isNewlyJoined()).isFalse();
         assertThat(resultDto).isNotNull();
         assertThat(resultDto.getId()).isNotNull();
         assertThat(resultDto.getEmail()).isEqualTo(dto.getEmail());

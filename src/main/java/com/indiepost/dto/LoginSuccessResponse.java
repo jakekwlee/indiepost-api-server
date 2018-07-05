@@ -1,5 +1,7 @@
 package com.indiepost.dto;
 
+import com.indiepost.dto.user.UserDto;
+
 public class LoginSuccessResponse {
     private UserDto user;
 

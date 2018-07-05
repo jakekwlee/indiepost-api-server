@@ -2,7 +2,7 @@ package com.indiepost.service;
 
 import com.indiepost.dto.AdminInitResponseDto;
 import com.indiepost.dto.TagDto;
-import com.indiepost.dto.UserDto;
+import com.indiepost.dto.user.UserDto;
 import com.indiepost.enums.Types.UserRole;
 import com.indiepost.model.Tag;
 import com.indiepost.model.User;
@@ -64,7 +64,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public List<UserDto> getUserDtoList(UserRole role) {
-        List<User> authors = userService.findByRolesEnum(role, 1, 1000000, true);
+        List<User> authors = userService.findByRole(role, 1, 1000000, true);
         return userListToUserDtoList(authors);
     }
 

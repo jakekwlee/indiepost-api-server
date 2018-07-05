@@ -1,15 +1,15 @@
-package com.indiepost.dto;
+package com.indiepost.dto.user;
 
-public class UserProfileDto {
+public class SyncAuthorizationResponse {
 
     private boolean isNewlyJoined;
 
     private UserDto user;
 
-    public UserProfileDto() {
+    public SyncAuthorizationResponse() {
     }
 
-    public UserProfileDto(boolean isNewlyJoined, UserDto user) {
+    public SyncAuthorizationResponse(boolean isNewlyJoined, UserDto user) {
         this.isNewlyJoined = isNewlyJoined;
         this.user = user;
     }

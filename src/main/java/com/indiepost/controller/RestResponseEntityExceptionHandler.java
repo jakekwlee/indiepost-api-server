@@ -1,6 +1,7 @@
 package com.indiepost.controller;
 
 import com.indiepost.exceptions.ResourceNotFoundException;
+import com.indiepost.exceptions.UnauthorizedException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,5 +24,10 @@ public class RestResponseEntityExceptionHandler
     @ExceptionHandler(value = {ResourceNotFoundException.class})
     protected ResponseEntity<Object> handleResourceNotFound(RuntimeException ex, WebRequest request) {
         return handleExceptionInternal(ex, null, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
+    @ExceptionHandler(value = {UnauthorizedException.class})
+    protected ResponseEntity<Object> handleUnauthorized(RuntimeException ex, WebRequest request) {
+        return handleExceptionInternal(ex, null, new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
     }
 }

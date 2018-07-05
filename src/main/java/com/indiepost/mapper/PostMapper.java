@@ -3,7 +3,7 @@ package com.indiepost.mapper;
 import com.indiepost.dto.ImageSetDto;
 import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.PostDto;
-import com.indiepost.dto.post.PostInteractionDto;
+import com.indiepost.dto.post.PostUserInteraction;
 import com.indiepost.dto.post.RelatedPostsMatchingResult;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.*;
@@ -144,8 +144,8 @@ public class PostMapper {
         return postEs;
     }
 
-    public static PostInteractionDto toPostInteractionDto(PostReading postReading) {
-        PostInteractionDto dto = new PostInteractionDto(postReading.getPostId());
+    public static PostUserInteraction toPostInteractionDto(PostReading postReading) {
+        PostUserInteraction dto = new PostUserInteraction(postReading.getPostId());
         dto.setLastRead(localDateTimeToInstant(postReading.getLastRead()));
         return dto;
     }

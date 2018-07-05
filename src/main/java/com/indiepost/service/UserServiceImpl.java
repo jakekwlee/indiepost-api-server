@@ -1,10 +1,10 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.UserDto;
-import com.indiepost.dto.UserProfileDto;
-import com.indiepost.enums.Types.UserGender;
+import com.indiepost.dto.user.SyncAuthorizationResponse;
+import com.indiepost.dto.user.UserDto;
+import com.indiepost.dto.user.UserProfileDto;
 import com.indiepost.enums.Types.UserRole;
-import com.indiepost.enums.Types.UserState;
+import com.indiepost.exceptions.UnauthorizedException;
 import com.indiepost.model.Role;
 import com.indiepost.model.User;
 import com.indiepost.repository.RoleRepository;
@@ -44,126 +44,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void save(User user) {
-        userRepository.save(user);
-    }
-
-    @Override
-    public void update(User user) {
-        userRepository.save(user);
-    }
-
-    @Override
-    public void delete(User user) {
-        userRepository.delete(user);
-    }
-
-    @Override
-    public User findCurrentUser() {
-        return userRepository.findCurrentUser();
-    }
-
-    @Override
-    public User findById(Long id) {
-        return userRepository.findById(id);
-    }
-
-    @Override
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
-
-    @Override
-    public boolean isUsernameExist(String username) {
-        User user = userRepository.findByUsername(username);
-        return user != null;
-    }
-
-    @Override
-    public boolean isEmailExist(String email) {
-        User user = userRepository.findByEmail(email);
-        return user != null;
-    }
-
-    @Override
-    public List<User> findByState(UserState state, int page, int maxResults, boolean isDesc) {
-        Pageable pageable = getPageable(page, maxResults, isDesc);
-        return userRepository.findByState(state, pageable);
-    }
-
-    @Override
-    public List<User> findByGender(UserGender gender, int page, int maxResults, boolean isDesc) {
-        Pageable pageable = getPageable(page, maxResults, isDesc);
-        return userRepository.findByGender(gender, pageable);
-    }
-
-    @Override
-    public List<User> findByRolesEnum(UserRole role, int page, int maxResults, boolean isDesc) {
-        return new ArrayList<>(roleRepository.findByUserRole(role).getUsers());
-    }
-
-    @Override
-    public List<User> findAllUsers(int page, int maxResults, boolean isDesc) {
-        Pageable pageable = getPageable(page, maxResults, isDesc);
-        return userRepository.findAll(pageable);
-    }
-
-    @Override
-    public UserDto getCurrentUserDto() {
+    public void update(UserProfileDto userProfileDto) {
         User user = findCurrentUser();
-        return getUserDto(user);
-    }
-
-    @Override
-    public UserDto getUserDto(User user) {
-        if (user == null) {
-            return null;
+        if (user == null ||
+                !user.getId().equals(userProfileDto.getId()) ||
+                !user.getUsername().equals(userProfileDto.getUsername())) {
+            throw new UnauthorizedException();
         }
-        UserDto userDto = new UserDto();
-        BeanUtils.copyProperties(user, userDto);
-        List<String> roles = user.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toList());
-        userDto.setRoles(roles);
-        return userDto;
+        user.setDisplayName(userProfileDto.getDisplayName());
     }
 
     @Override
-    public UserDto getUserDto(Long id) {
-        User user = this.findById(id);
-        return getUserDto(user);
-    }
-
-    @Override
-    public UserDto getUserDto(String username) {
-        User user = this.findByUsername(username);
-        return getUserDto(user);
-    }
-
-    @Override
-    public List<UserDto> getDtoList(List<User> userList) {
-        return userList
-                .stream()
-                .map(user -> {
-                    UserDto userDto = new UserDto();
-                    BeanUtils.copyProperties(user, userDto);
-                    return userDto;
-                })
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<UserDto> getDtoList(int page, int maxResults, boolean isDesc) {
-        return getDtoList(this.findAllUsers(page, maxResults, isDesc));
-    }
-
-    @Override
-    public List<UserDto> getDtoList(UserRole role, int page, int maxResults, boolean isDesc) {
-        return getDtoList(this.findByRolesEnum(role, page, maxResults, isDesc));
-    }
-
-    @Override
-    public UserProfileDto sync(UserDto dto) {
+    public SyncAuthorizationResponse syncAuthorization(UserDto dto) {
         User user = findCurrentUser();
         LocalDateTime now = LocalDateTime.now();
 
@@ -174,12 +66,11 @@ public class UserServiceImpl implements UserService {
             user.setLastLogin(now);
             addRolesToUser(user, dto.getRoles());
             userRepository.save(user);
-            return new UserProfileDto(true, userToUserDto(user));
+            return new SyncAuthorizationResponse(true, userToUserDto(user));
         }
 
-        // TODO error 401
         if (!user.getUsername().equals(dto.getUsername())) {
-            return null;
+            throw new UnauthorizedException();
         }
 
         user.setLastLogin(now);
@@ -194,7 +85,43 @@ public class UserServiceImpl implements UserService {
             user.setUpdatedAt(now);
             userRepository.save(user);
         }
-        return new UserProfileDto(false, userToUserDto(user));
+        return new SyncAuthorizationResponse(false, userToUserDto(user));
+    }
+
+
+    @Override
+    public User findCurrentUser() {
+        return userRepository.findCurrentUser();
+    }
+
+    @Override
+    public List<User> findByRole(UserRole role, int page, int maxResults, boolean isDesc) {
+        return new ArrayList<>(roleRepository.findByUserRole(role).getUsers());
+    }
+
+    @Override
+    public List<User> findAllUsers(int page, int maxResults, boolean isDesc) {
+        Pageable pageable = getPageable(page, maxResults, isDesc);
+        return userRepository.findAll(pageable);
+    }
+
+    @Override
+    public UserDto getCurrentUserDto() {
+        User user = findCurrentUser();
+        return toUserDto(user);
+    }
+
+    private UserDto toUserDto(User user) {
+        if (user == null) {
+            return null;
+        }
+        UserDto userDto = new UserDto();
+        BeanUtils.copyProperties(user, userDto);
+        List<String> roles = user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.toList());
+        userDto.setRoles(roles);
+        return userDto;
     }
 
     private void addRolesToUser(User user, List<String> roles) {

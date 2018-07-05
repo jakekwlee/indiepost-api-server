@@ -2,6 +2,7 @@ package com.indiepost.dto;
 
 import com.indiepost.dto.analytics.BannerDto;
 import com.indiepost.dto.post.PostSummaryDto;
+import com.indiepost.dto.user.UserDto;
 import org.springframework.data.domain.Page;
 
 import java.util.List;

@@ -49,7 +49,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public String[] getMailReceivers(Types.UserRole role) {
-        List<User> users = userService.findByRolesEnum(role, 0, 100, false);
+        List<User> users = userService.findByRole(role, 0, 100, false);
         return users.stream()
                 .map(user -> formatAddress(user.getDisplayName(), user.getEmail()))
                 .collect(Collectors.toList()).toArray(new String[0]);

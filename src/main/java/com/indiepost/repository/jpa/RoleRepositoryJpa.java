@@ -16,7 +16,7 @@ import javax.persistence.PersistenceContext;
 @Repository
 public class RoleRepositoryJpa implements RoleRepository {
 
-    static final QRole r = QRole.role;
+    private static final QRole r = QRole.role;
 
     @PersistenceContext
     private EntityManager entityManager;
