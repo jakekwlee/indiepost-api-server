@@ -18,7 +18,7 @@ apply plugin: "io.spring.dependency-management"
 apply plugin: "idea"
 
 group = "com.indiepost"
-version = "2.2.9-SNAPSHOT"
+version = "2.2.10-SNAPSHOT"
 sourceCompatibility = 1.8
 
 springBoot {
@@ -103,6 +103,9 @@ dependencies {
     compile group: "org.jsoup", name: "jsoup", version: "1.10.3"
     compile group: "org.apache.commons", name: "commons-collections4", version: "4.1"
     compile group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-hibernate5"
+
+    // https://mvnrepository.com/artifact/com.auth0/auth0
+    compile group: 'com.auth0', name: 'auth0', version: '1.7.0'
     compile group: "com.auth0", name: "java-jwt", version: "3.3.0"
 
 

@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import javax.inject.Inject;
 import java.time.LocalDateTime;
@@ -62,6 +63,9 @@ public class UserServiceImpl implements UserService {
         // if user is newly joined
         if (user == null) {
             user = userDtoToUser(dto);
+            if (StringUtils.isEmpty(user.getDisplayName())) {
+                user.setDisplayName("NO NAME");
+            }
             user.setJoinedAt(now);
             user.setLastLogin(now);
             addRolesToUser(user, dto.getRoles());
