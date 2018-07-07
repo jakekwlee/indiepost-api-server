@@ -3,6 +3,7 @@ package com.indiepost.service;
 import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.user.SyncAuthorizationResponse;
 import com.indiepost.dto.user.UserDto;
+import com.indiepost.dto.user.UserProfileDto;
 import com.indiepost.model.User;
 import com.indiepost.utils.DateUtil;
 import org.junit.Assert;
@@ -61,7 +62,7 @@ public class UserServiceTests {
         SyncAuthorizationResponse syncAuthorizationResponse = userService.syncAuthorization(dto);
         UserDto resultDto = syncAuthorizationResponse.getUser();
 
-        assertThat(syncAuthorizationResponse.isNewlyJoined()).isFalse();
+        assertThat(syncAuthorizationResponse.isNewUser()).isFalse();
         assertThat(resultDto).isNotNull();
         assertThat(resultDto.getId()).isNotNull();
         assertThat(resultDto.getEmail()).isEqualTo(dto.getEmail());
@@ -73,5 +74,16 @@ public class UserServiceTests {
         assertThat(resultDto.getUpdatedAt()).isEqualTo(dto.getUpdatedAt());
 
         assertThat(resultDto.getRoles()).containsOnlyElementsOf(dto.getRoles());
+    }
+
+    @Test
+    @WithMockUser("oauth2|naver|23423834")
+    public void update_shouldWorkProperly() {
+        UserProfileDto dto = new UserProfileDto();
+        dto.setId(18L);
+        dto.setUsername("oauth2|naver|23423834");
+        dto.setEmail("bwv1050@gmail.com");
+        dto.setDisplayName("바보");
+        userService.update(dto);
     }
 }

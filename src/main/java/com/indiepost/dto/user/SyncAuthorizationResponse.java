@@ -2,24 +2,24 @@ package com.indiepost.dto.user;
 
 public class SyncAuthorizationResponse {
 
-    private boolean isNewlyJoined;
+    private boolean isNewUser;
 
     private UserDto user;
 
     public SyncAuthorizationResponse() {
     }
 
-    public SyncAuthorizationResponse(boolean isNewlyJoined, UserDto user) {
-        this.isNewlyJoined = isNewlyJoined;
+    public SyncAuthorizationResponse(boolean isNewUser, UserDto user) {
+        this.isNewUser = isNewUser;
         this.user = user;
     }
 
-    public boolean isNewlyJoined() {
-        return isNewlyJoined;
+    public boolean isNewUser() {
+        return isNewUser;
     }
 
-    public void setNewlyJoined(boolean newlyJoined) {
-        isNewlyJoined = newlyJoined;
+    public void setNewUser(boolean newUser) {
+        isNewUser = newUser;
     }
 
     public UserDto getUser() {

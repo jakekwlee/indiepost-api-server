@@ -18,7 +18,7 @@ apply plugin: "io.spring.dependency-management"
 apply plugin: "idea"
 
 group = "com.indiepost"
-version = "2.2.10-SNAPSHOT"
+version = "2.2.11-SNAPSHOT"
 sourceCompatibility = 1.8
 
 springBoot {
@@ -107,6 +107,9 @@ dependencies {
     // https://mvnrepository.com/artifact/com.auth0/auth0
     compile group: 'com.auth0', name: 'auth0', version: '1.7.0'
     compile group: "com.auth0", name: "java-jwt", version: "3.3.0"
+    // https://mvnrepository.com/artifact/com.mashape.unirest/unirest-java
+    compile group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.9'
+
 
 
     testCompile group: "org.assertj", name: "assertj-core", version: "3.8.0"
