@@ -27,43 +27,40 @@ references `indiepost`.`Users` (`id`)
 alter table `indiepost`.`Users`
   change column `username` `username` varchar(200) character set 'utf8' not null;
 
-drop table `indiepost`.`Bookmarks`;
+alter table `indiepost`.`Posts_Tags`
+  drop foreign key `FK1hep4uir8xq9jdybjva00ryy1`,
+  drop foreign key `FK3y8elo7f5epa2hdsn0ijgmrd4`,
+  drop foreign key `FK5r36la691aih5iar838pm2v46`,
+  drop foreign key `FKa9m9vkeg1q9kwn118qri9ns0e`;
+alter table `indiepost`.`Posts_Tags`
+  change column `post_id` `postId` bigint(20) not null,
+  change column `tag_id` `tagId` bigint(20) not null;
+alter table `indiepost`.`Posts_Tags`
+  add constraint `FK1hep4uir8xq9jdybjva00ryy1`
+foreign key (`tagId`)
+references `indiepost`.`Tags` (`id`),
+  add constraint `FK3y8elo7f5epa2hdsn0ijgmrd4`
+foreign key (`tagId`)
+references `indiepost`.`Tags` (`id`),
+  add constraint `FK5r36la691aih5iar838pm2v46`
+foreign key (`postId`)
+references `indiepost`.`Posts` (`id`),
+  add constraint `FKa9m9vkeg1q9kwn118qri9ns0e`
+foreign key (`postId`)
+references `indiepost`.`Posts` (`id`);
 
-ALTER TABLE `indiepost`.`Posts_Tags`
-DROP FOREIGN KEY `FK1hep4uir8xq9jdybjva00ryy1`,
-DROP FOREIGN KEY `FK3y8elo7f5epa2hdsn0ijgmrd4`,
-DROP FOREIGN KEY `FK5r36la691aih5iar838pm2v46`,
-DROP FOREIGN KEY `FKa9m9vkeg1q9kwn118qri9ns0e`;
-ALTER TABLE `indiepost`.`Posts_Tags`
-CHANGE COLUMN `post_id` `postId` BIGINT(20) NOT NULL ,
-CHANGE COLUMN `tag_id` `tagId` BIGINT(20) NOT NULL ;
-ALTER TABLE `indiepost`.`Posts_Tags`
-ADD CONSTRAINT `FK1hep4uir8xq9jdybjva00ryy1`
-  FOREIGN KEY (`tagId`)
-  REFERENCES `indiepost`.`Tags` (`id`),
-ADD CONSTRAINT `FK3y8elo7f5epa2hdsn0ijgmrd4`
-  FOREIGN KEY (`tagId`)
-  REFERENCES `indiepost`.`Tags` (`id`),
-ADD CONSTRAINT `FK5r36la691aih5iar838pm2v46`
-  FOREIGN KEY (`postId`)
-  REFERENCES `indiepost`.`Posts` (`id`),
-ADD CONSTRAINT `FKa9m9vkeg1q9kwn118qri9ns0e`
-  FOREIGN KEY (`postId`)
-  REFERENCES `indiepost`.`Posts` (`id`);
-
-ALTER TABLE `indiepost`.`Posts_Contributors`
-DROP FOREIGN KEY `FKfecvvbgnwyijynuyniex8oa5h`,
-DROP FOREIGN KEY `FKqvy8nltmf230ra8lf811xftfb`;
-ALTER TABLE `indiepost`.`Posts_Contributors`
-CHANGE COLUMN `contributor_id` `contributorId` BIGINT(20) NOT NULL ,
-CHANGE COLUMN `post_id` `postId` BIGINT(20) NOT NULL ;
-ALTER TABLE `indiepost`.`Posts_Contributors`
-ADD CONSTRAINT `FKfecvvbgnwyijynuyniex8oa5h`
-  FOREIGN KEY (`contributorId`)
-  REFERENCES `indiepost`.`Contributors` (`id`),
-ADD CONSTRAINT `FKqvy8nltmf230ra8lf811xftfb`
-  FOREIGN KEY (`postId`)
-  REFERENCES `indiepost`.`Posts` (`id`);
-
+alter table `indiepost`.`Posts_Contributors`
+  drop foreign key `FKfecvvbgnwyijynuyniex8oa5h`,
+  drop foreign key `FKqvy8nltmf230ra8lf811xftfb`;
+alter table `indiepost`.`Posts_Contributors`
+  change column `contributor_id` `contributorId` bigint(20) not null,
+  change column `post_id` `postId` bigint(20) not null;
+alter table `indiepost`.`Posts_Contributors`
+  add constraint `FKfecvvbgnwyijynuyniex8oa5h`
+foreign key (`contributorId`)
+references `indiepost`.`Contributors` (`id`),
+  add constraint `FKqvy8nltmf230ra8lf811xftfb`
+foreign key (`postId`)
+references `indiepost`.`Posts` (`id`);
 
 
