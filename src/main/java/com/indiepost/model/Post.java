@@ -64,6 +64,9 @@ public class Post implements Serializable {
     @Column(nullable = false)
     private LocalDateTime publishedAt;
 
+    @Column(nullable = false)
+    private boolean showLastUpdated = false;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "titleImageId")
     private ImageSet titleImage;
@@ -383,5 +386,13 @@ public class Post implements Serializable {
 
     public void setPostBookmarks(List<Bookmark> postBookmarks) {
         this.postBookmarks = postBookmarks;
+    }
+
+    public boolean isShowLastUpdated() {
+        return showLastUpdated;
+    }
+
+    public void setShowLastUpdated(boolean showLastUpdated) {
+        this.showLastUpdated = showLastUpdated;
     }
 }

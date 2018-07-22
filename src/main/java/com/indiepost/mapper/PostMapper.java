@@ -35,6 +35,7 @@ public class PostMapper {
         destPost.setCreatedAt(srcPost.getCreatedAt());
         destPost.setPublishedAt(srcPost.getPublishedAt());
         destPost.setModifiedAt(srcPost.getModifiedAt());
+        destPost.setShowLastUpdated(srcPost.isShowLastUpdated());
         destPost.setSplash(srcPost.isSplash());
         destPost.setFeatured(srcPost.isFeatured());
         destPost.setPicked(srcPost.isPicked());
@@ -63,6 +64,7 @@ public class PostMapper {
         post.setSplash(requestDto.isSplash());
         post.setFeatured(requestDto.isFeatured());
         post.setPicked(requestDto.isPicked());
+        post.setShowLastUpdated(requestDto.isShowLastUpdated());
     }
 
     public static void addTagsToPost(Post post, List<Tag> tags) {
@@ -91,6 +93,7 @@ public class PostMapper {
         PostDto postDto = new PostDto();
         BeanUtils.copyProperties(post, postDto);
         postDto.setPublishedAt(localDateTimeToInstant(post.getPublishedAt()));
+        postDto.setModifiedAt(localDateTimeToInstant(post.getModifiedAt()));
         postDto.setCategoryName(post.getCategory().getName());
         RelatedPostsMatchingResult result = getRelatedPostIdsFromPostContent(post.getContent());
         if (result != null && result.getIds().size() > 0) {
@@ -112,6 +115,7 @@ public class PostMapper {
         post.setSplash(dto.isSplash());
         post.setFeatured(dto.isFeatured());
         post.setPicked(dto.isPicked());
+        post.setShowLastUpdated(dto.isShowLastUpdated());
 
         post.setTitleImageId(dto.getTitleImageId());
         post.setCategoryId(dto.getCategoryId());

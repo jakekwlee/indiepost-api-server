@@ -35,6 +35,8 @@ public class AdminPostRequestDto {
 
     private boolean splash;
 
+    private boolean showLastUpdated;
+
     private String categoryName;
 
     private List<String> tags = new ArrayList<>();
@@ -167,5 +169,13 @@ public class AdminPostRequestDto {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public boolean isShowLastUpdated() {
+        return showLastUpdated;
+    }
+
+    public void setShowLastUpdated(boolean showLastUpdated) {
+        this.showLastUpdated = showLastUpdated;
     }
 }

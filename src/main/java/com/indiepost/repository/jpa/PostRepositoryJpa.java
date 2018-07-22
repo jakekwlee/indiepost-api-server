@@ -291,7 +291,7 @@ public class PostRepositoryJpa implements PostRepository {
     private JPAQuery addProjections(JPAQuery query) {
         return query.select(
                 post.id, post.categoryId, post.category.name, post.category.slug, post.splash, post.picked, post.featured,
-                post.displayName, post.title, post.publishedAt, post.excerpt, post.titleImage);
+                post.displayName, post.title, post.publishedAt, post.modifiedAt, post.excerpt, post.titleImage, post.showLastUpdated);
     }
 
 
@@ -303,10 +303,12 @@ public class PostRepositoryJpa implements PostRepository {
             dto.setTitle(row.get(post.title));
             dto.setDisplayName(row.get(post.displayName));
             dto.setPublishedAt(localDateTimeToInstant(row.get(post.publishedAt)));
+            dto.setModifiedAt(localDateTimeToInstant(row.get(post.modifiedAt)));
             dto.setExcerpt(row.get(post.excerpt));
             dto.setSplash(row.get(post.splash));
             dto.setFeatured(row.get(post.featured));
             dto.setPicked(row.get(post.picked));
+            dto.setShowLastUpdated(row.get(post.showLastUpdated));
             dto.setCategoryName(row.get(post.category.slug));
             ImageSet titleImage = row.get(post.titleImage);
             if (titleImage != null) {

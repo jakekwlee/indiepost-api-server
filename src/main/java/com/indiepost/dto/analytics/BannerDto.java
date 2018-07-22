@@ -19,6 +19,8 @@ public class BannerDto {
 
     private boolean cover;
 
+    private String target;
+
     private int priority;
 
     public String getTitle() {
@@ -99,5 +101,13 @@ public class BannerDto {
 
     public void setInternalUrl(String internalUrl) {
         this.internalUrl = internalUrl;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
     }
 }

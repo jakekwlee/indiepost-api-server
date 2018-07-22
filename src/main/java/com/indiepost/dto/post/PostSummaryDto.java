@@ -30,6 +30,10 @@ public class PostSummaryDto implements Serializable {
 
     private Instant publishedAt;
 
+    private Instant modifiedAt;
+
+    private boolean showLastUpdated;
+
     private ImageSet titleImage;
 
     private PostStatus status;
@@ -45,6 +49,22 @@ public class PostSummaryDto implements Serializable {
     private boolean interactionFetched;
 
     private Highlight highlight;
+
+    public Instant getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(Instant modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
+
+    public boolean isShowLastUpdated() {
+        return showLastUpdated;
+    }
+
+    public void setShowLastUpdated(boolean showLastUpdated) {
+        this.showLastUpdated = showLastUpdated;
+    }
 
     public Highlight getHighlight() {
         return highlight;

@@ -70,4 +70,8 @@ public interface Types {
     enum BannerType {
         FullWidth, Grid, SidePanel,
     }
+
+    enum BannerTarget {
+        All, Users, NonUsers,
+    }
 }

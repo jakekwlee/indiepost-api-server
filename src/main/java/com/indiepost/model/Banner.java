@@ -1,5 +1,6 @@
 package com.indiepost.model;
 
+import com.indiepost.enums.Types.BannerTarget;
 import com.indiepost.enums.Types.BannerType;
 import com.indiepost.model.analytics.Link;
 
@@ -45,6 +46,10 @@ public class Banner {
 
     @Column(name = "linkId", insertable = false, updatable = false)
     private Long linkId;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private BannerTarget target = BannerTarget.All;
 
     public String getTitle() {
         return title;
@@ -132,5 +137,13 @@ public class Banner {
 
     public void setInternalUrl(String internalUrl) {
         this.internalUrl = internalUrl;
+    }
+
+    public BannerTarget getTarget() {
+        return target;
+    }
+
+    public void setTarget(BannerTarget target) {
+        this.target = target;
     }
 }

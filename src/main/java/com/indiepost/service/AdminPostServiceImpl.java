@@ -405,6 +405,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         responseDto.setPicked(post.isPicked());
         responseDto.setFeatured(post.isFeatured());
         responseDto.setSplash(post.isSplash());
+        responseDto.setShowLastUpdated(post.isShowLastUpdated());
 
         if (post.getAuthor() != null) {
             responseDto.setAuthorName(post.getAuthor().getDisplayName());

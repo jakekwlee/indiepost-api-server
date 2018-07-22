@@ -156,6 +156,7 @@ public class CampaignServiceImpl implements CampaignService {
             dto.setInternalUrl(banner.getInternalUrl());
             dto.setCover(banner.isCover());
             dto.setPriority(banner.getPriority());
+            dto.setTarget(banner.getTarget().toString());
             Link link = banner.getLink();
             if (link != null) {
                 dto.setLinkTo(linkUriPath + link.getUid());
