@@ -93,6 +93,7 @@ public class SpringSecurityConfigurer extends WebSecurityConfigurerAdapter {
         allowedOrigins.add("http://www.indiepost.co.kr");
 
         if (activeProfile.equals("dev")) {
+            allowedOrigins.add("http://192.168.35.204");
             allowedOrigins.add("http://localhost");
         }
 
