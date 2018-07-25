@@ -67,7 +67,7 @@ public class Post implements Serializable {
     @Column(nullable = false)
     private boolean showLastUpdated = false;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "titleImageId")
     private ImageSet titleImage;
 
@@ -112,7 +112,7 @@ public class Post implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @OrderBy("priority asc")
+    @OrderBy("priority")
     private List<PostContributor> postContributors = new ArrayList<>();
 
     @OneToMany(
@@ -120,14 +120,22 @@ public class Post implements Serializable {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<PostReading> postReadings;
+    private List<PostReading> postReadings = new ArrayList<>();
 
     @OneToMany(
             mappedBy = "post",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<Bookmark> postBookmarks;
+    private List<Bookmark> postBookmarks = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "post",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @OrderBy("priority")
+    private List<PostPost> postPosts = new ArrayList<>();
 
     public List<PostReading> getPostReadings() {
         return postReadings;
@@ -290,6 +298,38 @@ public class Post implements Serializable {
 
     public void clearContributors() {
         this.postContributors.clear();
+    }
+
+    public void addRelatedPost(Post post, int priority) {
+        PostPost postPost =
+                new PostPost(this, post, priority);
+        this.postPosts.add(postPost);
+    }
+
+    public void removeRelatedPost(Post post) {
+        for (PostPost postPost : postPosts) {
+            if (postPost.getPost().equals(this) &&
+                    postPost.getRelatedPost().equals(post)) {
+                postPosts.remove(postPost);
+                postPost.getRelatedPost().getPostPosts().remove(this);
+                postPost.setPost(null);
+                postPost.setRelatedPost(null);
+            }
+        }
+    }
+
+    public List<Post> getPostPosts() {
+        return postPosts.stream()
+                .map(postPost -> postPost.getRelatedPost())
+                .collect(Collectors.toList());
+    }
+
+    public void setPostPosts(List<PostPost> postPosts) {
+        this.postPosts = postPosts;
+    }
+
+    public void clearRelatedPosts() {
+        this.postPosts.clear();
     }
 
     public LocalDateTime getCreatedAt() {

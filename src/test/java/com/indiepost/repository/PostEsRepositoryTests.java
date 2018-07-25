@@ -112,4 +112,12 @@ public class PostEsRepositoryTests {
         assertThat(count).isNotZero().isEqualTo(posts.size());
         printToJson(count);
     }
+
+    @Test
+    public void moreLikeThis_shouldReturnRelatedPostList() {
+        Long postId = 8163L;
+        int size = 4;
+        List<Long> ids = postEsRepository.moreLikeThis(postId, Types.PostStatus.PUBLISH, PageRequest.of(0, size));
+        assertThat(ids).hasSize(size);
+    }
 }

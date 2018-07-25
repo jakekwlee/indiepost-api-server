@@ -31,7 +31,6 @@ public class AdminPostResponseDto extends AdminPostRequestDto {
 
     private String editorName;
 
-
     public String getAuthorName() {
         return authorName;
     }

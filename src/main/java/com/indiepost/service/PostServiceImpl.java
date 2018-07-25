@@ -219,6 +219,27 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Page<PostSummaryDto> moreLikeThis(Long id, Pageable pageable) {
+        Pageable pageRequest = getPageRequest(pageable);
+        List<Long> ids = postEsRepository.moreLikeThis(id, PostStatus.PUBLISH, pageRequest);
+        if (ids.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), pageRequest, 0);
+        }
+        int total = ids.size();
+        List<PostSummaryDto> posts = postRepository.findByIds(ids);
+        return new PageImpl<>(posts, pageRequest, total);
+    }
+
+    @Override
+    public Page<PostSummaryDto> findRelatedPostsById(Long id, Pageable pageable) {
+        Page<PostSummaryDto> posts = postRepository.findRelatedPostsById(id);
+        if (posts.getContent().isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
+        }
+        return posts;
+    }
+
+    @Override
     public List<PostSummaryDto> findPickedPosts() {
         PostQuery postQuery = new PostQuery.Builder(PostStatus.PUBLISH)
                 .picked(true)

@@ -15,6 +15,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -161,6 +162,31 @@ public class PostRepositoryJpa implements PostRepository {
     public Page<PostSummaryDto> findByStatus(PostStatus status, Pageable pageable) {
         PostQuery query = new PostQuery.Builder(status).build();
         return this.query(query, pageable);
+    }
+
+    @Override
+    public Page<PostSummaryDto> findRelatedPostsById(Long id) {
+        QCategory ct = QCategory.category;
+        QImageSet im = QImageSet.imageSet;
+        QPostTag pt = QPostTag.postTag;
+        QTag t = QTag.tag;
+        QPostPost pp = QPostPost.postPost;
+
+        JPAQuery query = getQueryFactory()
+                .selectFrom(pp);
+        addProjections(query)
+                .innerJoin(pp.relatedPost, post)
+                .innerJoin(pp.relatedPost.category, ct)
+                .innerJoin(pp.relatedPost.postTags, pt)
+                .innerJoin(pt.tag, t)
+                .leftJoin(pp.relatedPost.titleImage, im)
+                .where(pp.postId.eq(id)
+                        .and(pp.relatedPost.status.eq(PostStatus.PUBLISH)))
+                .orderBy(pp.priority.asc())
+                .groupBy(pp.relatedPostId);
+        List<Tuple> result = query.fetch();
+        List<PostSummaryDto> dtoList = toDtoList(result);
+        return new PageImpl<>(dtoList, PageRequest.of(0, 4), dtoList.size());
     }
 
     @Override

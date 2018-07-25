@@ -1,6 +1,6 @@
 package com.indiepost.controller.admin;
 
-import com.indiepost.dto.AdminInitResponseDto;
+import com.indiepost.dto.AdminInitialResponse;
 import com.indiepost.service.AdminService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,7 +23,7 @@ public class AdminInitialDataController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public AdminInitResponseDto getInitialResponse() {
+    public AdminInitialResponse getInitialResponse() {
         return adminService.buildInitialResponse();
     }
 }

@@ -1,4 +1,4 @@
-package testHelper;
+package com.indiepost.testHelper;
 
 import com.indiepost.dto.analytics.PeriodDto;
 import com.indiepost.dto.analytics.TimeDomainStat;

@@ -39,6 +39,8 @@ public class AdminPostRequestDto {
 
     private String categoryName;
 
+    private List<Long> relatedPostIds = new ArrayList<>();
+
     private List<String> tags = new ArrayList<>();
 
     private List<String> contributors = new ArrayList<>();
@@ -177,5 +179,13 @@ public class AdminPostRequestDto {
 
     public void setShowLastUpdated(boolean showLastUpdated) {
         this.showLastUpdated = showLastUpdated;
+    }
+
+    public List<Long> getRelatedPostIds() {
+        return relatedPostIds;
+    }
+
+    public void setRelatedPostIds(List<Long> relatedPostIds) {
+        this.relatedPostIds = relatedPostIds;
     }
 }

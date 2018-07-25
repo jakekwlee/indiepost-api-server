@@ -17,16 +17,6 @@ public class PostDto extends PostSummaryDto implements Serializable {
 
     private List<ContributorDto> contributors = new ArrayList<>();
 
-    private List<Long> relatedPostIds = new ArrayList<>();
-
-    public List<Long> getRelatedPostIds() {
-        return relatedPostIds;
-    }
-
-    public void setRelatedPostIds(List<Long> relatedPostIds) {
-        this.relatedPostIds = relatedPostIds;
-    }
-
     public String getContent() {
         return content;
     }

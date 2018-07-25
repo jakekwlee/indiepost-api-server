@@ -4,11 +4,11 @@ import com.indiepost.dto.PostImageSetDto;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.PostSummaryDto;
-import com.indiepost.dto.post.RelatedPostsRequestDto;
 import com.indiepost.enums.Types;
 import com.indiepost.service.ImageService;
 import com.indiepost.service.PostService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
@@ -70,9 +70,15 @@ public class PostController {
         return postService.fullTextSearch(searchText, pageable);
     }
 
-    @PostMapping("/related")
-    public List<PostSummaryDto> getPostByIds(@RequestBody RelatedPostsRequestDto dto) {
-        return postService.findByIds(dto.getPostIds());
+    @GetMapping("/related/{id}")
+    public Page<PostSummaryDto> getRelatedPosts(@PathVariable Long id, Pageable pageable) {
+        // ignore pageable for now...
+        return postService.findRelatedPostsById(id, PageRequest.of(0, 4));
+    }
+
+    @GetMapping("/more-like-this/{id}")
+    public Page<PostSummaryDto> getMoreLikeThis(@PathVariable Long id, Pageable pageable) {
+        return postService.moreLikeThis(id, PageRequest.of(0, 8));
     }
 
     @GetMapping(value = "/images/{id}")

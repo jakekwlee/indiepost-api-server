@@ -1,5 +1,6 @@
 package com.indiepost.dto;
 
+import com.indiepost.dto.post.Title;
 import com.indiepost.dto.user.UserDto;
 
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 /**
  * Created by jake on 10/8/16.
  */
-public class AdminInitResponseDto {
+public class AdminInitialResponse {
 
     private List<UserDto> authors;
 
@@ -20,6 +21,8 @@ public class AdminInitResponseDto {
     private List<CategoryDto> categories;
 
     private List<ContributorDto> contributors;
+
+    private List<Title> postTitles;
 
     public List<TagDto> getTags() {
         return tags;
@@ -67,5 +70,13 @@ public class AdminInitResponseDto {
 
     public void setContributors(List<ContributorDto> contributors) {
         this.contributors = contributors;
+    }
+
+    public List<Title> getPostTitles() {
+        return postTitles;
+    }
+
+    public void setPostTitles(List<Title> postTitles) {
+        this.postTitles = postTitles;
     }
 }

@@ -3,10 +3,7 @@ package com.indiepost.service;
 import com.amazonaws.services.pinpoint.model.BadRequestException;
 import com.indiepost.dto.Highlight;
 import com.indiepost.dto.ImageSetDto;
-import com.indiepost.dto.post.AdminPostRequestDto;
-import com.indiepost.dto.post.AdminPostResponseDto;
-import com.indiepost.dto.post.AdminPostSummaryDto;
-import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.*;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.Contributor;
 import com.indiepost.model.Post;
@@ -77,7 +74,6 @@ public class AdminPostServiceImpl implements AdminPostService {
             post.setAuthor(post.getAuthor());
         }
 
-
         copyDtoToPost(dto, post);
 
         if (dto.getTitleImageId() != null) {
@@ -99,6 +95,7 @@ public class AdminPostServiceImpl implements AdminPostService {
 
         addContributors(post, dto.getContributors());
         addTags(post, dto.getTags());
+        addRelatedPosts(post, dto.getRelatedPostIds());
 
         return postId;
     }
@@ -167,6 +164,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         }
         addContributors(post, dto.getContributors());
         addTags(post, dto.getTags());
+        addRelatedPosts(post, dto.getRelatedPostIds());
 
         User currentUser = userService.findCurrentUser();
         post.setEditor(currentUser);
@@ -191,6 +189,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         }
         addContributors(post, dto.getContributors());
         addTags(post, dto.getTags());
+        addRelatedPosts(post, dto.getRelatedPostIds());
 
         post.setModifiedAt(LocalDateTime.now());
         post.setEditor(currentUser);
@@ -290,6 +289,11 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     @Override
+    public List<Title> getAllTitles() {
+        return adminPostRepository.getTitleList();
+    }
+
+    @Override
     public Long count() {
         return adminPostRepository.count();
     }
@@ -352,6 +356,17 @@ public class AdminPostServiceImpl implements AdminPostService {
         return isDesc ?
                 PageRequest.of(page, maxResults, Sort.Direction.DESC, "publishedAt") :
                 PageRequest.of(page, maxResults, Sort.Direction.ASC, "publishedAt");
+    }
+
+    private void addRelatedPosts(Post post, List<Long> relatedPostIds) {
+        if (relatedPostIds != null) {
+            List<Post> relatedPosts = adminPostRepository.findByIds(relatedPostIds);
+            post.clearRelatedPosts();
+            int i = 0;
+            for (Post relatedPost : relatedPosts) {
+                post.addRelatedPost(relatedPost, i++);
+            }
+        }
     }
 
     private void addContributors(Post post, List<String> contributorList) {
@@ -435,6 +450,12 @@ public class AdminPostServiceImpl implements AdminPostService {
                     .map(contributor -> contributor.getFullName())
                     .collect(Collectors.toList());
             responseDto.setContributors(contributors);
+        }
+        if (!post.getPostPosts().isEmpty()) {
+            List<Long> ids = post.getPostPosts().stream()
+                    .map(p -> p.getId())
+                    .collect(Collectors.toList());
+            responseDto.setRelatedPostIds(ids);
         }
         return responseDto;
     }

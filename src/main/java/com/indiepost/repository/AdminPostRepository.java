@@ -2,6 +2,7 @@ package com.indiepost.repository;
 
 import com.indiepost.dto.post.AdminPostSummaryDto;
 import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.Title;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Post;
 import com.indiepost.model.User;
@@ -31,11 +32,17 @@ public interface AdminPostRepository {
 
     List<AdminPostSummaryDto> find(User currentUser, Types.PostStatus status, Pageable pageable);
 
+    List<Post> findAll();
+
+    List<Post> findByIds(List<Long> ids);
+
     Page<AdminPostSummaryDto> findText(String text, User currentUser, Types.PostStatus status, Pageable pageable);
 
     List<Long> findIds(User currentUser, Types.PostStatus status);
 
     List<String> findAllDisplayNames();
+
+    List<Title> getTitleList();
 
     Long count();
 
@@ -48,4 +55,5 @@ public interface AdminPostRepository {
     void disableSplashPosts();
 
     void disableFeaturedPosts();
+
 }

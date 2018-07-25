@@ -4,9 +4,7 @@ import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.Highlight;
 import com.indiepost.dto.Timeline;
 import com.indiepost.dto.TimelineRequest;
-import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostSummaryDto;
-import com.indiepost.utils.DomUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,8 +19,8 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.indiepost.testHelper.JsonSerializer.printToJson;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static testHelper.JsonSerializer.printToJson;
 
 /**
  * Created by jake on 17. 4. 23.
@@ -63,7 +61,6 @@ public class PostServiceTests {
         Page<PostSummaryDto> page = postService.fullTextSearch(text, PageRequest.of(0, 5));
         List<PostSummaryDto> posts = page.getContent();
         assertThat(posts).isNotNull().hasSize(5);
-        assertThat(page.getTotalElements()).isEqualTo(5);
         for (PostSummaryDto dto : posts) {
             Highlight highlight = dto.getHighlight();
             String titleAndExcerpt = highlight.getTitle() + highlight.getExcerpt();
@@ -83,15 +80,6 @@ public class PostServiceTests {
     }
 
     @Test
-    public void findById_shouldReturnPostDtoWithRelatedPostsProperly() {
-        PostDto post = postService.findOne(908L);
-        assertThat(post).isNotNull();
-        assertThat(post.getRelatedPostIds()).isNotNull();
-        assertThat(post.getRelatedPostIds().size()).isGreaterThan(1);
-        assertThat(DomUtil.relatedPostsPattern.matcher(post.getContent()).find()).isFalse();
-    }
-
-    @Test
     @WithMockUser("auth0|5b213cd8064de34cde981b47")
     public void findReadingHistory_shouldReturnResultProperly() {
         TimelineRequest request = new TimelineRequest();
@@ -103,5 +91,25 @@ public class PostServiceTests {
         assertThat(result.getContent().size()).isEqualTo(result.getNumberOfElements());
         assertThat(result.getContent().size()).isEqualTo(35);
         System.out.println("Running Time: " + ((endTime - startTime) / 1000000) + "milliseconds");
+    }
+
+    @Test
+    @WithMockUser("auth0|5b213cd8064de34cde981b47")
+    public void moreLikeThis_shouldReturnRelatedPostsProperly() {
+        Long id = 7983L;
+        int size = 4;
+        Page<PostSummaryDto> result = postService.moreLikeThis(id, PageRequest.of(0, 4));
+        assertThat(result.getContent().size()).isEqualTo(size);
+        printToJson(result);
+    }
+
+    @Test
+    @WithMockUser("auth0|5b213cd8064de34cde981b47")
+    public void findRelatedPostsById_shouldReturnRelatedPostsProperly() {
+        Long id = 7983L;
+        int size = 4;
+        Page<PostSummaryDto> result = postService.findRelatedPostsById(id, PageRequest.of(0, 4));
+        assertThat(result.getContent().size()).isEqualTo(size);
+        printToJson(result);
     }
 }

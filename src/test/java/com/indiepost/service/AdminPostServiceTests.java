@@ -4,6 +4,7 @@ import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.AdminPostResponseDto;
 import com.indiepost.dto.post.AdminPostSummaryDto;
+import com.indiepost.dto.post.Title;
 import com.indiepost.enums.Types;
 import org.junit.After;
 import org.junit.Before;
@@ -97,5 +98,12 @@ public class AdminPostServiceTests {
                 service.findText("인스타그램", Types.PostStatus.PUBLISH, PageRequest.of(0, 500));
         assertThat(page.getContent()).hasSize(18);
 
+    }
+
+    @Test
+    @WithMockUser("auth0|5b213cd8064de34cde981b47")
+    public void getAllTitles_shouldWorkProperly() {
+        List<Title> titles = service.getAllTitles();
+        assertThat(titles).isNotNull().hasAtLeastOneElementOfType(Title.class);
     }
 }

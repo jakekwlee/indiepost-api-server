@@ -22,8 +22,8 @@ import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -159,7 +159,7 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
             log.error(String.format("Elasticsearch: Failed search for: <%s>", text));
             log.error(e.getMessage(), e);
         }
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 
     @Override
@@ -183,7 +183,31 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
             log.error(String.format("Elasticsearch: Failed search for: <%s>", text));
             log.error(e.getMessage(), e);
         }
-        return new ArrayList<>();
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Long> moreLikeThis(Long postId, Types.PostStatus status, Pageable pageable) {
+        try {
+            String stringifiedJSONQuery = buildMoreLikeThis(postId, status, pageable);
+            Search search = new Search.Builder(stringifiedJSONQuery)
+                    .addIndex(INDEX_NAME)
+                    .addType(TYPE_NAME)
+                    .build();
+            SearchResult result = getClient().execute(search);
+            if (result.isSucceeded()) {
+                List<SearchResult.Hit<PostEs, Void>> hits = result.getHits(PostEs.class);
+                return hits.stream()
+                        .map(hit -> Long.parseLong(hit.id))
+                        .collect(Collectors.toList());
+            }
+            log.error(String.format("Elasticsearch: Failed 'more like this' query for: <%s>", postId));
+            log.error(result.getJsonString());
+        } catch (IOException e) {
+            log.error(String.format("Elasticsearch: Failed 'more like this' query for: <%s>", postId));
+            log.error(e.getMessage(), e);
+        }
+        return Collections.emptyList();
     }
 
     @Override
@@ -311,7 +335,7 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
         Bulk.Builder bulkBuilder = new Bulk.Builder()
                 .defaultIndex(INDEX_NAME);
         try {
-            List<Delete> deletes = new ArrayList<>();
+            List<Delete> deletes = Collections.emptyList();
             for (Long id : ids) {
                 deletes.add(prepareDelete(id));
             }
@@ -619,6 +643,77 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
                                 .put("modifiedUserName", new JSONObject())
                         )
                 )
+                .toString();
+    }
+
+    private String buildMoreLikeThis(Long postId, Types.PostStatus status, Pageable pageable) {
+        JSONArray filterContext = getFilterContext(status);
+
+        return new JSONObject()
+                .put("query", new JSONObject()
+                        .put("bool", new JSONObject()
+                                .put("filter", filterContext)
+                                .put("should", new JSONArray()
+                                        .put(new JSONObject()
+                                                .put("more_like_this",
+                                                        new JSONObject()
+                                                                .put("fields", new JSONArray()
+                                                                        .put("tags")
+                                                                )
+                                                                .put("like", new JSONArray()
+                                                                        .put(new JSONObject()
+                                                                                .put("_index", INDEX_NAME)
+                                                                                .put("_type", TYPE_NAME)
+                                                                                .put("_id", postId)
+                                                                        )
+                                                                )
+                                                                .put("min_term_freq", 1)
+                                                                .put("boost", 3)
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("more_like_this",
+                                                        new JSONObject()
+                                                                .put("fields", new JSONArray()
+                                                                        .put("contributors")
+                                                                )
+                                                                .put("like", new JSONArray()
+                                                                        .put(new JSONObject()
+                                                                                .put("_index", INDEX_NAME)
+                                                                                .put("_type", TYPE_NAME)
+                                                                                .put("_id", postId)
+                                                                        )
+                                                                )
+                                                                .put("min_term_freq", 1)
+                                                                .put("boost", 2)
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("more_like_this",
+                                                        new JSONObject()
+                                                                .put("fields", new JSONArray()
+                                                                        .put("title")
+                                                                        .put("content")
+                                                                        .put("excerpt")
+                                                                )
+                                                                .put("like", new JSONArray()
+                                                                        .put(new JSONObject()
+                                                                                .put("_index", INDEX_NAME)
+                                                                                .put("_type", TYPE_NAME)
+                                                                                .put("_id", postId)
+                                                                        )
+                                                                )
+                                                                .put("min_term_freq", 1)
+                                                )
+                                        )
+                                )
+                        )
+                )
+                .put("_source", new JSONArray()
+                        .put("_id")
+                )
+                .put("from", pageable.getOffset())
+                .put("size", pageable.getPageSize())
                 .toString();
     }
 

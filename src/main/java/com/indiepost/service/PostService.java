@@ -34,6 +34,10 @@ public interface PostService {
 
     Page<PostSummaryDto> fullTextSearch(String text, Pageable pageable);
 
+    Page<PostSummaryDto> moreLikeThis(Long id, Pageable pageable);
+
+    Page<PostSummaryDto> findRelatedPostsById(Long id, Pageable pageable);
+
     Timeline<PostSummaryDto> findReadingHistory(TimelineRequest request);
 
     Timeline<PostSummaryDto> findBookmarks(TimelineRequest request);

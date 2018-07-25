@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.AdminInitResponseDto;
+import com.indiepost.dto.AdminInitialResponse;
 import com.indiepost.dto.TagDto;
 import com.indiepost.dto.user.UserDto;
 import com.indiepost.enums.Types.UserRole;
@@ -45,21 +45,22 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public AdminInitResponseDto buildInitialResponse() {
+    public AdminInitialResponse buildInitialResponse() {
         User currentUser = userService.findCurrentUser();
-        AdminInitResponseDto adminInitResponseDto = new AdminInitResponseDto();
-        adminInitResponseDto.setCurrentUser(userToUserDto(currentUser));
-        adminInitResponseDto.setAuthors(getUserDtoList(UserRole.Author));
-        adminInitResponseDto.setCategories(categoryService.getDtoList());
-        adminInitResponseDto.setAuthorNames(adminPostService.findAllBylineNames());
+        AdminInitialResponse adminInitialResponse = new AdminInitialResponse();
+        adminInitialResponse.setCurrentUser(userToUserDto(currentUser));
+        adminInitialResponse.setAuthors(getUserDtoList(UserRole.Author));
+        adminInitialResponse.setCategories(categoryService.getDtoList());
+        adminInitialResponse.setAuthorNames(adminPostService.findAllBylineNames());
         // TODO for test
-        adminInitResponseDto.setContributors(contributorService.find(PageRequest.of(0, 1000)).getContent());
+        adminInitialResponse.setContributors(contributorService.find(PageRequest.of(0, 1000)).getContent());
+        adminInitialResponse.setPostTitles(adminPostService.getAllTitles());
         List<Tag> tagList = tagService.findAll();
         List<TagDto> tags = tagList.stream()
                 .map(tag -> new TagDto(tag.getId(), tag.getName()))
                 .collect(Collectors.toList());
-        adminInitResponseDto.setTags(tags);
-        return adminInitResponseDto;
+        adminInitialResponse.setTags(tags);
+        return adminInitialResponse;
     }
 
     @Override

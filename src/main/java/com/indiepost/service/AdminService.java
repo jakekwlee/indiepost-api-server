@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.dto.AdminInitResponseDto;
+import com.indiepost.dto.AdminInitialResponse;
 import com.indiepost.dto.user.UserDto;
 import com.indiepost.enums.Types.UserRole;
 
@@ -17,5 +17,5 @@ public interface AdminService {
 
     UserDto getCurrentUserDto();
 
-    AdminInitResponseDto buildInitialResponse();
+    AdminInitialResponse buildInitialResponse();
 }

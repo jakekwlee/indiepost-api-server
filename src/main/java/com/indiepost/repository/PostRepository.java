@@ -38,7 +38,10 @@ public interface PostRepository {
 
     Page<PostSummaryDto> findByStatus(Types.PostStatus status, Pageable pageable);
 
+    Page<PostSummaryDto> findRelatedPostsById(Long id);
+
     Timeline<PostSummaryDto> findReadingHistoryByUserId(Long userId, TimelineRequest request);
 
     Timeline<PostSummaryDto> findBookmarksByUserId(Long userId, TimelineRequest request);
+
 }

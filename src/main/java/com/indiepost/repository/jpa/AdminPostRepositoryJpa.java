@@ -2,6 +2,7 @@ package com.indiepost.repository.jpa;
 
 import com.indiepost.dto.post.AdminPostSummaryDto;
 import com.indiepost.dto.post.PostQuery;
+import com.indiepost.dto.post.Title;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.*;
 import com.indiepost.repository.AdminPostRepository;
@@ -135,6 +136,38 @@ public class AdminPostRepositoryJpa implements AdminPostRepository {
     }
 
     @Override
+    public List<Post> findAll() {
+        return getQueryFactory()
+                .selectFrom(post)
+                .where(post.id.goe(0))
+                .orderBy(post.id.asc())
+                .fetch();
+    }
+
+    @Override
+    public List<Post> findByIds(List<Long> ids) {
+        if (ids.isEmpty()) {
+            return Collections.emptyList();
+        }
+        final List<Post> posts = getQueryFactory()
+                .selectFrom(post)
+                .where(post.id.in(ids))
+                .fetch();
+        return ids.
+                stream()
+                .map(id -> {
+                    for (Post post : posts) {
+                        if (post.getId().equals(id)) {
+                            return post;
+                        }
+                    }
+                    return null;
+                })
+                .filter(post -> post != null)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Page<AdminPostSummaryDto> findText(String text, User currentUser, PostStatus status, Pageable pageable) {
         String like = "%" + text + "%";
         JPAQuery<Long> query = getQueryFactory()
@@ -195,6 +228,19 @@ public class AdminPostRepositoryJpa implements AdminPostRepository {
                 .where(post.displayName.isNotEmpty())
                 .distinct()
                 .fetch();
+    }
+
+    @Override
+    public List<Title> getTitleList() {
+        List<Tuple> result = getQueryFactory()
+                .select(post.id, post.title)
+                .from(post)
+                .where(post.status.eq(PostStatus.PUBLISH))
+                .fetch();
+        return result
+                .stream()
+                .map(row -> new Title(row.get(post.id), row.get(post.title)))
+                .collect(Collectors.toList());
     }
 
     @Override

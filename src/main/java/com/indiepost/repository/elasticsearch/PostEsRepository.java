@@ -26,6 +26,8 @@ public interface PostEsRepository {
 
     List<PostEs> search(String text, Types.PostStatus status, User currentUser, Pageable pageable);
 
+    List<Long> moreLikeThis(Long postId, Types.PostStatus status, Pageable pageable);
+
     Integer count(String text, Types.PostStatus status);
 
     Integer count(String text, Types.PostStatus status, User currentUser);

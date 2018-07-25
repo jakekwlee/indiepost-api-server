@@ -4,7 +4,6 @@ import com.indiepost.dto.ImageSetDto;
 import com.indiepost.dto.post.AdminPostRequestDto;
 import com.indiepost.dto.post.PostDto;
 import com.indiepost.dto.post.PostUserInteraction;
-import com.indiepost.dto.post.RelatedPostsMatchingResult;
 import com.indiepost.enums.Types.PostStatus;
 import com.indiepost.model.*;
 import com.indiepost.model.elasticsearch.PostEs;
@@ -15,7 +14,6 @@ import java.util.stream.Collectors;
 
 import static com.indiepost.utils.DateUtil.instantToLocalDateTime;
 import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
-import static com.indiepost.utils.DomUtil.getRelatedPostIdsFromPostContent;
 import static com.indiepost.utils.DomUtil.htmlToText;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
@@ -95,11 +93,6 @@ public class PostMapper {
         postDto.setPublishedAt(localDateTimeToInstant(post.getPublishedAt()));
         postDto.setModifiedAt(localDateTimeToInstant(post.getModifiedAt()));
         postDto.setCategoryName(post.getCategory().getName());
-        RelatedPostsMatchingResult result = getRelatedPostIdsFromPostContent(post.getContent());
-        if (result != null && result.getIds().size() > 0) {
-            postDto.setRelatedPostIds(result.getIds());
-            postDto.setContent(result.getContent());
-        }
         return postDto;
     }
 
