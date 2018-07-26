@@ -26,7 +26,7 @@ public class User implements Serializable {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    @Size(min = 4, max = 200)
+    @Size(min = 3, max = 200)
     private String username;
 
     @Size(max = 500)
@@ -76,9 +76,12 @@ public class User implements Serializable {
     )
     private List<Role> roles = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
+    private UserRole roleType;
+
     public UserRole getHighestRole() {
         int userLevel = 1;
-        for (Role role : this.roles) {
+        for (Role role : getRoles()) {
             if (role.getLevel() > userLevel) {
                 userLevel = role.getLevel();
             }
@@ -213,5 +216,13 @@ public class User implements Serializable {
 
     public void setLastLogin(LocalDateTime lastLogin) {
         this.lastLogin = lastLogin;
+    }
+
+    public UserRole getRoleType() {
+        return roleType;
+    }
+
+    public void setRoleType(UserRole roleType) {
+        this.roleType = roleType;
     }
 }

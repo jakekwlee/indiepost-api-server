@@ -399,7 +399,7 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
 
     private JSONArray getFilterContext(Types.PostStatus status, User user) {
         JSONArray filterContext = getFilterContext(status);
-        Types.UserRole role = user.getHighestRole();
+        Types.UserRole role = user.getRoleType();
         switch (role) {
             case Administrator:
                 return filterContext;

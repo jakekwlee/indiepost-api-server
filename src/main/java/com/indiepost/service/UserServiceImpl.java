@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
         user.setLastLogin(now);
         List<String> originalRoles = user.getRoles()
                 .stream()
-                .map(role -> role.getName())
+                .map(role -> role.getRoleType().toString())
                 .collect(Collectors.toList());
 
         // if user roles have changed
@@ -172,9 +172,10 @@ public class UserServiceImpl implements UserService {
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(user, userDto);
         List<String> roles = user.getRoles().stream()
-                .map(Role::getName)
+                .map(role -> role.getRoleType().toString())
                 .collect(Collectors.toList());
         userDto.setRoles(roles);
+        userDto.setRoleType(user.getRoleType().toString());
         return userDto;
     }
 
@@ -183,12 +184,20 @@ public class UserServiceImpl implements UserService {
             return;
         }
         user.getRoles().clear();
+        int level = 0;
+        UserRole roleType = null;
         for (String r : roles) {
             Role role = roleRepository.findByUserRoleString(r);
             if (role == null) {
                 continue;
             }
+            if (role.getLevel() > level) {
+                roleType = role.getRoleType();
+            }
             user.getRoles().add(role);
+        }
+        if (roleType != null) {
+            user.setRoleType(roleType);
         }
     }
 

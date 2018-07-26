@@ -27,6 +27,7 @@ public class UserMapperUnitTests {
         Instant updated = localDateTimeToInstant(LocalDateTime.of(2018, 2, 10, 12, 0));
         dto.setUpdatedAt(updated);
         dto.setRoles(Arrays.asList("Administrator", "Editor", "User"));
+        dto.setRoleType("Administrator");
         dto.setGender("MALE");
         User user = userDtoToUser(dto);
 

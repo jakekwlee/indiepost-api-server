@@ -6,6 +6,7 @@ import com.indiepost.enums.Types.ClientType;
 import com.indiepost.model.Metadata;
 import com.indiepost.repository.MetadataRepository;
 import com.indiepost.repository.StatRepository;
+import com.indiepost.repository.UserRepository;
 import com.indiepost.repository.VisitorRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,13 +30,16 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     private final VisitorRepository visitorRepository;
 
+    private final UserRepository userRepository;
+
     @Inject
     public AnalyticsServiceImpl(MetadataRepository metadataRepository,
                                 StatRepository statRepository,
-                                VisitorRepository visitorRepository) {
+                                VisitorRepository visitorRepository, UserRepository userRepository) {
         this.metadataRepository = metadataRepository;
         this.statRepository = statRepository;
         this.visitorRepository = visitorRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -71,6 +75,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
         stats.setTotalVisitor(visitorRepository.getTotalVisitors(since, until));
         stats.setTotalAppVisitor(visitorRepository.getTotalVisitors(since, until, ClientType.INDIEPOST_LEGACY_MOBILE_APP.toString()));
+
+        stats.setTotalUsers(userRepository.getTotalUsers());
+        stats.setNewSignups(userRepository.getTotalUsers(LocalDateTime.now().minusDays(7), LocalDateTime.now()));
 
         return stats;
     }

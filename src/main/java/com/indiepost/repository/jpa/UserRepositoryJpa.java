@@ -1,5 +1,6 @@
 package com.indiepost.repository.jpa;
 
+import com.indiepost.enums.Types;
 import com.indiepost.enums.Types.UserGender;
 import com.indiepost.enums.Types.UserState;
 import com.indiepost.model.QUser;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -66,6 +68,23 @@ public class UserRepositoryJpa implements UserRepository {
     }
 
     @Override
+    public List<User> search(String text, Types.UserRole role, Pageable pageable) {
+        String searchText = "%" + text.toLowerCase() + "%";
+        return getQueryFactory()
+                .selectFrom(u)
+                .where(
+                        u.roleType.eq(role)
+                                .and(u.email.likeIgnoreCase(searchText)
+                                        .or(u.displayName.likeIgnoreCase(searchText))
+                                )
+                )
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(u.joinedAt.desc())
+                .fetch();
+    }
+
+    @Override
     public User findByEmail(String email) {
         return getQueryFactory()
                 .selectFrom(u)
@@ -104,6 +123,55 @@ public class UserRepositoryJpa implements UserRepository {
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
+    }
+
+    @Override
+    public List<User> findByUserRole(Types.UserRole role, Pageable pageable) {
+        return getQueryFactory()
+                .selectFrom(u)
+                .where(u.roleType.eq(role))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(u.joinedAt.desc())
+                .fetch();
+    }
+
+    @Override
+    public Long getTotalUsers() {
+        return getQueryFactory()
+                .selectFrom(u)
+                .fetchCount();
+    }
+
+    @Override
+    public Long getTotalUsers(Types.UserRole role) {
+        return getQueryFactory()
+                .selectFrom(u)
+                .where(u.roleType.eq(role))
+                .fetchCount();
+    }
+
+    @Override
+    public Long getTotalUsers(LocalDateTime from, LocalDateTime to) {
+        return getQueryFactory()
+                .selectFrom(u)
+                .where(u.joinedAt.between(from, to))
+                .fetchCount();
+    }
+
+    @Override
+    public Long searchTotal(String text, Types.UserRole role) {
+        String searchText = "%" + text.toLowerCase() + "%";
+        return getQueryFactory()
+                .selectFrom(u)
+                .where(
+                        u.roleType.eq(role)
+                                .and(
+                                        u.email.likeIgnoreCase(searchText)
+                                                .or(u.displayName.likeIgnoreCase(searchText))
+                                )
+                )
+                .fetchCount();
     }
 
     private JPAQueryFactory getQueryFactory() {

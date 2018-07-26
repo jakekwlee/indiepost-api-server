@@ -1,8 +1,8 @@
 package com.indiepost.model;
 
+import com.indiepost.enums.Types;
+
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
 
@@ -19,14 +19,12 @@ public class Role implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotNull
-    @Size(min = 2, max = 20)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private Types.UserRole roleType;
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     private List<User> users;
 
-    @NotNull
     private int level = 1;
 
     public Long getId() {
@@ -35,14 +33,6 @@ public class Role implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public List<User> getUsers() {
@@ -59,5 +49,13 @@ public class Role implements Serializable {
 
     public void setLevel(int level) {
         this.level = level;
+    }
+
+    public Types.UserRole getRoleType() {
+        return roleType;
+    }
+
+    public void setRoleType(Types.UserRole roleType) {
+        this.roleType = roleType;
     }
 }

@@ -29,6 +29,8 @@ public class UserDto {
 
     private List<String> roles;
 
+    private String roleType;
+
     public Instant getUpdatedAt() {
         return updatedAt;
     }
@@ -114,5 +116,13 @@ public class UserDto {
             this.roles = new ArrayList<>();
         }
         this.roles.add(role);
+    }
+
+    public String getRoleType() {
+        return roleType;
+    }
+
+    public void setRoleType(String roleType) {
+        this.roleType = roleType;
     }
 }

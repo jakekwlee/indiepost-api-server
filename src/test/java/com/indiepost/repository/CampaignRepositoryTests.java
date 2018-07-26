@@ -69,7 +69,7 @@ public class CampaignRepositoryTests {
     @Test
     public void findBannerOnCampaignPeriodByPriority_shouldWorkProperly() {
         List<Banner> bannerList = repository.findBannerOnCampaignPeriodByPriority();
-        assertThat(bannerList).hasSize(3);
+        assertThat(bannerList.size()).isGreaterThan(3);
     }
 
 }

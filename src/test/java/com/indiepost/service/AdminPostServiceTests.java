@@ -36,6 +36,7 @@ public class AdminPostServiceTests {
     private List<Long> insertedIds = new ArrayList<>();
 
     @Before
+    @WithMockUser(username = "auth0|5a94f76a5c798c2296fd51ae")
     public void insert() {
         AdminPostRequestDto post = new AdminPostRequestDto();
         post.setTags(Arrays.asList("여행기", "콩자반", "일본영화", "쿠바", "아기다리고기다", "로망포르노", "로맨스"));
@@ -57,7 +58,7 @@ public class AdminPostServiceTests {
     }
 
     @Test
-    @WithMockUser(username = "eunjechoi")
+    @WithMockUser(username = "auth0|5a94f76a5c798c2296fd51ae")
     public void saveAutosave_shouldReturnCreatedPostId() {
         AdminPostRequestDto post = new AdminPostRequestDto();
         post.setContent("test content");
@@ -74,7 +75,7 @@ public class AdminPostServiceTests {
     }
 
     @Test
-    @WithMockUser(username = "eunjechoi")
+    @WithMockUser(username = "auth0|5a94f76a5c798c2296fd51ae")
     public void retrievedAdminPostResponseDto_shouldContainTagsWithProperOrder() {
         for (Long id : insertedIds) {
             AdminPostResponseDto dto = service.findOne(id);
@@ -83,7 +84,7 @@ public class AdminPostServiceTests {
     }
 
     @Test
-    @WithMockUser(username = "eunjechoi")
+    @WithMockUser(username = "auth0|5a94f76a5c798c2296fd51ae")
     public void retrievedAdminPostResponseDto_shouldContainContributorsWithProperOrder() {
         for (Long id : insertedIds) {
             AdminPostResponseDto dto = service.findOne(id);
@@ -92,7 +93,7 @@ public class AdminPostServiceTests {
     }
 
     @Test
-    @WithMockUser(username = "indiepost")
+    @WithMockUser(username = "auth0|5a94f76a5c798c2296fd51ae")
     public void findText_shouldReturnResultProperly() {
         Page<AdminPostSummaryDto> page =
                 service.findText("인스타그램", Types.PostStatus.PUBLISH, PageRequest.of(0, 500));
@@ -101,7 +102,7 @@ public class AdminPostServiceTests {
     }
 
     @Test
-    @WithMockUser("auth0|5b213cd8064de34cde981b47")
+    @WithMockUser("auth0|5a94f76a5c798c2296fd51ae")
     public void getAllTitles_shouldWorkProperly() {
         List<Title> titles = service.getAllTitles();
         assertThat(titles).isNotNull().hasAtLeastOneElementOfType(Title.class);

@@ -160,8 +160,8 @@ import javax.persistence.*;
 
         @NamedNativeQuery(name = "@GET_TOP_TAGS",
                 query = "select t.name as statName, count(*) as statValue from Stats s " +
-                        "inner join Posts_Tags pt on s.postId = pt.post_id " +
-                        "inner join Tags t on pt.tag_id = t.id " +
+                        "inner join Posts_Tags pt on s.postId = pt.postId " +
+                        "inner join Tags t on pt.tagId = t.id " +
                         "where s.timestamp between :since and :until " +
                         "group by t.id " +
                         "order by statValue desc " +

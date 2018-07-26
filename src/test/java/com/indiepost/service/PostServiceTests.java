@@ -74,8 +74,8 @@ public class PostServiceTests {
     public void testFindByTagName() {
         Page<PostSummaryDto> page = postService.findByTagName("일러스트", PageRequest.of(0, 100));
         List<PostSummaryDto> dtoList = page.getContent();
-        assertThat(dtoList.size()).isEqualTo(9);
-        assertThat(page.getTotalElements()).isEqualTo(9);
+        assertThat(dtoList.size()).isGreaterThanOrEqualTo(9);
+        assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(9);
         printToJson(dtoList);
     }
 

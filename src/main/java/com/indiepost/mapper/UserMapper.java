@@ -47,9 +47,10 @@ public class UserMapper {
         userDto.setJoinedAt(localDateTimeToInstant(user.getJoinedAt()));
         userDto.setUpdatedAt(localDateTimeToInstant(user.getUpdatedAt()));
         List<String> roles = user.getRoles().stream()
-                .map(role -> role.getName())
+                .map(role -> role.getRoleType().toString())
                 .collect(Collectors.toList());
         userDto.setRoles(roles);
+        userDto.setRoleType(user.getRoleType().toString());
         return userDto;
     }
 }

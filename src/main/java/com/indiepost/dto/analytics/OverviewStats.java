@@ -21,7 +21,27 @@ public class OverviewStats {
 
     private Trend visitorTrend;
 
+    private Long totalUsers;
+
+    private Long newSignups;
+
     private PeriodDto period;
+
+    public Long getTotalUsers() {
+        return totalUsers;
+    }
+
+    public void setTotalUsers(Long totalUsers) {
+        this.totalUsers = totalUsers;
+    }
+
+    public Long getNewSignups() {
+        return newSignups;
+    }
+
+    public void setNewSignups(Long newSignups) {
+        this.newSignups = newSignups;
+    }
 
     public Long getTotalUniquePostview() {
         return totalUniquePostview;

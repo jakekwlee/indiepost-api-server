@@ -51,9 +51,10 @@ public class RoleRepositoryJpa implements RoleRepository {
 
     @Override
     public Role findByUserRoleString(String role) {
+        UserRole userRole = UserRole.valueOf(role);
         return getQueryFactory()
                 .selectFrom(r)
-                .where(r.name.eq(role))
+                .where(r.roleType.eq(userRole))
                 .fetchOne();
     }
 

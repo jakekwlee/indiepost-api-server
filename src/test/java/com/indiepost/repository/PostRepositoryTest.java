@@ -28,7 +28,7 @@ public class PostRepositoryTest {
 
     @Test
     public void findByIdsShouldReturnPostsInRequestedOrder() {
-        List<Long> postIds = Arrays.asList(5891L, 1679L, 5897L, 5929L);
+        List<Long> postIds = Arrays.asList(5891L, 1679L, 5929L);
         List<PostSummaryDto> posts = repository.findByIds(postIds);
         List<Long> resultIds = posts.stream()
                 .map(p -> p.getId())
