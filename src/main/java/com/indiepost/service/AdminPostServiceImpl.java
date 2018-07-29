@@ -129,6 +129,7 @@ public class AdminPostServiceImpl implements AdminPostService {
 
         addContributors(post, dto.getContributors());
         addTags(post, dto.getTags());
+        addRelatedPosts(post, dto.getRelatedPostIds());
 
         return post.getId();
     }
