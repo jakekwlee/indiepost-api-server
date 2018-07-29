@@ -57,7 +57,7 @@ public class AdminServiceImpl implements AdminService {
         adminInitialResponse.setPostTitles(adminPostService.getAllTitles());
         List<Tag> tagList = tagService.findAll();
         List<TagDto> tags = tagList.stream()
-                .map(tag -> new TagDto(tag.getId(), tag.getName()))
+                .map(tag -> new TagDto(tag.getId(), tag.getName().toLowerCase()))
                 .collect(Collectors.toList());
         adminInitialResponse.setTags(tags);
         return adminInitialResponse;
