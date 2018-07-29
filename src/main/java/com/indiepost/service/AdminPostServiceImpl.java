@@ -387,7 +387,7 @@ public class AdminPostServiceImpl implements AdminPostService {
             );
             if (!subList.isEmpty()) {
                 for (String name : subList) {
-                    tagRepository.save(new Tag(name));
+                    tagRepository.save(new Tag(name.toLowerCase()));
                 }
                 tags = tagRepository.findByNameIn(tagList);
             }

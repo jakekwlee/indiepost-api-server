@@ -78,7 +78,7 @@ public class PostServiceImpl implements PostService {
         PostDto dto = postToPostDto(post);
         if (!post.getTags().isEmpty()) {
             List<String> tags = post.getTags().stream()
-                    .map(t -> t.getName())
+                    .map(t -> t.getName().toLowerCase())
                     .collect(Collectors.toList());
             dto.setTags(tags);
         }
@@ -189,15 +189,17 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<PostSummaryDto> fullTextSearch(String text, Pageable pageable) {
+        String searchFor = text;
         if (text.length() > 30) {
-            text = text.substring(0, 30);
+            searchFor = searchFor.substring(0, 30);
         }
+        searchFor = searchFor.toLowerCase();
         Pageable pageRequest = getPageRequest(pageable);
-        List<PostEs> postEsList = postEsRepository.search(text, PostStatus.PUBLISH, pageRequest);
+        List<PostEs> postEsList = postEsRepository.search(searchFor, PostStatus.PUBLISH, pageRequest);
         if (postEsList.isEmpty()) {
             return new PageImpl<>(Collections.emptyList(), pageRequest, 0);
         }
-        Long total = postEsRepository.count(text, PostStatus.PUBLISH).longValue();
+        Long total = postEsRepository.count(searchFor, PostStatus.PUBLISH).longValue();
         List<Long> ids = postEsList.stream()
                 .map(p -> p.getId())
                 .collect(Collectors.toList());

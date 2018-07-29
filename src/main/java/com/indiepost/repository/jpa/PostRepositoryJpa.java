@@ -105,13 +105,14 @@ public class PostRepositoryJpa implements PostRepository {
 
     @Override
     public Page<PostSummaryDto> findByTagName(String tagName, Pageable pageable) {
+        String tag = tagName.toLowerCase();
         JPAQuery query = getQueryFactory().from(post);
         addProjections(query)
                 .innerJoin(post.category, QCategory.category)
                 .innerJoin(post.postTags, QPostTag.postTag)
                 .innerJoin(QPostTag.postTag.tag, QTag.tag)
                 .leftJoin(post.titleImage, QImageSet.imageSet)
-                .where(QTag.tag.name.eq(tagName).and(post.status.eq(PostStatus.PUBLISH)))
+                .where(QTag.tag.name.eq(tag).and(post.status.eq(PostStatus.PUBLISH)))
                 .orderBy(post.publishedAt.desc(), QPostTag.postTag.priority.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize()).distinct();
@@ -122,7 +123,7 @@ public class PostRepositoryJpa implements PostRepository {
         Long total = getQueryFactory().selectFrom(post)
                 .innerJoin(post.postTags, QPostTag.postTag)
                 .innerJoin(QPostTag.postTag.tag, QTag.tag)
-                .where(QTag.tag.name.eq(tagName).and(post.status.eq(PostStatus.PUBLISH)))
+                .where(QTag.tag.name.eq(tag).and(post.status.eq(PostStatus.PUBLISH)))
                 .fetchCount();
         List<PostSummaryDto> dtoList = toDtoList(result);
         return new PageImpl<>(dtoList, pageable, total);

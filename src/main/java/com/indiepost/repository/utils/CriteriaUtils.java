@@ -14,7 +14,7 @@ public interface CriteriaUtils {
         builder.and(post.status.eq(query.getStatus()));
 
         if (query.getCategory() != null) {
-            builder.and(post.category.slug.eq(query.getCategory()));
+            builder.and(post.category.slug.eq(query.getCategory().toLowerCase()));
         }
         if (query.getPublishedAfter() != null) {
             builder.and(post.publishedAt.goe(query.getPublishedAfter()));
