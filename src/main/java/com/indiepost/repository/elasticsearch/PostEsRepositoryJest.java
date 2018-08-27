@@ -187,9 +187,9 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
     }
 
     @Override
-    public List<Long> moreLikeThis(Long postId, Types.PostStatus status, Pageable pageable) {
+    public List<Long> moreLikeThis(List<Long> postIds, Types.PostStatus status, Pageable pageable) {
         try {
-            String stringifiedJSONQuery = buildMoreLikeThis(postId, status, pageable);
+            String stringifiedJSONQuery = buildMoreLikeThis(postIds, status, pageable);
             Search search = new Search.Builder(stringifiedJSONQuery)
                     .addIndex(INDEX_NAME)
                     .addType(TYPE_NAME)
@@ -201,10 +201,34 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
                         .map(hit -> Long.parseLong(hit.id))
                         .collect(Collectors.toList());
             }
-            log.error(String.format("Elasticsearch: Failed 'more like this' query for: <%s>", postId));
+            log.error(String.format("Elasticsearch: Failed 'more like this' query for: <%s>", postIds));
             log.error(result.getJsonString());
         } catch (IOException e) {
-            log.error(String.format("Elasticsearch: Failed 'more like this' query for: <%s>", postId));
+            log.error(String.format("Elasticsearch: Failed 'more like this' query for: <%s>", postIds));
+            log.error(e.getMessage(), e);
+        }
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Long> recommendation(List<Long> bookmarkedPostIds, List<Long> historyPostIds, Types.PostStatus status, Pageable pageable) {
+        try {
+            String stringifiedJSONQuery = buildRecommendation(bookmarkedPostIds, historyPostIds, status, pageable);
+            Search search = new Search.Builder(stringifiedJSONQuery)
+                    .addIndex(INDEX_NAME)
+                    .addType(TYPE_NAME)
+                    .build();
+            SearchResult result = getClient().execute(search);
+            if (result.isSucceeded()) {
+                List<SearchResult.Hit<PostEs, Void>> hits = result.getHits(PostEs.class);
+                return hits.stream()
+                        .map(hit -> Long.parseLong(hit.id))
+                        .collect(Collectors.toList());
+            }
+            log.error(String.format("Elasticsearch: Failed 'recommendation' query"));
+            log.error(result.getJsonString());
+        } catch (IOException e) {
+            log.error(String.format("Elasticsearch: Failed 'recommendation' query"));
             log.error(e.getMessage(), e);
         }
         return Collections.emptyList();
@@ -454,14 +478,6 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
                                         )
                                         .put(new JSONObject()
                                                 .put("match", new JSONObject()
-                                                        .put("contributors", new JSONObject()
-                                                                .put("term", text)
-                                                                .put("boost", 3)
-                                                        )
-                                                )
-                                        )
-                                        .put(new JSONObject()
-                                                .put("match", new JSONObject()
                                                         .put("content", new JSONObject()
                                                                 .put("query", text)
                                                                 .put("analyzer", "korean")
@@ -471,11 +487,19 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
                                                 )
                                         )
                                         .put(new JSONObject()
-                                                .put("match", new JSONObject()
+                                                .put("prefix", new JSONObject()
+                                                        .put("contributors", new JSONObject()
+                                                                .put("value", text)
+                                                                .put("boost", 2)
+                                                        )
+
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("prefix", new JSONObject()
                                                         .put("tags", new JSONObject()
-                                                                .put("query", text)
-                                                                .put("analyzer", "korean")
-                                                                .put("minimum_should_match", "4<75%")
+                                                                .put("value", text)
+                                                                .put("boost", 2)
                                                         )
                                                 )
                                         )
@@ -634,8 +658,16 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
                 .toString();
     }
 
-    private String buildMoreLikeThis(Long postId, Types.PostStatus status, Pageable pageable) {
+    private String buildMoreLikeThis(List<Long> postIds, Types.PostStatus status, Pageable pageable) {
         JSONArray filterContext = getFilterContext(status);
+        JSONArray posts = new JSONArray();
+        for (Long postId : postIds) {
+            posts.put(new JSONObject()
+                    .put("_index", INDEX_NAME)
+                    .put("_type", TYPE_NAME)
+                    .put("_id", postId)
+            );
+        }
 
         return new JSONObject()
                 .put("query", new JSONObject()
@@ -648,13 +680,7 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
                                                                 .put("fields", new JSONArray()
                                                                         .put("tags")
                                                                 )
-                                                                .put("like", new JSONArray()
-                                                                        .put(new JSONObject()
-                                                                                .put("_index", INDEX_NAME)
-                                                                                .put("_type", TYPE_NAME)
-                                                                                .put("_id", postId)
-                                                                        )
-                                                                )
+                                                                .put("like", posts)
                                                                 .put("min_term_freq", 1)
                                                                 .put("min_doc_freq", 1)
                                                                 .put("boost", 3)
@@ -666,13 +692,7 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
                                                                 .put("fields", new JSONArray()
                                                                         .put("title")
                                                                 )
-                                                                .put("like", new JSONArray()
-                                                                        .put(new JSONObject()
-                                                                                .put("_index", INDEX_NAME)
-                                                                                .put("_type", TYPE_NAME)
-                                                                                .put("_id", postId)
-                                                                        )
-                                                                )
+                                                                .put("like", posts)
                                                                 .put("min_term_freq", 1)
                                                                 .put("min_doc_freq", 1)
                                                                 .put("max_doc_freq", 50)
@@ -685,13 +705,7 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
                                                                 .put("fields", new JSONArray()
                                                                         .put("contributors")
                                                                 )
-                                                                .put("like", new JSONArray()
-                                                                        .put(new JSONObject()
-                                                                                .put("_index", INDEX_NAME)
-                                                                                .put("_type", TYPE_NAME)
-                                                                                .put("_id", postId)
-                                                                        )
-                                                                )
+                                                                .put("like", posts)
                                                                 .put("min_term_freq", 1)
                                                                 .put("min_doc_freq", 1)
                                                                 .put("boost", 2)
@@ -704,13 +718,145 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
                                                                         .put("excerpt")
                                                                         .put("content")
                                                                 )
-                                                                .put("like", new JSONArray()
-                                                                        .put(new JSONObject()
-                                                                                .put("_index", INDEX_NAME)
-                                                                                .put("_type", TYPE_NAME)
-                                                                                .put("_id", postId)
-                                                                        )
+                                                                .put("like", posts)
+                                                                .put("min_term_freq", 1)
+                                                                .put("min_doc_freq", 1)
+                                                                .put("max_doc_freq", 50)
+                                                )
+                                        )
+                                )
+                        )
+                )
+                .put("_source", new JSONArray()
+                        .put("_id")
+                )
+                .put("from", pageable.getOffset())
+                .put("size", pageable.getPageSize())
+                .toString();
+    }
+
+    private String buildRecommendation(List<Long> bookmarkedPostIds, List<Long> historyPostIds, Types.PostStatus status, Pageable pageable) {
+        JSONArray filterContext = getFilterContext(status);
+        JSONArray bookmarkedPosts = new JSONArray();
+        JSONArray historyPosts = new JSONArray();
+        for (Long postId : bookmarkedPostIds) {
+            bookmarkedPosts.put(new JSONObject()
+                    .put("_index", INDEX_NAME)
+                    .put("_type", TYPE_NAME)
+                    .put("_id", postId)
+            );
+        }
+        for (Long postId : historyPostIds) {
+            bookmarkedPosts.put(new JSONObject()
+                    .put("_index", INDEX_NAME)
+                    .put("_type", TYPE_NAME)
+                    .put("_id", postId)
+            );
+        }
+
+        return new JSONObject()
+                .put("query", new JSONObject()
+                        .put("bool", new JSONObject()
+                                .put("filter", filterContext)
+                                .put("should", new JSONArray()
+                                        .put(new JSONObject()
+                                                .put("more_like_this",
+                                                        new JSONObject()
+                                                                .put("fields", new JSONArray()
+                                                                        .put("tags")
                                                                 )
+                                                                .put("like", bookmarkedPosts)
+                                                                .put("min_term_freq", 1)
+                                                                .put("min_doc_freq", 1)
+                                                                .put("boost", 6)
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("more_like_this",
+                                                        new JSONObject()
+                                                                .put("fields", new JSONArray()
+                                                                        .put("title")
+                                                                )
+                                                                .put("like", bookmarkedPosts)
+                                                                .put("min_term_freq", 1)
+                                                                .put("min_doc_freq", 1)
+                                                                .put("max_doc_freq", 50)
+                                                                .put("boost", 4)
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("more_like_this",
+                                                        new JSONObject()
+                                                                .put("fields", new JSONArray()
+                                                                        .put("contributors")
+                                                                )
+                                                                .put("like", bookmarkedPosts)
+                                                                .put("min_term_freq", 1)
+                                                                .put("min_doc_freq", 1)
+                                                                .put("boost", 4)
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("more_like_this",
+                                                        new JSONObject()
+                                                                .put("fields", new JSONArray()
+                                                                        .put("excerpt")
+                                                                        .put("content")
+                                                                )
+                                                                .put("like", bookmarkedPosts)
+                                                                .put("min_term_freq", 1)
+                                                                .put("min_doc_freq", 1)
+                                                                .put("max_doc_freq", 50)
+                                                                .put("boost", 2)
+                                                )
+                                        )
+
+
+                                        .put(new JSONObject()
+                                                .put("more_like_this",
+                                                        new JSONObject()
+                                                                .put("fields", new JSONArray()
+                                                                        .put("tags")
+                                                                )
+                                                                .put("like", historyPosts)
+                                                                .put("min_term_freq", 1)
+                                                                .put("min_doc_freq", 1)
+                                                                .put("boost", 3)
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("more_like_this",
+                                                        new JSONObject()
+                                                                .put("fields", new JSONArray()
+                                                                        .put("title")
+                                                                )
+                                                                .put("like", historyPosts)
+                                                                .put("min_term_freq", 1)
+                                                                .put("min_doc_freq", 1)
+                                                                .put("max_doc_freq", 50)
+                                                                .put("boost", 2)
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("more_like_this",
+                                                        new JSONObject()
+                                                                .put("fields", new JSONArray()
+                                                                        .put("contributors")
+                                                                )
+                                                                .put("like", historyPosts)
+                                                                .put("min_term_freq", 1)
+                                                                .put("min_doc_freq", 1)
+                                                                .put("boost", 2)
+                                                )
+                                        )
+                                        .put(new JSONObject()
+                                                .put("more_like_this",
+                                                        new JSONObject()
+                                                                .put("fields", new JSONArray()
+                                                                        .put("excerpt")
+                                                                        .put("content")
+                                                                )
+                                                                .put("like", historyPosts)
                                                                 .put("min_term_freq", 1)
                                                                 .put("min_doc_freq", 1)
                                                                 .put("max_doc_freq", 50)

@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -223,7 +224,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Page<PostSummaryDto> moreLikeThis(Long id, Pageable pageable) {
         Pageable pageRequest = getPageRequest(pageable);
-        List<Long> ids = postEsRepository.moreLikeThis(id, PostStatus.PUBLISH, pageRequest);
+        List<Long> ids = postEsRepository.moreLikeThis(Arrays.asList(id), PostStatus.PUBLISH, pageRequest);
         if (ids.isEmpty()) {
             return new PageImpl<>(Collections.emptyList(), pageRequest, 0);
         }

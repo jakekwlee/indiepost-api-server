@@ -16,6 +16,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.indiepost.testHelper.JsonSerializer.printToJson;
@@ -117,7 +118,16 @@ public class PostEsRepositoryTests {
     public void moreLikeThis_shouldReturnRelatedPostList() {
         Long postId = 8163L;
         int size = 4;
-        List<Long> ids = postEsRepository.moreLikeThis(postId, Types.PostStatus.PUBLISH, PageRequest.of(0, size));
+        List<Long> ids = postEsRepository.moreLikeThis(Arrays.asList(postId), Types.PostStatus.PUBLISH, PageRequest.of(0, size));
+        assertThat(ids).hasSize(size);
+    }
+
+    @Test
+    public void recommendation_shouldReturnRelatedPostList() {
+        List<Long> bookmarked = Arrays.asList(129L, 8422L);
+        List<Long> history = Arrays.asList(8543L, 5022L, 8480L);
+        int size = 4;
+        List<Long> ids = postEsRepository.recommendation(bookmarked, history, Types.PostStatus.PUBLISH, PageRequest.of(0, size));
         assertThat(ids).hasSize(size);
     }
 }
