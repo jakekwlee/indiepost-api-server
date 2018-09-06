@@ -72,7 +72,7 @@ public class TagRepositoryJpa implements TagRepository {
         List<Tag> result = new ArrayList<>();
         for (String name : tagNames) {
             for (Tag tag : tags) {
-                if (name.equals(tag.getName())) {
+                if (name.toLowerCase().equals(tag.getName().toLowerCase())) {
                     result.add(tag);
                     break;
                 }
