@@ -38,6 +38,8 @@ public interface PostRepository {
 
     Page<PostSummaryDto> findByStatus(Types.PostStatus status, Pageable pageable);
 
+    Page<PostSummaryDto> fallbackSearch(String text, Pageable pageable);
+
     Page<PostSummaryDto> findRelatedPostsById(Long id);
 
     Timeline<PostSummaryDto> findReadingHistoryByUserId(Long userId, TimelineRequest request);

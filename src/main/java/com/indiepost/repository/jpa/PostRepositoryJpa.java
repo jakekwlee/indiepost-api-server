@@ -315,6 +315,42 @@ public class PostRepositoryJpa implements PostRepository {
         return new Timeline<>(dtoList, request, total.intValue());
     }
 
+    @Override
+    public Page<PostSummaryDto> fallbackSearch(String text, Pageable pageable) {
+        String like = "%" + text + "%";
+        JPAQuery<Long> query = getQueryFactory()
+                .selectDistinct(post.id)
+                .from(post)
+                .leftJoin(post.postContributors, QPostContributor.postContributor)
+                .leftJoin(QPostContributor.postContributor.contributor, QContributor.contributor)
+                .leftJoin(post.postTags, QPostTag.postTag)
+                .leftJoin(QPostTag.postTag.tag, QTag.tag)
+                .orderBy(post.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize());
+
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(post.status.eq(PostStatus.PUBLISH));
+        builder.and(post.title.like(like)
+                .or(post.excerpt.like(like))
+                .or(post.displayName.like(like))
+                .or(QTag.tag.name.like(like))
+                .or(QContributor.contributor.fullName.like(like))
+        );
+
+        query.where(builder);
+
+        Long count = query.fetchCount();
+        List<Long> ids = query.fetch();
+
+        if (ids.size() == 0) {
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
+        }
+
+        List<PostSummaryDto> dtoList = findByIds(ids);
+        return new PageImpl<>(dtoList, pageable, count.intValue());
+    }
+
     private JPAQuery addProjections(JPAQuery query) {
         return query.select(
                 post.id, post.categoryId, post.category.name, post.category.slug, post.splash, post.picked, post.featured,

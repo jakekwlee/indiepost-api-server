@@ -112,4 +112,13 @@ public class PostServiceTests {
         assertThat(result.getContent().size()).isEqualTo(size);
         printToJson(result);
     }
+
+    @Test
+    @WithMockUser("auth0|5b213cd8064de34cde981b47")
+    public void recommendations_shouldReturnRelatedPostsProperly() {
+        int size = 16;
+        Page<PostSummaryDto> result = postService.recommendations(PageRequest.of(0, size));
+        assertThat(result.getContent().size()).isEqualTo(size);
+        printToJson(result);
+    }
 }

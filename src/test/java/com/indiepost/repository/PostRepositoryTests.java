@@ -47,4 +47,10 @@ public class PostRepositoryTests {
         assertThat(post).isNotNull();
         assertThat(page.getSize()).isGreaterThanOrEqualTo(1);
     }
+
+    @Test
+    public void fallbackSearch_returnPostListProperly() {
+        Page<PostSummaryDto> page = postRepository.fallbackSearch("황샤오량", PageRequest.of(0, 30));
+        assertThat(page.getTotalElements()).isGreaterThanOrEqualTo(1);
+    }
 }

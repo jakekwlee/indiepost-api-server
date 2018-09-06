@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -198,7 +199,7 @@ public class PostServiceImpl implements PostService {
         Pageable pageRequest = getPageRequest(pageable);
         List<PostEs> postEsList = postEsRepository.search(searchFor, PostStatus.PUBLISH, pageRequest);
         if (postEsList.isEmpty()) {
-            return new PageImpl<>(Collections.emptyList(), pageRequest, 0);
+            return postRepository.fallbackSearch(text, pageable);
         }
         Long total = postEsRepository.count(searchFor, PostStatus.PUBLISH).longValue();
         List<Long> ids = postEsList.stream()
@@ -240,6 +241,49 @@ public class PostServiceImpl implements PostService {
             return new PageImpl<>(Collections.emptyList(), pageable, 0);
         }
         return posts;
+    }
+
+    @Override
+    public Page<PostSummaryDto> recommendations(Pageable pageable) {
+        User user = userRepository.findCurrentUser();
+        long now = Instant.now().getEpochSecond();
+
+        Long userId = user.getId();
+        Timeline<PostSummaryDto> watchedPosts =
+                postRepository.findReadingHistoryByUserId(userId, new TimelineRequest(now, 100));
+        Timeline<PostSummaryDto> bookmarkedPosts =
+                postRepository.findBookmarksByUserId(userId, new TimelineRequest(now, 100));
+
+        // fallback
+        if (watchedPosts.getNumberOfElements() == 0 && bookmarkedPosts.getNumberOfElements() == 0) {
+            List<PostSummaryDto> topPosts = findTopRatedPosts(LocalDateTime.now().minusDays(7), LocalDateTime.now(), pageable.getPageSize());
+            return new PageImpl<>(topPosts, pageable, topPosts.size());
+        }
+
+        List<Long> watchedPostIds = watchedPosts.getContent().stream()
+                .map(post -> post.getId())
+                .collect(Collectors.toList());
+        List<Long> bookmarkPostIds = bookmarkedPosts.getContent().stream()
+                .map(p -> p.getId())
+                .collect(Collectors.toList());
+
+        List<Long> resultIds = postEsRepository.recommendation(bookmarkPostIds, watchedPostIds, PostStatus.PUBLISH, pageable);
+
+        // fallback
+        if (resultIds.size() < pageable.getPageSize()) {
+            int lacks = pageable.getPageSize() - resultIds.size();
+            List<PostSummaryDto> result = new ArrayList<>();
+            if (lacks > 0) {
+                result = postRepository.findByIds(resultIds);
+            }
+            List<PostSummaryDto> topPosts = findTopRatedPosts(LocalDateTime.now().minusDays(60), LocalDateTime.now(), lacks);
+            result.addAll(topPosts);
+            return new PageImpl<>(result, pageable, pageable.getPageSize());
+        }
+
+        List<PostSummaryDto> posts = postRepository.findByIds(resultIds);
+        int total = resultIds.size();
+        return new PageImpl<>(posts, pageable, total);
     }
 
     @Override

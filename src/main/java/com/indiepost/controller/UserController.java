@@ -11,6 +11,9 @@ import com.indiepost.exceptions.UnauthorizedException;
 import com.indiepost.service.PostService;
 import com.indiepost.service.PostUserInteractionService;
 import com.indiepost.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -87,5 +90,10 @@ public class UserController {
     @DeleteMapping("/bookmark")
     public void removeAllBookmarks() {
         interactionService.removeAllUsersBookmarks();
+    }
+
+    @GetMapping("/recommendations")
+    public Page<PostSummaryDto> getRecommendation(Pageable pageable) {
+        return postService.recommendations(PageRequest.of(0, pageable.getPageSize()));
     }
 }

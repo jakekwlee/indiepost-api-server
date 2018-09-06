@@ -10,6 +10,11 @@ public class TimelineRequest {
     public TimelineRequest() {
     }
 
+    public TimelineRequest(long timepoint, int size) {
+        this.timepoint = timepoint;
+        this.size = size;
+    }
+
     public long getTimepoint() {
         return timepoint;
     }

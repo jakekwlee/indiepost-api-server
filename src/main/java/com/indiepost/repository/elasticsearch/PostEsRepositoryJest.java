@@ -213,7 +213,7 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
     @Override
     public List<Long> recommendation(List<Long> bookmarkedPostIds, List<Long> historyPostIds, Types.PostStatus status, Pageable pageable) {
         try {
-            String stringifiedJSONQuery = buildRecommendation(bookmarkedPostIds, historyPostIds, status, pageable);
+            String stringifiedJSONQuery = buildRecommendations(bookmarkedPostIds, historyPostIds, status, pageable);
             Search search = new Search.Builder(stringifiedJSONQuery)
                     .addIndex(INDEX_NAME)
                     .addType(TYPE_NAME)
@@ -225,10 +225,10 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
                         .map(hit -> Long.parseLong(hit.id))
                         .collect(Collectors.toList());
             }
-            log.error(String.format("Elasticsearch: Failed 'recommendation' query"));
+            log.error(String.format("Elasticsearch: Failed 'recommendations' query"));
             log.error(result.getJsonString());
         } catch (IOException e) {
-            log.error(String.format("Elasticsearch: Failed 'recommendation' query"));
+            log.error(String.format("Elasticsearch: Failed 'recommendations' query"));
             log.error(e.getMessage(), e);
         }
         return Collections.emptyList();
@@ -735,134 +735,139 @@ public class PostEsRepositoryJest implements com.indiepost.repository.elasticsea
                 .toString();
     }
 
-    private String buildRecommendation(List<Long> bookmarkedPostIds, List<Long> historyPostIds, Types.PostStatus status, Pageable pageable) {
+    private String buildRecommendations(List<Long> bookmarkedPostIds, List<Long> historyPostIds, Types.PostStatus status, Pageable pageable) {
         JSONArray filterContext = getFilterContext(status);
         JSONArray bookmarkedPosts = new JSONArray();
         JSONArray historyPosts = new JSONArray();
-        for (Long postId : bookmarkedPostIds) {
-            bookmarkedPosts.put(new JSONObject()
-                    .put("_index", INDEX_NAME)
-                    .put("_type", TYPE_NAME)
-                    .put("_id", postId)
-            );
+        JSONArray should = new JSONArray();
+        if (bookmarkedPostIds == null || bookmarkedPostIds.size() > 0) {
+            for (Long postId : bookmarkedPostIds) {
+                bookmarkedPosts.put(new JSONObject()
+                        .put("_index", INDEX_NAME)
+                        .put("_type", TYPE_NAME)
+                        .put("_id", postId)
+                );
+            }
+            should
+                    .put(new JSONObject()
+                            .put("more_like_this",
+                                    new JSONObject()
+                                            .put("fields", new JSONArray()
+                                                    .put("tags")
+                                            )
+                                            .put("like", bookmarkedPosts)
+                                            .put("min_term_freq", 1)
+                                            .put("min_doc_freq", 1)
+                                            .put("boost", 6)
+                            )
+                    )
+                    .put(new JSONObject()
+                            .put("more_like_this",
+                                    new JSONObject()
+                                            .put("fields", new JSONArray()
+                                                    .put("title")
+                                            )
+                                            .put("like", bookmarkedPosts)
+                                            .put("min_term_freq", 1)
+                                            .put("min_doc_freq", 1)
+                                            .put("max_doc_freq", 50)
+                                            .put("boost", 4)
+                            )
+                    )
+                    .put(new JSONObject()
+                            .put("more_like_this",
+                                    new JSONObject()
+                                            .put("fields", new JSONArray()
+                                                    .put("contributors")
+                                            )
+                                            .put("like", bookmarkedPosts)
+                                            .put("min_term_freq", 1)
+                                            .put("min_doc_freq", 1)
+                                            .put("boost", 4)
+                            )
+                    )
+                    .put(new JSONObject()
+                            .put("more_like_this",
+                                    new JSONObject()
+                                            .put("fields", new JSONArray()
+                                                    .put("excerpt")
+                                                    .put("content")
+                                            )
+                                            .put("like", bookmarkedPosts)
+                                            .put("min_term_freq", 1)
+                                            .put("min_doc_freq", 1)
+                                            .put("max_doc_freq", 50)
+                                            .put("boost", 2)
+                            )
+                    );
+
         }
-        for (Long postId : historyPostIds) {
-            bookmarkedPosts.put(new JSONObject()
-                    .put("_index", INDEX_NAME)
-                    .put("_type", TYPE_NAME)
-                    .put("_id", postId)
-            );
+        if (historyPostIds == null || historyPostIds.size() > 0) {
+            for (Long postId : historyPostIds) {
+                historyPosts.put(new JSONObject()
+                        .put("_index", INDEX_NAME)
+                        .put("_type", TYPE_NAME)
+                        .put("_id", postId)
+                );
+            }
+            should
+                    .put(new JSONObject()
+                            .put("more_like_this",
+                                    new JSONObject()
+                                            .put("fields", new JSONArray()
+                                                    .put("tags")
+                                            )
+                                            .put("like", historyPosts)
+                                            .put("min_term_freq", 1)
+                                            .put("min_doc_freq", 1)
+                                            .put("boost", 3)
+                            )
+                    )
+                    .put(new JSONObject()
+                            .put("more_like_this",
+                                    new JSONObject()
+                                            .put("fields", new JSONArray()
+                                                    .put("title")
+                                            )
+                                            .put("like", historyPosts)
+                                            .put("min_term_freq", 1)
+                                            .put("min_doc_freq", 1)
+                                            .put("max_doc_freq", 50)
+                                            .put("boost", 2)
+                            )
+                    )
+                    .put(new JSONObject()
+                            .put("more_like_this",
+                                    new JSONObject()
+                                            .put("fields", new JSONArray()
+                                                    .put("contributors")
+                                            )
+                                            .put("like", historyPosts)
+                                            .put("min_term_freq", 1)
+                                            .put("min_doc_freq", 1)
+                                            .put("boost", 2)
+                            )
+                    )
+                    .put(new JSONObject()
+                            .put("more_like_this",
+                                    new JSONObject()
+                                            .put("fields", new JSONArray()
+                                                    .put("excerpt")
+                                                    .put("content")
+                                            )
+                                            .put("like", historyPosts)
+                                            .put("min_term_freq", 1)
+                                            .put("min_doc_freq", 1)
+                                            .put("max_doc_freq", 50)
+                            )
+                    );
         }
 
         return new JSONObject()
                 .put("query", new JSONObject()
                         .put("bool", new JSONObject()
                                 .put("filter", filterContext)
-                                .put("should", new JSONArray()
-                                        .put(new JSONObject()
-                                                .put("more_like_this",
-                                                        new JSONObject()
-                                                                .put("fields", new JSONArray()
-                                                                        .put("tags")
-                                                                )
-                                                                .put("like", bookmarkedPosts)
-                                                                .put("min_term_freq", 1)
-                                                                .put("min_doc_freq", 1)
-                                                                .put("boost", 6)
-                                                )
-                                        )
-                                        .put(new JSONObject()
-                                                .put("more_like_this",
-                                                        new JSONObject()
-                                                                .put("fields", new JSONArray()
-                                                                        .put("title")
-                                                                )
-                                                                .put("like", bookmarkedPosts)
-                                                                .put("min_term_freq", 1)
-                                                                .put("min_doc_freq", 1)
-                                                                .put("max_doc_freq", 50)
-                                                                .put("boost", 4)
-                                                )
-                                        )
-                                        .put(new JSONObject()
-                                                .put("more_like_this",
-                                                        new JSONObject()
-                                                                .put("fields", new JSONArray()
-                                                                        .put("contributors")
-                                                                )
-                                                                .put("like", bookmarkedPosts)
-                                                                .put("min_term_freq", 1)
-                                                                .put("min_doc_freq", 1)
-                                                                .put("boost", 4)
-                                                )
-                                        )
-                                        .put(new JSONObject()
-                                                .put("more_like_this",
-                                                        new JSONObject()
-                                                                .put("fields", new JSONArray()
-                                                                        .put("excerpt")
-                                                                        .put("content")
-                                                                )
-                                                                .put("like", bookmarkedPosts)
-                                                                .put("min_term_freq", 1)
-                                                                .put("min_doc_freq", 1)
-                                                                .put("max_doc_freq", 50)
-                                                                .put("boost", 2)
-                                                )
-                                        )
-
-
-                                        .put(new JSONObject()
-                                                .put("more_like_this",
-                                                        new JSONObject()
-                                                                .put("fields", new JSONArray()
-                                                                        .put("tags")
-                                                                )
-                                                                .put("like", historyPosts)
-                                                                .put("min_term_freq", 1)
-                                                                .put("min_doc_freq", 1)
-                                                                .put("boost", 3)
-                                                )
-                                        )
-                                        .put(new JSONObject()
-                                                .put("more_like_this",
-                                                        new JSONObject()
-                                                                .put("fields", new JSONArray()
-                                                                        .put("title")
-                                                                )
-                                                                .put("like", historyPosts)
-                                                                .put("min_term_freq", 1)
-                                                                .put("min_doc_freq", 1)
-                                                                .put("max_doc_freq", 50)
-                                                                .put("boost", 2)
-                                                )
-                                        )
-                                        .put(new JSONObject()
-                                                .put("more_like_this",
-                                                        new JSONObject()
-                                                                .put("fields", new JSONArray()
-                                                                        .put("contributors")
-                                                                )
-                                                                .put("like", historyPosts)
-                                                                .put("min_term_freq", 1)
-                                                                .put("min_doc_freq", 1)
-                                                                .put("boost", 2)
-                                                )
-                                        )
-                                        .put(new JSONObject()
-                                                .put("more_like_this",
-                                                        new JSONObject()
-                                                                .put("fields", new JSONArray()
-                                                                        .put("excerpt")
-                                                                        .put("content")
-                                                                )
-                                                                .put("like", historyPosts)
-                                                                .put("min_term_freq", 1)
-                                                                .put("min_doc_freq", 1)
-                                                                .put("max_doc_freq", 50)
-                                                )
-                                        )
-                                )
+                                .put("should", should)
                         )
                 )
                 .put("_source", new JSONArray()

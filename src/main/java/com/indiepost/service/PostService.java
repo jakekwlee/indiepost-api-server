@@ -38,6 +38,8 @@ public interface PostService {
 
     Page<PostSummaryDto> findRelatedPostsById(Long id, Pageable pageable);
 
+    Page<PostSummaryDto> recommendations(Pageable pageable);
+
     Timeline<PostSummaryDto> findReadingHistory(TimelineRequest request);
 
     Timeline<PostSummaryDto> findBookmarks(TimelineRequest request);

@@ -54,7 +54,7 @@ public class InitialDataServiceImpl implements InitialDataService {
         initialData.setWithLatestPosts(withLatestPosts);
         Page<StaticPageDto> page = staticPageService.find(
                 Types.PostStatus.PUBLISH, PageRequest.of(0, 100, Sort.Direction.DESC, "displayOrder"));
-        initialData.setPages(page.getContent());
+        initialData.setStaticPages(page.getContent());
 
         initialData.setSplash(postService.findSplashPost());
         initialData.setFeatured(postService.findFeaturePost());

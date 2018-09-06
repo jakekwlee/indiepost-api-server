@@ -26,7 +26,7 @@ public class InitialData {
 
     private PostSummaryDto featured;
 
-    private List<StaticPageDto> pages;
+    private List<StaticPageDto> staticPages;
 
     private List<BannerDto> banners;
 
@@ -96,12 +96,12 @@ public class InitialData {
         this.withLatestPosts = withLatestPosts;
     }
 
-    public List<StaticPageDto> getPages() {
-        return pages;
+    public List<StaticPageDto> getStaticPages() {
+        return staticPages;
     }
 
-    public void setPages(List<StaticPageDto> pages) {
-        this.pages = pages;
+    public void setStaticPages(List<StaticPageDto> staticPages) {
+        this.staticPages = staticPages;
     }
 
     public List<BannerDto> getBanners() {
