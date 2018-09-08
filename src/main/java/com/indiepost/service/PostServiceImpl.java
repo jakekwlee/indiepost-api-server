@@ -250,9 +250,9 @@ public class PostServiceImpl implements PostService {
 
         Long userId = user.getId();
         Timeline<PostSummaryDto> watchedPosts =
-                postRepository.findReadingHistoryByUserId(userId, new TimelineRequest(now, 100));
+                postRepository.findReadingHistoryByUserId(userId, new TimelineRequest(now, 10));
         Timeline<PostSummaryDto> bookmarkedPosts =
-                postRepository.findBookmarksByUserId(userId, new TimelineRequest(now, 100));
+                postRepository.findBookmarksByUserId(userId, new TimelineRequest(now, 10));
 
         // fallback
         if (watchedPosts.getNumberOfElements() == 0 && bookmarkedPosts.getNumberOfElements() == 0) {
