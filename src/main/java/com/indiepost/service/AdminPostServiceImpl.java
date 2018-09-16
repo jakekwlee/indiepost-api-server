@@ -380,19 +380,22 @@ public class AdminPostServiceImpl implements AdminPostService {
     }
 
     private void addTags(Post post, List<String> tagList) {
-        if (tagList != null) {
-            List<Tag> tags = tagRepository.findByNameIn(tagList);
+        if (tagList != null && tagList.size() > 0) {
+            List<String> tagListLowerCased = tagList.stream()
+                    .map(t -> t.toLowerCase())
+                    .collect(Collectors.toList());
+            List<Tag> tags = tagRepository.findByNameIn(tagListLowerCased);
             List<String> tagNames = tags.stream()
                     .map(t -> t.getName().toLowerCase())
                     .collect(Collectors.toList());
             List<String> subList = (List<String>) CollectionUtils.subtract(
-                    tagList, tagNames
+                    tagListLowerCased, tagNames
             );
             if (!subList.isEmpty()) {
                 for (String name : subList) {
                     tagRepository.save(new Tag(name.toLowerCase()));
                 }
-                tags = tagRepository.findByNameIn(tagList);
+                tags = tagRepository.findByNameIn(tagListLowerCased);
             }
             addTagsToPost(post, tags);
         }
