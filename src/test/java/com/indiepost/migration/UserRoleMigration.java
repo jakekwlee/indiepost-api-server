@@ -1,6 +1,6 @@
 package com.indiepost.migration;
 
-import com.indiepost.NewIndiepostApplication;
+import com.indiepost.NewIndiepostApplicationKt;
 import com.indiepost.enums.Types;
 import com.indiepost.model.User;
 import com.indiepost.repository.UserRepository;
@@ -17,7 +17,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = NewIndiepostApplication.class)
+@SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 @Transactional
 public class UserRoleMigration {

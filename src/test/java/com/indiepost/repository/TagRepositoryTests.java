@@ -1,6 +1,6 @@
 package com.indiepost.repository;
 
-import com.indiepost.NewIndiepostApplication;
+import com.indiepost.NewIndiepostApplicationKt;
 import com.indiepost.model.Tag;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = NewIndiepostApplication.class)
+@SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 @Transactional
 public class TagRepositoryTests {

@@ -1,6 +1,6 @@
 package com.indiepost.repository;
 
-import com.indiepost.NewIndiepostApplication;
+import com.indiepost.NewIndiepostApplicationKt;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +16,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
  * Created by jake on 8/10/17.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = NewIndiepostApplication.class)
+@SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 @Transactional
 public class ClickRepositoryTests {

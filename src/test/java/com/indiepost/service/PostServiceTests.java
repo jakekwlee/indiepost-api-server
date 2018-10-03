@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.NewIndiepostApplication;
+import com.indiepost.NewIndiepostApplicationKt;
 import com.indiepost.dto.Highlight;
 import com.indiepost.dto.Timeline;
 import com.indiepost.dto.TimelineRequest;
@@ -26,7 +26,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
  * Created by jake on 17. 4. 23.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = NewIndiepostApplication.class)
+@SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 public class PostServiceTests {
 

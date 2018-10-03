@@ -1,7 +1,7 @@
 package com.indiepost.repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.indiepost.NewIndiepostApplication;
+import com.indiepost.NewIndiepostApplicationKt;
 import com.indiepost.dto.analytics.PeriodDto;
 import com.indiepost.dto.analytics.ShareStat;
 import com.indiepost.dto.analytics.TimeDomainDoubleStat;
@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Created by jake on 8/9/17.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = NewIndiepostApplication.class)
+@SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 @Transactional
 public class StatRepositoryTests {

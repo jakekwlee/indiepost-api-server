@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.NewIndiepostApplication;
+import com.indiepost.NewIndiepostApplicationKt;
 import com.indiepost.dto.Inquiry;
 import com.indiepost.dto.Suggestion;
 import com.indiepost.enums.Types;
@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
  * Created by jake on 9/1/17.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = NewIndiepostApplication.class)
+@SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 public class MailServiceTests {
 

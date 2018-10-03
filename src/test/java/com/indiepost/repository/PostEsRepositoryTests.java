@@ -1,6 +1,6 @@
 package com.indiepost.repository;
 
-import com.indiepost.NewIndiepostApplication;
+import com.indiepost.NewIndiepostApplicationKt;
 import com.indiepost.enums.Types;
 import com.indiepost.model.User;
 import com.indiepost.model.elasticsearch.PostEs;
@@ -23,7 +23,7 @@ import static com.indiepost.testHelper.JsonSerializer.printToJson;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = NewIndiepostApplication.class)
+@SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 @Transactional
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

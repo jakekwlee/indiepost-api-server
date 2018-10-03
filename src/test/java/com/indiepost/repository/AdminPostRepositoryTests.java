@@ -1,6 +1,5 @@
 package com.indiepost.repository;
 
-import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.Title;
 import org.junit.Test;
@@ -17,7 +16,7 @@ import static com.indiepost.enums.Types.PostStatus.PUBLISH;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = NewIndiepostApplication.class)
+@SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 @Transactional
 public class AdminPostRepositoryTests {

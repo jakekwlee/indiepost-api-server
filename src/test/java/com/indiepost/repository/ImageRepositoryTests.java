@@ -1,6 +1,6 @@
 package com.indiepost.repository;
 
-import com.indiepost.NewIndiepostApplication;
+import com.indiepost.NewIndiepostApplicationKt;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
 import org.junit.Assert;
@@ -21,7 +21,7 @@ import java.util.Set;
  * Created by jake on 10/12/17.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = NewIndiepostApplication.class)
+@SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 @Transactional
 public class ImageRepositoryTests {

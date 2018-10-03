@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.NewIndiepostApplication;
+import com.indiepost.NewIndiepostApplicationKt;
 import com.indiepost.dto.AdminInitialResponse;
 import com.indiepost.dto.CategoryDto;
 import com.indiepost.dto.ContributorDto;
@@ -20,7 +20,7 @@ import static com.indiepost.testHelper.JsonSerializer.printToJson;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = NewIndiepostApplication.class)
+@SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 public class AdminServiceTests {
     @Inject

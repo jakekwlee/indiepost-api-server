@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.NewIndiepostApplication;
+import com.indiepost.NewIndiepostApplicationKt;
 import com.indiepost.dto.user.SyncAuthorizationResponse;
 import com.indiepost.dto.user.UserDto;
 import com.indiepost.dto.user.UserProfileDto;
@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Created by jake on 17. 11. 13.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = NewIndiepostApplication.class)
+@SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 public class UserServiceTests {
 

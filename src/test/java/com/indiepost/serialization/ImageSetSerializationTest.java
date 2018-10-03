@@ -3,7 +3,7 @@ package com.indiepost.serialization;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.indiepost.NewIndiepostApplication;
+import com.indiepost.NewIndiepostApplicationKt;
 import com.indiepost.dto.ImageSetDto;
 import com.indiepost.service.ImageService;
 import org.junit.Test;
@@ -21,7 +21,7 @@ import java.util.List;
  * Created by jake on 17. 1. 22.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = NewIndiepostApplication.class)
+@SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 public class ImageSetSerializationTest {
 
