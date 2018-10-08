@@ -1,7 +1,7 @@
 package com.indiepost.repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.indiepost.NewIndiepostApplicationKt;
+import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.analytics.PeriodDto;
 import com.indiepost.dto.analytics.ShareStat;
 import com.indiepost.enums.Types.ClientType;
@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Created by jake on 17. 5. 25.
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = NewIndiepostApplicationKt.class)
+@SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
 @Transactional
 public class VisitorRepositoryTests {

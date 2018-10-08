@@ -37,7 +37,7 @@ data class PostEs(
         this.id = id
     }
 
-    fun getContributors(): List<String> {
+    fun getContributors(): MutableList<String> {
         return contributors
     }
 
@@ -45,7 +45,7 @@ data class PostEs(
         this.contributors = contributors
     }
 
-    fun getTags(): List<String> {
+    fun getTags(): MutableList<String> {
         return tags
     }
 

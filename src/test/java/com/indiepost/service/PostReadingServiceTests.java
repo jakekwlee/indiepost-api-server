@@ -1,75 +1,54 @@
 package com.indiepost.service;
 
-import com.indiepost.NewIndiepostApplicationKt;
+import com.indiepost.NewIndiepostApplication;
 import com.indiepost.model.PostReading;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = NewIndiepostApplicationKt.class)
+@SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
 public class PostReadingServiceTests {
 
     @Inject
     private PostUserInteractionService service;
 
-    private List<Long> insertedIds = new ArrayList<>();
-
-    @BeforeEach
-    public void beforeTest() {
-        PostReading postReading = new PostReading();
-        postReading.setCreated(LocalDateTime.now());
-        postReading.setLastRead(LocalDateTime.now());
-        Long id = service.add(1L, 500L);
-        insertedIds.add(id);
-    }
-
     @Test
     public void add_shouldAddUserReadingProperlyAndReturnId() {
         Long insertedId = service.add(4L, 500L);
         assertThat(insertedId).isNotNull();
-        insertedIds.add(insertedId);
     }
 
     @Test
-    public void setInvisibleByUserIdAndPostId_shouldAddUserReadingProperly() {
-        service.setInvisible(500L);
-        PostReading postReading = service.findOne(insertedIds.get(0));
+    @WithMockUser(username = "auth0|5b213cd8064de34cde981b47")
+    public void setInvisibleByPostId_shouldAddUserReadingProperly() {
+        service.setInvisible(8051L);
+        PostReading postReading = service.findOne(1L);
         assertThat(postReading.isVisible()).isFalse();
     }
 
     @Test
+    @WithMockUser(username = "auth0|5b213cd8064de34cde981b47")
     public void setInvisibleAllByUserId_shouldAddUserReadingProperly() {
         service.setInvisibleAll();
-        PostReading postReading = service.findOne(insertedIds.get(0));
+        PostReading postReading = service.findOne(1L);
         assertThat(postReading.isVisible()).isFalse();
         service.setVisibleAll();
     }
 
     @Test
+    @WithMockUser(username = "auth0|5b213cd8064de34cde981b47")
     public void setInvisibleAllByUserId_shouldAddUserReadingProperlyAndReturnId() {
         service.setInvisibleAll();
-        PostReading postReading = service.findOne(insertedIds.get(0));
+        PostReading postReading = service.findOne(1L);
         assertThat(postReading.isVisible()).isFalse();
     }
-
-    @AfterEach
-    public void afterTest() {
-        for (Long id : insertedIds) {
-            service.deleteById(id);
-        }
-    }
-
 }

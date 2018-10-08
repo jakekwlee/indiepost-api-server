@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.NewIndiepostApplicationKt;
+import com.indiepost.NewIndiepostApplication;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,7 +17,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
  */
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = NewIndiepostApplicationKt.class)
+@SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
 public class SitemapServiceTests {
 

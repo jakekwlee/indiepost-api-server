@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
-import com.indiepost.NewIndiepostApplicationKt;
+import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.service.PostService;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ import javax.inject.Inject;
  * Created by jake on 17. 3. 16.
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = NewIndiepostApplicationKt.class)
+@SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
 public class TagSearchTest {
 

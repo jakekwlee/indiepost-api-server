@@ -49,7 +49,6 @@ public class AdminServiceImpl implements AdminService {
         User currentUser = userService.findCurrentUser();
         AdminInitialResponse adminInitialResponse = new AdminInitialResponse();
         adminInitialResponse.setCurrentUser(userToUserDto(currentUser));
-        adminInitialResponse.setAuthors(getUserDtoList(UserRole.Author));
         adminInitialResponse.setCategories(categoryService.getDtoList());
         adminInitialResponse.setAuthorNames(adminPostService.findAllBylineNames());
         // TODO for test

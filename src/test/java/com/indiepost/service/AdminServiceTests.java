@@ -1,12 +1,11 @@
 package com.indiepost.service;
 
-import com.indiepost.NewIndiepostApplicationKt;
+import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.AdminInitialResponse;
 import com.indiepost.dto.CategoryDto;
 import com.indiepost.dto.ContributorDto;
 import com.indiepost.dto.TagDto;
 import com.indiepost.dto.post.Title;
-import com.indiepost.dto.user.UserDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +19,7 @@ import static com.indiepost.testHelper.JsonSerializer.printToJson;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = NewIndiepostApplicationKt.class)
+@SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
 public class AdminServiceTests {
     @Inject
@@ -33,9 +32,6 @@ public class AdminServiceTests {
         assertThat(dto.getAuthorNames())
                 .isNotNull()
                 .hasAtLeastOneElementOfType(String.class);
-        assertThat(dto.getAuthors())
-                .isNotNull()
-                .hasAtLeastOneElementOfType(UserDto.class);
         assertThat(dto.getContributors())
                 .isNotNull()
                 .hasAtLeastOneElementOfType(ContributorDto.class);

@@ -1,6 +1,6 @@
 package com.indiepost.service;
 
-import com.indiepost.NewIndiepostApplicationKt;
+import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.Inquiry;
 import com.indiepost.dto.Suggestion;
 import com.indiepost.enums.Types;
@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Created by jake on 9/1/17.
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = NewIndiepostApplicationKt.class)
+@SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
 public class MailServiceTests {
 

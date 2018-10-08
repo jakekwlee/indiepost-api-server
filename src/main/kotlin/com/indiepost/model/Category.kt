@@ -22,7 +22,7 @@ data class Category(
         var parentId: Long? = null,
 
         @OneToMany(mappedBy = "parent", orphanRemoval = true, fetch = FetchType.LAZY)
-        var categories: List<Category>? = null,
+        var categories: MutableList<Category>? = null,
 
         @Column(nullable = false, unique = true)
         @Size(min = 3, max = 20)

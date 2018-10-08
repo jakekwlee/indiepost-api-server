@@ -3,6 +3,7 @@ package com.indiepost.dto;
 import com.indiepost.dto.post.Title;
 import com.indiepost.dto.user.UserDto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,7 +11,8 @@ import java.util.List;
  */
 public class AdminInitialResponse {
 
-    private List<UserDto> authors;
+    // TODO unused property
+    private List<UserDto> authors = new ArrayList<>();
 
     private List<String> authorNames;
 

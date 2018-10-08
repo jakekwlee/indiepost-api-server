@@ -18,7 +18,7 @@ data class Role(
         var roleType: Types.UserRole? = null,
 
         @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
-        var users: List<User>? = null,
+        var users: MutableList<User>? = null,
 
         var level: Int = 1
 ) : Serializable {

@@ -36,7 +36,7 @@ data class Link(
 
         @OneToMany(fetch = FetchType.LAZY, mappedBy = "link")
         @LazyCollection(LazyCollectionOption.EXTRA)
-        var clicks: List<Click>? = null,
+        var clicks: MutableList<Click>? = null,
 
         @ManyToOne(optional = false, fetch = FetchType.LAZY)
         @JoinColumn(name = "campaignId")

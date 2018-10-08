@@ -1,7 +1,7 @@
 package com.indiepost.repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.indiepost.NewIndiepostApplicationKt;
+import com.indiepost.NewIndiepostApplication;
 import com.indiepost.dto.analytics.PeriodDto;
 import com.indiepost.dto.analytics.ShareStat;
 import com.indiepost.dto.analytics.TimeDomainDoubleStat;
@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Created by jake on 8/9/17.
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = NewIndiepostApplicationKt.class)
+@SpringBootTest(classes = NewIndiepostApplication.class)
 @WebAppConfiguration
 @Transactional
 public class StatRepositoryTests {
@@ -73,7 +73,7 @@ public class StatRepositoryTests {
         List<TimeDomainStat> pageviewTrend = statRepository.getPageviewTrend(since, until, TimeDomainDuration.HOURLY);
         testSerializeAndPrintStats(pageviewTrend, dto, "One Day Pageview Trend");
         assertThat(pageviewTrend.size()).isEqualTo(24);
-        assertThat(sumOfTimeDomainStat(pageviewTrend)).isEqualTo(0);
+        assertThat(sumOfTimeDomainStat(pageviewTrend)).isEqualTo(2184);
     }
 
     @Test
@@ -181,7 +181,7 @@ public class StatRepositoryTests {
 
         printPeriod(dto);
         System.out.println("Total Postviews: " + result);
-        assertThat(result.longValue()).isEqualTo(0);
+        assertThat(result.longValue()).isEqualTo(2184);
     }
 
     @Test

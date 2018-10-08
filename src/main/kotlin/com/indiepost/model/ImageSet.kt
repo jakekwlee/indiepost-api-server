@@ -27,7 +27,7 @@ data class ImageSet(
         @JoinColumn(name = "imageSetId")
         @BatchSize(size = 20)
         @JsonIgnore
-        var images: Set<Image>? = null,
+        var images: MutableSet<Image>? = null,
 
         @Column(nullable = false)
         @Size(min = 9, max = 10)
