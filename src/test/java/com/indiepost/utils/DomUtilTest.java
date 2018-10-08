@@ -5,8 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.indiepost.dto.post.RelatedPostsMatchingResult;
 import org.apache.commons.collections4.CollectionUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
@@ -54,8 +53,8 @@ public class DomUtilTest {
                 "2017/10/13/hJVwPo", "2017/10/13/k5q1j8", "2017/10/13/BaQ5b8", "2017/10/13/lxJMjF"
         );
 
-        Assert.assertEquals(expectedNumberOfImages, imageSetPrefixList.size());
-        Assert.assertTrue(CollectionUtils.isEqualCollection(expectedImageSetPrefixList, imageSetPrefixList));
+        assertThat(imageSetPrefixList.size()).isEqualTo(expectedNumberOfImages);
+        assertThat(CollectionUtils.isEqualCollection(expectedImageSetPrefixList, imageSetPrefixList)).isTrue();
         ObjectMapper objectMapper = new ObjectMapper();
         String result = objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true)
                 .writeValueAsString(imageSetPrefixList);

@@ -5,13 +5,13 @@ import com.indiepost.dto.Highlight;
 import com.indiepost.dto.Timeline;
 import com.indiepost.dto.TimelineRequest;
 import com.indiepost.dto.post.PostSummaryDto;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
@@ -25,7 +25,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 /**
  * Created by jake on 17. 4. 23.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 public class PostServiceTests {

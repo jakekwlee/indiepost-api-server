@@ -29,13 +29,13 @@ public interface CriteriaUtils {
             builder.and(post.modifiedAt.loe(query.getModifiedBefore()));
         }
         if (query.getSplash() != null) {
-            builder.and(post.splash.eq(query.getSplash()));
+            builder.and(post.isSplash.eq(query.getSplash()));
         }
         if (query.getFeatured() != null) {
-            builder.and(post.featured.eq(query.getFeatured()));
+            builder.and(post.isFeatured.eq(query.getFeatured()));
         }
         if (query.getPicked() != null) {
-            builder.and(post.picked.eq(query.getPicked()));
+            builder.and(post.isPicked.eq(query.getPicked()));
         }
         return builder;
     }

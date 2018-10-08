@@ -3,14 +3,14 @@ package com.indiepost.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.indiepost.dto.analytics.TimeDomainStat;
 import com.indiepost.utils.DateUtil;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created by jake on 17. 4. 28.
@@ -34,15 +34,15 @@ public class AnalyticsServiceUnitTests {
                         input,
                         LocalDate.of(2017, 1, 1),
                         LocalDate.of(2017, 1, 1));
-        assertEquals(24, output.size());
+        assertThat(output.size()).isEqualTo(24);
         for (int i = 0; i < output.size(); ++i) {
             TimeDomainStat stat = output.get(i);
             if (i == 4) {
-                assertEquals(d1Value, stat.getStatValue());
+                assertThat(stat.getStatValue()).isEqualTo(d1Value);
             } else if (i == 10) {
-                assertEquals(d2Value, stat.getStatValue());
+                assertThat(stat.getStatValue()).isEqualTo(d2Value);
             } else {
-                assertEquals((Long) 0L, stat.getStatValue());
+                assertThat(stat.getStatValue()).isEqualTo(0L);
             }
         }
     }

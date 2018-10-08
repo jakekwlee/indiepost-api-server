@@ -2,7 +2,7 @@ package com.indiepost.mapper;
 
 import com.indiepost.dto.user.UserDto;
 import com.indiepost.model.User;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

@@ -3,11 +3,10 @@ package com.indiepost.repository;
 import com.indiepost.NewIndiepostApplicationKt;
 import com.indiepost.model.Image;
 import com.indiepost.model.ImageSet;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +16,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 /**
  * Created by jake on 10/12/17.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 @Transactional
@@ -34,9 +35,9 @@ public class ImageRepositoryTests {
         String prefix = "2016/06/KykQo6TS";
         ImageSet imageSet = imageRepository.findByPrefix(prefix);
         String actual = imageSet.getPrefix();
-        Assert.assertEquals(prefix, actual);
+        assertThat(actual).isEqualTo(prefix);
         for (Image image : imageSet.getImages()) {
-            Assert.assertTrue(image.getFilePath().contains(prefix));
+            assertThat(image.getFilePath().contains(prefix)).isTrue();
         }
     }
 
@@ -57,13 +58,13 @@ public class ImageRepositoryTests {
         };
         Collections.addAll(prefixList, prefixArray);
         List<ImageSet> imageSetList = imageRepository.findByPrefixes(prefixList);
-        Assert.assertEquals(10, imageSetList.size());
+        assertThat(imageSetList.size()).isEqualTo(10);
 
         for (ImageSet imageSet : imageSetList) {
             Set<Image> images = imageSet.getImages();
             String prefix = imageSet.getPrefix();
             for (Image image : images) {
-                Assert.assertTrue(image.getFilePath().contains(prefix));
+                assertThat(image.getFilePath().contains(prefix)).isTrue();
             }
         }
     }

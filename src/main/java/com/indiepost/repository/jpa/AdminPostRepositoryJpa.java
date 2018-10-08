@@ -282,8 +282,8 @@ public class AdminPostRepositoryJpa implements AdminPostRepository {
     public void disableSplashPosts() {
         getQueryFactory()
                 .update(post)
-                .set(post.splash, false)
-                .where(post.status.eq(PostStatus.PUBLISH), post.splash.eq(true))
+                .set(post.isSplash, false)
+                .where(post.status.eq(PostStatus.PUBLISH), post.isSplash.eq(true))
                 .execute();
     }
 
@@ -291,14 +291,14 @@ public class AdminPostRepositoryJpa implements AdminPostRepository {
     public void disableFeaturedPosts() {
         getQueryFactory()
                 .update(post)
-                .set(post.featured, false)
-                .where(post.status.eq(PostStatus.PUBLISH), post.featured.eq(true))
+                .set(post.isFeatured, false)
+                .where(post.status.eq(PostStatus.PUBLISH), post.isFeatured.eq(true))
                 .execute();
     }
 
     private JPAQuery addProjections(JPAQuery query) {
         return query.select(
-                post.id, post.originalId, post.title, post.displayName, post.splash, post.featured, post.picked,
+                post.id, post.originalId, post.title, post.displayName, post.isSplash, post.isFeatured, post.isPicked,
                 post.category.name, post.author.displayName, post.editor.displayName,
                 post.createdAt, post.modifiedAt, post.publishedAt, post.status
         );
@@ -333,9 +333,9 @@ public class AdminPostRepositoryJpa implements AdminPostRepository {
             dto.setOriginalId(row.get(post.originalId));
             dto.setTitle(row.get(post.title));
             dto.setDisplayName(row.get(post.displayName));
-            dto.setSplash(row.get(post.splash));
-            dto.setFeatured(row.get(post.featured));
-            dto.setPicked(row.get(post.picked));
+            dto.setSplash(row.get(post.isSplash));
+            dto.setFeatured(row.get(post.isFeatured));
+            dto.setPicked(row.get(post.isPicked));
             dto.setCategoryName(row.get(post.category.name));
             dto.setAuthorDisplayName(row.get(post.author.displayName));
             dto.setEditorDisplayName(row.get(post.editor.displayName));

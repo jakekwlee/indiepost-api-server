@@ -6,12 +6,11 @@ import com.indiepost.dto.user.UserDto;
 import com.indiepost.dto.user.UserProfileDto;
 import com.indiepost.model.User;
 import com.indiepost.utils.DateUtil;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
@@ -25,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Created by jake on 17. 11. 13.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 public class UserServiceTests {
@@ -38,7 +37,7 @@ public class UserServiceTests {
         List<User> users = userService.findAllUsers(0, 100, true);
         Long id = -1L;
         for (User user : users) {
-            Assert.assertNotEquals(id, user.getId());
+            assertThat(user.getId()).isEqualTo(id);
             id = user.getId();
         }
     }

@@ -21,7 +21,6 @@ data class UserAgent(
 ) {
     @Column(nullable = false, unique = true)
     var uaHash: Long? = null
-        private set
 
     fun setUaHash(uaString: String) {
         this.uaHash = Murmur2.hash64(uaString.toByteArray(), uaString.length, 1110L)

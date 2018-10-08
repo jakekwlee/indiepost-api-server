@@ -2,14 +2,13 @@ package com.indiepost.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.collections4.CollectionUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created by jake on 10/12/17.
@@ -51,14 +50,14 @@ public class DomUtilUnitTests {
                 "2017/10/13/hJVwPo", "2017/10/13/k5q1j8", "2017/10/13/BaQ5b8", "2017/10/13/lxJMjF"
         );
 
-        assertEquals(4, imageSetPrefixList.size());
-        assertTrue(CollectionUtils.isEqualCollection(expectedImageSetPrefixList, imageSetPrefixList));
+        assertThat(imageSetPrefixList.size()).isEqualTo(4);
+        assertThat(CollectionUtils.isEqualCollection(expectedImageSetPrefixList, imageSetPrefixList)).isTrue();
     }
 
     @Test
     public void htmlToTextShouldWorkProperly() {
         String text = DomUtil.htmlToText(content);
-        assertTrue("Converted text should not content html tags", !text.contains("<p>"));
-        assertTrue("Converted text should not content html special characters", !text.contains("&nbsp;"));
+        assertThat(text.contains("<p>")).isFalse();
+        assertThat(text.contains("&nbsp;")).isFalse();
     }
 }

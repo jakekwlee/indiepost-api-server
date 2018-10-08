@@ -7,12 +7,12 @@ import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.indiepost.NewIndiepostApplicationKt;
 import com.indiepost.dto.post.PostSummaryDto;
 import com.indiepost.service.PostService;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
@@ -20,7 +20,7 @@ import javax.inject.Inject;
 /**
  * Created by jake on 17. 3. 16.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 public class TagSearchTest {

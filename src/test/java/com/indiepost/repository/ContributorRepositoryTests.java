@@ -4,14 +4,14 @@ import com.indiepost.NewIndiepostApplicationKt;
 import com.indiepost.enums.Types;
 import com.indiepost.model.Contributor;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
@@ -22,7 +22,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 @Transactional
@@ -34,7 +34,7 @@ public class ContributorRepositoryTests {
     private List<Long> insertedId = new ArrayList<>();
 
 
-    @Before
+    @BeforeEach
     public void beforeTests() {
         Contributor contributor = new Contributor();
         contributor.setFullName(RandomStringUtils.randomAlphanumeric(10));
@@ -90,7 +90,7 @@ public class ContributorRepositoryTests {
         assertThat(contributors.size()).isEqualTo(0);
     }
 
-    @After
+    @AfterEach
     public void afterTests() {
         for (Long id : insertedId) {
             contributorRepository.deleteById(id);

@@ -5,13 +5,11 @@ import com.indiepost.enums.Types;
 import com.indiepost.model.User;
 import com.indiepost.model.elasticsearch.PostEs;
 import com.indiepost.repository.elasticsearch.PostEsRepository;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
@@ -22,11 +20,11 @@ import java.util.List;
 import static com.indiepost.testHelper.JsonSerializer.printToJson;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 @Transactional
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+// TODO @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class PostEsRepositoryTests {
 
     @Inject

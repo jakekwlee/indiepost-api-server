@@ -56,7 +56,7 @@ public class VisitorRepositoryJpa implements VisitorRepository {
     public Long getTotalVisitors(LocalDateTime since, LocalDateTime until) {
         return getQueryFactory().selectFrom(qVisitor)
                 .where(qVisitor.timestamp.between(since, until)
-                        .and(qVisitor.adVisitor.isFalse()))
+                        .and(qVisitor.isAdVisitor.isFalse()))
                 .fetchCount();
     }
 

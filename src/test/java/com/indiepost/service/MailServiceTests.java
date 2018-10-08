@@ -4,22 +4,21 @@ import com.indiepost.NewIndiepostApplicationKt;
 import com.indiepost.dto.Inquiry;
 import com.indiepost.dto.Suggestion;
 import com.indiepost.enums.Types;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created by jake on 9/1/17.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 public class MailServiceTests {
@@ -48,10 +47,10 @@ public class MailServiceTests {
     public void testGetMailReceivers() {
         Types.UserRole userRole = Types.UserRole.Administrator;
         String[] mailTo = mailService.getMailReceivers(userRole);
-        assertTrue(mailTo.length > 0);
+        assertThat(mailTo.length).isGreaterThan(0);
         for (String to : mailTo) {
             if (to.contains("Indiepost")) {
-                assertEquals("Indiepost <sysadmin@indiepost.co.kr>", to);
+                assertThat(to).isEqualTo("Indiepost <sysadmin@indiepost.co.kr>");
             }
         }
     }

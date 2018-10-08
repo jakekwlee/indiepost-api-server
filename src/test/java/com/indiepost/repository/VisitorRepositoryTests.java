@@ -5,11 +5,10 @@ import com.indiepost.NewIndiepostApplicationKt;
 import com.indiepost.dto.analytics.PeriodDto;
 import com.indiepost.dto.analytics.ShareStat;
 import com.indiepost.enums.Types.ClientType;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
@@ -18,11 +17,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.indiepost.repository.RepositoryTestUtil.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created by jake on 17. 5. 25.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 @Transactional
@@ -40,7 +40,7 @@ public class VisitorRepositoryTests {
 
         printPeriod(dto);
         System.out.println("Total Visitors: " + result);
-        Assert.assertNotEquals("Total visitors should not 0", result.longValue(), 0);
+        assertThat(result.longValue()).isGreaterThan(0);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class VisitorRepositoryTests {
         Long result = visitorRepository.getTotalVisitors(since, until, ClientType.INDIEPOST_LEGACY_MOBILE_APP.toString());
         printPeriod(dto);
         System.out.println("Total Mobile App Visitors: " + result);
-        Assert.assertNotEquals("Total mobile app visitors should not 0", result.longValue(), 0);
+        assertThat(result.longValue()).isGreaterThan(0);
     }
 
 
@@ -62,7 +62,7 @@ public class VisitorRepositoryTests {
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
         List<ShareStat> share = visitorRepository.getTopChannel(since, until, 10);
         testSerializeAndPrintStats(share, dto, "Top Channel");
-        Assert.assertTrue("Repository should return resultset", share.size() > 0);
+        assertThat(share.size()).isGreaterThan(0);
     }
 
     @Test
@@ -72,7 +72,7 @@ public class VisitorRepositoryTests {
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
         List<ShareStat> share = visitorRepository.getTopReferrers(since, until, 10);
         testSerializeAndPrintStats(share, dto, "Top Referrer");
-        Assert.assertTrue("Repository should return resultset", share.size() > 0);
+        assertThat(share.size()).isGreaterThan(0);
     }
 
     @Test
@@ -82,7 +82,7 @@ public class VisitorRepositoryTests {
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
         List<ShareStat> share = visitorRepository.getTopOs(since, until, 10);
         testSerializeAndPrintStats(share, dto, "Top Os");
-        Assert.assertTrue("Repository should return resultset", share.size() > 0);
+        assertThat(share.size()).isGreaterThan(0);
     }
 
     @Test
@@ -92,6 +92,6 @@ public class VisitorRepositoryTests {
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
         List<ShareStat> share = visitorRepository.getTopWebBrowsers(since, until, 10);
         testSerializeAndPrintStats(share, dto, "Top Web Browsers");
-        Assert.assertTrue("Repository should return resultset", share.size() > 0);
+        assertThat(share.size()).isGreaterThan(0);
     }
 }

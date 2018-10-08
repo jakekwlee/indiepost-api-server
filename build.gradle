@@ -1,7 +1,7 @@
 buildscript {
     ext {
-        kotlinVersion = "1.2.51"
-        springBootVersion = "2.0.2.RELEASE"
+        kotlinVersion = "1.2.71"
+        springBootVersion = "2.0.5.RELEASE"
         querydslVersion = "4.2.1"
     }
     repositories {
@@ -12,12 +12,15 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
         classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
+        classpath("org.jetbrains.kotlin:kotlin-noarg:${kotlinVersion}")
     }
 }
 
 apply plugin: "java"
 apply plugin: "kotlin"
 apply plugin: "kotlin-spring"
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-jpa'
 apply plugin: "org.springframework.boot"
 apply plugin: "io.spring.dependency-management"
 apply plugin: "idea"
@@ -25,12 +28,18 @@ apply plugin: "idea"
 group = "com.indiepost"
 version = "2.4.2-SNAPSHOT"
 sourceCompatibility = 1.8
+
+test {
+    useJUnitPlatform()
+}
+
 compileKotlin {
     kotlinOptions {
         freeCompilerArgs = ["-Xjsr305=strict"]
         jvmTarget = "1.8"
     }
 }
+
 compileTestKotlin {
     kotlinOptions {
         freeCompilerArgs = ["-Xjsr305=strict"]
@@ -42,43 +51,19 @@ springBoot {
     mainClassName = "com.indiepost.NewIndiepostApplicationKt"
 }
 
-def queryDslOutput = file("generated/main/java")
-
-sourceSets {
-    main {
-        java {
-            srcDir "generated/main/java"
-        }
+idea {
+    module {
+        def kaptMain = file('build/generated/source/kapt/main')
+        sourceDirs += kaptMain
+        generatedSourceDirs += kaptMain
     }
 }
 
-clean {
-    delete queryDslOutput
+allOpen {
+    annotation("javax.persistence.Entity")
+    annotation("javax.persistence.MappedSuperclass")
+    annotation("javax.persistence.Embeddable")
 }
-
-task generateQueryDSL(type: JavaCompile, group: "build", description: "Query dsl Generator") {
-    doFirst {
-        if (!queryDslOutput.exists()) {
-            logger.info("Creating `$queryDslOutput` directory")
-
-            if (!queryDslOutput.mkdirs()) {
-                throw new InvalidUserDataException("Unable to create `$queryDslOutput` directory")
-            }
-        }
-    }
-
-    source = sourceSets.main.java
-    classpath = configurations.compile
-    options.compilerArgs = [
-            "-proc:only",
-            "-processor",
-            "com.querydsl.apt.jpa.JPAAnnotationProcessor"
-    ]
-    destinationDir = queryDslOutput
-}
-
-compileTestJava.dependsOn(generateQueryDSL)
-compileJava.dependsOn(processResources)
 
 repositories {
     mavenCentral()
@@ -94,7 +79,11 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-json")
     runtime("org.springframework.boot:spring-boot-devtools")
     compileOnly("org.springframework.boot:spring-boot-configuration-processor")
-    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile("org.springframework.boot:spring-boot-starter-test") {
+        exclude module: 'junit'
+    }
+    testImplementation('org.junit.jupiter:junit-jupiter-api')
+    testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine')
     testCompile("org.springframework.security:spring-security-test")
 
     // for kotlin
@@ -103,7 +92,7 @@ dependencies {
     compile("org.jetbrains.kotlin:kotlin-reflect")
 
     compile("com.querydsl:querydsl-core:${querydslVersion}")
-    compile("com.querydsl:querydsl-apt:${querydslVersion}")
+    kapt("com.querydsl:querydsl-apt:${querydslVersion}:jpa")
     compile("com.querydsl:querydsl-jpa:${querydslVersion}")
 
     compile group: "io.jsonwebtoken", name: "jjwt", version: "0.7.0"
@@ -126,17 +115,14 @@ dependencies {
     compile group: "org.apache.commons", name: "commons-collections4", version: "4.1"
     compile group: "com.fasterxml.jackson.datatype", name: "jackson-datatype-hibernate5"
 
-    // https://mvnrepository.com/artifact/com.auth0/auth0
     compile group: "com.auth0", name: "auth0", version: "1.7.0"
     compile group: "com.auth0", name: "java-jwt", version: "3.3.0"
-    // https://mvnrepository.com/artifact/com.mashape.unirest/unirest-java
     compile group: "com.mashape.unirest", name: "unirest-java", version: "1.4.9"
 
 
+    testCompile group: "org.assertj", name: "assertj-core", version: "3.11.1"
 
-    testCompile group: "org.assertj", name: "assertj-core", version: "3.8.0"
-
-    runtime group: "org.mariadb.jdbc", name: "mariadb-java-client", version: "2.2.5"
+    runtime group: "org.mariadb.jdbc", name: "mariadb-java-client", version: "2.3.0"
 
     compile files("local_libs/ua-parser-1.3.1-SNAPSHOT.jar")
 }

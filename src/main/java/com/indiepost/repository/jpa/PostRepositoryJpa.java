@@ -243,7 +243,7 @@ public class PostRepositoryJpa implements PostRepository {
         LocalDateTime timepoint = instantToLocalDateTime(instant);
 
         whereClause = post.status.eq(PostStatus.PUBLISH)
-                .and(r.visible.isTrue())
+                .and(r.isVisible.isTrue())
                 .and(r.userId.eq(userId))
                 .and(isAfter ?
                         r.lastRead.after(timepoint) :
@@ -353,8 +353,8 @@ public class PostRepositoryJpa implements PostRepository {
 
     private JPAQuery addProjections(JPAQuery query) {
         return query.select(
-                post.id, post.categoryId, post.category.name, post.category.slug, post.splash, post.picked, post.featured,
-                post.displayName, post.title, post.publishedAt, post.modifiedAt, post.excerpt, post.titleImage, post.showLastUpdated);
+                post.id, post.categoryId, post.category.name, post.category.slug, post.isSplash, post.isPicked, post.isFeatured,
+                post.displayName, post.title, post.publishedAt, post.modifiedAt, post.excerpt, post.titleImage, post.isShowLastUpdated);
     }
 
 
@@ -368,10 +368,10 @@ public class PostRepositoryJpa implements PostRepository {
             dto.setPublishedAt(localDateTimeToInstant(row.get(post.publishedAt)));
             dto.setModifiedAt(localDateTimeToInstant(row.get(post.modifiedAt)));
             dto.setExcerpt(row.get(post.excerpt));
-            dto.setSplash(row.get(post.splash));
-            dto.setFeatured(row.get(post.featured));
-            dto.setPicked(row.get(post.picked));
-            dto.setShowLastUpdated(row.get(post.showLastUpdated));
+            dto.setSplash(row.get(post.isSplash));
+            dto.setFeatured(row.get(post.isFeatured));
+            dto.setPicked(row.get(post.isPicked));
+            dto.setShowLastUpdated(row.get(post.isShowLastUpdated));
             dto.setCategoryName(row.get(post.category.slug));
             ImageSet titleImage = row.get(post.titleImage);
             if (titleImage != null) {

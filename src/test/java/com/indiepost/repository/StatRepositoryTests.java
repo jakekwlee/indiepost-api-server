@@ -8,11 +8,10 @@ import com.indiepost.dto.analytics.TimeDomainDoubleStat;
 import com.indiepost.dto.analytics.TimeDomainStat;
 import com.indiepost.enums.Types.ClientType;
 import com.indiepost.enums.Types.TimeDomainDuration;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
@@ -26,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Created by jake on 8/9/17.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 @Transactional
@@ -42,7 +41,7 @@ public class StatRepositoryTests {
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
         List<TimeDomainStat> pageviewTrend = statRepository.getPageviewTrend(since, until, TimeDomainDuration.YEARLY);
         testSerializeAndPrintStats(pageviewTrend, dto, "Yearly Pageview Trend");
-        Assert.assertNotEquals("Sum of pageviewTrend should not 0", sumOfTimeDomainStat(pageviewTrend), 0);
+        assertThat(sumOfTimeDomainStat(pageviewTrend)).isNotEqualTo(0);
     }
 
     @Test
@@ -52,7 +51,7 @@ public class StatRepositoryTests {
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
         List<TimeDomainStat> pageviewTrend = statRepository.getPageviewTrend(since, until, TimeDomainDuration.MONTHLY);
         testSerializeAndPrintStats(pageviewTrend, dto, "Monthly Pageview Trend");
-        Assert.assertNotEquals("Sum of pageviewTrend should not 0", sumOfTimeDomainStat(pageviewTrend), 0);
+        assertThat(sumOfTimeDomainStat(pageviewTrend)).isNotEqualTo(0);
     }
 
     @Test
@@ -62,8 +61,8 @@ public class StatRepositoryTests {
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
         List<TimeDomainStat> pageviewTrend = statRepository.getPageviewTrend(since, until, TimeDomainDuration.DAILY);
         testSerializeAndPrintStats(pageviewTrend, dto, "Daily Pageview Trend");
-        Assert.assertEquals("PageviewTrend(Daily) should contain 5 day of results", 5, pageviewTrend.size());
-        Assert.assertNotEquals("Sum of pageviewTrend should not 0", sumOfTimeDomainStat(pageviewTrend), 0);
+        assertThat(pageviewTrend.size()).isNotEqualTo(5);
+        assertThat(sumOfTimeDomainStat(pageviewTrend)).isNotEqualTo(0);
     }
 
     @Test
@@ -73,8 +72,8 @@ public class StatRepositoryTests {
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
         List<TimeDomainStat> pageviewTrend = statRepository.getPageviewTrend(since, until, TimeDomainDuration.HOURLY);
         testSerializeAndPrintStats(pageviewTrend, dto, "One Day Pageview Trend");
-        Assert.assertEquals("PageviewTrend(Hourly) should contain 24 hours of results", 24, pageviewTrend.size());
-        Assert.assertNotEquals("Sum of pageviewTrend should not 0", sumOfTimeDomainStat(pageviewTrend), 0);
+        assertThat(pageviewTrend.size()).isEqualTo(24);
+        assertThat(sumOfTimeDomainStat(pageviewTrend)).isEqualTo(0);
     }
 
     @Test
@@ -89,7 +88,7 @@ public class StatRepositoryTests {
                 .map(s -> s.getValue1())
                 .mapToLong(value -> value.longValue())
                 .sum();
-        Assert.assertEquals("Method should return correct value", totalPageviewExpected, totalPageviewActual);
+        assertThat(totalPageviewActual).isEqualTo(totalPageviewExpected);
     }
 
     @Test
@@ -105,7 +104,7 @@ public class StatRepositoryTests {
                 .mapToLong(value -> value.longValue())
                 .sum();
         testSerializeAndPrintStats(pageviewTrend, dto, "Monthly Pageview Trend");
-        Assert.assertEquals("Method should return correct value", totalPageviewExpected, totalPageviewActual);
+        assertThat(totalPageviewActual).isEqualTo(totalPageviewExpected);
     }
 
     @Test
@@ -121,8 +120,8 @@ public class StatRepositoryTests {
                 .mapToLong(value -> value.longValue())
                 .sum();
         testSerializeAndPrintStats(pageviewTrend, dto, "Daily Pageview Trend");
-        Assert.assertEquals("PageviewTrend(Daily) should contain 5 day of results", 5, pageviewTrend.size());
-        Assert.assertEquals("Method should return correct value", totalPageviewExpected, totalPageviewActual);
+        assertThat(pageviewTrend.size()).isEqualTo(5);
+        assertThat(totalPageviewActual).isEqualTo(totalPageviewExpected);
     }
 
     @Test
@@ -137,8 +136,8 @@ public class StatRepositoryTests {
                 .map(s -> s.getValue1())
                 .mapToLong(value -> value.longValue())
                 .sum();
-        Assert.assertEquals("Method should return correct value", totalPageviewExpected, totalPageviewActual);
-        Assert.assertEquals("PageviewTrend(Hourly) should contain 24 hours of results", 24, pageviewTrend.size());
+        assertThat(totalPageviewActual).isEqualTo(totalPageviewExpected);
+        assertThat(pageviewTrend.size()).isEqualTo(24);
     }
 
     @Test
@@ -154,7 +153,7 @@ public class StatRepositoryTests {
         Long expected = 234267L;
         PeriodDto dto = getMonthlyPeriod();
         Long result = testRetrieveTotals(dto);
-        Assert.assertEquals(expected, result);
+        assertThat(result).isEqualTo(result);
     }
 
     @Test
@@ -162,7 +161,7 @@ public class StatRepositoryTests {
         Long expected = 13405L;
         PeriodDto dto = getDailyPeriod();
         Long result = testRetrieveTotals(dto);
-        Assert.assertEquals(expected, result);
+        assertThat(result).isEqualTo(expected);
     }
 
     @Test
@@ -170,7 +169,7 @@ public class StatRepositoryTests {
         Long expected = 2184L;
         PeriodDto dto = getOneDayPeriod();
         Long result = testRetrieveTotals(dto);
-        Assert.assertEquals(expected, result);
+        assertThat(result).isEqualTo(expected);
     }
 
     @Test
@@ -182,7 +181,7 @@ public class StatRepositoryTests {
 
         printPeriod(dto);
         System.out.println("Total Postviews: " + result);
-        Assert.assertNotEquals("Total postviews should not 0", result.longValue(), 0);
+        assertThat(result.longValue()).isEqualTo(0);
     }
 
     @Test
@@ -192,7 +191,7 @@ public class StatRepositoryTests {
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
         List<ShareStat> share = statRepository.getPageviewsByCategory(since, until, 30);
         testSerializeAndPrintStats(share, dto, "Pageview By Category");
-        Assert.assertTrue("Repository should return resultset", share.size() > 0);
+        assertThat(share.size()).isGreaterThan(0);
     }
 
     @Test
@@ -202,7 +201,7 @@ public class StatRepositoryTests {
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
         List<ShareStat> share = statRepository.getPageviewsByAuthor(since, until, 30);
         testSerializeAndPrintStats(share, dto, "Pageview By Author");
-        Assert.assertTrue("Repository should return resultset", share.size() > 0);
+        assertThat(share.size()).isGreaterThan(0);
     }
 
     @Test
@@ -212,7 +211,7 @@ public class StatRepositoryTests {
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
         List<ShareStat> share = statRepository.getTopPages(since, until, 10, ClientType.INDIEPOST_WEBAPP.toString());
         testSerializeAndPrintStats(share, dto, "Top Pages (Webapp)");
-        Assert.assertTrue("Repository should return resultset", share.size() > 0);
+        assertThat(share.size()).isGreaterThan(0);
     }
 
     @Test
@@ -222,7 +221,7 @@ public class StatRepositoryTests {
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
         List<ShareStat> share = statRepository.getTopPages(since, until, 10, ClientType.INDIEPOST_LEGACY_MOBILE_APP.toString());
         testSerializeAndPrintStats(share, dto, "Top pages (Mobile)");
-        Assert.assertTrue("Repository should return resultset", share.size() > 0);
+        assertThat(share.size()).isGreaterThan(0);
     }
 
     @Test
@@ -232,7 +231,7 @@ public class StatRepositoryTests {
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
         List<ShareStat> share = statRepository.getTopPosts(since, until, 10, ClientType.INDIEPOST_WEBAPP.toString());
         testSerializeAndPrintStats(share, dto, "Top Posts (Webapp)");
-        Assert.assertTrue("Repository should return resultset", share.size() > 0);
+        assertThat(share.size()).isGreaterThan(0);
     }
 
     @Test
@@ -242,7 +241,7 @@ public class StatRepositoryTests {
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
         List<ShareStat> share = statRepository.getTopPosts(since, until, 10, ClientType.INDIEPOST_LEGACY_MOBILE_APP.toString());
         testSerializeAndPrintStats(share, dto, "Top Posts (Mobile)");
-        Assert.assertTrue("Repository should return resultset", share.size() > 0);
+        assertThat(share.size()).isGreaterThan(0);
     }
 
     @Test
@@ -252,7 +251,7 @@ public class StatRepositoryTests {
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
         List<ShareStat> share = statRepository.getTopLandingPages(since, until, 10, ClientType.INDIEPOST_WEBAPP.toString());
         testSerializeAndPrintStats(share, dto, "Top Landing Pages (Webapp)");
-        Assert.assertTrue("Repository should return resultset", share.size() > 0);
+        assertThat(share.size()).isGreaterThan(0);
     }
 
     @Test
@@ -262,7 +261,7 @@ public class StatRepositoryTests {
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
         List<ShareStat> share = statRepository.getTopLandingPages(since, until, 10, ClientType.INDIEPOST_LEGACY_MOBILE_APP.toString());
         testSerializeAndPrintStats(share, dto, "Top Landing Pages (Mobile)");
-        Assert.assertTrue("Repository should return resultset", share.size() > 0);
+        assertThat(share.size()).isGreaterThan(0);
     }
 
     public Long testRetrieveTotals(PeriodDto dto) {
@@ -282,6 +281,6 @@ public class StatRepositoryTests {
         LocalDateTime until = dto.getEndDate().atTime(23, 59, 59);
         List<ShareStat> share = statRepository.getTopTags(since, until, 10);
         testSerializeAndPrintStats(share, dto, "Top Tags");
-        Assert.assertTrue("Repository should return resultset", share.size() > 0);
+        assertThat(share.size()).isGreaterThan(0);
     }
 }

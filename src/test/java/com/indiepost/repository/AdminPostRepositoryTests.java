@@ -1,27 +1,29 @@
 package com.indiepost.repository;
 
+import com.indiepost.NewIndiepostApplicationKt;
 import com.indiepost.dto.post.PostQuery;
 import com.indiepost.dto.post.Title;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.util.List;
 
 import static com.indiepost.enums.Types.PostStatus.PUBLISH;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = NewIndiepostApplicationKt.class)
+@DataJpaTest
 @WebAppConfiguration
-@Transactional
 public class AdminPostRepositoryTests {
     @Inject
     private AdminPostRepository repository;
+
 
     @Test
     public void getTitleList_shouldReturnPostTitlesProperly() {

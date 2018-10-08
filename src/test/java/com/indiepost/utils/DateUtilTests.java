@@ -1,7 +1,7 @@
 package com.indiepost.utils;
 
 import com.indiepost.dto.analytics.TimeDomainStat;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

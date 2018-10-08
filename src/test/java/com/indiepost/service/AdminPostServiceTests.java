@@ -6,15 +6,15 @@ import com.indiepost.dto.post.AdminPostResponseDto;
 import com.indiepost.dto.post.AdminPostSummaryDto;
 import com.indiepost.dto.post.Title;
 import com.indiepost.enums.Types;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
@@ -25,7 +25,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = NewIndiepostApplicationKt.class)
 @WebAppConfiguration
 public class AdminPostServiceTests {
@@ -35,7 +35,7 @@ public class AdminPostServiceTests {
 
     private List<Long> insertedIds = new ArrayList<>();
 
-    @Before
+    @BeforeEach
     @WithMockUser(username = "auth0|5a94f76a5c798c2296fd51ae")
     public void insert() {
         AdminPostRequestDto post = new AdminPostRequestDto();
@@ -50,7 +50,7 @@ public class AdminPostServiceTests {
         insertedIds.add(service.createDraft(post));
     }
 
-    @After
+    @AfterEach
     public void deleteInserted() {
         for (Long id : insertedIds) {
             service.deleteById(id);

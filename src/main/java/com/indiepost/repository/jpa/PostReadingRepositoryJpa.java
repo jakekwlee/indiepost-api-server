@@ -59,7 +59,7 @@ public class PostReadingRepositoryJpa implements PostReadingRepository {
 
     @Override
     public void setVisibility(Long userId, boolean visible) {
-        getQueryFactory().update(interaction).set(interaction.visible, visible)
+        getQueryFactory().update(interaction).set(interaction.isVisible, visible)
                 .where(interaction.userId.eq(userId).and(interaction.id.goe(1)))
                 .execute();
     }
