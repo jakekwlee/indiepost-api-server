@@ -135,8 +135,9 @@ data class Post(
 
             if (postTag.post == this && postTag.tag == tag) {
                 iterator.remove()
-                // TODO
-//                postTag.tag.postTags.remove(postTag)
+                postTag.tag?.let {
+                    it.postTags.remove(postTag)
+                }
                 postTag.post = null
                 postTag.tag = null
             }
@@ -164,8 +165,10 @@ data class Post(
 
             if (postContributor.post == this && postContributor.contributor == contributor) {
                 iterator.remove()
-                // TODO
-//                postContributor.contributor.postContributors.remove(postContributor)
+                postContributor.contributor?.let {
+                    it.postContributors.remove(postContributor)
+                }
+
                 postContributor.post = null
                 postContributor.contributor = null
             }

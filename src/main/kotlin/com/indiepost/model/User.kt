@@ -1,9 +1,12 @@
 package com.indiepost.model
 
+import com.indiepost.dto.user.UserDto
 import com.indiepost.enums.Types.*
+import com.indiepost.utils.DateUtil.localDateTimeToInstant
 import java.io.Serializable
 import java.time.LocalDateTime
 import java.util.*
+import java.util.stream.Collectors
 import javax.persistence.*
 import javax.validation.constraints.Pattern
 import javax.validation.constraints.Size
@@ -89,8 +92,23 @@ data class User(
                 else -> return UserRole.User
             }
         }
+}
 
-    companion object {
-        private const val serialVersionUID = -1147949899202777107L
-    }
+fun User.toDto(): UserDto {
+    val userDto = UserDto()
+    userDto.id = this.id
+    userDto.username = this.username
+    userDto.displayName = this.displayName
+    userDto.email = this.email
+    userDto.gender = this.gender!!.toString()
+    userDto.picture = this.picture
+    userDto.profile = this.profile
+    userDto.joinedAt = localDateTimeToInstant(this.joinedAt!!)
+    userDto.updatedAt = localDateTimeToInstant(this.updatedAt!!)
+    val roles = this.roles.stream()
+            .map({ role -> role.roleType!!.toString() })
+            .collect(Collectors.toList<String>())
+    userDto.roles = roles
+    userDto.roleType = this.roleType!!.toString()
+    return userDto
 }

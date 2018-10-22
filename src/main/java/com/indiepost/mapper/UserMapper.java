@@ -5,10 +5,6 @@ import com.indiepost.enums.Types;
 import com.indiepost.model.User;
 
 import java.time.ZoneId;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.indiepost.utils.DateUtil.localDateTimeToInstant;
 
 /**
  * Created by jake on 17. 1. 14.
@@ -35,22 +31,4 @@ public class UserMapper {
         // TODO do not map roles. why???
     }
 
-    public static UserDto userToUserDto(User user) {
-        UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setUsername(user.getUsername());
-        userDto.setDisplayName(user.getDisplayName());
-        userDto.setEmail(user.getEmail());
-        userDto.setGender(user.getGender().toString());
-        userDto.setPicture(user.getPicture());
-        userDto.setProfile(user.getProfile());
-        userDto.setJoinedAt(localDateTimeToInstant(user.getJoinedAt()));
-        userDto.setUpdatedAt(localDateTimeToInstant(user.getUpdatedAt()));
-        List<String> roles = user.getRoles().stream()
-                .map(role -> role.getRoleType().toString())
-                .collect(Collectors.toList());
-        userDto.setRoles(roles);
-        userDto.setRoleType(user.getRoleType().toString());
-        return userDto;
-    }
 }

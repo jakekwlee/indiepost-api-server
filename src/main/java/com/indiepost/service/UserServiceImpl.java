@@ -8,6 +8,7 @@ import com.indiepost.exceptions.UnauthorizedException;
 import com.indiepost.model.ManagementToken;
 import com.indiepost.model.Role;
 import com.indiepost.model.User;
+import com.indiepost.model.UserKt;
 import com.indiepost.repository.ManagementTokenRepository;
 import com.indiepost.repository.RoleRepository;
 import com.indiepost.repository.UserRepository;
@@ -33,7 +34,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.indiepost.mapper.UserMapper.userDtoToUser;
-import static com.indiepost.mapper.UserMapper.userToUserDto;
 
 
 /**
@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
             user.setLastLogin(now);
             addRolesToUser(user, dto.getRoles());
             userRepository.save(user);
-            return new SyncAuthorizationResponse(true, userToUserDto(user));
+            return new SyncAuthorizationResponse(true, UserKt.toDto(user));
         }
 
         if (!user.getUsername().equals(dto.getUsername())) {
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
             user.setUpdatedAt(now);
             userRepository.save(user);
         }
-        return new SyncAuthorizationResponse(false, userToUserDto(user));
+        return new SyncAuthorizationResponse(false, UserKt.toDto(user));
     }
 
 
