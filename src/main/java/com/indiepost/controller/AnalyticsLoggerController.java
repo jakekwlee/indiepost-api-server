@@ -67,11 +67,7 @@ public class AnalyticsLoggerController {
                           @RequestParam(name = "l", required = false) String label,
                           @RequestParam(name = "u", required = false) Long userId
     ) throws IOException {
-        ActionDto dto = new ActionDto.Builder(appName, appVersion, path, actionType)
-                .label(label)
-                .value(value)
-                .userId(userId)
-                .build();
+        ActionDto dto = new ActionDto(appName, appVersion, path, actionType, label, value, userId);
         analyticsLoggerService.logAction(request, response, dto);
     }
 }

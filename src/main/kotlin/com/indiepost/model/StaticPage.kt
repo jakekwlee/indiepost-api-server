@@ -31,17 +31,17 @@ data class StaticPage(
         @Column(nullable = false)
         var displayOrder: Int = 0,
 
-        @ManyToOne(fetch = FetchType.LAZY, optional = false)
-        @JoinColumn(name = "authorId", nullable = false)
-        var author: User? = null,
-
-        @Column(name = "authorId", nullable = false, insertable = false, updatable = false)
-        var authorId: Long? = null,
-
         var type: String = "",
 
         @Column(nullable = false)
         @Enumerated(EnumType.STRING)
         var status: Types.PostStatus = Types.PostStatus.PUBLISH
 
-)
+) {
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "authorId", nullable = false)
+    var author: User? = null
+
+    @Column(name = "authorId", nullable = false, insertable = false, updatable = false)
+    var authorId: Long? = null
+}

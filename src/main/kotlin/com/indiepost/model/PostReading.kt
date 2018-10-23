@@ -1,6 +1,5 @@
 package com.indiepost.model
 
-import java.io.Serializable
 import java.time.LocalDateTime
 import javax.persistence.*
 
@@ -14,16 +13,10 @@ data class PostReading(
         @GeneratedValue(strategy = GenerationType.AUTO)
         var id: Long? = null,
 
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "userId", nullable = false)
-        var user: User? = null,
 
         @Column(name = "userId", insertable = false, updatable = false)
         var userId: Long? = null,
 
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "postId", nullable = false)
-        var post: Post? = null,
 
         @Column(name = "postId", insertable = false, updatable = false)
         var postId: Long? = null,
@@ -38,12 +31,16 @@ data class PostReading(
         var readCount: Int = 1,
 
         var isVisible: Boolean = true
-) : Serializable {
+) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId", nullable = false)
+    var user: User? = null
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "postId", nullable = false)
+    var post: Post? = null
+
     fun increaseReadCount() {
         this.readCount = readCount + 1
-    }
-
-    companion object {
-        private const val serialVersionUID = 5793341286387473902L
     }
 }

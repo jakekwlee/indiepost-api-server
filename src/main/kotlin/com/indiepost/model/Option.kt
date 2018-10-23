@@ -1,6 +1,5 @@
 package com.indiepost.model
 
-import java.io.Serializable
 import javax.persistence.*
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
@@ -22,8 +21,4 @@ data class Option(
         @NotNull
         @Size(min = 2, max = 20)
         var value: String? = null
-) : Serializable {
-    companion object {
-        private const val serialVersionUID = -6249744799288631153L
-    }
-}
+)

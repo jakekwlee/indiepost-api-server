@@ -1,7 +1,6 @@
 package com.indiepost.model
 
 import com.indiepost.enums.Types.ImageSize
-import java.io.Serializable
 import javax.persistence.*
 import javax.validation.constraints.Size
 
@@ -35,8 +34,4 @@ data class Image(
 
         @Column(name = "imageSetId", updatable = false, insertable = false)
         var imageSetId: Long? = null
-) : Serializable {
-    companion object {
-        private const val serialVersionUID = -6417761322329861824L
-    }
-}
+)

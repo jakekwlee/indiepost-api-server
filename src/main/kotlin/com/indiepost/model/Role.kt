@@ -1,7 +1,6 @@
 package com.indiepost.model
 
 import com.indiepost.enums.Types
-import java.io.Serializable
 import javax.persistence.*
 
 /**
@@ -17,12 +16,8 @@ data class Role(
         @Enumerated(EnumType.STRING)
         var roleType: Types.UserRole? = null,
 
-        @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
-        var users: MutableList<User>? = null,
-
         var level: Int = 1
-) : Serializable {
-    companion object {
-        private const val serialVersionUID = 7196256370247012643L
-    }
+) {
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+    var users: MutableList<User>? = null
 }

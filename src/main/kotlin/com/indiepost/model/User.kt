@@ -60,21 +60,23 @@ data class User(
         @Enumerated(EnumType.STRING)
         var gender: UserGender? = null,
 
-        @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-        var postReadings: MutableList<PostReading>? = null,
-
-        @Column(nullable = false)
-        @ManyToMany(cascade = [CascadeType.ALL])
-        @JoinTable(
-                name = "Users_Roles",
-                joinColumns = [JoinColumn(name = "userId")],
-                inverseJoinColumns = [JoinColumn(name = "roleId")]
-        )
-        var roles: MutableList<Role> = ArrayList(),
 
         @Enumerated(EnumType.STRING)
         var roleType: UserRole? = null
 ) : Serializable {
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    var postReadings: MutableList<PostReading>? = null
+
+    @Column(nullable = false)
+    @ManyToMany(cascade = [CascadeType.ALL])
+    @JoinTable(
+            name = "Users_Roles",
+            joinColumns = [JoinColumn(name = "userId")],
+            inverseJoinColumns = [JoinColumn(name = "roleId")]
+    )
+    var roles: MutableList<Role> = ArrayList()
+
     val highestRole: UserRole
         get() {
             var userLevel = 1

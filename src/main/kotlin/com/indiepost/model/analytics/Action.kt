@@ -1,6 +1,5 @@
 package com.indiepost.model.analytics
 
-import java.io.Serializable
 import javax.persistence.DiscriminatorValue
 import javax.persistence.Entity
 import javax.validation.constraints.NotNull
@@ -20,9 +19,4 @@ data class Action(
         var label: String? = null,
 
         var value: Int? = null
-
-) : Stat(), Serializable {
-    companion object {
-        private const val serialVersionUID = -527267775197998523L
-    }
-}
+) : Stat()

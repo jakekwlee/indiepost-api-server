@@ -39,15 +39,15 @@ data class Banner(
         @Column(nullable = false)
         var priority: Int = 0,
 
-        @OneToOne(fetch = FetchType.EAGER)
-        @JoinColumn(name = "linkId")
-        var link: Link? = null,
-
-        @Column(name = "linkId", insertable = false, updatable = false)
-        var linkId: Long? = null,
-
         @Column(nullable = false)
         @Enumerated(EnumType.STRING)
         var target: BannerTarget = BannerTarget.All
-)
+) {
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "linkId")
+    var link: Link? = null
+
+    @Column(name = "linkId", insertable = false, updatable = false)
+    var linkId: Long? = null
+}
 

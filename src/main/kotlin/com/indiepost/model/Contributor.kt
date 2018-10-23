@@ -3,7 +3,6 @@ package com.indiepost.model
 import com.indiepost.enums.Types.ContributorDisplayType
 import com.indiepost.enums.Types.ContributorType
 import org.hibernate.validator.constraints.URL
-import java.io.Serializable
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
@@ -18,9 +17,6 @@ data class Contributor(
         @GeneratedValue(strategy = GenerationType.AUTO)
         var id: Long? = null,
 
-        @OneToMany(mappedBy = "contributor", cascade = arrayOf(CascadeType.ALL), orphanRemoval = true)
-        @OrderBy("id desc")
-        var postContributors: MutableList<PostContributor> = ArrayList(),
 
         @NotNull
         @Column(nullable = false)
@@ -78,8 +74,8 @@ data class Contributor(
 
         @Column(nullable = false)
         var lastUpdated: LocalDateTime? = null
-) : Serializable {
-    companion object {
-        private val serialVersionUID = 7763721241430441486L
-    }
+) {
+    @OneToMany(mappedBy = "contributor", cascade = arrayOf(CascadeType.ALL), orphanRemoval = true)
+    @OrderBy("id desc")
+    var postContributors: MutableList<PostContributor> = ArrayList()
 }

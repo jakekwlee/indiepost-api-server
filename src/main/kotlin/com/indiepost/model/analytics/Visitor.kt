@@ -3,7 +3,6 @@ package com.indiepost.model.analytics
 import com.indiepost.enums.Types
 import com.indiepost.model.User
 import com.indiepost.model.UserAgent
-import java.io.Serializable
 import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.constraints.NotNull
@@ -13,7 +12,7 @@ import javax.validation.constraints.Size
  * Created by jake on 17. 4. 9.
  */
 @Entity
-@Table(name = "Visitors", indexes = arrayOf(Index(columnList = "timestamp", name = "v_timestamp_idx")))
+@Table(name = "Visitors", indexes = [Index(columnList = "timestamp", name = "v_timestamp_idx")])
 data class Visitor(
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
@@ -53,20 +52,16 @@ data class Visitor(
         var channel: Types.Channel = Types.Channel.NONE,
 
         @NotNull
-        var timestamp: LocalDateTime? = null,
+        var timestamp: LocalDateTime? = null
+) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
+    var user: User? = null
 
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "userId")
-        var user: User? = null,
+    @Column(name = "userId", insertable = false, updatable = false)
+    var userId: Long? = null
 
-        @Column(name = "userId", insertable = false, updatable = false)
-        var userId: Long? = null,
-
-        @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.MERGE])
-        @JoinColumn(name = "userAgentId")
-        var userAgent: UserAgent? = null
-) : Serializable {
-    companion object {
-        private const val serialVersionUID = -4875803542223940133L
-    }
+    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.MERGE])
+    @JoinColumn(name = "userAgentId")
+    var userAgent: UserAgent? = null
 }

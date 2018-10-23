@@ -10,18 +10,18 @@ data class PostContributor(
         @GeneratedValue(strategy = GenerationType.AUTO)
         var id: Long? = null,
 
-        @ManyToOne(fetch = FetchType.LAZY, optional = false)
-        @JoinColumn(name = "postId")
-        var post: Post? = null,
-
-        @ManyToOne(fetch = FetchType.EAGER, optional = false)
-        @JoinColumn(name = "contributorId")
-        var contributor: Contributor? = null,
-
         @NotNull
         @Column(nullable = false)
         var priority: Int = 0
 ) {
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "postId")
+    var post: Post? = null
+
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "contributorId")
+    var contributor: Contributor? = null
+
     constructor(post: Post, contributor: Contributor) : this() {
         this.post = post
         this.contributor = contributor

@@ -7,12 +7,11 @@ import javax.persistence.*
  */
 @Entity
 @DiscriminatorValue("Click")
-data class Click(
-        @ManyToOne
-        @JoinColumn(name = "linkId")
-        var link: Link? = null,
+class Click : Stat() {
+    @ManyToOne
+    @JoinColumn(name = "linkId")
+    var link: Link? = null
 
-        @Column(updatable = false, insertable = false)
-        var linkId: Long? = null
-
-) : Stat()
+    @Column(updatable = false, insertable = false)
+    var linkId: Long? = null
+}

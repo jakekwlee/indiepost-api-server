@@ -26,7 +26,6 @@ data class Highlight(
     }
 
     constructor(title: String, excerpt: String) : this() {
-
         this.title = title
         this.excerpt = excerpt
     }

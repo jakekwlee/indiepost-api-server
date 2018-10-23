@@ -1,6 +1,5 @@
 package com.indiepost.model.analytics
 
-import java.io.Serializable
 import java.time.LocalDateTime
 import javax.persistence.*
 import javax.validation.constraints.NotNull
@@ -24,17 +23,13 @@ open class Stat(
         var path: String? = null,
 
         @NotNull
-        var timestamp: LocalDateTime? = null,
+        var timestamp: LocalDateTime? = null
+) {
+    @NotNull
+    @Column(name = "visitorId", updatable = false, insertable = false, nullable = false)
+    var visitorId: Long? = null
 
-        @ManyToOne(optional = false)
-        @JoinColumn(name = "visitorId", nullable = false)
-        var visitor: Visitor? = null,
-
-        @NotNull
-        @Column(name = "visitorId", updatable = false, insertable = false, nullable = false)
-        var visitorId: Long? = null
-) : Serializable {
-    companion object {
-        private const val serialVersionUID = 7119668551684081952L
-    }
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "visitorId", nullable = false)
+    var visitor: Visitor? = null
 }

@@ -1,6 +1,5 @@
 package com.indiepost.model
 
-import java.io.Serializable
 import java.time.LocalDateTime
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -20,8 +19,4 @@ data class Metadata(
         var postStatsLastUpdated: LocalDateTime? = null,
 
         var searchIndexLastUpdated: LocalDateTime? = null
-) : Serializable {
-    companion object {
-        private const val serialVersionUID = 1L
-    }
-}
+)

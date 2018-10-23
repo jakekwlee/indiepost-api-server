@@ -1,6 +1,5 @@
 package com.indiepost.model
 
-import java.io.Serializable
 import javax.persistence.*
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
@@ -35,8 +34,4 @@ data class Setting(
         @NotNull
         @Max(20)
         var mailPersonalName: String? = null
-) : Serializable {
-    companion object {
-        private const val serialVersionUID = -564094387641842243L
-    }
-}
+)

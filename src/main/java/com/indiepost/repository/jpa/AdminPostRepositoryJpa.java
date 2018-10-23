@@ -305,6 +305,7 @@ public class AdminPostRepositoryJpa implements AdminPostRepository {
     }
 
     private void addPrivacyCriteria(BooleanBuilder builder, PostStatus status, User currentUser) {
+        // TODO
         switch (currentUser.getRoleType()) {
             case Administrator:
                 return;

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.indiepost.enums.Types.ImageSize
 import org.hibernate.annotations.*
 import org.hibernate.annotations.CascadeType
-import java.io.Serializable
 import java.time.LocalDateTime
 import javax.persistence.*
 import javax.persistence.Entity
@@ -21,14 +20,6 @@ data class ImageSet(
         @GeneratedValue(strategy = GenerationType.AUTO)
         var id: Long? = null,
 
-        @Fetch(FetchMode.JOIN)
-        @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
-        @Cascade(CascadeType.ALL, CascadeType.SAVE_UPDATE)
-        @JoinColumn(name = "imageSetId")
-        @BatchSize(size = 20)
-        @JsonIgnore
-        var images: MutableSet<Image>? = null,
-
         @Column(nullable = false)
         @Size(min = 9, max = 10)
         var contentType: String? = null,
@@ -42,7 +33,15 @@ data class ImageSet(
 
         @Column(nullable = false)
         var uploadedAt: LocalDateTime? = null
-) : Serializable {
+) {
+    @Fetch(FetchMode.JOIN)
+    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
+    @Cascade(CascadeType.ALL, CascadeType.SAVE_UPDATE)
+    @JoinColumn(name = "imageSetId")
+    @BatchSize(size = 20)
+    @JsonIgnore
+    var images: MutableSet<Image>? = null
+
     val original: Image?
         get() = findByImageSize(ImageSize.ORIGINAL)
 
@@ -68,9 +67,5 @@ data class ImageSet(
             }
         }
         return null
-    }
-
-    companion object {
-        private const val serialVersionUID = -6176638635434014551L
     }
 }

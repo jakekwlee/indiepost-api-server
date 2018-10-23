@@ -215,7 +215,9 @@ public class PostServiceImpl implements PostService {
             if (title == null && excerpt == null) {
                 continue;
             }
-            Highlight highlight = new Highlight(title, excerpt);
+            Highlight highlight = new Highlight();
+            highlight.setTitle(title);
+            highlight.setExcerpt(excerpt);
             dto.setHighlight(highlight);
             index = index + 1;
         }
