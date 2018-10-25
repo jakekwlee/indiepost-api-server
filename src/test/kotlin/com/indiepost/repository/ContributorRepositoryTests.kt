@@ -46,7 +46,7 @@ class ContributorRepositoryTests {
         contributor.created = now
 
         val id = contributorRepository.save(contributor)
-        insertedId.add(id)
+        id?.let { insertedId.add(it) }
     }
 
     @Test

@@ -38,12 +38,12 @@ class PostEsRepositoryTests {
         val postId = 6740L
         val post = postEsRepository.findById(postId)
         assertThat(post).isNotNull()
-        assertThat(post.id).isEqualTo(postId)
-        assertThat(post.title).isNotEmpty()
-        assertThat(post.excerpt).isNotEmpty()
-        assertThat(post.bylineName).isNotEmpty()
-        assertThat(post.content).isNotEmpty()
-        assertThat(post.getTags().size).isGreaterThan(0)
+        assertThat(post!!.id).isEqualTo(postId)
+        assertThat(post!!.title).isNotEmpty()
+        assertThat(post!!.excerpt).isNotEmpty()
+        assertThat(post!!.bylineName).isNotEmpty()
+        assertThat(post!!.content).isNotEmpty()
+        assertThat(post!!.getTags().size).isGreaterThan(0)
         printToJson(post)
     }
 
@@ -77,7 +77,7 @@ class PostEsRepositoryTests {
     fun searchForAdminUserWorksCorrectly() {
         val text = "너의 췌장을"
         val userId = 12L
-        val currentUser = userRepository.findById(userId)
+        val currentUser = userRepository.findById(userId) ?: return
         val postEsList = postEsRepository.search(
                 text,
                 Types.PostStatus.PUBLISH,

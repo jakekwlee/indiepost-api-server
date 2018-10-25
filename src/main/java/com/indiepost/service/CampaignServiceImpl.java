@@ -13,11 +13,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.indiepost.utils.DateUtil.*;
@@ -63,12 +63,10 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     public void update(CampaignDto campaignDto) {
-        Optional<Campaign> optionalCampaign = campaignRepository.findOne(campaignDto.getId());
-        if (!optionalCampaign.isPresent()) {
-            //TODO
-            return;
+        Campaign campaign = campaignRepository.findOne(campaignDto.getId());
+        if (campaign == null) {
+            throw new EntityNotFoundException("No campaign with this id: " + campaignDto.getId());
         }
-        Campaign campaign = optionalCampaign.get();
         campaign.setName(campaignDto.getName());
         campaign.setClientName(campaignDto.getClientName());
         campaign.setGoal(campaignDto.getGoal());
@@ -107,9 +105,8 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     public CampaignDto findById(Long id) {
-        Optional<Campaign> optional = campaignRepository.findOne(id);
-        if (optional.isPresent()) {
-            Campaign campaign = optional.get();
+        Campaign campaign = campaignRepository.findOne(id);
+        if (campaign != null) {
             return campaignToDto(campaign, true);
         } else {
             return null;
@@ -195,11 +192,11 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     public CampaignReport getReport(Long id) {
-        Optional<Campaign> optional = campaignRepository.findOne(id);
-        if (!optional.isPresent()) {
+        Campaign campaign = campaignRepository.findOne(id);
+        if (campaign == null) {
             return new CampaignReport();
         }
-        CampaignDto dto = campaignToDto(optional.get(), true);
+        CampaignDto dto = campaignToDto(campaign, true);
         List<ShareStat> byLinks = dto.getLinks()
                 .stream()
                 .map(link -> new ShareStat(link.getName(), link.getValidClicks()))

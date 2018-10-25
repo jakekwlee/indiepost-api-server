@@ -2,7 +2,6 @@ package com.indiepost.service;
 
 import com.indiepost.dto.ContributorDto;
 import com.indiepost.enums.Types;
-import com.indiepost.mapper.ContributorMapper;
 import com.indiepost.model.Contributor;
 import com.indiepost.repository.ContributorRepository;
 import org.springframework.data.domain.*;
@@ -14,7 +13,6 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.indiepost.mapper.ContributorMapper.*;
@@ -32,10 +30,11 @@ public class ContributorServiceImpl implements ContributorService {
 
     @Override
     public ContributorDto findOne(Long id) {
-        Optional<Contributor> contributor = contributorRepository.findById(id);
-        return contributor
-                .map(c -> ContributorMapper.toDto(c))
-                .orElse(null);
+        Contributor contributor = contributorRepository.findById(id);
+        if (contributor != null) {
+            return toDto(contributor);
+        }
+        return null;
     }
 
     @Override
@@ -47,13 +46,11 @@ public class ContributorServiceImpl implements ContributorService {
             contributor = toEntity(dto);
             contributor.setCreated(now);
         } else {
-            Optional<Contributor> optionalContributor = contributorRepository.findById(dto.getId());
-            if (optionalContributor.isPresent()) {
-                contributor = optionalContributor.get();
+            contributor = contributorRepository.findById(dto.getId());
+            if (contributor != null) {
                 copy(dto, contributor);
             } else {
-                optionalContributor.orElseThrow(EntityNotFoundException::new);
-                return null;
+                throw new EntityNotFoundException("No Contributor with this id: " + dto.getId().toString());
             }
         }
         contributor.setLastUpdated(now);
@@ -75,7 +72,8 @@ public class ContributorServiceImpl implements ContributorService {
 
     @Override
     public int count(Types.ContributorType type) {
-        return contributorRepository.countAllByContributorType(type).intValue();
+        Long ret = contributorRepository.countAllByContributorType(type);
+        return ret.intValue();
     }
 
     @Override

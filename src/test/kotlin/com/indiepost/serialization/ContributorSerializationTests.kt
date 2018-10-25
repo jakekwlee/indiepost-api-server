@@ -24,7 +24,7 @@ class ContributorSerializationTests {
 
     @Test
     fun pagedContributorDtoListShouldSerializeCorrectly() {
-        val pageRequest = PageRequest(0, 10)
+        val pageRequest = PageRequest.of(0, 10)
         val page = contributorService.find(Types.ContributorType.FeatureEditor, pageRequest)
         val objectMapper = ObjectMapper()
         objectMapper.registerModule(Hibernate5Module())

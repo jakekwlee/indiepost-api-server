@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.PageRequest
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.context.web.WebAppConfiguration
 import javax.inject.Inject
@@ -32,8 +33,9 @@ class AdminPostDtoSerializationTests {
      * @throws JsonProcessingException
      */
     @Test
+    @WithMockUser("auth0|5b213cd8064de34cde981b47")
     fun adminPostSummaryDtoListShouldSerializeCorrectly() {
-        val page = adminPostService.find(Types.PostStatus.PUBLISH, PageRequest(0, 10))
+        val page = adminPostService.find(Types.PostStatus.PUBLISH, PageRequest.of(0, 10))
         val objectMapper = ObjectMapper()
         objectMapper.registerModule(Hibernate5Module())
         println("*** Start serialize List<AdminPostResponseDto> ***")

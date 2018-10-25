@@ -201,7 +201,7 @@ public class PostServiceImpl implements PostService {
         if (postEsList.isEmpty()) {
             return postRepository.fallbackSearch(text, pageable);
         }
-        Long total = postEsRepository.count(searchFor, PostStatus.PUBLISH).longValue();
+        int total = postEsRepository.count(searchFor, PostStatus.PUBLISH);
         List<Long> ids = postEsList.stream()
                 .map(p -> p.getId())
                 .collect(Collectors.toList());

@@ -27,9 +27,9 @@ class ImageRepositoryTests {
     fun findByPrefixShouldReturnProperImageSet() {
         val prefix = "2016/06/KykQo6TS"
         val imageSet = imageRepository.findByPrefix(prefix)
-        val actual = imageSet.prefix
+        val actual = imageSet?.prefix
         assertThat(actual).isEqualTo(prefix)
-        for ((_, filePath) in imageSet.images!!) {
+        for ((_, filePath) in imageSet!!.images!!) {
             if (filePath != null) {
                 assertThat(filePath.contains(prefix)).isTrue()
             }

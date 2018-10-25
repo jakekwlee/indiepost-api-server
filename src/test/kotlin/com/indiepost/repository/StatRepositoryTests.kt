@@ -155,7 +155,7 @@ class StatRepositoryTests {
         val expected = 234267L
         val dto = getMonthlyPeriod()
         val result = testRetrieveTotals(dto)
-        assertThat(result).isEqualTo(result)
+        assertThat(result).isEqualTo(expected)
     }
 
     @Test

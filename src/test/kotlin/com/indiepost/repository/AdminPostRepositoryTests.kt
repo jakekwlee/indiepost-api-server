@@ -21,7 +21,7 @@ class AdminPostRepositoryTests {
 
     @Test
     fun getTitleList_shouldReturnPostTitlesProperly() {
-        val titleList = repository.titleList
+        val titleList = repository.getTitleList()
         val query = PostQuery.Builder(PUBLISH).build()
         assertThat(titleList).hasSize(repository.count(query)!!.toInt())
     }

@@ -77,6 +77,6 @@ class UserServiceTests {
         dto.username = "auth0|5b213cd8064de34cde981b47"
         dto.email = "bwv1050@gmail.com"
         dto.displayName = "바보"
-        userService!!.update(dto)
+        userService.update(dto)
     }
 }
