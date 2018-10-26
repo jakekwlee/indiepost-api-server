@@ -76,7 +76,7 @@ public class ImageServiceAws extends AbstractImageService implements ImageServic
         try {
             result = getS3Client().deleteObjects(request);
             log.info("Successfully deleted all the {} items.", result.getDeletedObjects().size());
-            imageRepository.delete(imageSet);
+            getImageRepository().delete(imageSet);
         } catch (MultiObjectDeleteException mode) {
             printDeleteResults(mode);
         }

@@ -28,7 +28,7 @@ public class ImageServiceFileSystem extends AbstractImageService {
 
     @Override
     protected void saveUploadedImage(BufferedImage bufferedImage, Image image, String contentType) throws IOException {
-        String path = config.getStaticRootPath() + '/' + image.getFilePath();
+        String path = getConfig().getStaticRootPath() + '/' + image.getFilePath();
         String fileExtension = contentType.split("/")[1];
         File file = new File(path);
         if (!file.getParentFile().exists()) {
@@ -44,10 +44,10 @@ public class ImageServiceFileSystem extends AbstractImageService {
     public void delete(ImageSet imageSet) throws IOException {
         Set<Image> images = imageSet.getImages();
         for (Image image : images) {
-            File fileToDelete = FileUtils.getFile(new File(config.getStaticRootPath() + image.getFilePath()));
+            File fileToDelete = FileUtils.getFile(new File(getConfig().getStaticRootPath() + image.getFilePath()));
             FileUtils.deleteQuietly(fileToDelete);
         }
-        imageRepository.delete(imageSet);
+        getImageRepository().delete(imageSet);
     }
 
     private void setFilePermission(String path) throws IOException {
