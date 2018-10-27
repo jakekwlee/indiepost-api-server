@@ -361,8 +361,8 @@ class PostEsRepositoryJest @Inject constructor(
         val indexPoses = JSONArray(Arrays.asList("N", "SL", "SH", "SN", "XR", "V", "UNK", "M"))
         val dictionary = words.stream()
                 .map { (_, surface, cost) ->
-                    val cost = if (cost != null) "," + cost.toString() else ""
-                    surface!! + cost
+                    val c = if (cost != null) "," + cost.toString() else ""
+                    surface!! + c
                 }
                 .collect(Collectors.toList())
         val userWords = JSONArray(dictionary)

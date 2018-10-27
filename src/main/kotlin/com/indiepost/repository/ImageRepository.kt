@@ -24,5 +24,5 @@ interface ImageRepository {
 
     fun deleteById(id: Long?)
 
-    fun count(): Long?
+    fun count(): Long
 }

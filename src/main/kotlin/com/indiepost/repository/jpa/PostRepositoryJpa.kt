@@ -56,8 +56,8 @@ class PostRepositoryJpa : PostRepository {
                 .fetchCount()
     }
 
-    override fun count(search: PostQuery): Long {
-        val builder = addConjunction(search, BooleanBuilder())
+    override fun count(postQuery: PostQuery): Long {
+        val builder = addConjunction(postQuery, BooleanBuilder())
         return queryFactory
                 .selectFrom(post)
                 .where(builder)
@@ -169,7 +169,7 @@ class PostRepositoryJpa : PostRepository {
                 .leftJoin(pp.relatedPost.postTags, pt)
                 .leftJoin(pt.tag, t)
                 .leftJoin(pp.relatedPost.titleImage, im)
-                .where(pp.postId.eq(id!!)
+                .where(pp.postId.eq(id)
                         .and(pp.relatedPost.status.eq(PostStatus.PUBLISH)))
                 .orderBy(pp.priority.asc())
                 .groupBy(pp.relatedPostId)
@@ -228,7 +228,7 @@ class PostRepositoryJpa : PostRepository {
 
         whereClause = post.status.eq(PostStatus.PUBLISH)
                 .and(r.isVisible.isTrue)
-                .and(r.userId.eq(userId!!))
+                .and(r.userId.eq(userId))
                 .and(if (isAfter)
                     r.lastRead.after(timepoint)
                 else
@@ -270,7 +270,7 @@ class PostRepositoryJpa : PostRepository {
         val timepoint = instantToLocalDateTime(instant)
 
         whereClause = post.status.eq(PostStatus.PUBLISH)
-                .and(b.userId.eq(userId!!))
+                .and(b.userId.eq(userId))
                 .and(if (isAfter)
                     b.created.after(timepoint)
                 else

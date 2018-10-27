@@ -24,12 +24,12 @@ import javax.inject.Inject
 class AnalyticsServiceTests {
 
     @Inject
-    private val analyticsService: AnalyticsService? = null
+    private lateinit var analyticsService: AnalyticsService
 
     @Test
     @Throws(JsonProcessingException::class)
     fun overviewStatsShouldSerializeCorrectly() {
-        val stats = analyticsService!!.getOverviewStats(
+        val stats = analyticsService.getOverviewStats(
                 PeriodDto(
                         LocalDate.of(2017, 4, 28),
                         LocalDate.of(2017, 4, 28)
@@ -41,7 +41,7 @@ class AnalyticsServiceTests {
     @Test
     @Throws(JsonProcessingException::class)
     fun recentAndOldStatsShouldSerializeCorrectly() {
-        val stats = analyticsService!!.getRecentAndOldPostStats(
+        val stats = analyticsService.getRecentAndOldPostStats(
                 PeriodDto(
                         LocalDate.of(2017, 8, 1),
                         LocalDate.of(2017, 8, 5)
@@ -52,7 +52,7 @@ class AnalyticsServiceTests {
 
     @Test
     fun getCachedPostStatsShouldWordProperly() {
-        val postStatsDto = analyticsService!!.cachedPostStats
+        val postStatsDto = analyticsService.getCachedPostStats() ?: throw Exception()
         val stats = postStatsDto.statData
         val lastUpdated = postStatsDto.lastUpdated
         assertThat(postStatsDto).isNotNull()

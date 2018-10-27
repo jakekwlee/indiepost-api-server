@@ -39,11 +39,11 @@ class PostEsRepositoryTests {
         val post = postEsRepository.findById(postId)
         assertThat(post).isNotNull()
         assertThat(post!!.id).isEqualTo(postId)
-        assertThat(post!!.title).isNotEmpty()
-        assertThat(post!!.excerpt).isNotEmpty()
-        assertThat(post!!.bylineName).isNotEmpty()
-        assertThat(post!!.content).isNotEmpty()
-        assertThat(post!!.getTags().size).isGreaterThan(0)
+        assertThat(post.title).isNotEmpty()
+        assertThat(post.excerpt).isNotEmpty()
+        assertThat(post.bylineName).isNotEmpty()
+        assertThat(post.content).isNotEmpty()
+        assertThat(post.getTags().size).isGreaterThan(0)
         printToJson(post)
     }
 
@@ -114,6 +114,7 @@ class PostEsRepositoryTests {
     }
 
     @Test
+    // TODO
     fun recommendation_shouldReturnRelatedPostList() {
         val bookmarked = Arrays.asList(129L, 8422L)
         val history = Arrays.asList(8543L, 5022L, 8480L)

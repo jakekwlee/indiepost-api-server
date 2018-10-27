@@ -78,7 +78,7 @@ class ImageRepositoryJpa : ImageRepository {
         entityManager.remove(imageSetReference)
     }
 
-    override fun count(): Long? {
+    override fun count(): Long {
         return queryFactory.selectFrom(i).fetchCount()
     }
 }

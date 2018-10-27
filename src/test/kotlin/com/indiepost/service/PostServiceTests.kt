@@ -105,7 +105,7 @@ class PostServiceTests {
         printToJson(result)
     }
 
-    @Test
+    //    @Test
     @WithMockUser("auth0|5b213cd8064de34cde981b47")
     fun recommendations_shouldReturnRelatedPostsProperly() {
         val size = 16

@@ -28,6 +28,6 @@ public class LinkController {
 
     @GetMapping("/{uid}")
     public String link(@PathVariable String uid, HttpServletRequest req, HttpServletResponse res, Principal principal) throws IOException {
-        return "redirect:" + analyticsLoggerService.logClickAndGetLink(req, res, principal, uid);
+        return "redirect:" + analyticsLoggerService.logClickAndGetLink(req, res, uid, principal);
     }
 }

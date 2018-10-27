@@ -23,7 +23,7 @@ import javax.inject.Inject
 class AdminPostServiceTests {
 
     @Inject
-    private val service: AdminPostService? = null
+    private lateinit var service: AdminPostService
 
     private var insertedId: Long? = null
 
@@ -39,7 +39,7 @@ class AdminPostServiceTests {
         post.categoryId = 2L
         post.displayName = "TEST name"
         post.publishedAt = Instant.now()
-        insertedId = service!!.createDraft(post)
+        insertedId = service.createDraft(post)
     }
 
     @Test
@@ -52,7 +52,7 @@ class AdminPostServiceTests {
         post.categoryId = 2L
         post.displayName = "TEST name"
         post.publishedAt = Instant.now()
-        val id = service!!.createAutosave(post)
+        val id = service.createAutosave(post)
         if (id != null) {
             insertedId = id
         }
@@ -62,21 +62,23 @@ class AdminPostServiceTests {
     @Test
     @WithMockUser(username = "auth0|5a94f76a5c798c2296fd51ae")
     fun retrievedAdminPostResponseDto_shouldContainTagsWithProperOrder() {
-        val dto = service!!.findOne(insertedId)
-        assertThat(dto.tags).isEqualTo(Arrays.asList("여행기", "콩자반", "일본영화", "쿠바", "아기다리고기다", "로망포르노", "로맨스"))
+        val id = insertedId ?: throw Exception()
+        val dto = service.findOne(id)
+        assertThat(dto!!.tags).isEqualTo(Arrays.asList("여행기", "콩자반", "일본영화", "쿠바", "아기다리고기다", "로망포르노", "로맨스"))
     }
 
     @Test
     @WithMockUser(username = "auth0|5a94f76a5c798c2296fd51ae")
     fun retrievedAdminPostResponseDto_shouldContainContributorsWithProperOrder() {
-        val dto = service!!.findOne(insertedId)
-        assertThat(dto.contributors).isEqualTo(Arrays.asList("유미래", "최은제", "이사민", "김유영"))
+        val id = insertedId ?: throw Exception()
+        val dto = service.findOne(id)
+        assertThat(dto!!.contributors).isEqualTo(Arrays.asList("유미래", "최은제", "이사민", "김유영"))
     }
 
     @Test
     @WithMockUser(username = "auth0|5a94f76a5c798c2296fd51ae")
     fun findText_shouldReturnResultProperly() {
-        val page = service!!.findText("인스타그램", Types.PostStatus.PUBLISH, PageRequest.of(0, 500))
+        val page = service.findText("인스타그램", Types.PostStatus.PUBLISH, PageRequest.of(0, 500))
         assertThat(page.content).hasSize(18)
 
     }
@@ -84,7 +86,7 @@ class AdminPostServiceTests {
     @Test
     @WithMockUser("auth0|5a94f76a5c798c2296fd51ae")
     fun getAllTitles_shouldWorkProperly() {
-        val titles = service!!.allTitles
+        val titles = service.getAllTitles()
         assertThat(titles).isNotNull.hasAtLeastOneElementOfType(Title::class.java)
     }
 }

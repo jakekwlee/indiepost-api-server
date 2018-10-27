@@ -29,7 +29,7 @@ class ImageRepositoryTests {
         val imageSet = imageRepository.findByPrefix(prefix)
         val actual = imageSet?.prefix
         assertThat(actual).isEqualTo(prefix)
-        for ((_, filePath) in imageSet!!.images!!) {
+        for ((_, filePath) in imageSet!!.images) {
             if (filePath != null) {
                 assertThat(filePath.contains(prefix)).isTrue()
             }
@@ -47,11 +47,9 @@ class ImageRepositoryTests {
         for (imageSet in imageSetList) {
             val images = imageSet.images
             val prefix = imageSet.prefix
-            if (images != null) {
-                for ((_, filePath) in images) {
-                    if (filePath != null) {
-                        assertThat(filePath.contains(prefix!!)).isTrue()
-                    }
+            for ((_, filePath) in images) {
+                if (filePath != null) {
+                    assertThat(filePath.contains(prefix!!)).isTrue()
                 }
             }
         }

@@ -38,9 +38,9 @@ data class ImageSet(
     @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
     @Cascade(CascadeType.ALL, CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "imageSetId")
-    @BatchSize(size = 20)
+    @BatchSize(size = 30)
     @JsonIgnore
-    var images: MutableSet<Image>? = null
+    var images: MutableSet<Image> = HashSet()
 
     val original: Image?
         get() = findByImageSize(ImageSize.ORIGINAL)
@@ -58,10 +58,7 @@ data class ImageSet(
         get() = findByImageSize(ImageSize.THUMBNAIL)
 
     private fun findByImageSize(sizeType: ImageSize): Image? {
-        if (images == null) {
-            return null
-        }
-        for (image in images!!) {
+        for (image in images) {
             if (image.sizeType == sizeType) {
                 return image
             }

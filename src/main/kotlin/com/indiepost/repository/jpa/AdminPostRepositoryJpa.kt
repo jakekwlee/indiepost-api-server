@@ -228,9 +228,9 @@ class AdminPostRepositoryJpa : AdminPostRepository {
                 .fetchCount()
     }
 
-    override fun count(search: PostQuery): Long {
+    override fun count(postQuery: PostQuery): Long {
         val query = queryFactory.selectFrom(post)
-        val builder = addConjunction(search, BooleanBuilder())
+        val builder = addConjunction(postQuery, BooleanBuilder())
         query.where(builder)
         return query.fetchCount()
     }

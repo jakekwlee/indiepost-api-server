@@ -18,7 +18,7 @@ interface PostRepository {
 
     fun count(): Long
 
-    fun count(query: PostQuery): Long
+    fun count(postQuery: PostQuery): Long
 
     fun getStatusById(postId: Long): Types.PostStatus?
 

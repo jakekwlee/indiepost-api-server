@@ -33,8 +33,8 @@ class VisitorRepositoryTests {
         val result = visitorRepository.getTotalVisitors(since, until)
 
         printPeriod(dto)
-        println("Total Visitors: " + result!!)
-        assertThat(result.toLong()).isGreaterThan(0)
+        println("Total Visitors: $result")
+        assertThat(result).isGreaterThan(0)
     }
 
     @Test
@@ -45,8 +45,8 @@ class VisitorRepositoryTests {
         val until = dto.endDate!!.atTime(23, 59, 59)
         val result = visitorRepository.getTotalVisitors(since, until, ClientType.INDIEPOST_LEGACY_MOBILE_APP.toString())
         printPeriod(dto)
-        println("Total Mobile App Visitors: " + result!!)
-        assertThat(result.toLong()).isGreaterThan(0)
+        println("Total Mobile App Visitors: $result")
+        assertThat(result).isGreaterThan(0)
     }
 
 

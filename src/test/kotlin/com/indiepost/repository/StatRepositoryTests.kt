@@ -185,8 +185,8 @@ class StatRepositoryTests {
         val result = statRepository.getTotalPageviews(since, until)
 
         printPeriod(dto)
-        println("Total Postviews: " + result!!)
-        assertThat(result.toLong()).isEqualTo(2184)
+        println("Total Postviews: $result")
+        assertThat(result).isEqualTo(2184)
     }
 
     @Test
@@ -283,7 +283,7 @@ class StatRepositoryTests {
         val result = statRepository.getTotalPageviews(since, until)
         println("Date since: $since")
         println("Date until: $until")
-        println("Total Pageviews: " + result!!)
+        println("Total Pageviews: $result")
         return result
     }
 

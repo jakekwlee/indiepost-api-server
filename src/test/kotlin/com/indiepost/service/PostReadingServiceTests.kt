@@ -29,7 +29,7 @@ class PostReadingServiceTests {
     @WithMockUser(username = "auth0|5b213cd8064de34cde981b47")
     fun setInvisibleByPostId_shouldAddUserReadingProperly() {
         service.setInvisible(8051L)
-        val postReading = service.findOne(1L)
+        val postReading = service.findOne(1L) ?: throw Exception()
         assertThat(postReading.isVisible).isFalse()
     }
 
@@ -37,9 +37,8 @@ class PostReadingServiceTests {
     @WithMockUser(username = "auth0|5b213cd8064de34cde981b47")
     fun setInvisibleAllByUserId_shouldAddUserReadingProperly() {
         service.setInvisibleAll()
-        service.findOne(1).let {
-            assertThat(it.isVisible).isFalse()
-        }
+        val pr = service.findOne(1) ?: throw Exception()
+        assertThat(pr.isVisible).isFalse()
         service.setVisibleAll()
     }
 
@@ -47,8 +46,7 @@ class PostReadingServiceTests {
     @WithMockUser(username = "auth0|5b213cd8064de34cde981b47")
     fun setInvisibleAllByUserId_shouldAddUserReadingProperlyAndReturnId() {
         service.setInvisibleAll()
-        service.findOne(1).let {
-            assertThat(it.isVisible).isFalse()
-        }
+        val pr = service.findOne(1) ?: throw Exception()
+        assertThat(pr.isVisible).isFalse()
     }
 }

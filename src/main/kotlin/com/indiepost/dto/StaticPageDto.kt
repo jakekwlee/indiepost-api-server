@@ -11,15 +11,15 @@ data class StaticPageDto(
 
         var id: Long? = null,
 
-        var title: String? = null,
+        var title: String? = "No Title",
 
-        var content: String? = null,
+        var content: String? = "",
 
         var slug: String? = null,
 
-        var displayOrder: Int = 0,
+        var displayOrder: Int = 999,
 
-        var status: Types.PostStatus? = null,
+        var status: Types.PostStatus? = Types.PostStatus.DRAFT,
 
         var authorDisplayName: String? = null,
 

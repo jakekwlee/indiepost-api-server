@@ -11,9 +11,9 @@ import org.springframework.data.domain.Pageable
  */
 interface StaticPageRepository {
 
-    fun save(staticPage: StaticPage): Long?
+    fun save(staticPage: StaticPage): Long
 
-    fun findById(id: Long?): StaticPage
+    fun findById(id: Long): StaticPage?
 
     fun update(staticPage: StaticPage)
 

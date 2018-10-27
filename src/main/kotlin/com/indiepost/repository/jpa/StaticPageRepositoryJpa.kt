@@ -29,13 +29,13 @@ class StaticPageRepositoryJpa : StaticPageRepository {
     private val queryFactory: JPAQueryFactory
         get() = JPAQueryFactory(entityManager)
 
-    override fun save(staticPage: StaticPage): Long? {
+    override fun save(staticPage: StaticPage): Long {
         entityManager.persist(staticPage)
-        return staticPage.id
+        return staticPage.id!!
     }
 
-    override fun findById(id: Long?): StaticPage {
-        return entityManager.find(StaticPage::class.java, id)
+    override fun findById(id: Long): StaticPage? {
+        return entityManager.find(StaticPage::class.java, id) ?: null
     }
 
     override fun update(staticPage: StaticPage) {

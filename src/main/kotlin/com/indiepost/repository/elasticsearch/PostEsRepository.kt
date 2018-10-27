@@ -24,7 +24,7 @@ interface PostEsRepository {
 
     fun search(text: String, status: Types.PostStatus, currentUser: User, pageable: Pageable): List<PostEs>
 
-    fun moreLikeThis(postId: List<Long>, status: Types.PostStatus, pageable: Pageable): List<Long>
+    fun moreLikeThis(postIds: List<Long>, status: Types.PostStatus, pageable: Pageable): List<Long>
 
     fun recommendation(bookmarkedPostIds: List<Long>, historyPostIds: List<Long>, status: Types.PostStatus, pageable: Pageable): List<Long>
 
