@@ -32,23 +32,6 @@ fun Post.createDto(): PostDto {
     return postDto
 }
 
-fun duplicate(srcPost: Post): Post {
-    val destPost = Post()
-    destPost.title = srcPost.title
-    destPost.excerpt = srcPost.excerpt
-    destPost.content = srcPost.content
-    destPost.displayName = srcPost.displayName
-    destPost.status = srcPost.status
-    destPost.createdAt = srcPost.createdAt
-    destPost.publishedAt = srcPost.publishedAt
-    destPost.modifiedAt = srcPost.modifiedAt
-    destPost.isShowLastUpdated = srcPost.isShowLastUpdated
-    destPost.isSplash = srcPost.isSplash
-    destPost.isFeatured = srcPost.isFeatured
-    destPost.isPicked = srcPost.isPicked
-    return destPost
-}
-
 fun Post.merge(requestDto: AdminPostRequestDto) {
     requestDto.title?.let {
         title = it
@@ -104,7 +87,7 @@ fun AdminPostRequestDto.createPost(): Post {
         post.title = it.trim()
     }
     content?.let {
-        post.title = it.trim()
+        post.content = it.trim()
     }
     excerpt?.let {
         post.excerpt = it.trim()
@@ -162,7 +145,9 @@ fun Post.createAdminPostResponseDto(): AdminPostResponseDto {
     dto.editorName = editor?.displayName
     dto.categoryName = category?.name
     dto.originalId = original?.id
-    dto.originalStatus = original?.status.toString()
+    original?.let {
+        dto.originalStatus = it.status.toString()
+    }
     titleImage?.let {
         dto.titleImage = it.createDto()
     }

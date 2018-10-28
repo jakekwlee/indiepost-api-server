@@ -1,6 +1,7 @@
 package com.indiepost.service
 
 import com.indiepost.dto.post.PostUserInteraction
+import com.indiepost.mapper.createPostUserInteraction
 import com.indiepost.model.Bookmark
 import com.indiepost.model.PostReading
 import com.indiepost.repository.BookmarkRepository
@@ -47,14 +48,13 @@ class PostUserInteractionServiceImpl @Inject constructor(
 
     override fun findUsersByPostId(postId: Long): PostUserInteraction? {
         val userId = currentUserId ?: return null
-        val postReading = postReadingRepository.findOneByUserIdAndPostId(userId, postId)
+        val postReading = postReadingRepository.findOneByUserIdAndPostId(userId, postId) ?: return null
         val bookmark = bookmarkRepository.findOneByUserIdAndPostId(userId, postId)
-        val dto = PostUserInteraction(postId)
-        if (postReading != null) {
-            dto.lastRead = localDateTimeToInstant(postReading.lastRead!!)
-        }
+        val dto = postReading.createPostUserInteraction()
         if (bookmark != null) {
-            dto.bookmarked = localDateTimeToInstant(bookmark.created!!)
+            bookmark.created?.let {
+                dto.bookmarked = localDateTimeToInstant(it)
+            }
         }
         return dto
     }

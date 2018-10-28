@@ -66,11 +66,11 @@ constructor(private val adminPostService: AdminPostService) {
     @GetMapping
     fun getList(
             @RequestParam("status") status: String,
-            @RequestParam(value = "query", required = false) query: String,
+            @RequestParam(value = "query", required = false) query: String?,
             pageable: Pageable
     ): Page<AdminPostSummaryDto> {
         val postStatus = Types.PostStatus.valueOf(status.toUpperCase())
-        if (query.isNotEmpty()) {
+        if (query != null && query.isNotEmpty()) {
             return try {
                 val id = query.toLong()
                 adminPostService.findIdsIn(Arrays.asList(id), pageable)
