@@ -152,8 +152,13 @@ class StaticPageRepositoryJpa : StaticPageRepository {
             dto.id = row.get(staticPage.id)
             dto.title = row.get(staticPage.title)
             dto.authorDisplayName = row.get(staticPage.author.displayName)
-            dto.createdAt = localDateTimeToInstant(row.get(staticPage.createdAt))
-            dto.modifiedAt = localDateTimeToInstant(row.get(staticPage.modifiedAt))
+
+            row.get(staticPage.createdAt)?.let {
+                dto.createdAt = localDateTimeToInstant(it)
+            }
+            row.get(staticPage.modifiedAt)?.let {
+                dto.modifiedAt = localDateTimeToInstant(it)
+            }
             row.get(staticPage.displayOrder)?.let {
                 dto.displayOrder = it
             }

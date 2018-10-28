@@ -1,6 +1,6 @@
 package com.indiepost.service
 
-import com.indiepost.NewIndiepostApplication
+import com.indiepost.IndiepostBackendApplication
 import com.indiepost.dto.CategoryDto
 import com.indiepost.dto.ContributorDto
 import com.indiepost.dto.TagDto
@@ -16,7 +16,7 @@ import org.springframework.test.context.web.WebAppConfiguration
 import javax.inject.Inject
 
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = arrayOf(NewIndiepostApplication::class))
+@SpringBootTest(classes = arrayOf(IndiepostBackendApplication::class))
 @WebAppConfiguration
 class AdminServiceTests {
     @Inject

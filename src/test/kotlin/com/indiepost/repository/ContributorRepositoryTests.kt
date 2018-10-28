@@ -1,6 +1,6 @@
 package com.indiepost.repository
 
-import com.indiepost.NewIndiepostApplication
+import com.indiepost.IndiepostBackendApplication
 import com.indiepost.enums.Types
 import com.indiepost.model.Contributor
 import org.apache.commons.lang3.RandomStringUtils
@@ -20,7 +20,7 @@ import javax.inject.Inject
 import javax.transaction.Transactional
 
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = [NewIndiepostApplication::class])
+@SpringBootTest(classes = [IndiepostBackendApplication::class])
 @WebAppConfiguration
 @Transactional
 class ContributorRepositoryTests {
@@ -73,6 +73,7 @@ class ContributorRepositoryTests {
 
     @Test
     fun delete_shouldDeleteContributorProperly() {
+        // TODO  1s 158ms
         var contributors = contributorRepository.findAll(
                 PageRequest.of(0, 10, Sort.Direction.DESC, "id")
         ).content

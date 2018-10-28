@@ -1,7 +1,7 @@
 package com.indiepost.repository
 
 import com.fasterxml.jackson.core.JsonProcessingException
-import com.indiepost.NewIndiepostApplication
+import com.indiepost.IndiepostBackendApplication
 import com.indiepost.dto.analytics.PeriodDto
 import com.indiepost.enums.Types.ClientType
 import com.indiepost.enums.Types.TimeDomainDuration
@@ -18,7 +18,7 @@ import javax.transaction.Transactional
  * Created by jake on 8/9/17.
  */
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = arrayOf(NewIndiepostApplication::class))
+@SpringBootTest(classes = arrayOf(IndiepostBackendApplication::class))
 @WebAppConfiguration
 @Transactional
 class StatRepositoryTests {

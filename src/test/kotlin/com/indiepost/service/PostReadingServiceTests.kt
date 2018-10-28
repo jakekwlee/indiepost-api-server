@@ -1,6 +1,6 @@
 package com.indiepost.service
 
-import com.indiepost.NewIndiepostApplication
+import com.indiepost.IndiepostBackendApplication
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -11,7 +11,7 @@ import org.springframework.test.context.web.WebAppConfiguration
 import javax.inject.Inject
 
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = [NewIndiepostApplication::class])
+@SpringBootTest(classes = [IndiepostBackendApplication::class])
 @WebAppConfiguration
 class PostReadingServiceTests {
 

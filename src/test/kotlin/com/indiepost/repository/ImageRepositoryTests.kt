@@ -1,6 +1,6 @@
 package com.indiepost.repository
 
-import com.indiepost.NewIndiepostApplication
+import com.indiepost.IndiepostBackendApplication
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -15,7 +15,7 @@ import javax.inject.Inject
  * Created by jake on 10/12/17.
  */
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = arrayOf(NewIndiepostApplication::class))
+@SpringBootTest(classes = arrayOf(IndiepostBackendApplication::class))
 @WebAppConfiguration
 @Transactional
 class ImageRepositoryTests {

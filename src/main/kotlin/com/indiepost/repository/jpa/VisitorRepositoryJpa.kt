@@ -8,8 +8,8 @@ import com.indiepost.model.User
 import com.indiepost.model.analytics.QVisitor
 import com.indiepost.model.analytics.Visitor
 import com.indiepost.repository.VisitorRepository
-import com.indiepost.repository.utils.toShareStateList
-import com.indiepost.repository.utils.toTimeDomainStatList
+import com.indiepost.repository.utils.ResultMapper.toShareStateList
+import com.indiepost.repository.utils.ResultMapper.toTimeDomainStatList
 import com.indiepost.utils.DateUtil.normalizeTimeDomainStats
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.hibernate.Session

@@ -134,8 +134,8 @@ class AnalyticsLoggerServiceImpl @Inject constructor(
         val deviceName = ua.device.family
 
         if (isNotEmpty(deviceName)) {
-            // TODO regex
-            if (deviceName.contains("Spider")) {
+            if (deviceName.contains("Spider") ||
+                    browserName.contains(Regex("python|yeti", RegexOption.IGNORE_CASE))) {
                 logger.info("A visitor is filtered by blacklist, skip DB insert: {} : {} : {}",
                         browserName, ipAddress, req.requestURI)
                 return null

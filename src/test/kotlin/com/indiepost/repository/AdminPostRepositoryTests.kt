@@ -1,6 +1,6 @@
 package com.indiepost.repository
 
-import com.indiepost.NewIndiepostApplication
+import com.indiepost.IndiepostBackendApplication
 import com.indiepost.dto.post.PostQuery
 import com.indiepost.enums.Types.PostStatus.PUBLISH
 import org.assertj.core.api.Assertions.assertThat
@@ -12,7 +12,7 @@ import org.springframework.test.context.web.WebAppConfiguration
 import javax.inject.Inject
 
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = arrayOf(NewIndiepostApplication::class))
+@SpringBootTest(classes = arrayOf(IndiepostBackendApplication::class))
 @WebAppConfiguration
 class AdminPostRepositoryTests {
     @Inject
@@ -23,6 +23,6 @@ class AdminPostRepositoryTests {
     fun getTitleList_shouldReturnPostTitlesProperly() {
         val titleList = repository.getTitleList()
         val query = PostQuery.Builder(PUBLISH).build()
-        assertThat(titleList).hasSize(repository.count(query)!!.toInt())
+        assertThat(titleList).hasSize(repository.count(query).toInt())
     }
 }

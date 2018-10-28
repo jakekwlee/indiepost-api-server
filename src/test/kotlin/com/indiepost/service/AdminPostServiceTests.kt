@@ -1,6 +1,6 @@
 package com.indiepost.service
 
-import com.indiepost.NewIndiepostApplication
+import com.indiepost.IndiepostBackendApplication
 import com.indiepost.dto.post.AdminPostRequestDto
 import com.indiepost.dto.post.Title
 import com.indiepost.enums.Types
@@ -18,7 +18,7 @@ import java.util.*
 import javax.inject.Inject
 
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = [NewIndiepostApplication::class])
+@SpringBootTest(classes = [IndiepostBackendApplication::class])
 @WebAppConfiguration
 class AdminPostServiceTests {
 

@@ -1,6 +1,6 @@
 package com.indiepost.service
 
-import com.indiepost.NewIndiepostApplication
+import com.indiepost.IndiepostBackendApplication
 import com.indiepost.dto.user.UserDto
 import com.indiepost.dto.user.UserProfileDto
 import com.indiepost.utils.DateUtil
@@ -19,7 +19,7 @@ import javax.inject.Inject
  * Created by jake on 17. 11. 13.
  */
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = arrayOf(NewIndiepostApplication::class))
+@SpringBootTest(classes = arrayOf(IndiepostBackendApplication::class))
 @WebAppConfiguration
 class UserServiceTests {
 

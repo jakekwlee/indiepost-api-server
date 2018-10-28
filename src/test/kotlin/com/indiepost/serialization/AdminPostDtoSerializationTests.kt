@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module
-import com.indiepost.NewIndiepostApplication
+import com.indiepost.IndiepostBackendApplication
 import com.indiepost.enums.Types
 import com.indiepost.service.AdminPostService
 import org.junit.jupiter.api.Test
@@ -20,7 +20,7 @@ import javax.inject.Inject
  * Created by jake on 17. 1. 22.
  */
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = [NewIndiepostApplication::class])
+@SpringBootTest(classes = [IndiepostBackendApplication::class])
 @WebAppConfiguration
 class AdminPostDtoSerializationTests {
 

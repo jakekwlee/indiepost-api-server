@@ -10,10 +10,10 @@ import com.indiepost.enums.Types.TimeDomainDuration
 import com.indiepost.model.analytics.Stat
 import com.indiepost.model.analytics.Visitor
 import com.indiepost.repository.StatRepository
-import com.indiepost.repository.utils.toPostStatDtoList
-import com.indiepost.repository.utils.toShareStateList
-import com.indiepost.repository.utils.toTimeDomainDoubleStatList
-import com.indiepost.repository.utils.toTimeDomainStatList
+import com.indiepost.repository.utils.ResultMapper.toPostStatDtoList
+import com.indiepost.repository.utils.ResultMapper.toShareStateList
+import com.indiepost.repository.utils.ResultMapper.toTimeDomainDoubleStatList
+import com.indiepost.repository.utils.ResultMapper.toTimeDomainStatList
 import com.indiepost.utils.DateUtil.localDateTimeToDate
 import com.indiepost.utils.DateUtil.normalizeTimeDomainStats
 import org.hibernate.Criteria

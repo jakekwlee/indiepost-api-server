@@ -1,6 +1,6 @@
 package com.indiepost.service
 
-import com.indiepost.NewIndiepostApplication
+import com.indiepost.IndiepostBackendApplication
 import com.indiepost.dto.Inquiry
 import com.indiepost.dto.Suggestion
 import com.indiepost.enums.Types
@@ -17,7 +17,7 @@ import javax.inject.Inject
  * Created by jake on 9/1/17.
  */
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = [NewIndiepostApplication::class])
+@SpringBootTest(classes = [IndiepostBackendApplication::class])
 @WebAppConfiguration
 class MailServiceTests {
 

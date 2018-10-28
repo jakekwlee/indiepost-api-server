@@ -35,5 +35,5 @@ data class UserDto(
         }
         this.roles!!.add(role)
     }
-
 }
+

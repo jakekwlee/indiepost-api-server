@@ -5,7 +5,7 @@ import com.indiepost.dto.ImageSetDto
 import com.indiepost.dto.PostImageSetDto
 import com.indiepost.enums.Types.ImageSize
 import com.indiepost.exceptions.ResourceNotFoundException
-import com.indiepost.mapper.PostMapper.imageSetToDto
+import com.indiepost.mapper.createDto
 import com.indiepost.model.Image
 import com.indiepost.model.ImageSet
 import com.indiepost.repository.ImageRepository
@@ -101,7 +101,7 @@ abstract class AbstractImageService @Inject constructor(
             imageSetList.add(imageSet)
         }
         return imageSetList.stream()
-                .map { imageSet -> imageSetToDto(imageSet) }
+                .map { imageSet -> imageSet.createDto() }
                 .collect(Collectors.toList())
     }
 
@@ -109,7 +109,7 @@ abstract class AbstractImageService @Inject constructor(
         val dtFormat = DateTimeFormatter.ofPattern("/yyyy/MM/dd/")
         val subPath = config.imageUploadPath + LocalDateTime.now().format(dtFormat)
         val fileExtension = contentType.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
-        val filename = String.format(config.imageFilenameFormat, filenamePrefix, width, height, fileExtension)
+        val filename = String.format(config.imageFilenameFormat!!, filenamePrefix, width, height, fileExtension)
 
         val image = Image()
         image.fileName = filename
@@ -128,7 +128,7 @@ abstract class AbstractImageService @Inject constructor(
         val pageRequest = PageRequest.of(pageable.pageNumber, pageable.pageSize, Sort.Direction.DESC, "id")
         val imageSetList = imageRepository.findAll(pageRequest)
         val dtoList = imageSetList.stream()
-                .map { imageSet -> imageSetToDto(imageSet) }
+                .map { imageSet -> imageSet.createDto() }
                 .collect(Collectors.toList())
         val count = imageRepository.count()
         return PageImpl(dtoList, pageRequest, count)
@@ -186,7 +186,7 @@ abstract class AbstractImageService @Inject constructor(
 
     @Throws(FileUploadException::class)
     private fun validateContentType(contentType: String?) {
-        if (!config.acceptedImageTypes.contains(contentType)) {
+        if (!config.acceptedImageTypes!!.contains(contentType)) {
             throw FileUploadException("File type is not accepted: " + contentType!!)
         }
     }

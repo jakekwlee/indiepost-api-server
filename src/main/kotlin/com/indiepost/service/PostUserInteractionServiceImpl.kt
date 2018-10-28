@@ -71,8 +71,7 @@ class PostUserInteractionServiceImpl @Inject constructor(
     override fun setInvisible(postId: Long) {
         val userId = currentUserId ?: return
         val postReading = postReadingRepository.findOneByUserIdAndPostId(userId, postId)
-                ?: // TODO throw error
-                return
+                ?: return // fail silently
         postReading.isVisible = false
     }
 

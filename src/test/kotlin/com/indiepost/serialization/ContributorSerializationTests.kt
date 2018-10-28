@@ -3,7 +3,7 @@ package com.indiepost.serialization
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module
-import com.indiepost.NewIndiepostApplication
+import com.indiepost.IndiepostBackendApplication
 import com.indiepost.enums.Types
 import com.indiepost.service.ContributorService
 import org.junit.jupiter.api.Test
@@ -15,7 +15,7 @@ import org.springframework.test.context.web.WebAppConfiguration
 import javax.inject.Inject
 
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = [NewIndiepostApplication::class])
+@SpringBootTest(classes = [IndiepostBackendApplication::class])
 @WebAppConfiguration
 class ContributorSerializationTests {
 

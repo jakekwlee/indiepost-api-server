@@ -1,6 +1,6 @@
 package com.indiepost.repository
 
-import com.indiepost.NewIndiepostApplication
+import com.indiepost.IndiepostBackendApplication
 import com.indiepost.enums.Types
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -14,7 +14,7 @@ import java.util.stream.Collectors
 import javax.inject.Inject
 
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = [NewIndiepostApplication::class])
+@SpringBootTest(classes = [IndiepostBackendApplication::class])
 @WebAppConfiguration
 @Transactional
 class PostRepositoryTest {

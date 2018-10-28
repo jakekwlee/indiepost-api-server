@@ -2,16 +2,17 @@ package com.indiepost.service
 
 import com.indiepost.dto.ContributorDto
 import com.indiepost.enums.Types
-import com.indiepost.mapper.ContributorMapper.*
+import com.indiepost.exceptions.ResourceNotFoundException
+import com.indiepost.mapper.createDto
+import com.indiepost.mapper.createEntity
+import com.indiepost.mapper.merge
 import com.indiepost.model.Contributor
 import com.indiepost.repository.ContributorRepository
 import org.springframework.data.domain.*
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
 import java.util.*
 import java.util.stream.Collectors
 import javax.inject.Inject
-import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
 
 @Service
@@ -20,30 +21,24 @@ class ContributorServiceImpl @Inject constructor(
         private val contributorRepository: ContributorRepository) : ContributorService {
 
     override fun findOne(id: Long): ContributorDto? {
-        val contributor = contributorRepository.findById(id)
-        return if (contributor != null) {
-            toDto(contributor)
-        } else null
+        return contributorRepository.findById(id)?.createDto()
     }
 
     override fun save(dto: ContributorDto): ContributorDto {
-        val now = LocalDateTime.now()
         val contributor: Contributor?
-        // TODO remove verbose code
-        if (dto.id == null) {
-            contributor = toEntity(dto)
-            contributor!!.created = now
+        val postId = dto.id
+        if (postId == null) {
+            contributor = dto.createEntity()
         } else {
-            contributor = contributorRepository.findById(dto.id!!)
+            contributor = contributorRepository.findById(postId)
             if (contributor != null) {
-                copy(dto, contributor)
+                contributor.merge(dto)
             } else {
-                throw EntityNotFoundException("No Contributor with this id: " + dto.id!!.toString())
+                throw ResourceNotFoundException("No Contributor with this id: $postId")
             }
         }
-        contributor.lastUpdated = now
         contributorRepository.save(contributor)
-        return toDto(contributor)
+        return contributor.createDto()
     }
 
     override fun delete(dto: ContributorDto): Long? {
@@ -73,7 +68,7 @@ class ContributorServiceImpl @Inject constructor(
         val contributorList = contributorRepository.findAllByContributorType(type, pageable)
         val dtoList = contributorList.content
                 .stream()
-                .map { contributor -> toDto(contributor) }
+                .map { contributor -> contributor.createDto() }
                 .collect(Collectors.toList())
         return PageImpl(dtoList, pageable, count.toLong())
 
@@ -90,7 +85,7 @@ class ContributorServiceImpl @Inject constructor(
                 Sort.Direction.DESC, "id"))
         val dtoList = contributorList.content
                 .stream()
-                .map { contributor -> toDto(contributor) }
+                .map { contributor -> contributor.createDto() }
                 .collect(Collectors.toList())
         return PageImpl(dtoList, pageable, count.toLong())
     }

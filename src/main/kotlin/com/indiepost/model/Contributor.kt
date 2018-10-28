@@ -17,7 +17,6 @@ data class Contributor(
         @GeneratedValue(strategy = GenerationType.AUTO)
         var id: Long? = null,
 
-
         @NotNull
         @Column(nullable = false)
         @Size(max = 30)
@@ -75,7 +74,10 @@ data class Contributor(
         @Column(nullable = false)
         var lastUpdated: LocalDateTime? = null
 ) {
-    @OneToMany(mappedBy = "contributor", cascade = arrayOf(CascadeType.ALL), orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "contributor",
+            cascade = [CascadeType.ALL],
+            orphanRemoval = true)
     @OrderBy("id desc")
     var postContributors: MutableList<PostContributor> = ArrayList()
 }

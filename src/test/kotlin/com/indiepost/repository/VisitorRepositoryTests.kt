@@ -1,7 +1,7 @@
 package com.indiepost.repository
 
 import com.fasterxml.jackson.core.JsonProcessingException
-import com.indiepost.NewIndiepostApplication
+import com.indiepost.IndiepostBackendApplication
 import com.indiepost.enums.Types.ClientType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -16,7 +16,7 @@ import javax.transaction.Transactional
  * Created by jake on 17. 5. 25.
  */
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = [NewIndiepostApplication::class])
+@SpringBootTest(classes = [IndiepostBackendApplication::class])
 @WebAppConfiguration
 @Transactional
 class VisitorRepositoryTests {

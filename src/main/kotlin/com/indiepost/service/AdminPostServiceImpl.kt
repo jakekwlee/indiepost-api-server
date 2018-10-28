@@ -4,24 +4,22 @@ import com.amazonaws.services.pinpoint.model.BadRequestException
 import com.amazonaws.services.workdocs.model.EntityNotExistsException
 import com.indiepost.dto.Highlight
 import com.indiepost.dto.post.*
+import com.indiepost.enums.Types.Companion.isPublicStatus
 import com.indiepost.enums.Types.PostStatus
-import com.indiepost.enums.Types.isPublicStatus
 import com.indiepost.exceptions.UnauthorizedException
-import com.indiepost.mapper.PostMapper.*
+import com.indiepost.mapper.*
 import com.indiepost.model.Post
 import com.indiepost.model.Tag
 import com.indiepost.repository.AdminPostRepository
 import com.indiepost.repository.ContributorRepository
 import com.indiepost.repository.TagRepository
 import com.indiepost.repository.elasticsearch.PostEsRepository
-import com.indiepost.utils.DateUtil.localDateTimeToInstant
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Caching
 import org.springframework.data.domain.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
-import java.util.*
 import java.util.stream.Collectors
 import javax.inject.Inject
 
@@ -44,19 +42,13 @@ constructor(private val userService: UserService,
         val post = Post()
         if (requestDto.id != null) {
             val originalPost = adminPostRepository.findOne(requestDto.id)
-            post.original = originalPost
-            post.originalId = originalPost!!.id
-            post.author = post.author
+            if (originalPost != null) {
+                post.original = originalPost
+                post.originalId = originalPost.id
+                post.author = post.author
+            }
         }
-
-        copyDtoToPost(requestDto, post)
-
-        if (requestDto.titleImageId != null) {
-            post.titleImageId = requestDto.titleImageId
-        }
-        if (requestDto.categoryId != null) {
-            post.categoryId = requestDto.categoryId
-        }
+        post.merge(requestDto)
 
         post.createdAt = LocalDateTime.now()
         post.modifiedAt = LocalDateTime.now()
@@ -67,22 +59,18 @@ constructor(private val userService: UserService,
         post.status = PostStatus.AUTOSAVE
 
         val postId = adminPostRepository.persist(post)
-
-        addContributors(post, requestDto.contributors)
-        addTags(post, requestDto.tags)
-        addRelatedPosts(post, requestDto.relatedPostIds)
-
+        addManyToManyAttributes(post, requestDto)
         return postId
     }
 
     override fun findOne(id: Long): AdminPostResponseDto? {
         val post = adminPostRepository.findOne(id)
-        return toAdminPostResponseDto(post)
+        return post?.createAdminPostResponseDto()
     }
 
     override fun createDraft(dto: AdminPostRequestDto): Long? {
         val currentUser = userService.findCurrentUser()
-        val post = copyDtoToPost(dto)
+        val post = dto.createPost()
 
         val now = LocalDateTime.now()
         post.createdAt = now
@@ -91,19 +79,10 @@ constructor(private val userService: UserService,
         post.author = currentUser
         post.editor = currentUser
 
-        if (dto.titleImageId != null) {
-            post.titleImageId = dto.titleImageId
-        }
-        if (dto.categoryId != null) {
-            post.categoryId = dto.categoryId
-        }
         post.status = PostStatus.DRAFT
         adminPostRepository.persist(post)
 
-        addContributors(post, dto.contributors)
-        addTags(post, dto.tags)
-        addRelatedPosts(post, dto.relatedPostIds)
-
+        addManyToManyAttributes(post, dto)
         return post.id
     }
 
@@ -126,17 +105,9 @@ constructor(private val userService: UserService,
 
         val post = adminPostRepository.findOne(postId)
                 ?: throw EntityNotExistsException("No post with id with: " + requestDto.id)
-        copyDtoToPost(requestDto, post)
+        post.merge(requestDto)
 
-        if (requestDto.titleImageId != null) {
-            post.titleImageId = requestDto.titleImageId
-        }
-        if (requestDto.categoryId != null) {
-            post.categoryId = requestDto.categoryId
-        }
-        addContributors(post, requestDto.contributors)
-        addTags(post, requestDto.tags)
-        addRelatedPosts(post, requestDto.relatedPostIds)
+        addManyToManyAttributes(post, requestDto)
 
         val currentUser = userService.findCurrentUser()
         post.editor = currentUser
@@ -151,19 +122,10 @@ constructor(private val userService: UserService,
         val post = adminPostRepository.findOne(requestDto.id)
                 ?: throw EntityNotExistsException("No post with id with: " + requestDto.id)
 
-        copyDtoToPost(requestDto, post)
+        post.merge(requestDto)
 
-        if (requestDto.titleImageId != null) {
-            post.titleImageId = requestDto.titleImageId
-        }
-        if (requestDto.categoryId != null) {
-            post.categoryId = requestDto.categoryId
-        }
-        addContributors(post, requestDto.contributors)
-        addTags(post, requestDto.tags)
-        addRelatedPosts(post, requestDto.relatedPostIds)
+        addManyToManyAttributes(post, requestDto)
 
-        post.modifiedAt = LocalDateTime.now()
         post.editor = currentUser
         post.status = PostStatus.AUTOSAVE
 
@@ -187,7 +149,7 @@ constructor(private val userService: UserService,
         val result = adminPostRepository.find(currentUser, status, pageRequest)
         val count = adminPostRepository.count(status, currentUser)
         return if (result.isEmpty()) {
-            PageImpl(result, pageRequest, count)
+            PageImpl(emptyList(), pageRequest, 0)
         } else PageImpl(result, pageRequest, count)
     }
 
@@ -211,7 +173,7 @@ constructor(private val userService: UserService,
         val count = postEsRepository.count(text, status, currentUser)
 
         if (postEsList.isEmpty()) {
-            return PageImpl(ArrayList(), pageRequest, count.toLong())
+            return PageImpl(emptyList(), pageRequest, count.toLong())
         }
 
         val ids = postEsList.stream()
@@ -283,23 +245,22 @@ constructor(private val userService: UserService,
     }
 
     override fun bulkStatusUpdate(ids: List<Long>, changeTo: PostStatus) {
-        val (id1) = userService.findCurrentUser() ?: throw UnauthorizedException()
+        val user = userService.findCurrentUser() ?: throw UnauthorizedException()
+        val userId = user.id
         if (changeTo == PostStatus.AUTOSAVE) {
             return
         }
         for (id in ids) {
-            val post = adminPostRepository.findOne(id)
-            if (post!!.titleImageId == null && isPublicStatus(changeTo)) {
+            val post = adminPostRepository.findOne(id) ?: continue
+            if (post.titleImageId == null && isPublicStatus(changeTo)) {
                 return
             }
 
             disableCurrentFeaturePostIfNeeded(changeTo, post.isSplash, post.isFeatured)
             // if original post is exists, unlink original
-            if (post.originalId != null) {
-                post.originalId = null
-            }
+            post.originalId = null
             post.status = changeTo
-            post.editorId = id1
+            post.editorId = userId
 
             val now = LocalDateTime.now()
             post.modifiedAt = now
@@ -308,33 +269,25 @@ constructor(private val userService: UserService,
     }
 
     private fun getPageable(page: Int, maxResults: Int, isDesc: Boolean): Pageable {
-        return if (isDesc)
-            PageRequest.of(page, maxResults, Sort.Direction.DESC, "publishedAt")
-        else
-            PageRequest.of(page, maxResults, Sort.Direction.ASC, "publishedAt")
+        val direction = if (isDesc) Sort.Direction.DESC else Sort.Direction.ASC
+        return PageRequest.of(page, maxResults, direction, "publishedAt")
     }
 
-    private fun addRelatedPosts(post: Post, relatedPostIds: List<Long>?) {
-        if (relatedPostIds != null) {
-            val relatedPosts = adminPostRepository.findByIds(relatedPostIds)
+    private fun addManyToManyAttributes(post: Post, dto: AdminPostRequestDto) {
+        if (dto.relatedPostIds.isNotEmpty()) {
+            val relatedPosts = adminPostRepository.findByIds(dto.relatedPostIds)
             post.clearRelatedPosts()
             for ((i, relatedPost) in relatedPosts.withIndex()) {
                 post.addRelatedPost(relatedPost, i)
             }
         }
-    }
-
-    private fun addContributors(post: Post, contributorList: List<String>?) {
-        if (contributorList != null) {
-            val page = contributorRepository.findByFullNameIn(contributorList, PageRequest.of(0, 100))
-            val contributors = page.content
-            addContributorsToPost(post, contributors)
+        if (dto.contributors.isNotEmpty()) {
+            val contributors = contributorRepository.findByFullNameIn(dto.contributors, PageRequest.of(0, 100))
+                    .content
+            post.addContributors(contributors)
         }
-    }
-
-    private fun addTags(post: Post, tagList: List<String>?) {
-        if (tagList != null && tagList.isNotEmpty()) {
-            val tagListLowerCased = tagList.stream()
+        if (dto.tags.isNotEmpty()) {
+            val tagListLowerCased = dto.tags.stream()
                     .map { t -> t.toLowerCase() }
                     .collect(Collectors.toList())
             var tags = tagRepository.findByNameIn(tagListLowerCased)
@@ -348,64 +301,9 @@ constructor(private val userService: UserService,
                 }
                 tags = tagRepository.findByNameIn(tagListLowerCased)
             }
-            addTagsToPost(post, tags)
+            post.addTags(tags)
         }
-    }
 
-    private fun toAdminPostResponseDto(post: Post?): AdminPostResponseDto? {
-        if (post == null) {
-            return null
-        }
-        val responseDto = AdminPostResponseDto()
-        responseDto.id = post.id
-        responseDto.title = post.title
-        responseDto.content = post.content
-        responseDto.excerpt = post.excerpt
-        responseDto.displayName = post.displayName
-        responseDto.titleImageId = post.titleImageId
-        responseDto.status = post.status!!.toString()
-
-        responseDto.createdAt = localDateTimeToInstant(post.createdAt!!)
-        responseDto.modifiedAt = localDateTimeToInstant(post.modifiedAt!!)
-        responseDto.publishedAt = localDateTimeToInstant(post.publishedAt!!)
-
-        responseDto.categoryId = post.categoryId
-        responseDto.authorId = post.authorId
-        responseDto.editorId = post.editorId
-
-        responseDto.isPicked = post.isPicked
-        responseDto.isFeatured = post.isFeatured
-        responseDto.isSplash = post.isSplash
-        responseDto.isShowLastUpdated = post.isShowLastUpdated
-
-        responseDto.authorName = post.author?.displayName
-        responseDto.editorName = post.editor?.displayName
-        responseDto.categoryName = post.category?.name
-        responseDto.originalId = post.original?.id
-        responseDto.originalStatus = post.original?.status.toString()
-        if (post.titleImage != null) {
-            val imageSetDto = imageSetToDto(post.titleImage!!)
-            responseDto.titleImage = imageSetDto
-        }
-        if (!post.tags.isEmpty()) {
-            val tags = post.tags.stream()
-                    .map<String> { (_, name) -> name }
-                    .collect(Collectors.toList())
-            responseDto.tags = tags
-        }
-        if (!post.contributors.isEmpty()) {
-            val contributors = post.contributors.stream()
-                    .map<String> { (_, fullName) -> fullName }
-                    .collect(Collectors.toList())
-            responseDto.contributors = contributors
-        }
-        if (!post.getPostPosts().isEmpty()) {
-            val ids = post.getPostPosts().stream()
-                    .map<Long> { (id) -> id }
-                    .collect(Collectors.toList())
-            responseDto.relatedPostIds = ids
-        }
-        return responseDto
     }
 
     private fun disableCurrentFeaturePostIfNeeded(status: PostStatus, isSplash: Boolean, isFeatured: Boolean) {

@@ -9,7 +9,7 @@ import com.indiepost.dto.post.PostQuery
 import com.indiepost.dto.post.PostSummaryDto
 import com.indiepost.enums.Types.PostStatus
 import com.indiepost.exceptions.ResourceNotFoundException
-import com.indiepost.mapper.PostMapper.postToPostDto
+import com.indiepost.mapper.createDto
 import com.indiepost.repository.*
 import com.indiepost.repository.elasticsearch.PostEsRepository
 import com.indiepost.utils.DateUtil.localDateTimeToInstant
@@ -36,19 +36,16 @@ class PostServiceImpl @Inject constructor(
         private val bookmarkRepository: BookmarkRepository,
         private val userRepository: UserRepository) : PostService {
 
-    override fun findOne(id: Long): PostDto {
-        val post = postRepository.findById(id) ?: throw ResourceNotFoundException()
-        // TODO I will find a better solution!
-        post.tags
-        post.contributors
-        val dto = postToPostDto(post)
-        if (!post.tags.isEmpty()) {
+    override fun findOne(postId: Long): PostDto {
+        val post = postRepository.findById(postId) ?: throw ResourceNotFoundException()
+        val dto = post.createDto()
+        if (post.tags.isNotEmpty()) {
             val tags = post.tags.stream()
                     .map { (_, name) -> name!!.toLowerCase() }
                     .collect(Collectors.toList())
             dto.tags = tags
         }
-        if (!post.contributors.isEmpty()) {
+        if (post.contributors.isNotEmpty()) {
             val contributors = post.contributors.stream()
                     .map { c ->
                         val contributorDto = ContributorDto()
@@ -60,8 +57,8 @@ class PostServiceImpl @Inject constructor(
         }
         val user = userRepository.findCurrentUser()
         if (user != null) {
-            val postReading = postReadingRepository.findOneByUserIdAndPostId(user.id!!, dto.id!!)
-            val bookmark = bookmarkRepository.findOneByUserIdAndPostId(user.id!!, dto.id!!)
+            val postReading = postReadingRepository.findOneByUserIdAndPostId(user.id!!, postId)
+            val bookmark = bookmarkRepository.findOneByUserIdAndPostId(user.id!!, postId)
             if (postReading != null) {
                 dto.lastRead = localDateTimeToInstant(postReading.lastRead!!)
             }

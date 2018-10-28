@@ -1,6 +1,6 @@
 package com.indiepost.repository
 
-import com.indiepost.NewIndiepostApplication
+import com.indiepost.IndiepostBackendApplication
 import com.indiepost.enums.Types
 import com.indiepost.helper.printToJson
 import com.indiepost.repository.elasticsearch.PostEsRepository
@@ -16,7 +16,7 @@ import javax.inject.Inject
 import javax.transaction.Transactional
 
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = arrayOf(NewIndiepostApplication::class))
+@SpringBootTest(classes = arrayOf(IndiepostBackendApplication::class))
 @WebAppConfiguration
 @Transactional
 class PostEsRepositoryTests {

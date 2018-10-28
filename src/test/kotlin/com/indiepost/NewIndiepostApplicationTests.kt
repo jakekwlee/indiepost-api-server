@@ -7,7 +7,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.context.web.WebAppConfiguration
 
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = arrayOf(NewIndiepostApplication::class))
+@SpringBootTest(classes = arrayOf(IndiepostBackendApplication::class))
 @WebAppConfiguration
 class NewIndiepostApplicationTests {
 

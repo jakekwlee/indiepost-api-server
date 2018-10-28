@@ -1,6 +1,6 @@
 package com.indiepost.repository
 
-import com.indiepost.NewIndiepostApplication
+import com.indiepost.IndiepostBackendApplication
 import com.indiepost.dto.analytics.LinkDto
 import com.indiepost.dto.analytics.ShareStat
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
@@ -14,7 +14,7 @@ import javax.inject.Inject
 import javax.transaction.Transactional
 
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = arrayOf(NewIndiepostApplication::class))
+@SpringBootTest(classes = arrayOf(IndiepostBackendApplication::class))
 @WebAppConfiguration
 @Transactional
 class CampaignRepositoryTests {

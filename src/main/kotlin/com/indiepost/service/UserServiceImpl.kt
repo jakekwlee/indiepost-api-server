@@ -5,10 +5,10 @@ import com.indiepost.dto.user.UserDto
 import com.indiepost.dto.user.UserProfileDto
 import com.indiepost.enums.Types.UserRole
 import com.indiepost.exceptions.UnauthorizedException
-import com.indiepost.mapper.UserMapper.userDtoToUser
+import com.indiepost.mapper.createDto
+import com.indiepost.mapper.createEntity
 import com.indiepost.model.ManagementToken
 import com.indiepost.model.User
-import com.indiepost.model.toDto
 import com.indiepost.repository.ManagementTokenRepository
 import com.indiepost.repository.RoleRepository
 import com.indiepost.repository.UserRepository
@@ -95,8 +95,8 @@ class UserServiceImpl @Inject constructor(
 
         // if user is newly joined
         if (user == null) {
-            user = userDtoToUser(dto)
-            if (StringUtils.isEmpty(user!!.displayName)) {
+            user = dto.createEntity()
+            if (StringUtils.isEmpty(user.displayName)) {
                 user.displayName = "NO NAME"
             }
             user.joinedAt = now
@@ -105,7 +105,7 @@ class UserServiceImpl @Inject constructor(
                 addRolesToUser(user, it)
             }
             userRepository.save(user)
-            return SyncAuthorizationResponse(true, user.toDto())
+            return SyncAuthorizationResponse(true, user.createDto())
         }
 
         if (user.username != dto.username) {
@@ -126,7 +126,7 @@ class UserServiceImpl @Inject constructor(
             user.updatedAt = now
             userRepository.save(user)
         }
-        return SyncAuthorizationResponse(false, user.toDto())
+        return SyncAuthorizationResponse(false, user.createDto())
     }
 
 

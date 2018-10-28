@@ -8,7 +8,7 @@ import com.indiepost.enums.Types.PostStatus
 import com.indiepost.model.*
 import com.indiepost.model.QPost.post
 import com.indiepost.repository.AdminPostRepository
-import com.indiepost.repository.utils.addConjunction
+import com.indiepost.repository.utils.CriteriaUtils.addConjunction
 import com.indiepost.utils.DateUtil.localDateTimeToInstant
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.Tuple
@@ -314,12 +314,18 @@ class AdminPostRepositoryJpa : AdminPostRepository {
             row.get(post.isPicked)?.let {
                 dto.isPicked = it
             }
+            row.get(post.createdAt)?.let {
+                dto.createdAt = localDateTimeToInstant(it)
+            }
+            row.get(post.modifiedAt)?.let {
+                dto.modifiedAt = localDateTimeToInstant(it)
+            }
+            row.get(post.publishedAt)?.let {
+                dto.publishedAt = localDateTimeToInstant(it)
+            }
             dto.categoryName = row.get(post.category.name)
             dto.authorDisplayName = row.get(post.author.displayName)
             dto.editorDisplayName = row.get(post.editor.displayName)
-            dto.createdAt = localDateTimeToInstant(row.get(post.createdAt))
-            dto.modifiedAt = localDateTimeToInstant(row.get(post.modifiedAt))
-            dto.publishedAt = localDateTimeToInstant(row.get(post.publishedAt))
             dto.status = row.get(post.status).toString()
             val postContributorsList = row.get(post.postContributors)
             if (postContributorsList != null) {

@@ -15,7 +15,7 @@ import java.time.LocalDateTime
  */
 interface PostService {
 
-    fun findOne(id: Long): PostDto
+    fun findOne(postId: Long): PostDto
 
     fun count(): Long
 

@@ -8,7 +8,7 @@ import com.indiepost.enums.Types.PostStatus
 import com.indiepost.model.*
 import com.indiepost.model.QPost.post
 import com.indiepost.repository.PostRepository
-import com.indiepost.repository.utils.addConjunction
+import com.indiepost.repository.utils.CriteriaUtils.addConjunction
 import com.indiepost.utils.DateUtil.instantToLocalDateTime
 import com.indiepost.utils.DateUtil.localDateTimeToInstant
 import com.querydsl.core.BooleanBuilder

@@ -5,8 +5,8 @@ import com.indiepost.dto.TagDto
 import com.indiepost.dto.user.UserDto
 import com.indiepost.enums.Types.UserRole
 import com.indiepost.exceptions.UnauthorizedException
+import com.indiepost.mapper.createDto
 import com.indiepost.model.User
-import com.indiepost.model.toDto
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -29,7 +29,7 @@ class AdminServiceImpl @Inject constructor(
     override fun buildInitialResponse(): AdminInitialResponse {
         val currentUser = userService.findCurrentUser() ?: throw UnauthorizedException()
         val adminInitialResponse = AdminInitialResponse()
-        adminInitialResponse.currentUser = currentUser.toDto()
+        adminInitialResponse.currentUser = currentUser.createDto()
         adminInitialResponse.categories = categoryService.getDtoList()
         adminInitialResponse.authorNames = adminPostService.findAllBylineNames()
         // TODO for test
@@ -55,13 +55,13 @@ class AdminServiceImpl @Inject constructor(
 
     override fun getCurrentUserDto(): UserDto {
         val currentUser = userService.findCurrentUser() ?: throw UnauthorizedException()
-        return currentUser.toDto()
+        return currentUser.createDto()
     }
 
     private fun userListToUserDtoList(userList: List<User>): List<UserDto> {
         val userDtoList = ArrayList<UserDto>()
         for (user in userList) {
-            userDtoList.add(user.toDto())
+            userDtoList.add(user.createDto())
         }
         return userDtoList
     }

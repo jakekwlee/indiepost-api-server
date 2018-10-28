@@ -1,77 +1,80 @@
-package com.indiepost.enums;
+package com.indiepost.enums
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat
 
 /**
  * Created by jake on 17. 4. 13.
  */
-public interface Types {
+interface Types {
 
-    static boolean isPublicStatus(PostStatus status) {
-        return status.equals(PostStatus.PUBLISH)
-                || status.equals(PostStatus.FUTURE)
-                || status.equals(PostStatus.PENDING);
-    }
-
-    enum ImageSize {
+    enum class ImageSize {
         THUMBNAIL, SMALL, OPTIMIZED, LARGE, ORIGINAL
     }
 
-    enum PostStatus {
+    enum class PostStatus {
         AUTOSAVE, DRAFT, TRASH, PENDING, FUTURE, PUBLISH
     }
 
-    enum UserGender {
+    enum class UserGender {
         UNIDENTIFIED, FEMALE, MALE, ETC
     }
 
-    enum UserState {
+    enum class UserState {
         PENDING, ACTIVATED, DEACTIVATED, DELETED, BANNED, EXPIRED
     }
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    enum UserRole {
+    enum class UserRole {
         User, Author, Editor, EditorInChief, Administrator
     }
 
-    enum StatType {
+    enum class StatType {
         ACTION, POST, PAGE, HOME, SEARCH, TAG, CONTRIBUTOR, CATEGORY, READING_HISTORY, BOOKMARK, NOTICE
     }
 
-    enum ActionType {
+    enum class ActionType {
         LOAD_MORE_POSTS, CHANGE_THEME, OPEN_MENU,
         CLICK_APPSTORE, CLICK_SNS, CLICK_AD
     }
 
-    enum Channel {
+    enum class Channel {
         INBOUND_LINK, GOOGLE, TWITTER, FACEBOOK, INSTAGRAM, YOUTUBE, NAVER, BING, DAUM, NATE, OTHER, NONE
     }
 
-    enum ClientType {
+    enum class ClientType {
         INDIEPOST_WEBAPP, INDIEPOST_LEGACY_MOBILE_APP, INDIEPOST_AD_ENGINE
     }
 
-    enum TimeDomainDuration {
+    enum class TimeDomainDuration {
         HOURLY, DAILY, MONTHLY, YEARLY
     }
 
-    enum ContributorType {
+    enum class ContributorType {
         FeatureEditor, FreelanceEditor, Photographer
     }
 
-    enum ContributorDisplayType {
+    enum class ContributorDisplayType {
         HTML, TEXT
     }
 
-    enum LinkType {
+    enum class LinkType {
         Banner, Standard, FakeVideo
     }
 
-    enum BannerType {
-        FullWidth, Grid, SidePanel,
+    enum class BannerType {
+        FullWidth, Grid, SidePanel
     }
 
-    enum BannerTarget {
-        All, Users, NonUsers,
+    enum class BannerTarget {
+        All, Users, NonUsers
+    }
+
+    companion object {
+
+        fun isPublicStatus(status: PostStatus): Boolean {
+            return (status == PostStatus.PUBLISH
+                    || status == PostStatus.FUTURE
+                    || status == PostStatus.PENDING)
+        }
     }
 }

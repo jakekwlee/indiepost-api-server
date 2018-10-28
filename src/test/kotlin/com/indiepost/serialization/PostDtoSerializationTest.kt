@@ -1,17 +1,13 @@
 package com.indiepost.serialization
 
 import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.indiepost.NewIndiepostApplication
+import com.indiepost.IndiepostBackendApplication
+import com.indiepost.helper.printToJson
 import com.indiepost.service.PostService
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.PageRequest
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.context.web.WebAppConfiguration
 import javax.inject.Inject
@@ -20,7 +16,7 @@ import javax.inject.Inject
  * Created by jake on 17. 1. 18.
  */
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = arrayOf(NewIndiepostApplication::class))
+@SpringBootTest(classes = [IndiepostBackendApplication::class])
 @WebAppConfiguration
 class PostDtoSerializationTest {
 
@@ -35,12 +31,7 @@ class PostDtoSerializationTest {
     @Test
     fun postDtoShouldSerializeCorrectly() {
         val postDto = postService.findOne(347L)
-        val objectMapper = ObjectMapper()
-        objectMapper.registerModule(Hibernate5Module())
-        println("*** Start serialize PostDto ***")
-        val result = objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true)
-                .writeValueAsString(postDto)
-        println(result)
+        printToJson(postDto)
     }
 
     /**
@@ -49,15 +40,11 @@ class PostDtoSerializationTest {
      * @throws JsonProcessingException
      */
     @Test
-    fun PagedPostSummaryDtoListShouldSerializeCorrectly() {
-        val pagedResult = postService.find(PageRequest.of(3, 10))
-        val objectMapper = Jackson2ObjectMapperBuilder.json().featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).modules(JavaTimeModule()).build<ObjectMapper>()
-        objectMapper.registerModule(Hibernate5Module())
-        println("\n\n*** Start serialize List<PostSummaryDto> ***\n\n")
+    fun pagedPostSummaryDtoListShouldSerializeCorrectly() {
+        // TODO 151 ms? it takes too much.. Size of results: 75.603kb
+        val pagedResult = postService.find(PageRequest.of(3, 30))
+        printToJson(pagedResult)
         println("Result Length: " + pagedResult.content.size)
-        val result = objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true)
-                .writeValueAsString(pagedResult)
-        println(result)
     }
 
     /**

@@ -1,6 +1,6 @@
 package com.indiepost.service
 
-import com.indiepost.NewIndiepostApplication
+import com.indiepost.IndiepostBackendApplication
 import com.indiepost.dto.TimelineRequest
 import com.indiepost.helper.printToJson
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
@@ -19,7 +19,7 @@ import javax.inject.Inject
  * Created by jake on 17. 4. 23.
  */
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(classes = [NewIndiepostApplication::class])
+@SpringBootTest(classes = [IndiepostBackendApplication::class])
 @WebAppConfiguration
 class PostServiceTests {
     @Inject
@@ -74,6 +74,7 @@ class PostServiceTests {
     @Test
     @WithMockUser("auth0|5a94f788fbf06a78e80360d0")
     fun findReadingHistory_shouldReturnResultProperly() {
+        // TODO it takes too much time...
         val request = TimelineRequest()
         request.size = 100
         request.timepoint = Instant.now().toEpochMilli() / 1000
