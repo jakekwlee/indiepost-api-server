@@ -19,7 +19,8 @@ internal class ContentTypeMultipartFileValidator : ConstraintValidator<ContentTy
     }
 
     override fun initialize(constraintAnnotation: ContentType?) {
-        this.acceptedContentTypes = constraintAnnotation!!.value
+        // TODO
+        this.acceptedContentTypes = constraintAnnotation!!.value as (Array<String>)
     }
 
     override fun isValid(value: MultipartFile?, context: ConstraintValidatorContext): Boolean {

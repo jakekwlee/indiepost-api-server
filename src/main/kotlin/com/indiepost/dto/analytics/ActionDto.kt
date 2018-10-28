@@ -14,7 +14,7 @@ data class ActionDto(
 
         var label: String? = null,
 
-        var value: Int = 0,
+        var value: Int? = 1,
 
         var userId: Long? = null
 )

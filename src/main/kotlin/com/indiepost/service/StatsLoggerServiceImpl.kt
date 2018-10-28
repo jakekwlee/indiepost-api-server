@@ -30,13 +30,13 @@ import javax.transaction.Transactional
  */
 @Service
 @Transactional
-class AnalyticsLoggerServiceImpl @Inject constructor(
+class StatsLoggerServiceImpl @Inject constructor(
         private val visitorRepository: VisitorRepository,
         private val pageviewRepository: PageviewRepository,
         private val actionRepository: ActionRepository,
         private val userService: UserService,
         private val linkRepository: LinkRepository,
-        private val clickRepository: ClickRepository) : AnalyticsLoggerService {
+        private val clickRepository: ClickRepository) : StatsLoggerService {
 
     @Value("\${spring.profiles.active}")
     private val activeProfile: String? = null
@@ -45,7 +45,6 @@ class AnalyticsLoggerServiceImpl @Inject constructor(
         return visitorRepository.findOne(id)
     }
 
-    @Throws(IOException::class)
     override fun logPageview(req: HttpServletRequest, res: HttpServletResponse, pageviewDto: PageviewDto) {
         var visitorId = getVisitorId(req, pageviewDto.userId)
         val pageview = Pageview()
@@ -75,7 +74,6 @@ class AnalyticsLoggerServiceImpl @Inject constructor(
         pageviewRepository.save(pageview)
     }
 
-    @Throws(IOException::class)
     override fun logAction(req: HttpServletRequest, res: HttpServletResponse, actionDto: ActionDto) {
         var visitorId = getVisitorId(req, actionDto.userId)
         if (visitorId == null) {
@@ -94,7 +92,6 @@ class AnalyticsLoggerServiceImpl @Inject constructor(
         actionRepository.save(action)
     }
 
-    @Throws(IOException::class)
     override fun logClickAndGetLink(req: HttpServletRequest, res: HttpServletResponse, linkUid: String, principal: Principal?): String {
         if (linkUid.isEmpty()) {
             return "/"
@@ -284,6 +281,6 @@ class AnalyticsLoggerServiceImpl @Inject constructor(
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(AnalyticsLoggerServiceImpl::class.java)
+        private val logger = LoggerFactory.getLogger(StatsLoggerServiceImpl::class.java)
     }
 }

@@ -364,11 +364,10 @@ class PostRepositoryJpa : PostRepository {
             row.get(post.isShowLastUpdated)?.let {
                 dto.isShowLastUpdated = it
             }
-            dto.categoryName = row.get(post.category.slug)
-            val titleImage = row.get(post.titleImage)
-            if (titleImage != null) {
-                dto.titleImage = titleImage
+            row.get(post.titleImage)?.let {
+                dto.titleImage = it
             }
+            dto.categoryName = row.get(post.category.slug)
             dtoList.add(dto)
         }
         return dtoList
