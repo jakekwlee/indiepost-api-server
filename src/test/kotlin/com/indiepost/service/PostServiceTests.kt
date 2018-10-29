@@ -44,7 +44,8 @@ class PostServiceTests {
         val posts = page.content
         assertThat(posts.size).isEqualTo(expected)
         assertThat(page.size).isEqualTo(expected)
-        printToJson(posts)
+        assertThat(posts[0].titleImageId).isNotNull()
+        printToJson(page)
     }
 
     @Test

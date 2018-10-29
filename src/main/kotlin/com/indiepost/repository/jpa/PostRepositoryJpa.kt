@@ -5,6 +5,7 @@ import com.indiepost.dto.TimelineRequest
 import com.indiepost.dto.post.PostQuery
 import com.indiepost.dto.post.PostSummaryDto
 import com.indiepost.enums.Types.PostStatus
+import com.indiepost.mapper.createDto
 import com.indiepost.model.*
 import com.indiepost.model.QPost.post
 import com.indiepost.repository.PostRepository
@@ -365,7 +366,8 @@ class PostRepositoryJpa : PostRepository {
                 dto.isShowLastUpdated = it
             }
             row.get(post.titleImage)?.let {
-                dto.titleImage = it
+                dto.titleImage = it.createDto()
+                dto.titleImageId = it.id
             }
             dto.categoryName = row.get(post.category.slug)
             dtoList.add(dto)

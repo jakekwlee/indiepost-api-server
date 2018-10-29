@@ -1,8 +1,8 @@
 package com.indiepost.dto.post
 
 import com.indiepost.dto.Highlight
+import com.indiepost.dto.ImageSetDto
 import com.indiepost.enums.Types.PostStatus
-import com.indiepost.model.ImageSet
 import java.io.Serializable
 import java.time.Instant
 
@@ -31,7 +31,9 @@ open class PostSummaryDto : Serializable {
 
     var isShowLastUpdated: Boolean = false
 
-    var titleImage: ImageSet? = null
+    var titleImage: ImageSetDto? = null
+
+    var titleImageId: Long? = null
 
     var status: PostStatus? = null
 
