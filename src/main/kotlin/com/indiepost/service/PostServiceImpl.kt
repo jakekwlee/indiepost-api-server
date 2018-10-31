@@ -82,8 +82,8 @@ class PostServiceImpl @Inject constructor(
         return postRepository.findByIds(ids)
     }
 
-    override fun find(pageable: Pageable): Page<PostSummaryDto> {
-        return postRepository.findByStatus(PostStatus.PUBLISH, getPageRequest(pageable))
+    override fun findPublicPosts(pageable: Pageable): Page<PostSummaryDto> {
+        return postRepository.findPublicPosts(getPageRequest(pageable), includeFeatured = false)
     }
 
     override fun findByCategorySlug(slug: String, pageable: Pageable): Page<PostSummaryDto> {
@@ -160,22 +160,33 @@ class PostServiceImpl @Inject constructor(
         return PageImpl(posts, pageRequest, total.toLong())
     }
 
-    override fun moreLikeThis(id: Long?, pageable: Pageable): Page<PostSummaryDto> {
-        val pageRequest = getPageRequest(pageable)
-        val ids = postEsRepository.moreLikeThis(Arrays.asList(id!!), PostStatus.PUBLISH, pageRequest)
-        if (ids.isEmpty()) {
-            return PageImpl(emptyList(), pageRequest, 0)
+    override fun findRelatedPostsById(id: Long, pageable: Pageable): Page<PostSummaryDto> {
+        val relatedPosts = postRepository.findRelatedPostsById(id).content
+        val relatedPostIds = relatedPosts.stream()
+                .map { it -> it.id }
+                .collect(Collectors.toList())
+        var moreLikeThis: List<PostSummaryDto>? = null
+        if (pageable.pageSize > relatedPostIds.size) {
+            val pageRequest = getPageRequest(pageable)
+            val moreLikeThisIds = postEsRepository.moreLikeThis(listOf(id), PostStatus.PUBLISH, pageRequest)
+            val subIds = moreLikeThisIds.subtract(relatedPostIds).toList()
+            val ids = if (relatedPostIds.size + subIds.size > pageable.pageSize) {
+                subIds.subList(0, pageable.pageSize - relatedPostIds.size)
+            } else {
+                subIds
+            }
+            moreLikeThis = postRepository.findByIds(ids as List<Long>)
         }
-        val total = ids.size
-        val posts = postRepository.findByIds(ids)
-        return PageImpl(posts, pageRequest, total.toLong())
-    }
-
-    override fun findRelatedPostsById(id: Long?, pageable: Pageable): Page<PostSummaryDto> {
-        val posts = postRepository.findRelatedPostsById(id!!)
-        return if (posts.content.isEmpty()) {
-            PageImpl(emptyList(), pageable, 0)
-        } else posts
+        val posts = ArrayList<PostSummaryDto>()
+        if (relatedPosts.isNotEmpty()) {
+            posts.addAll(relatedPosts)
+        }
+        if (moreLikeThis != null) {
+            posts.addAll(moreLikeThis)
+        }
+        val pageRequest = getPageRequest(pageable)
+        val total = posts.size.toLong()
+        return PageImpl(posts, pageRequest, total)
     }
 
     override fun recommendations(pageable: Pageable): Page<PostSummaryDto> {

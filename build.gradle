@@ -26,7 +26,7 @@ apply plugin: "io.spring.dependency-management"
 apply plugin: "idea"
 
 group = "com.indiepost"
-version = "2.6.2-SNAPSHOT"
+version = "2.6.3-SNAPSHOT"
 sourceCompatibility = 1.8
 
 test {

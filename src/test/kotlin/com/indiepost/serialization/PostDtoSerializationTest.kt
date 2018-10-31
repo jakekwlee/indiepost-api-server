@@ -42,7 +42,7 @@ class PostDtoSerializationTest {
     @Test
     fun pagedPostSummaryDtoListShouldSerializeCorrectly() {
         // TODO 151 ms? it takes too much.. Size of results: 75.603kb
-        val pagedResult = postService.find(PageRequest.of(3, 30))
+        val pagedResult = postService.findPublicPosts(PageRequest.of(3, 30))
         printToJson(pagedResult)
         println("Result Length: " + pagedResult.content.size)
     }

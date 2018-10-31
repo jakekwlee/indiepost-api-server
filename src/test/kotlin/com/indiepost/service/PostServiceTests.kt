@@ -27,7 +27,7 @@ class PostServiceTests {
 
     @Test
     fun postsShouldHaveUniqueId() {
-        val posts = postService.find(PageRequest.of(0, 10)).content
+        val posts = postService.findPublicPosts(PageRequest.of(0, 10)).content
         var prevId: Long? = -1L
         for (post in posts) {
             assertThat(post.id).isNotNull()
@@ -40,7 +40,7 @@ class PostServiceTests {
     @Test
     fun findPostsShouldReturnDtoListProperly() {
         val expected = 50
-        val page = postService.find(PageRequest.of(0, expected))
+        val page = postService.findPublicPosts(PageRequest.of(0, expected))
         val posts = page.content
         assertThat(posts.size).isEqualTo(expected)
         assertThat(page.size).isEqualTo(expected)
@@ -85,16 +85,6 @@ class PostServiceTests {
         assertThat(result.content.size).isEqualTo(result.numberOfElements)
         assertThat(result.content.size).isEqualTo(100)
         println("Running Time: " + (endTime - startTime) / 1000000 + "milliseconds")
-    }
-
-    @Test
-    @WithMockUser("auth0|5b213cd8064de34cde981b47")
-    fun moreLikeThis_shouldReturnRelatedPostsProperly() {
-        val id = 7983L
-        val size = 4
-        val result = postService.moreLikeThis(id, PageRequest.of(0, 4))
-        assertThat(result.content.size).isEqualTo(size)
-        printToJson(result)
     }
 
     @Test

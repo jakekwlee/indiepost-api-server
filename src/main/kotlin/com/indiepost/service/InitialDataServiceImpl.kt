@@ -37,7 +37,7 @@ class InitialDataServiceImpl @Inject constructor(
         initialData.pickedPosts = postService.findPickedPosts()
 
         if (withLatestPosts) {
-            initialData.posts = postService.find(PageRequest.of(0, config.fetchCount))
+            initialData.posts = postService.findPublicPosts(PageRequest.of(0, config.fetchCount))
         }
 
         val banners = campaignService.findBannersOnCampaignPeriod()

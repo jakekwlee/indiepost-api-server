@@ -1,36 +1,36 @@
 package com.indiepost.mapper
 
+import com.indiepost.dto.ImageDto
 import com.indiepost.dto.ImageSetDto
+import com.indiepost.model.Image
 import com.indiepost.model.ImageSet
 import com.indiepost.utils.DateUtil.localDateTimeToInstant
 
 fun ImageSet.createDto(): ImageSetDto {
     val imageSetDto = ImageSetDto()
-    imageSetDto.id = this.id
-    imageSetDto.contentType = this.contentType
+    imageSetDto.id = id
+    imageSetDto.contentType = contentType
     this.uploadedAt?.let {
         imageSetDto.uploadedAt = localDateTimeToInstant(it)
     }
-    val original = this.original
-    if (original != null) {
-        imageSetDto.original = original.filePath
-        imageSetDto.width = original.width
-        imageSetDto.height = original.height
-    } else {
-        imageSetDto.width = 700
-        imageSetDto.height = 400
+    original?.let {
+        imageSetDto.original = it.createDto()
     }
-    this.large?.let {
-        imageSetDto.large = it.filePath
+    large?.let {
+        imageSetDto.large = it.createDto()
     }
-    this.optimized?.let {
-        imageSetDto.optimized = it.filePath
+    optimized?.let {
+        imageSetDto.optimized = it.createDto()
     }
-    this.small?.let {
-        imageSetDto.small = it.filePath
+    small?.let {
+        imageSetDto.small = it.createDto()
     }
-    this.thumbnail?.let {
-        imageSetDto.thumbnail = it.filePath
+    thumbnail?.let {
+        imageSetDto.thumbnail = it.createDto()
     }
     return imageSetDto
+}
+
+fun Image.createDto(): ImageDto {
+    return ImageDto(id, filePath, width, height)
 }

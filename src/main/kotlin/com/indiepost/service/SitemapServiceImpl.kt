@@ -1,6 +1,5 @@
 package com.indiepost.service
 
-import com.indiepost.enums.Types.PostStatus
 import com.indiepost.repository.CategoryRepository
 import com.indiepost.repository.PostRepository
 import com.indiepost.repository.StaticPageRepository
@@ -25,8 +24,7 @@ class SitemapServiceImpl @Inject constructor(
     override fun buildSitemap(): String {
         val sitemapGenerator = SitemapGenerator("http://www.indiepost.co.kr")
 
-        val posts = postRepository.findByStatus(
-                PostStatus.PUBLISH,
+        val posts = postRepository.findPublicPosts(
                 PageRequest.of(0, 9999, Sort.Direction.DESC, "publishedAt")
         ).content
 

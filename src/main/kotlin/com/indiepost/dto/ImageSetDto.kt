@@ -5,21 +5,17 @@ import java.time.Instant
 data class ImageSetDto(
         var id: Long? = null,
 
-        var width: Int = 0,
-
-        var height: Int = 0,
-
         var uploadedAt: Instant? = null,
 
         var contentType: String? = null,
 
-        var original: String? = null,
+        var original: ImageDto? = null,
 
-        var large: String? = null,
+        var large: ImageDto? = null,
 
-        var optimized: String? = null,
+        var optimized: ImageDto? = null,
 
-        var small: String? = null,
+        var small: ImageDto? = null,
 
-        var thumbnail: String? = null
+        var thumbnail: ImageDto? = null
 )

@@ -150,8 +150,13 @@ class PostRepositoryJpa : PostRepository {
         return PageImpl(dtoList, pageable, total)
     }
 
-    override fun findByStatus(status: PostStatus, pageable: Pageable): Page<PostSummaryDto> {
-        val query = PostQuery.Builder(status).build()
+    override fun findPublicPosts(pageable: Pageable, includeFeatured: Boolean): Page<PostSummaryDto> {
+        val queryBuilder = PostQuery.Builder(PostStatus.PUBLISH)
+        val query = if (includeFeatured) {
+            queryBuilder.build()
+        } else {
+            queryBuilder.splash(false).featured(false).build()
+        }
         return this.query(query, pageable)
     }
 

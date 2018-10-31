@@ -16,20 +16,20 @@ import javax.validation.constraints.Size
 open class Stat(
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
-        var id: Long? = null,
+        open var id: Long? = null,
 
         @NotNull
         @Size(max = 200)
-        var path: String? = null,
+        open var path: String? = null,
 
         @NotNull
-        var timestamp: LocalDateTime? = null
+        open var timestamp: LocalDateTime? = null
 ) {
     @NotNull
     @Column(name = "visitorId", updatable = false, insertable = false, nullable = false)
-    var visitorId: Long? = null
+    open var visitorId: Long? = null
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "visitorId", nullable = false)
-    var visitor: Visitor? = null
+    open var visitor: Visitor? = null
 }

@@ -8,10 +8,8 @@ import com.indiepost.enums.Types
 import com.indiepost.service.ImageService
 import com.indiepost.service.PostService
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.*
-
 import javax.inject.Inject
 
 /**
@@ -64,14 +62,8 @@ constructor(private val postService: PostService, private val imageService: Imag
     }
 
     @GetMapping("/related/{id}")
-    fun getRelatedPosts(@PathVariable id: Long?, pageable: Pageable): Page<PostSummaryDto> {
-        // ignore pageable for now...
-        return postService.findRelatedPostsById(id, PageRequest.of(0, 4))
-    }
-
-    @GetMapping("/more-like-this/{id}")
-    fun getMoreLikeThis(@PathVariable id: Long?, pageable: Pageable): Page<PostSummaryDto> {
-        return postService.moreLikeThis(id, PageRequest.of(0, 8))
+    fun getRelatedPosts(@PathVariable id: Long, pageable: Pageable): Page<PostSummaryDto> {
+        return postService.findRelatedPostsById(id, pageable)
     }
 
     @GetMapping("/images/{id}")

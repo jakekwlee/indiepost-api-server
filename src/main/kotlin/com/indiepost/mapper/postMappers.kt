@@ -29,6 +29,9 @@ fun Post.createDto(): PostDto {
     this.category?.let {
         postDto.categoryName = it.name
     }
+    this.titleImage?.let {
+        postDto.titleImage = it.createDto()
+    }
     return postDto
 }
 

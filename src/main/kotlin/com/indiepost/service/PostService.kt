@@ -21,7 +21,7 @@ interface PostService {
 
     fun count(postQuery: PostQuery): Long
 
-    fun find(pageable: Pageable): Page<PostSummaryDto>
+    fun findPublicPosts(pageable: Pageable): Page<PostSummaryDto>
 
     fun findByCategorySlug(slug: String, pageable: Pageable): Page<PostSummaryDto>
 
@@ -33,9 +33,7 @@ interface PostService {
 
     fun fullTextSearch(text: String, pageable: Pageable): Page<PostSummaryDto>
 
-    fun moreLikeThis(id: Long?, pageable: Pageable): Page<PostSummaryDto>
-
-    fun findRelatedPostsById(id: Long?, pageable: Pageable): Page<PostSummaryDto>
+    fun findRelatedPostsById(id: Long, pageable: Pageable): Page<PostSummaryDto>
 
     fun recommendations(pageable: Pageable): Page<PostSummaryDto>
 

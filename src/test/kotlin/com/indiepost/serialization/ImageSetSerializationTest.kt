@@ -33,12 +33,11 @@ class ImageSetSerializationTest {
     @Throws(JsonProcessingException::class)
     fun imageSetShouldSerializeCorrectly() {
         val page = imageService.findAll(PageRequest.of(2, 10))
-        val imageSetList = page.content
         val objectMapper = ObjectMapper()
         println("*** Start serialize List<ImageSet> ***")
-        println("Result Length: " + imageSetList.size)
+        println("Result Length: " + page.size)
         val result = objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true)
-                .writeValueAsString(imageSetList)
+                .writeValueAsString(page)
 
         println(result)
     }
