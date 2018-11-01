@@ -9,6 +9,7 @@ import com.indiepost.repository.PostReadingRepository
 import com.indiepost.repository.UserRepository
 import com.indiepost.utils.DateUtil.localDateTimeToInstant
 import org.springframework.stereotype.Service
+import java.time.Instant
 import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -48,7 +49,8 @@ class PostUserInteractionServiceImpl @Inject constructor(
 
     override fun findUsersByPostId(postId: Long): PostUserInteraction? {
         val userId = currentUserId ?: return null
-        val postReading = postReadingRepository.findOneByUserIdAndPostId(userId, postId) ?: return null
+        val postReading = postReadingRepository.findOneByUserIdAndPostId(userId, postId)
+                ?: return PostUserInteraction(postId, Instant.now())
         val bookmark = bookmarkRepository.findOneByUserIdAndPostId(userId, postId)
         val dto = postReading.createPostUserInteraction()
         if (bookmark != null) {

@@ -25,7 +25,7 @@ class Timeline<T> {
         this.content = content
         this.totalElements = total
         this.numberOfElements = content.size
-        this.isLast = total == content.size
+        this.isLast = request.size > content.size
         this.size = request.size
         this.isAfter = request.isAfter
         this.timepoint = Instant.ofEpochSecond(request.timepoint)
@@ -37,7 +37,7 @@ class Timeline<T> {
         this.content = content
         this.totalElements = total
         this.numberOfElements = content.size
-        this.isLast = total == content.size
+        this.isLast = request.size > content.size
         this.size = request.size
         this.isAfter = request.isAfter
         this.oldest = oldest

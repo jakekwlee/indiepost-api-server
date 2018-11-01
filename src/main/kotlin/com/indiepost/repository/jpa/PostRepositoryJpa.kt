@@ -259,7 +259,9 @@ class PostRepositoryJpa : PostRepository {
         val total = queryFactory.selectFrom(post)
                 .innerJoin(post.postReadings, r)
                 .innerJoin(r.post, post)
-                .where(whereClause)
+                .where(post.status.eq(PostStatus.PUBLISH)
+                        .and(r.isVisible.isTrue)
+                        .and(r.userId.eq(userId)))
                 .fetchCount()
         return Timeline(dtoList, request, total.toInt())
     }
@@ -301,7 +303,8 @@ class PostRepositoryJpa : PostRepository {
         val total = queryFactory.selectFrom(post)
                 .innerJoin(post.postBookmarks, b)
                 .innerJoin(b.post, post)
-                .where(whereClause)
+                .where(post.status.eq(PostStatus.PUBLISH)
+                        .and(b.userId.eq(userId)))
                 .fetchCount()
         return Timeline(dtoList, request, total.toInt())
     }
