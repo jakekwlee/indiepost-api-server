@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: prod
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: org.mariadb.jdbc.Driver
@@ -44,7 +44,7 @@ logging:
   level:
     org:
       springframework:
-        web: info
+        web: debug
 
 ---
 

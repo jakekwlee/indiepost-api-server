@@ -22,7 +22,7 @@ constructor(private val statsLoggerService: StatsLoggerService) {
     fun logAndRedirect(@PathVariable uid: String,
                        req: HttpServletRequest,
                        res: HttpServletResponse,
-                       principal: Principal): String {
+                       principal: Principal?): String {
         return "redirect:" + statsLoggerService.logClickAndGetLink(req, res, uid, principal)
     }
 }
