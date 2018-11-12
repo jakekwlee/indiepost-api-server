@@ -190,6 +190,10 @@ class PostServiceImpl @Inject constructor(
     }
 
     override fun recommendations(pageable: Pageable): Page<PostSummaryDto> {
+        val isEsAlive = postEsRepository.testConnection()
+        if (!isEsAlive) {
+            return defaultRecommendations(pageable)
+        }
         val user = userRepository.findCurrentUser()
         val now = Instant.now().epochSecond
 
@@ -197,10 +201,8 @@ class PostServiceImpl @Inject constructor(
         val watchedPosts = postRepository.findReadingHistoryByUserId(userId!!, TimelineRequest(now, 10))
         val bookmarkedPosts = postRepository.findBookmarksByUserId(userId, TimelineRequest(now, 10))
 
-        // fallback
         if (watchedPosts.numberOfElements == 0 && bookmarkedPosts.numberOfElements == 0) {
-            val topPosts = findTopRatedPosts(LocalDateTime.now().minusDays(7), LocalDateTime.now(), pageable.pageSize)
-            return PageImpl(topPosts, pageable, topPosts.size.toLong())
+            return defaultRecommendations(pageable)
         }
 
         val watchedPostIds = watchedPosts.content.stream()
@@ -230,6 +232,11 @@ class PostServiceImpl @Inject constructor(
         val posts = postRepository.findByIds(resultIds)
         val total = resultIds.size
         return PageImpl(posts, pageable, total.toLong())
+    }
+
+    override fun defaultRecommendations(pageable: Pageable): Page<PostSummaryDto> {
+        val topPosts = findTopRatedPosts(LocalDateTime.now().minusDays(7), LocalDateTime.now(), pageable.pageSize)
+        return PageImpl(topPosts, pageable, topPosts.size.toLong())
     }
 
     override fun findPickedPosts(): List<PostSummaryDto> {

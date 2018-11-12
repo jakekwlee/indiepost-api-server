@@ -15,9 +15,7 @@ class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(value = [IllegalArgumentException::class, IllegalStateException::class])
     protected fun handleConflict(ex: RuntimeException, request: WebRequest): ResponseEntity<Any> {
-        val bodyOfResponse = "This should be application specific"
-        return handleExceptionInternal(ex, bodyOfResponse,
-                HttpHeaders(), HttpStatus.CONFLICT, request)
+        return handleExceptionInternal(ex, null, HttpHeaders(), HttpStatus.CONFLICT, request)
     }
 
     @ExceptionHandler(value = [ResourceNotFoundException::class])
