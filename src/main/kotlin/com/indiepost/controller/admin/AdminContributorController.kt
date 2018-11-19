@@ -45,5 +45,4 @@ constructor(private val contributorService: ContributorService) {
         val deletedId = contributorService.deleteById(id)
         return DeleteResponse(deletedId!!)
     }
-
 }

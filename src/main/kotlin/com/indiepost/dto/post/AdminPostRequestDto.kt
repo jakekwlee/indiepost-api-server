@@ -43,4 +43,6 @@ open class AdminPostRequestDto {
     var tags: List<String> = ArrayList()
 
     var contributors: List<String> = ArrayList()
+
+    var profiles: List<String> = ArrayList()
 }

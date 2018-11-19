@@ -53,6 +53,14 @@ interface Types {
         FeatureEditor, FreelanceEditor, Photographer
     }
 
+    enum class ProfileType {
+        Editor, Writer, Photographer
+    }
+
+    enum class ProfileState {
+        ACTIVE, INACTIVE
+    }
+
     enum class ContributorDisplayType {
         HTML, TEXT
     }

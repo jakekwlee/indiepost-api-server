@@ -5,10 +5,7 @@ import com.indiepost.dto.post.AdminPostResponseDto
 import com.indiepost.dto.post.PostDto
 import com.indiepost.dto.post.PostUserInteraction
 import com.indiepost.enums.Types
-import com.indiepost.model.Contributor
-import com.indiepost.model.Post
-import com.indiepost.model.PostReading
-import com.indiepost.model.Tag
+import com.indiepost.model.*
 import com.indiepost.model.elasticsearch.PostEs
 import com.indiepost.utils.DateUtil.instantToLocalDateTime
 import com.indiepost.utils.DateUtil.localDateTimeToInstant
@@ -81,6 +78,16 @@ fun Post.addContributors(contributors: List<Contributor>?) {
     clearContributors()
     for ((index, contributor) in contributors.withIndex()) {
         addContributor(contributor, index)
+    }
+}
+
+fun Post.addProfiles(profiles: List<Profile>?) {
+    if (profiles == null) {
+        return
+    }
+    clearProfiles()
+    for ((index, profile) in profiles.withIndex()) {
+        addProfile(profile, index)
     }
 }
 
@@ -161,6 +168,11 @@ fun Post.createAdminPostResponseDto(): AdminPostResponseDto {
     }
     if (contributors.isNotEmpty()) {
         dto.contributors = contributors.stream()
+                .map<String> { (_, fullName) -> fullName }
+                .collect(Collectors.toList())
+    }
+    if (profiles.isNotEmpty()) {
+        dto.profiles = profiles.stream()
                 .map<String> { (_, fullName) -> fullName }
                 .collect(Collectors.toList())
     }

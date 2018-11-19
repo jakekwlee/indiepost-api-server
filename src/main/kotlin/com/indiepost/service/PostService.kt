@@ -52,5 +52,8 @@ interface PostService {
     fun findSplashPost(): PostSummaryDto?
 
     fun findFeaturePost(): PostSummaryDto?
+
     fun defaultRecommendations(pageable: Pageable): Page<PostSummaryDto>
+
+    fun findByProfileSlug(slug: String, pageable: Pageable): Page<PostSummaryDto>
 }

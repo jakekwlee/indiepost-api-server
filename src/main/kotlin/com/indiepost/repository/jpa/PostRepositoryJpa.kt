@@ -309,6 +309,35 @@ class PostRepositoryJpa : PostRepository {
         return Timeline(dtoList, request, total.toInt())
     }
 
+    override fun findByProfileSlug(slug: String, pageable: Pageable): Page<PostSummaryDto> {
+        val ct = QCategory.category
+        val pp = QPostProfile.postProfile
+        val p = QProfile.profile
+        val i = QImageSet.imageSet
+
+        val query = queryFactory.from(post)
+        addProjections(query)
+                .innerJoin(post.category, ct)
+                .innerJoin(post.postProfile, pp)
+                .innerJoin(pp.profile, p)
+                .leftJoin(post.titleImage, i)
+                .where(p.slug.eq(slug).and(post.status.eq(PostStatus.PUBLISH)))
+                .orderBy(post.publishedAt.desc(), pp.priority.asc())
+                .offset(pageable.offset)
+                .limit(pageable.pageSize.toLong()).distinct()
+        val result = query.fetch()
+        if (result.size == 0) {
+            return PageImpl(emptyList(), pageable, 0)
+        }
+        val total = queryFactory.selectFrom(post)
+                .innerJoin(post.postProfile, pp)
+                .innerJoin(pp.profile, p)
+                .where(p.slug.eq(slug).and(post.status.eq(PostStatus.PUBLISH)))
+                .fetchCount()
+        val dtoList = toDtoList(result as List<Tuple>)
+        return PageImpl(dtoList, pageable, total)
+    }
+
     override fun fallbackSearch(text: String, pageable: Pageable): Page<PostSummaryDto> {
         val like = "%$text%"
         val query = queryFactory

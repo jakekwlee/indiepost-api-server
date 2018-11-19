@@ -34,6 +34,8 @@ interface PostRepository {
 
     fun findByContributorFullName(fullName: String, pageable: Pageable): Page<PostSummaryDto>
 
+    fun findByProfileSlug(slug: String, pageable: Pageable): Page<PostSummaryDto>
+
     fun findPublicPosts(pageable: Pageable, includeFeatured: Boolean = true): Page<PostSummaryDto>
 
     fun fallbackSearch(text: String, pageable: Pageable): Page<PostSummaryDto>

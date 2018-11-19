@@ -7,7 +7,7 @@ import javax.persistence.*
  * Created by jake on 7/25/16.
  */
 @Entity
-@Table(name = "PostReadings")
+@Table(name = "Posts_Users_Readings")
 data class PostReading(
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)

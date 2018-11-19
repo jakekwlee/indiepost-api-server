@@ -101,6 +101,10 @@ data class Post(
     private var postContributors: MutableList<PostContributor> = ArrayList()
 
     @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OrderBy("priority")
+    private var postProfile: MutableList<PostProfile> = ArrayList()
+
+    @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
     var postReadings: MutableList<PostReading> = ArrayList()
 
     @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
@@ -120,6 +124,10 @@ data class Post(
                 .map { postContributor -> postContributor.contributor }
                 .collect(Collectors.toList())
 
+    val profiles: MutableList<Profile>
+        get() = postProfile.stream()
+                .map { postProfile -> postProfile.profile }
+                .collect(Collectors.toList())
 
     fun addTag(tag: Tag, priority: Int) {
         val postTag = PostTag(this, tag, priority)
@@ -176,6 +184,32 @@ data class Post(
 
     fun clearContributors() {
         this.postContributors.clear()
+    }
+
+    fun addProfile(profile: Profile, priority: Int) {
+        val postProfile = PostProfile(this, profile, priority)
+        this.postProfile.add(postProfile)
+        profile.postProfile.add(postProfile)
+    }
+
+    fun removeProfile(profile: Profile) {
+        val iterator = postProfile.iterator()
+        while (iterator.hasNext()) {
+            val postProfile = iterator.next()
+
+            if (postProfile.post == this && postProfile.profile == profile) {
+                iterator.remove()
+                postProfile.profile?.let {
+                    it.postProfile.remove(postProfile)
+                }
+                postProfile.post = null
+                postProfile.profile = null
+            }
+        }
+    }
+
+    fun clearProfiles() {
+        this.postProfile.clear()
     }
 
     fun addRelatedPost(post: Post, priority: Int) {

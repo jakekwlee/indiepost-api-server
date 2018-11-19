@@ -234,6 +234,10 @@ class PostServiceImpl @Inject constructor(
         return PageImpl(posts, pageable, total.toLong())
     }
 
+    override fun findByProfileSlug(slug: String, pageable: Pageable): Page<PostSummaryDto> {
+        return postRepository.findByProfileSlug(slug, pageable)
+    }
+
     override fun defaultRecommendations(pageable: Pageable): Page<PostSummaryDto> {
         val topPosts = findTopRatedPosts(LocalDateTime.now().minusDays(7), LocalDateTime.now(), pageable.pageSize)
         return PageImpl(topPosts, pageable, topPosts.size.toLong())

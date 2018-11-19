@@ -56,6 +56,11 @@ constructor(private val postService: PostService, private val imageService: Imag
         return postService.findByContributorFullName(fullName, pageable)
     }
 
+    @GetMapping("/by/{slug}")
+    fun getPostsByProfileSlug(@PathVariable slug: String, pageable: Pageable): Page<PostSummaryDto> {
+        return postService.findByProfileSlug(slug, pageable)
+    }
+
     @GetMapping("/search/{searchText}")
     fun fullTextSearch(@PathVariable searchText: String, pageable: Pageable): Page<PostSummaryDto> {
         return postService.fullTextSearch(searchText, pageable)

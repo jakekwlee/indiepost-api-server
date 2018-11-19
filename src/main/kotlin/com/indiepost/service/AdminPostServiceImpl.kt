@@ -12,6 +12,7 @@ import com.indiepost.model.Post
 import com.indiepost.model.Tag
 import com.indiepost.repository.AdminPostRepository
 import com.indiepost.repository.ContributorRepository
+import com.indiepost.repository.ProfileRepository
 import com.indiepost.repository.TagRepository
 import com.indiepost.repository.elasticsearch.PostEsRepository
 import org.springframework.cache.annotation.CacheEvict
@@ -32,6 +33,7 @@ class AdminPostServiceImpl @Inject
 constructor(private val userService: UserService,
             private val adminPostRepository: AdminPostRepository,
             private val contributorRepository: ContributorRepository,
+            private val profileRepository: ProfileRepository,
             private val postEsRepository: PostEsRepository,
             private val tagRepository: TagRepository) : AdminPostService {
 
@@ -285,6 +287,11 @@ constructor(private val userService: UserService,
             val contributors = contributorRepository.findByFullNameIn(dto.contributors, PageRequest.of(0, 100))
                     .content
             post.addContributors(contributors)
+        }
+        if (dto.profiles.isNotEmpty()) {
+            val profiles = profileRepository.findByFullNameIn(dto.profiles, PageRequest.of(0, 100))
+                    .content
+            post.addProfiles(profiles)
         }
         if (dto.tags.isNotEmpty()) {
             val tagListLowerCased = dto.tags.stream()
