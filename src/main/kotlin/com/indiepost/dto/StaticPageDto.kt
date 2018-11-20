@@ -27,5 +27,7 @@ data class StaticPageDto(
 
         var modifiedAt: Instant? = null,
 
-        var type: String = ""
+        var type: String = "",
+
+        var lastRequested: Instant? = null
 )

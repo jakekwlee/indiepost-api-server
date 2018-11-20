@@ -3,9 +3,9 @@ package com.indiepost.service
 import com.indiepost.dto.StaticPageDto
 import com.indiepost.enums.Types
 import com.indiepost.exceptions.ResourceNotFoundException
+import com.indiepost.mapper.createDto
 import com.indiepost.model.StaticPage
 import com.indiepost.repository.StaticPageRepository
-import com.indiepost.utils.DateUtil.localDateTimeToInstant
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Caching
 import org.springframework.data.domain.Page
@@ -64,13 +64,13 @@ constructor(private val staticPageRepository: StaticPageRepository, private val 
     override fun findById(id: Long): StaticPageDto? {
         val staticPage = staticPageRepository.findById(id)
         return if (staticPage != null)
-            pageToPageDto(staticPage)
+            staticPage.createDto()
         else null
     }
 
     override fun findBySlug(slug: String): StaticPageDto {
         val staticPage = staticPageRepository.findBySlug(slug) ?: throw ResourceNotFoundException()
-        return pageToPageDto(staticPage)
+        return staticPage.createDto()
     }
 
     override fun find(pageable: Pageable): Page<StaticPageDto> {
@@ -106,21 +106,6 @@ constructor(private val staticPageRepository: StaticPageRepository, private val 
 
     override fun emptyTrash() {
         staticPageRepository.bulkDeleteByStatus(Types.PostStatus.TRASH)
-    }
-
-    private fun pageToPageDto(staticPage: StaticPage): StaticPageDto {
-        val staticPageDto = StaticPageDto()
-        staticPageDto.id = staticPage.id
-        staticPageDto.title = staticPage.title
-        staticPageDto.content = staticPage.content
-        staticPageDto.type = staticPage.type
-        staticPageDto.authorDisplayName = staticPage.author!!.displayName
-        staticPageDto.slug = staticPage.slug
-        staticPageDto.displayOrder = staticPage.displayOrder
-        staticPageDto.modifiedAt = localDateTimeToInstant(staticPage.modifiedAt!!)
-        staticPageDto.createdAt = localDateTimeToInstant(staticPage.createdAt!!)
-        staticPageDto.status = staticPage.status
-        return staticPageDto
     }
 
     private fun addOrder(pageable: Pageable): Pageable {
