@@ -19,17 +19,23 @@ data class ProfileDto(
 
         var label: String = "Writer",
 
+        var picture: String? = null,
+
         var showLabel: Boolean = true,
 
         var description: String? = null,
 
         var showDescription: Boolean = false,
 
+        var showPicture: Boolean = false,
+
         var profileType: String? = null,
 
         var profileState: String? = null,
 
         var etc: String? = null,
+
+        var phone: String? = null,
 
         var created: Instant? = null,
 
