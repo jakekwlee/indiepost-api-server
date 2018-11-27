@@ -47,10 +47,13 @@ class ProfileRepositoryJpa : ProfileRepository {
     }
 
     override fun findBySlug(slug: String): Profile? {
-        return queryFactory
+        // TODO make unique
+        val profiles = queryFactory
                 .selectFrom(p)
                 .where(p.slug.eq(slug))
-                .fetchOne()
+                .fetch()
+        return if (profiles.size > 0) profiles[0]
+        else null
     }
 
     override fun count(): Long {
