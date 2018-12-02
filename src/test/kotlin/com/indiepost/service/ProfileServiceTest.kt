@@ -1,8 +1,8 @@
 package com.indiepost.service
 
 import com.indiepost.IndiepostBackendApplication
+import com.indiepost.dto.ProfileDto
 import com.indiepost.enums.Types
-import com.indiepost.model.Profile
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.PageRequest
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.context.web.WebAppConfiguration
-import java.time.LocalDateTime
+import java.time.Instant
 import javax.inject.Inject
 import javax.transaction.Transactional
 
@@ -27,16 +27,16 @@ internal class ProfileServiceTest {
 
     @BeforeEach
     fun before() {
-        val profile = Profile(slug = "test_slug")
-        profile.created = LocalDateTime.now()
-        profile.lastUpdated = LocalDateTime.now()
+        val profile = ProfileDto(slug = "test_slug")
+        profile.created = Instant.now()
+        profile.lastUpdated = Instant.now()
         profile.description = "Test description"
         profile.displayName = "Test User"
         profile.email = "sysadmin@indiepost.co.kr"
         profile.fullName = "Jake Lee"
         profile.label = "title"
-        profile.profileState = Types.ProfileState.ACTIVE
-        profile.profileType = Types.ProfileType.Editor
+        profile.profileState = Types.ProfileState.ACTIVE.toString()
+        profile.profileType = Types.ProfileType.Editor.toString()
         profile.showEmail = true
         profile.showDescription = true
         profile.showLabel = true
@@ -62,8 +62,11 @@ internal class ProfileServiceTest {
     fun delete_shouldWorkProperly() {
         val profile = service.findOneBySlug("test_slug")
         assertThat(profile!!).isNotNull()
-        val id = service.delete(profile)
-        assertThat(id!!).isNotNull()
+        assertThat(profile!!.id).isNotNull()
+        profile.id?.let {
+            val id = service.deleteById(it)
+            assertThat(id!!).isNotNull()
+        }
     }
 
     @Test

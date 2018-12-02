@@ -55,6 +55,12 @@ class PostServiceImpl @Inject constructor(
                     .collect(Collectors.toList())
             dto.contributors = contributors
         }
+        if (post.profiles.isNotEmpty()) {
+            val profiles = post.profiles.stream()
+                    .map { p -> p.createDto() }
+                    .collect(Collectors.toList())
+            dto.profiles = profiles
+        }
         val user = userRepository.findCurrentUser()
         if (user != null) {
             val postReading = postReadingRepository.findOneByUserIdAndPostId(user.id!!, postId)

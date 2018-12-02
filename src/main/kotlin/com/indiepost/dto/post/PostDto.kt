@@ -1,7 +1,7 @@
 package com.indiepost.dto.post
 
 import com.indiepost.dto.ContributorDto
-import com.indiepost.model.Profile
+import com.indiepost.dto.ProfileDto
 import java.io.Serializable
 import java.time.Instant
 import java.util.*
@@ -16,7 +16,7 @@ data class PostDto(
 
         var contributors: List<ContributorDto> = ArrayList(),
 
-        var profiles: List<Profile> = ArrayList(),
+        var profiles: List<ProfileDto> = ArrayList(),
 
         val lastRequested: Instant = Instant.now()
 ) : PostSummaryDto(), Serializable

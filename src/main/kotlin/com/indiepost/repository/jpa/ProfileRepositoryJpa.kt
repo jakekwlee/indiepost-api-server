@@ -65,7 +65,7 @@ class ProfileRepositoryJpa : ProfileRepository {
     override fun findAll(pageable: Pageable): Page<Profile> {
         val profileList = queryFactory
                 .selectFrom(p)
-                .orderBy(p.fullName.asc())
+                .orderBy(p.profileState.asc(), p.id.desc())
                 .fetch()
         val count = queryFactory
                 .selectFrom(p)
@@ -74,14 +74,17 @@ class ProfileRepositoryJpa : ProfileRepository {
     }
 
     override fun findAllByProfileType(profileType: Types.ProfileType, pageable: Pageable): Page<Profile> {
+        val count = countAllByProfileType(profileType)
+        if (count == 0L) {
+            return PageImpl(emptyList(), pageable, 0)
+        }
         val profileList = queryFactory
                 .selectFrom(p)
                 .where(p.profileType.eq(profileType))
-                .orderBy(p.fullName.asc())
+                .orderBy(p.profileState.asc(), p.id.desc())
                 .offset(pageable.offset)
                 .limit(pageable.pageSize.toLong())
                 .fetch()
-        val count = countAllByProfileType(profileType)
         return PageImpl(profileList, pageable, count)
     }
 

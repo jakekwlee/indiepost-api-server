@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
 @Entity
-@Table(name = "Profile")
+@Table(name = "Profiles")
 data class Profile(
 
         @Id

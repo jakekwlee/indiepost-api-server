@@ -21,28 +21,28 @@ import javax.persistence.*
                 query = """select count(distinct s.postId, v.id) from Stats s inner join Visitors v on s.visitorId = v.id where s.timestamp between :since and :until and v.appName = :client and s.postId is not null"""),
         NamedNativeQuery(
                 name = "@GET_PAGEVIEW_TREND_HOURLY",
-                query = """select date_add(date(s.timestamp), interval hour(s.timestamp) hour) as statDateTime, count(*) as statValue from Stats s where s.timestamp between :since and :until and s.class <> 'Click' group by date(s.timestamp), hour(s.timestamp) order by statDateTime"""),
+                query = """select date_add(date(s.timestamp), interval hour(s.timestamp) hour) as statDateTime, count(*) as statValue from Stats s where s.timestamp between :since and :until and s.class <> 'Click' group by statDateTime order by statDateTime"""),
         NamedNativeQuery(
                 name = "@GET_PAGEVIEW_TREND_DAILY",
-                query = """select date(s.timestamp) as statDateTime, count(*) as statValue from Stats s where s.timestamp between :since and :until and s.class <> 'Click' group by date(s.timestamp) order by statDateTime"""),
+                query = """select date(s.timestamp) as statDateTime, count(*) as statValue from Stats s where s.timestamp between :since and :until and s.class <> 'Click' group by statDateTime order by statDateTime"""),
         NamedNativeQuery(
                 name = "@GET_PAGEVIEW_TREND_MONTHLY",
-                query = """select date_sub(date(s.timestamp), interval day(s.timestamp) - 1 day) as statDateTime, count(*) as statValue  from Stats s where s.timestamp between :since and :until and s.class <> 'Click' group by year(s.timestamp), month(s.timestamp) """),
+                query = """select date_sub(date(s.timestamp), interval day(s.timestamp) - 1 day) as statDateTime, count(*) as statValue  from Stats s where s.timestamp between :since and :until and s.class <> 'Click' group by statDateTime """),
         NamedNativeQuery(
                 name = "@GET_PAGEVIEW_TREND_YEARLY",
-                query = """select makedate(year(s.timestamp), 1) as statDateTime, count(*) as statValue from Stats s where s.timestamp between :since and :until and s.class <> 'Click' group by year(s.timestamp) order by statDateTime"""),
+                query = """select makedate(year(s.timestamp), 1) as statDateTime, count(*) as statValue from Stats s where s.timestamp between :since and :until and s.class <> 'Click' group by statDateTime order by statDateTime"""),
         NamedNativeQuery(
                 name = "@GET_OLD_AND_NEW_PAGEVIEW_TREND_HOURLY",
-                query = """select date_add(date(s.timestamp), interval hour(s.timestamp) hour) as dateTime, COUNT(*) as pageviews, COUNT(IF(DATE_ADD(p.publishedAt, interval 10 day) > s.timestamp, true, null)) as recentPageviews from Stats s inner join Posts p on s.postId = p.id where s.timestamp between :since and :until and s.class <> 'Click' group by date(s.timestamp), hour(s.timestamp) order by dateTime"""),
+                query = """select date_add(date(s.timestamp), interval hour(s.timestamp) hour) as dateTime, COUNT(*) as pageviews, COUNT(IF(DATE_ADD(p.publishedAt, interval 10 day) > s.timestamp, true, null)) as recentPageviews from Stats s inner join Posts p on s.postId = p.id where s.timestamp between :since and :until and s.class <> 'Click' group by dateTime order by dateTime"""),
         NamedNativeQuery(
                 name = "@GET_OLD_AND_NEW_PAGEVIEW_TREND_DAILY",
-                query = """select date(s.timestamp) as dateTime, COUNT(*) as pageviews, COUNT(IF(DATE_ADD(p.publishedAt, interval 10 day) > s.timestamp, true, null)) as recentPageviews from Stats s inner join Posts p on s.postId = p.id where s.timestamp between :since and :until and s.class <> 'Click' group by date(s.timestamp) order by dateTime"""),
+                query = """select date(s.timestamp) as dateTime, COUNT(*) as pageviews, COUNT(IF(DATE_ADD(p.publishedAt, interval 10 day) > s.timestamp, true, null)) as recentPageviews from Stats s inner join Posts p on s.postId = p.id where s.timestamp between :since and :until and s.class <> 'Click' group by dateTime order by dateTime"""),
         NamedNativeQuery(
                 name = "@GET_OLD_AND_NEW_PAGEVIEW_TREND_MONTHLY",
-                query = """select date_sub(date(s.timestamp), interval day(s.timestamp) - 1 day) as dateTime, COUNT(*) as pageviews, COUNT(IF(DATE_ADD(p.publishedAt, interval 10 day) > s.timestamp, true, null)) as recentPageviews from Stats s inner join Posts p on s.postId = p.id where s.timestamp between :since and :until and s.class <> 'Click' group by year(s.timestamp), month(s.timestamp) order by dateTime"""),
+                query = """select date_sub(date(s.timestamp), interval day(s.timestamp) - 1 day) as dateTime, COUNT(*) as pageviews, COUNT(IF(DATE_ADD(p.publishedAt, interval 10 day) > s.timestamp, true, null)) as recentPageviews from Stats s inner join Posts p on s.postId = p.id where s.timestamp between :since and :until and s.class <> 'Click' group by dateTime order by dateTime"""),
         NamedNativeQuery(
                 name = "@GET_OLD_AND_NEW_PAGEVIEW_TREND_YEARLY",
-                query = """select makedate(year(s.timestamp), 1) as dateTime, COUNT(*) as pageviews, COUNT(IF(DATE_ADD(p.publishedAt, interval 10 day) > s.timestamp, true, null)) as recentPageviews from Stats s inner join Posts p on s.postId = p.id where s.timestamp between :since and :until and s.class <> 'Click' group by year(s.timestamp) order by dateTime"""),
+                query = """select makedate(year(s.timestamp), 1) as dateTime, COUNT(*) as pageviews, COUNT(IF(DATE_ADD(p.publishedAt, interval 10 day) > s.timestamp, true, null)) as recentPageviews from Stats s inner join Posts p on s.postId = p.id where s.timestamp between :since and :until and s.class <> 'Click' group by dateTime order by dateTime"""),
         NamedNativeQuery(
                 name = "@GET_POST_STATS_ORDER_BY_PAGEVIEWS",
                 query = """select p.id, p.title, p.publishedAt, p.displayName author, c.name category, count(*) as pageviews, count(distinct v.id) as uniquePageviews from Stats s inner join Visitors v on s.visitorId = v.id inner join Posts p on s.postId = p.id inner join Categories c on p.categoryId = c.id where s.timestamp between :since and :until and p.status ='PUBLISH' group by p.id order by pageviews desc , p.id desc limit :limit"""),
@@ -129,7 +129,7 @@ import javax.persistence.*
                 query = """select l.id, l.campaignId, l.name, l.uid, l.url, l.createdAt, ifnull(i.clicks, 0) validClicks, l.linkType, b.id bannerId, b.bannerType, b.bgColor, b.imageUrl, b.internalUrl, b.isCover,  b.title, b.subtitle from Links l left join Banners b on b.linkId = l.id inner join Campaigns c on c.id = l.campaignId left outer join (   select l.id, count(distinct s.visitorId) clicks    from Campaigns c    inner join Links l on c.id = l.campaignId    inner join Stats s on l.id = s.linkId    where c.id = :id    and s.timestamp between c.startAt and c.endAt    group by l.id) i on i.id = l.id where c.id = :id order by clicks desc, id asc"""),
         NamedNativeQuery(
                 name = "@GET_UV_TREND_HOURLY_BY_HOUR_BY_CAMPAIGN_ID",
-                query = """select DATE_ADD(DATE(s.timestamp), interval HOUR(s.timestamp) hour) as statDateTime, COUNT(distinct s.visitorId) as statValue from Stats s inner join Links l on s.linkId = l.id inner join Campaigns c on c.id = l.campaignId where c.id = :id and s.timestamp between c.startAt and c.endAt group by DATE(s.timestamp) , HOUR(s.timestamp) order by statDateTime"""))
+                query = """select DATE_ADD(DATE(s.timestamp), interval HOUR(s.timestamp) hour) as statDateTime, COUNT(distinct s.visitorId) as statValue from Stats s inner join Links l on s.linkId = l.id inner join Campaigns c on c.id = l.campaignId where c.id = :id and s.timestamp between c.startAt and c.endAt group by statDateTime order by statDateTime"""))
 data class NamedQueryHolder(
         @Id
         @GeneratedValue

@@ -13,6 +13,29 @@ fun Profile.createDto(): ProfileDto {
     dto.showDescription = showDescription
     dto.displayName = displayName
     dto.etc = etc
+    dto.label = label
+    dto.showLabel = showLabel
+    dto.profileType = profileType.toString()
+    dto.email = email
+    dto.subEmail = subEmail
+    dto.showEmail = showEmail
+    dto.slug = slug
+    created?.let {
+        dto.created = localDateTimeToInstant(it)
+    }
+    lastUpdated?.let {
+        dto.lastUpdated = localDateTimeToInstant(it)
+    }
+    return dto
+}
+
+fun Profile.createDtoWithPrivacy(): ProfileDto {
+    val dto = ProfileDto()
+    dto.id = id
+    dto.description = description
+    dto.showDescription = showDescription
+    dto.displayName = displayName
+    dto.etc = etc
     dto.fullName = fullName
     dto.label = label
     dto.showLabel = showLabel
@@ -31,8 +54,7 @@ fun Profile.createDto(): ProfileDto {
     return dto
 }
 
-// TODO
-fun ProfileDto.createEntiry(): Profile {
+fun ProfileDto.createEntity(): Profile {
     val profile = Profile(slug = this.slug!!)
     profile.created = LocalDateTime.now()
     profile.lastUpdated = LocalDateTime.now()
@@ -52,7 +74,6 @@ fun ProfileDto.createEntiry(): Profile {
     }
     profileType?.let {
         profile.profileType = Types.ProfileType.valueOf(it)
-
     }
     displayName?.let {
         profile.displayName = it
@@ -63,23 +84,33 @@ fun ProfileDto.createEntiry(): Profile {
     return profile
 }
 
-fun Profile.merge(profile: Profile) {
-    slug = profile.slug
-    fullName = profile.fullName
-    description = profile.description
-    showDescription = profile.showDescription
-    displayName = profile.displayName
-    showLabel = profile.showLabel
-    picture = profile.picture
-    showPicture = profile.showPicture
-    etc = profile.etc
-    email = profile.email
-    subEmail = profile.subEmail
-    showEmail = profile.showEmail
-    profileType = profile.profileType
-    profileState = profile.profileState
-    label = profile.label
-    phone = profile.phone
+fun Profile.merge(dto: ProfileDto) {
+    dto.slug?.let {
+        slug = it
+    }
+    dto.fullName?.let {
+        fullName = it
+    }
+    dto.displayName?.let {
+        displayName = it
+    }
+    dto.profileState?.let {
+        profileState = Types.ProfileState.valueOf(it)
+    }
+    dto.profileType?.let {
+        profileType = Types.ProfileType.valueOf(it)
+    }
+    description = dto.description
+    showDescription = dto.showDescription
+    showLabel = dto.showLabel
+    picture = dto.picture
+    showPicture = dto.showPicture
+    etc = dto.etc
+    email = dto.email
+    subEmail = dto.subEmail
+    showEmail = dto.showEmail
+    label = dto.label
+    phone = dto.phone
     lastUpdated = LocalDateTime.now()
 }
 

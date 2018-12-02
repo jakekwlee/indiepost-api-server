@@ -1,8 +1,9 @@
 package com.indiepost.controller.admin
 
+import com.indiepost.dto.CreateResponse
 import com.indiepost.dto.DeleteResponse
+import com.indiepost.dto.ProfileDto
 import com.indiepost.enums.Types
-import com.indiepost.model.Profile
 import com.indiepost.service.ProfileService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -16,28 +17,29 @@ class AdminProfileController @Inject
 constructor(private val profileService: ProfileService) {
 
     @GetMapping
-    fun getList(@RequestParam type: String?, pageable: Pageable): Page<Profile> {
+    fun getList(@RequestParam type: String?, pageable: Pageable): Page<ProfileDto> {
         return if (type != null) {
             profileService.find(Types.ProfileType.valueOf(type), pageable)
         } else profileService.find(pageable)
     }
 
     @GetMapping("/{id}")
-    fun getProfile(@PathVariable id: Long): Profile? {
+    fun getProfile(@PathVariable id: Long): ProfileDto? {
         return profileService.findOne(id)
     }
 
     @PostMapping
-    fun create(@RequestBody profile: Profile): Profile {
-        return profileService.save(profile)
+    fun create(@RequestBody dto: ProfileDto): CreateResponse {
+        val id = profileService.save(dto)
+        return CreateResponse(id)
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable id: Long, @RequestBody profile: Profile): Profile {
-        if (profile.id != id) {
-            throw ValidationException("Path variable and dto.id does not match: path($id) != dto(${profile.id})")
+    fun update(@PathVariable id: Long, @RequestBody dto: ProfileDto) {
+        if (dto.id != id) {
+            throw ValidationException("Path variable and dto.id does not match: path($id) != dto(${dto.id})")
         }
-        return profileService.save(profile)
+        profileService.save(dto)
     }
 
     @DeleteMapping("/{id}")
