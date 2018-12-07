@@ -1,5 +1,6 @@
 package com.indiepost.controller
 
+import com.indiepost.dto.PageWithProfile
 import com.indiepost.dto.PostImageSetDto
 import com.indiepost.dto.post.PostDto
 import com.indiepost.dto.post.PostQuery
@@ -51,13 +52,8 @@ constructor(private val postService: PostService, private val imageService: Imag
         return postService.findByTagName(tagName, pageable)
     }
 
-    @GetMapping("/contributor/{fullName}")
-    fun getPostsByContributorName(@PathVariable fullName: String, pageable: Pageable): Page<PostSummaryDto> {
-        return postService.findByContributorFullName(fullName, pageable)
-    }
-
-    @GetMapping("/by/{slug}")
-    fun getPostsByProfileSlug(@PathVariable slug: String, pageable: Pageable): Page<PostSummaryDto> {
+    @GetMapping("/profile/{slug}")
+    fun getPostsByProfileSlug(@PathVariable slug: String, pageable: Pageable): PageWithProfile<PostSummaryDto> {
         return postService.findByProfileSlug(slug, pageable)
     }
 

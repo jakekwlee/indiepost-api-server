@@ -65,7 +65,7 @@ class ProfileRepositoryJpa : ProfileRepository {
     override fun findAll(pageable: Pageable): Page<Profile> {
         val profileList = queryFactory
                 .selectFrom(p)
-                .orderBy(p.profileState.asc(), p.id.desc())
+                .orderBy(p.profileState.asc(), p.profileType.asc(), p.fullName.asc())
                 .fetch()
         val count = queryFactory
                 .selectFrom(p)

@@ -1,11 +1,16 @@
 package com.indiepost.mapper
 
+import com.indiepost.dto.ProfileSummaryDto
+import com.indiepost.dto.TagDto
 import com.indiepost.dto.post.AdminPostRequestDto
 import com.indiepost.dto.post.AdminPostResponseDto
 import com.indiepost.dto.post.PostDto
 import com.indiepost.dto.post.PostUserInteraction
 import com.indiepost.enums.Types
-import com.indiepost.model.*
+import com.indiepost.model.Post
+import com.indiepost.model.PostReading
+import com.indiepost.model.Profile
+import com.indiepost.model.Tag
 import com.indiepost.model.elasticsearch.PostEs
 import com.indiepost.utils.DateUtil.instantToLocalDateTime
 import com.indiepost.utils.DateUtil.localDateTimeToInstant
@@ -68,16 +73,6 @@ fun Post.addTags(tags: List<Tag>?) {
     clearTags()
     for ((index, tag) in tags.withIndex()) {
         addTag(tag, index)
-    }
-}
-
-fun Post.addContributors(contributors: List<Contributor>?) {
-    if (contributors == null) {
-        return
-    }
-    clearContributors()
-    for ((index, contributor) in contributors.withIndex()) {
-        addContributor(contributor, index)
     }
 }
 
@@ -163,17 +158,12 @@ fun Post.createAdminPostResponseDto(): AdminPostResponseDto {
     }
     if (tags.isNotEmpty()) {
         dto.tags = tags.stream()
-                .map<String> { (_, name) -> name }
-                .collect(Collectors.toList())
-    }
-    if (contributors.isNotEmpty()) {
-        dto.contributors = contributors.stream()
-                .map<String> { (_, fullName) -> fullName }
+                .map<TagDto> { (id, name) -> TagDto(id, name) }
                 .collect(Collectors.toList())
     }
     if (profiles.isNotEmpty()) {
         dto.profiles = profiles.stream()
-                .map<String> { (_, fullName) -> fullName }
+                .map { p -> ProfileSummaryDto(p.id, p.fullName, p.profileType.toString()) }
                 .collect(Collectors.toList())
     }
     if (getPostPosts().isNotEmpty()) {
@@ -205,7 +195,8 @@ fun Post.createPostEs(): PostEs {
         postEs.creatorName = it.displayName
     }
 
-    val contributors = contributors.stream()
+    // TODO fix this
+    val contributors = profiles.stream()
             .map<String> { (_, fullName) -> fullName }
             .collect(Collectors.toList())
     postEs.setContributors(contributors)

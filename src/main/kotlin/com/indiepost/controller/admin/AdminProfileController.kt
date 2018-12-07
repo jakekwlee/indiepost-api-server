@@ -28,6 +28,11 @@ constructor(private val profileService: ProfileService) {
         return profileService.findOne(id)
     }
 
+    @GetMapping("/ids")
+    fun getProfiles(@RequestParam ids: List<Long>): List<ProfileDto> {
+        return profileService.findByIdIn(ids)
+    }
+
     @PostMapping
     fun create(@RequestBody dto: ProfileDto): CreateResponse {
         val id = profileService.save(dto)

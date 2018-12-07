@@ -31,7 +31,7 @@ data class AdminPostSummaryDto(
 
         var modifiedAt: Instant? = null,
 
-        var contributors: List<String> = ArrayList(),
+        var profiles: List<String> = ArrayList(),
 
         var tags: List<String> = ArrayList(),
 

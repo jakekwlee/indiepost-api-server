@@ -1,6 +1,7 @@
 package com.indiepost.mapper
 
 import com.indiepost.dto.ProfileDto
+import com.indiepost.dto.ProfileSummaryDto
 import com.indiepost.enums.Types
 import com.indiepost.model.Profile
 import com.indiepost.utils.DateUtil.localDateTimeToInstant
@@ -27,6 +28,10 @@ fun Profile.createDto(): ProfileDto {
         dto.lastUpdated = localDateTimeToInstant(it)
     }
     return dto
+}
+
+fun Profile.createSummayDto(): ProfileSummaryDto {
+    return ProfileSummaryDto(id, fullName, profileType.toString())
 }
 
 fun Profile.createDtoWithPrivacy(): ProfileDto {

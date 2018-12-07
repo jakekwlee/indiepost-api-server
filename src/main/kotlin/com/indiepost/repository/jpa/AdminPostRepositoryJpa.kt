@@ -167,7 +167,7 @@ class AdminPostRepositoryJpa : AdminPostRepository {
         val query = queryFactory
                 .selectDistinct(post.id)
                 .from(post)
-                .leftJoin(post.postContributors, QPostContributor.postContributor)
+                .leftJoin(post.postProfile, QPostProfile.postProfile)
                 .leftJoin(QPostContributor.postContributor.contributor, QContributor.contributor)
                 .leftJoin(post.postTags, QPostTag.postTag)
                 .leftJoin(QPostTag.postTag.tag, QTag.tag)
@@ -327,12 +327,12 @@ class AdminPostRepositoryJpa : AdminPostRepository {
             dto.authorDisplayName = row.get(post.author.displayName)
             dto.editorDisplayName = row.get(post.editor.displayName)
             dto.status = row.get(post.status).toString()
-            val postContributorsList = row.get(post.postContributors)
-            if (postContributorsList != null) {
-                val contributors = postContributorsList.stream()
-                        .map<String> { postContributor -> postContributor.contributor?.fullName }
+            val postProfileList = row.get(post.postProfile)
+            if (postProfileList != null) {
+                val profiles = postProfileList.stream()
+                        .map<String> { postProfile -> postProfile.profile?.fullName }
                         .collect(Collectors.toList())
-                dto.contributors = contributors
+                dto.profiles = profiles
             }
             val postTags = row.get(post.postTags)
             if (postTags != null) {

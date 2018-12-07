@@ -1,11 +1,10 @@
 package com.indiepost.service
 
 import com.indiepost.dto.ProfileDto
+import com.indiepost.dto.ProfileSummaryDto
 import com.indiepost.enums.Types
 import com.indiepost.exceptions.ResourceNotFoundException
-import com.indiepost.mapper.createDtoWithPrivacy
-import com.indiepost.mapper.createEntity
-import com.indiepost.mapper.merge
+import com.indiepost.mapper.*
 import com.indiepost.model.Profile
 import com.indiepost.repository.ProfileRepository
 import org.springframework.data.domain.*
@@ -77,6 +76,17 @@ open class ProfileServiceImpl @Inject constructor(
                 pageable.pageSize,
                 Sort.Direction.DESC, "id"))
         return profilePageToDtoPage(page)
+    }
+
+    override fun getSummaryDtoList(): List<ProfileSummaryDto> {
+        return profileRepository.findAll(PageRequest.of(0, 1000)).content.stream()
+                .map { p -> p.createSummayDto() }
+                .collect(Collectors.toList())
+    }
+
+    override fun findByIdIn(ids: List<Long>): List<ProfileDto> {
+        val result = profileRepository.findByIdIn(ids, PageRequest.of(0, 1000))
+        return result.stream().map { p -> p.createDto() }.collect(Collectors.toList())
     }
 
     private fun profilePageToDtoPage(page: Page<Profile>): Page<ProfileDto> {

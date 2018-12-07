@@ -121,34 +121,6 @@ class PostRepositoryJpa : PostRepository {
         return PageImpl(dtoList, pageable, total)
     }
 
-    override fun findByContributorFullName(fullName: String, pageable: Pageable): Page<PostSummaryDto> {
-        val ct = QCategory.category
-        val pc = QPostContributor.postContributor
-        val c = QContributor.contributor
-        val i = QImageSet.imageSet
-
-        val query = queryFactory.from(post)
-        addProjections(query)
-                .innerJoin(post.category, ct)
-                .innerJoin(post.postContributors, pc)
-                .innerJoin(pc.contributor, c)
-                .leftJoin(post.titleImage, i)
-                .where(c.fullName.eq(fullName).and(post.status.eq(PostStatus.PUBLISH)))
-                .orderBy(post.publishedAt.desc(), QPostContributor.postContributor.priority.asc())
-                .offset(pageable.offset)
-                .limit(pageable.pageSize.toLong()).distinct()
-        val result = query.fetch()
-        if (result.size == 0) {
-            return PageImpl(emptyList(), pageable, 0)
-        }
-        val total = queryFactory.selectFrom(post)
-                .innerJoin(post.postContributors, pc)
-                .innerJoin(pc.contributor, c)
-                .where(c.fullName.eq(fullName).and(post.status.eq(PostStatus.PUBLISH)))
-                .fetchCount()
-        val dtoList = toDtoList(result as List<Tuple>)
-        return PageImpl(dtoList, pageable, total)
-    }
 
     override fun findPublicPosts(pageable: Pageable, includeFeatured: Boolean): Page<PostSummaryDto> {
         val queryBuilder = PostQuery.Builder(PostStatus.PUBLISH)
@@ -343,7 +315,7 @@ class PostRepositoryJpa : PostRepository {
         val query = queryFactory
                 .selectDistinct(post.id)
                 .from(post)
-                .leftJoin(post.postContributors, QPostContributor.postContributor)
+                .leftJoin(post.postProfile, QPostProfile.postProfile)
                 .leftJoin(QPostContributor.postContributor.contributor, QContributor.contributor)
                 .leftJoin(post.postTags, QPostTag.postTag)
                 .leftJoin(QPostTag.postTag.tag, QTag.tag)

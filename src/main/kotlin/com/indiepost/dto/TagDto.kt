@@ -7,10 +7,5 @@ data class TagDto(
 
         var id: Long? = null,
 
-        var name: String? = null
-) {
-    constructor(id: Long, name: String) : this() {
-        this.id = id
-        this.name = name
-    }
-}
+        var text: String? = null
+)

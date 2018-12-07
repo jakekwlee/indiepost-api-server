@@ -24,6 +24,7 @@ class AdminServiceImpl @Inject constructor(
         private val categoryService: CategoryService,
         private val userService: UserService,
         private val tagService: TagService,
+        private val profileService: ProfileService,
         private val contributorService: ContributorService) : AdminService {
 
     override fun buildInitialResponse(): AdminInitialResponse {
@@ -34,6 +35,7 @@ class AdminServiceImpl @Inject constructor(
         adminInitialResponse.authorNames = adminPostService.findAllBylineNames()
         // TODO for test
         adminInitialResponse.contributors = contributorService.find(PageRequest.of(0, 1000)).content
+        adminInitialResponse.profiles = profileService.getSummaryDtoList()
         adminInitialResponse.postTitles = adminPostService.getAllTitles()
         val tagList = tagService.findAll()
         val tags = tagList.stream()

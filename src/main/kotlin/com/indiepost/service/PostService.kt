@@ -1,5 +1,6 @@
 package com.indiepost.service
 
+import com.indiepost.dto.PageWithProfile
 import com.indiepost.dto.Timeline
 import com.indiepost.dto.TimelineRequest
 import com.indiepost.dto.post.PostDto
@@ -27,8 +28,6 @@ interface PostService {
 
     fun findByTagName(tagName: String, pageable: Pageable): Page<PostSummaryDto>
 
-    fun findByContributorFullName(fullName: String, pageable: Pageable): Page<PostSummaryDto>
-
     fun query(postQuery: PostQuery, pageable: Pageable): Page<PostSummaryDto>
 
     fun fullTextSearch(text: String, pageable: Pageable): Page<PostSummaryDto>
@@ -55,5 +54,5 @@ interface PostService {
 
     fun defaultRecommendations(pageable: Pageable): Page<PostSummaryDto>
 
-    fun findByProfileSlug(slug: String, pageable: Pageable): Page<PostSummaryDto>
+    fun findByProfileSlug(slug: String, pageable: Pageable): PageWithProfile<PostSummaryDto>
 }

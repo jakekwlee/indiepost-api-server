@@ -98,10 +98,6 @@ data class Post(
 
     @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
     @OrderBy("priority")
-    private var postContributors: MutableList<PostContributor> = ArrayList()
-
-    @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
-    @OrderBy("priority")
     private var postProfile: MutableList<PostProfile> = ArrayList()
 
     @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
@@ -117,11 +113,6 @@ data class Post(
     val tags: MutableList<Tag>
         get() = postTags.stream()
                 .map { postTag -> postTag.tag }
-                .collect(Collectors.toList())
-
-    val contributors: MutableList<Contributor>
-        get() = postContributors.stream()
-                .map { postContributor -> postContributor.contributor }
                 .collect(Collectors.toList())
 
     val profiles: MutableList<Profile>
@@ -155,36 +146,6 @@ data class Post(
         this.postTags.clear()
     }
 
-    fun setPostContributors(postContributors: MutableList<PostContributor>) {
-        this.postContributors = postContributors
-    }
-
-    fun addContributor(contributor: Contributor, priority: Int) {
-        val postContributor = PostContributor(this, contributor, priority)
-        this.postContributors.add(postContributor)
-        contributor.postContributors.add(postContributor)
-    }
-
-    fun removeContributor(contributor: Contributor) {
-        val iterator = postContributors.iterator()
-        while (iterator.hasNext()) {
-            val postContributor = iterator.next()
-
-            if (postContributor.post == this && postContributor.contributor == contributor) {
-                iterator.remove()
-                postContributor.contributor?.let {
-                    it.postContributors.remove(postContributor)
-                }
-
-                postContributor.post = null
-                postContributor.contributor = null
-            }
-        }
-    }
-
-    fun clearContributors() {
-        this.postContributors.clear()
-    }
 
     fun addProfile(profile: Profile, priority: Int) {
         val postProfile = PostProfile(this, profile, priority)

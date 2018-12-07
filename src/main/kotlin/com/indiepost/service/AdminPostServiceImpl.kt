@@ -283,31 +283,29 @@ constructor(private val userService: UserService,
                 post.addRelatedPost(relatedPost, i)
             }
         }
-        if (dto.contributors.isNotEmpty()) {
-            val contributors = contributorRepository.findByFullNameIn(dto.contributors, PageRequest.of(0, 100))
-                    .content
-            post.addContributors(contributors)
-        }
         if (dto.profiles.isNotEmpty()) {
-            val profiles = profileRepository.findByFullNameIn(dto.profiles, PageRequest.of(0, 100))
-                    .content
-            post.addProfiles(profiles)
+            val profileIds = dto.profiles.stream().map { p -> p.id }.collect(Collectors.toList())
+            if (profileIds.isNotEmpty()) {
+                val profiles = profileRepository.findByIdIn(profileIds as List<Long>, PageRequest.of(0, 100))
+                        .content
+                post.addProfiles(profiles)
+            }
         }
         if (dto.tags.isNotEmpty()) {
-            val tagListLowerCased = dto.tags.stream()
-                    .map { t -> t.toLowerCase() }
+            val tagNames = dto.tags.stream()
+                    .filter { (_, text) -> text != null }
+                    .map<String> { (_, text) -> text!!.toLowerCase() }
                     .collect(Collectors.toList())
-            var tags = tagRepository.findByNameIn(tagListLowerCased)
-            val tagNames = tags.stream()
-                    .map { (_, name) -> name!!.toLowerCase() }
+
+            val newTags = dto.tags.stream()
+                    .filter { (id, text) -> id == null && text != null && text.isNotEmpty() }
+                    .map<String> { (_, text) -> text!!.toLowerCase() }
                     .collect(Collectors.toList())
-            val subList = tagListLowerCased.subtract(tagNames)
-            if (!subList.isEmpty()) {
-                for (name in subList) {
-                    tagRepository.save(Tag(name.toLowerCase()))
-                }
-                tags = tagRepository.findByNameIn(tagListLowerCased)
+            for (text in newTags) {
+                tagRepository.save(Tag(text))
             }
+
+            val tags = tagRepository.findByNameIn(tagNames)
             post.addTags(tags)
         }
 

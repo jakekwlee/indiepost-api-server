@@ -1,7 +1,7 @@
 package com.indiepost.service
 
-import com.indiepost.dto.ContributorDto
 import com.indiepost.dto.Highlight
+import com.indiepost.dto.PageWithProfile
 import com.indiepost.dto.Timeline
 import com.indiepost.dto.TimelineRequest
 import com.indiepost.dto.post.PostDto
@@ -13,7 +13,6 @@ import com.indiepost.mapper.createDto
 import com.indiepost.repository.*
 import com.indiepost.repository.elasticsearch.PostEsRepository
 import com.indiepost.utils.DateUtil.localDateTimeToInstant
-import org.springframework.beans.BeanUtils
 import org.springframework.data.domain.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -30,6 +29,7 @@ import javax.inject.Inject
 @Transactional(readOnly = true)
 class PostServiceImpl @Inject constructor(
         private val postRepository: PostRepository,
+        private val profileRepository: ProfileRepository,
         private val statRepository: StatRepository,
         private val postEsRepository: PostEsRepository,
         private val postReadingRepository: PostReadingRepository,
@@ -44,16 +44,6 @@ class PostServiceImpl @Inject constructor(
                     .map { (_, name) -> name!!.toLowerCase() }
                     .collect(Collectors.toList())
             dto.tags = tags
-        }
-        if (post.contributors.isNotEmpty()) {
-            val contributors = post.contributors.stream()
-                    .map { c ->
-                        val contributorDto = ContributorDto()
-                        BeanUtils.copyProperties(c, contributorDto)
-                        contributorDto
-                    }
-                    .collect(Collectors.toList())
-            dto.contributors = contributors
         }
         if (post.profiles.isNotEmpty()) {
             val profiles = post.profiles.stream()
@@ -98,10 +88,6 @@ class PostServiceImpl @Inject constructor(
 
     override fun findByTagName(tagName: String, pageable: Pageable): Page<PostSummaryDto> {
         return postRepository.findByTagName(tagName, getPageRequest(pageable))
-    }
-
-    override fun findByContributorFullName(fullName: String, pageable: Pageable): Page<PostSummaryDto> {
-        return postRepository.findByContributorFullName(fullName, getPageRequest(pageable))
     }
 
     override fun findReadingHistory(request: TimelineRequest): Timeline<PostSummaryDto> {
@@ -240,8 +226,14 @@ class PostServiceImpl @Inject constructor(
         return PageImpl(posts, pageable, total.toLong())
     }
 
-    override fun findByProfileSlug(slug: String, pageable: Pageable): Page<PostSummaryDto> {
-        return postRepository.findByProfileSlug(slug, pageable)
+    override fun findByProfileSlug(slug: String, pageable: Pageable): PageWithProfile<PostSummaryDto> {
+        val profile = profileRepository.findBySlug(slug)
+        if (profile != null) {
+            val page = postRepository.findByProfileSlug(slug, pageable)
+            return PageWithProfile(profile.createDto(), page.content, page.pageable, page.totalElements)
+        }
+        return PageWithProfile()
+
     }
 
     override fun defaultRecommendations(pageable: Pageable): Page<PostSummaryDto> {
