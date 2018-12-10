@@ -316,7 +316,7 @@ class PostRepositoryJpa : PostRepository {
                 .selectDistinct(post.id)
                 .from(post)
                 .leftJoin(post.postProfile, QPostProfile.postProfile)
-                .leftJoin(QPostContributor.postContributor.contributor, QContributor.contributor)
+                .leftJoin(QPostProfile.postProfile.profile, QProfile.profile)
                 .leftJoin(post.postTags, QPostTag.postTag)
                 .leftJoin(QPostTag.postTag.tag, QTag.tag)
                 .orderBy(post.id.desc())
@@ -329,7 +329,7 @@ class PostRepositoryJpa : PostRepository {
                 .or(post.excerpt.like(like))
                 .or(post.displayName.like(like))
                 .or(QTag.tag.name.like(like))
-                .or(QContributor.contributor.fullName.like(like))
+                .or(QProfile.profile.displayName.like(like))
         )
 
         query.where(builder)
