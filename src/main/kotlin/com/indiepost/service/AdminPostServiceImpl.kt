@@ -11,7 +11,6 @@ import com.indiepost.mapper.*
 import com.indiepost.model.Post
 import com.indiepost.model.Tag
 import com.indiepost.repository.AdminPostRepository
-import com.indiepost.repository.ContributorRepository
 import com.indiepost.repository.ProfileRepository
 import com.indiepost.repository.TagRepository
 import com.indiepost.repository.elasticsearch.PostEsRepository
@@ -32,7 +31,6 @@ import javax.inject.Inject
 class AdminPostServiceImpl @Inject
 constructor(private val userService: UserService,
             private val adminPostRepository: AdminPostRepository,
-            private val contributorRepository: ContributorRepository,
             private val profileRepository: ProfileRepository,
             private val postEsRepository: PostEsRepository,
             private val tagRepository: TagRepository) : AdminPostService {
@@ -276,6 +274,9 @@ constructor(private val userService: UserService,
     }
 
     private fun addManyToManyAttributes(post: Post, dto: AdminPostRequestDto) {
+        post.clearRelatedPosts()
+        post.clearProfiles()
+        post.clearTags()
         if (dto.relatedPostIds.isNotEmpty()) {
             val relatedPosts = adminPostRepository.findByIds(dto.relatedPostIds)
             post.clearRelatedPosts()

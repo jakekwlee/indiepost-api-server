@@ -63,7 +63,7 @@ class PostEsRepositoryTests {
         assertThat(post.content).isNull()
         assertThat(post.status).isNull()
         assertThat(post.getTags()).hasSize(0)
-        assertThat(post.getContributors()).hasSize(0)
+        assertThat(post.getProfiles()).hasSize(0)
         assertThat(post.title)
                 .isNotEmpty()
                 .contains("em", "무지갯", "영화")

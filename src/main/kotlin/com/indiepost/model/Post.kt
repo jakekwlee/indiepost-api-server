@@ -39,7 +39,7 @@ data class Post(
 
         @Column(nullable = false)
         @Size(max = 30)
-        var displayName: String = "Indiepost",
+        var displayName: String = "INDIEPOST",
 
         @Column(nullable = false)
         var createdAt: LocalDateTime? = null,

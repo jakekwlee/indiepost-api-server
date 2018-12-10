@@ -80,7 +80,7 @@ open class ProfileServiceImpl @Inject constructor(
 
     override fun getSummaryDtoList(): List<ProfileSummaryDto> {
         return profileRepository.findAll(PageRequest.of(0, 1000)).content.stream()
-                .map { p -> p.createSummayDto() }
+                .map { p -> p.createSummaryDto() }
                 .collect(Collectors.toList())
     }
 

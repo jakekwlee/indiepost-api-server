@@ -67,7 +67,7 @@
           "analyzer": "korean",
           "search_analyzer": "korean"
         },
-        "contributors": {
+        "profile": {
           "type": "text",
           "analyzer": "korean",
           "search_analyzer": "korean"

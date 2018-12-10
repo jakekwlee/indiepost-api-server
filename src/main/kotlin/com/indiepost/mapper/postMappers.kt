@@ -195,11 +195,10 @@ fun Post.createPostEs(): PostEs {
         postEs.creatorName = it.displayName
     }
 
-    // TODO fix this
-    val contributors = profiles.stream()
-            .map<String> { (_, fullName) -> fullName }
+    val profiles = profiles.stream()
+            .map<String> { (_, displayName) -> displayName }
             .collect(Collectors.toList())
-    postEs.setContributors(contributors)
+    postEs.setProfiles(profiles)
 
     val tags = tags.stream()
             .map { (_, name) -> name!!.replace("_".toRegex(), " ") }

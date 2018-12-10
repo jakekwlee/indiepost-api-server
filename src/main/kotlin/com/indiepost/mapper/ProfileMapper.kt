@@ -21,6 +21,7 @@ fun Profile.createDto(): ProfileDto {
     dto.subEmail = subEmail
     dto.showEmail = showEmail
     dto.slug = slug
+    dto.isCustomSlug = isCustomSlug
     created?.let {
         dto.created = localDateTimeToInstant(it)
     }
@@ -30,7 +31,7 @@ fun Profile.createDto(): ProfileDto {
     return dto
 }
 
-fun Profile.createSummayDto(): ProfileSummaryDto {
+fun Profile.createSummaryDto(): ProfileSummaryDto {
     return ProfileSummaryDto(id, fullName, profileType.toString())
 }
 
@@ -50,6 +51,7 @@ fun Profile.createDtoWithPrivacy(): ProfileDto {
     dto.subEmail = subEmail
     dto.showEmail = showEmail
     dto.slug = slug
+    dto.isCustomSlug = isCustomSlug
     created?.let {
         dto.created = localDateTimeToInstant(it)
     }
@@ -61,6 +63,11 @@ fun Profile.createDtoWithPrivacy(): ProfileDto {
 
 fun ProfileDto.createEntity(): Profile {
     val profile = Profile(slug = this.slug!!)
+    if (!profile.isCustomSlug) {
+        displayName?.let {
+            profile.slug = it.trim().replace(" ", "_")
+        }
+    }
     profile.created = LocalDateTime.now()
     profile.lastUpdated = LocalDateTime.now()
     profile.description = description
@@ -90,8 +97,14 @@ fun ProfileDto.createEntity(): Profile {
 }
 
 fun Profile.merge(dto: ProfileDto) {
-    dto.slug?.let {
-        slug = it
+    if (dto.isCustomSlug) {
+        dto.slug?.let {
+            slug = it
+        }
+    } else {
+        dto.displayName?.let {
+            slug = it.trim().replace(" ", "-")
+        }
     }
     dto.fullName?.let {
         fullName = it
@@ -105,6 +118,7 @@ fun Profile.merge(dto: ProfileDto) {
     dto.profileType?.let {
         profileType = Types.ProfileType.valueOf(it)
     }
+    isCustomSlug = dto.isCustomSlug
     description = dto.description
     showDescription = dto.showDescription
     showLabel = dto.showLabel

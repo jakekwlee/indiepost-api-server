@@ -16,7 +16,7 @@ data class PostEs(
 
         var bylineName: String? = null,
 
-        private var contributors: MutableList<String> = ArrayList(),
+        private var profiles: MutableList<String> = ArrayList(),
 
         private var tags: MutableList<String> = ArrayList(),
 
@@ -37,12 +37,12 @@ data class PostEs(
         this.id = id
     }
 
-    fun getContributors(): MutableList<String> {
-        return contributors
+    fun getProfiles(): MutableList<String> {
+        return profiles
     }
 
-    fun setContributors(contributors: MutableList<String>) {
-        this.contributors = contributors
+    fun setProfiles(contributors: MutableList<String>) {
+        this.profiles = contributors
     }
 
     fun getTags(): MutableList<String> {
@@ -61,12 +61,12 @@ data class PostEs(
         tags.remove(tag)
     }
 
-    fun addContributor(contributor: String) {
-        contributors.add(contributor)
+    fun addProfile(contributor: String) {
+        profiles.add(contributor)
     }
 
-    fun removeContributor(contributor: String) {
-        contributors.remove(contributor)
+    fun removeProfile(contributor: String) {
+        profiles.remove(contributor)
     }
 
     companion object {
