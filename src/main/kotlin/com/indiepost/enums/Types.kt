@@ -29,7 +29,7 @@ interface Types {
     }
 
     enum class StatType {
-        ACTION, POST, PAGE, HOME, SEARCH, TAG, CONTRIBUTOR, CATEGORY, READING_HISTORY, BOOKMARK, NOTICE
+        ACTION, POST, PAGE, HOME, SEARCH, TAG, PROFILE, CATEGORY, READING_HISTORY, BOOKMARK, NOTICE
     }
 
     enum class ActionType {
@@ -49,20 +49,12 @@ interface Types {
         HOURLY, DAILY, MONTHLY, YEARLY
     }
 
-    enum class ContributorType {
-        FeatureEditor, FreelanceEditor, Photographer
-    }
-
     enum class ProfileType {
         Editor, Writer, Photographer
     }
 
     enum class ProfileState {
         ACTIVE, INACTIVE
-    }
-
-    enum class ContributorDisplayType {
-        HTML, TEXT
     }
 
     enum class LinkType {

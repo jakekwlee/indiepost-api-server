@@ -6,7 +6,7 @@ data class Highlight(
 
         var excerpt: String? = null,
 
-        var contributors: List<String>? = null,
+        var profiles: List<String>? = null,
 
         var tags: List<String>? = null,
 

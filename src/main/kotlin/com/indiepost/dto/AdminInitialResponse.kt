@@ -15,8 +15,6 @@ data class AdminInitialResponse(
 
         var categories: List<CategoryDto>? = null,
 
-        var contributors: List<ContributorDto>? = null,
-
         var profiles: List<ProfileSummaryDto>? = null,
 
         var postTitles: List<Title>? = null

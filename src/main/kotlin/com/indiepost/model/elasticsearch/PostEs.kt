@@ -41,8 +41,8 @@ data class PostEs(
         return profiles
     }
 
-    fun setProfiles(contributors: MutableList<String>) {
-        this.profiles = contributors
+    fun setProfiles(profiles: MutableList<String>) {
+        this.profiles = profiles
     }
 
     fun getTags(): MutableList<String> {
@@ -61,12 +61,12 @@ data class PostEs(
         tags.remove(tag)
     }
 
-    fun addProfile(contributor: String) {
-        profiles.add(contributor)
+    fun addProfile(profile: String) {
+        profiles.add(profile)
     }
 
-    fun removeProfile(contributor: String) {
-        profiles.remove(contributor)
+    fun removeProfile(profile: String) {
+        profiles.remove(profile)
     }
 
     companion object {

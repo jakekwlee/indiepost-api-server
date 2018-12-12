@@ -7,7 +7,6 @@ import com.indiepost.enums.Types.UserRole
 import com.indiepost.exceptions.UnauthorizedException
 import com.indiepost.mapper.createDto
 import com.indiepost.model.User
-import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -24,8 +23,7 @@ class AdminServiceImpl @Inject constructor(
         private val categoryService: CategoryService,
         private val userService: UserService,
         private val tagService: TagService,
-        private val profileService: ProfileService,
-        private val contributorService: ContributorService) : AdminService {
+        private val profileService: ProfileService) : AdminService {
 
     override fun buildInitialResponse(): AdminInitialResponse {
         val currentUser = userService.findCurrentUser() ?: throw UnauthorizedException()
@@ -34,7 +32,6 @@ class AdminServiceImpl @Inject constructor(
         adminInitialResponse.categories = categoryService.getDtoList()
         adminInitialResponse.authorNames = adminPostService.findAllBylineNames()
         // TODO for test
-        adminInitialResponse.contributors = contributorService.find(PageRequest.of(0, 1000)).content
         adminInitialResponse.profiles = profileService.getSummaryDtoList()
         adminInitialResponse.postTitles = adminPostService.getAllTitles()
         val tagList = tagService.findAll()

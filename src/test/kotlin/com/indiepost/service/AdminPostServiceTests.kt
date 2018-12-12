@@ -32,7 +32,6 @@ class AdminPostServiceTests {
     fun insert() {
         val post = AdminPostRequestDto()
         post.tags = Arrays.asList("여행기", "콩자반", "일본영화", "쿠바", "아기다리고기다", "로망포르노", "로맨스")
-//        post.profilescontributors = Arrays.asList("유미래", "최은제", "이사민", "김유영")
         post.content = "test content"
         post.title = "test title"
         post.excerpt = "test except"
@@ -65,14 +64,6 @@ class AdminPostServiceTests {
         val id = insertedId ?: throw Exception()
         val dto = service.findOne(id)
         assertThat(dto!!.tags).isEqualTo(Arrays.asList("여행기", "콩자반", "일본영화", "쿠바", "아기다리고기다", "로망포르노", "로맨스"))
-    }
-
-    //        @Test
-//    @WithMockUser(username = "auth0|5a94f76a5c798c2296fd51ae")
-    fun retrievedAdminPostResponseDto_shouldContainContributorsWithProperOrder() {
-        val id = insertedId ?: throw Exception()
-        val dto = service.findOne(id)
-//        assertThat(dto!!.contributors).isEqualTo(Arrays.asList("유미래", "최은제", "이사민", "김유영"))
     }
 
     @Test
