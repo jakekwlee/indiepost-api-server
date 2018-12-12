@@ -1,7 +1,6 @@
 package com.indiepost.dto.post
 
 import com.indiepost.dto.ProfileSummaryDto
-import com.indiepost.dto.TagDto
 import java.time.Instant
 import java.util.*
 
@@ -42,7 +41,7 @@ open class AdminPostRequestDto {
 
     var relatedPostIds: List<Long> = ArrayList()
 
-    var tags: List<TagDto> = ArrayList()
+    var tags: List<String> = ArrayList()
 
     var profiles: List<ProfileSummaryDto> = ArrayList()
 }

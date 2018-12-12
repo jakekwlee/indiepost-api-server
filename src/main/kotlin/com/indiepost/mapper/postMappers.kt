@@ -1,7 +1,6 @@
 package com.indiepost.mapper
 
 import com.indiepost.dto.ProfileSummaryDto
-import com.indiepost.dto.TagDto
 import com.indiepost.dto.post.AdminPostRequestDto
 import com.indiepost.dto.post.AdminPostResponseDto
 import com.indiepost.dto.post.PostDto
@@ -158,7 +157,7 @@ fun Post.createAdminPostResponseDto(): AdminPostResponseDto {
     }
     if (tags.isNotEmpty()) {
         dto.tags = tags.stream()
-                .map<TagDto> { (id, name) -> TagDto(id, name) }
+                .map<String> { (_, name) -> name }
                 .collect(Collectors.toList())
     }
     if (profiles.isNotEmpty()) {

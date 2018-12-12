@@ -293,23 +293,22 @@ constructor(private val userService: UserService,
             }
         }
         if (dto.tags.isNotEmpty()) {
-            val tagNames = dto.tags.stream()
-                    .filter { (_, text) -> text != null }
-                    .map<String> { (_, text) -> text!!.toLowerCase() }
+            val tagListLowerCased = dto.tags.stream()
+                    .map { t -> t.toLowerCase() }
                     .collect(Collectors.toList())
-
-            val newTags = dto.tags.stream()
-                    .filter { (id, text) -> id == null && text != null && text.isNotEmpty() }
-                    .map<String> { (_, text) -> text!!.toLowerCase() }
+            var tags = tagRepository.findByNameIn(tagListLowerCased)
+            val tagNames = tags.stream()
+                    .map { (_, name) -> name!!.toLowerCase() }
                     .collect(Collectors.toList())
-            for (text in newTags) {
-                tagRepository.save(Tag(text))
+            val subList = tagListLowerCased.subtract(tagNames)
+            if (!subList.isEmpty()) {
+                for (name in subList) {
+                    tagRepository.save(Tag(name.toLowerCase()))
+                }
+                tags = tagRepository.findByNameIn(tagListLowerCased)
             }
-
-            val tags = tagRepository.findByNameIn(tagNames)
             post.addTags(tags)
         }
-
     }
 
     private fun disableCurrentFeaturePostIfNeeded(status: PostStatus, isSplash: Boolean, isFeatured: Boolean) {
