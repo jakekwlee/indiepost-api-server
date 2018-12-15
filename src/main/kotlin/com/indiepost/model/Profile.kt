@@ -31,11 +31,6 @@ data class Profile(
         @Size(max = 30)
         var slug: String,
 
-        @NotNull
-        @Column(nullable = false)
-        @Size(max = 30)
-        var isCustomSlug: Boolean = false,
-
         @Size(max = 50)
         var email: String = "email@example.com",
 

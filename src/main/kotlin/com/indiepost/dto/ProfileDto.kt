@@ -1,6 +1,5 @@
 package com.indiepost.dto
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.Instant
 
 data class ProfileDto(
@@ -11,10 +10,6 @@ data class ProfileDto(
         var displayName: String? = null,
 
         var slug: String? = null,
-
-        @get:JsonProperty("isCustomSlug")
-        @set:JsonProperty("isCustomSlug")
-        var isCustomSlug: Boolean = false,
 
         var email: String = "email@example.com",
 

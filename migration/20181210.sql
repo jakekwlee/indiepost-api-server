@@ -1,6 +1,6 @@
 insert into Profiles (id, displayName, slug, fullName, etc, email, subEmail, phone, picture, label, description,
                       showDescription, showEmail, showPicture, showLabel, profileType, profileState, created,
-                      lastUpdated, isCustomSlug)
+                      lastUpdated)
 select
   id,
   fullName,
@@ -20,8 +20,7 @@ select
   'Editor',
   'ACTIVE',
   created,
-  lastUpdated,
-  false
+  lastUpdated
 from
   Contributors;
 
