@@ -1,6 +1,8 @@
 package com.indiepost.utils
 
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.jsoup.nodes.Entities
 import java.util.*
 import java.util.regex.Pattern
 
@@ -28,5 +30,20 @@ object DomUtil {
             }
         }
         return imagePrefixList
+    }
+
+    fun findAndRemoveWriterInformationFromContent(content: String): String? {
+        val html = Jsoup.parseBodyFragment(content)
+        val settings = html.outputSettings()
+        settings.syntax(Document.OutputSettings.Syntax.xml)
+        settings.prettyPrint(false)
+        settings.escapeMode(Entities.EscapeMode.extended)
+        val postContent = html.select("p:contains(필자소개)")
+        if (postContent.isNotEmpty()) {
+            postContent.prev().nextAll().remove()
+            return html.body().html().trim().trimIndent()
+        } else {
+            return null
+        }
     }
 }

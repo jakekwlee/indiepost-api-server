@@ -98,7 +98,7 @@ data class Post(
 
     @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
     @OrderBy("priority")
-    private var postProfile: MutableList<PostProfile> = ArrayList()
+    var postProfile: MutableList<PostProfile> = ArrayList()
 
     @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
     var postReadings: MutableList<PostReading> = ArrayList()
