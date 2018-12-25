@@ -1,5 +1,7 @@
 package com.indiepost.utils
 
+import com.indiepost.dto.LinkBoxResponse
+import com.indiepost.enums.Types
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Entities
@@ -32,6 +34,27 @@ object DomUtil {
         return imagePrefixList
     }
 
+    fun extractInformationFromURL(url: String): LinkBoxResponse? {
+        val urlSlices = url.split("/")
+        val source = if (urlSlices.size > 2) urlSlices[2] else null
+        if (source != "movie.naver.com") {
+            return null
+        }
+        val doc = Jsoup.connect(url).get()
+        val title = doc.select("meta[property='og:title']").attr("content")
+        val image = doc.select("meta[property='og:image']").attr("content")
+        val director = doc.select("div.mv_info > dl > dd:nth-child(4) > p").text()
+        val credits = doc.select("div.mv_info > dl > dd:nth-child(6) > p").text()
+        return LinkBoxResponse(
+                title = title,
+                imageUrl = image,
+                data = Arrays.asList(director, credits),
+                source = source,
+                url = url,
+                type = Types.LinkBoxType.Movie.toString()
+        )
+    }
+
     fun findAndRemoveWriterInformationFromContent(content: String): String? {
         val html = Jsoup.parseBodyFragment(content)
         val settings = html.outputSettings()
@@ -39,11 +62,11 @@ object DomUtil {
         settings.prettyPrint(false)
         settings.escapeMode(Entities.EscapeMode.extended)
         val postContent = html.select("p:contains(필자소개)")
-        if (postContent.isNotEmpty()) {
+        return if (postContent.isNotEmpty()) {
             postContent.prev().nextAll().remove()
-            return html.body().html().trim().trimIndent()
+            html.body().html().trim().trimIndent()
         } else {
-            return null
+            null
         }
     }
 }

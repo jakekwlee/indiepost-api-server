@@ -1,5 +1,7 @@
 package com.indiepost.service
 
+import com.indiepost.dto.LinkBoxRequest
+import com.indiepost.dto.LinkBoxResponse
 import com.indiepost.dto.analytics.LinkDto
 import com.indiepost.model.analytics.Link
 
@@ -19,6 +21,8 @@ interface LinkService {
     fun findByUid(uid: String): LinkDto?
 
     fun findAll(): List<LinkDto>
+
+    fun getLinkBox(linkBoxRequest: LinkBoxRequest): LinkBoxResponse
 
     fun dtoToLink(linkDto: LinkDto): Link
 

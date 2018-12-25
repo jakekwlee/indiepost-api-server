@@ -69,6 +69,10 @@ interface Types {
         All, Users, NonUsers
     }
 
+    enum class LinkBoxType {
+        Movie, Album, Song, Default
+    }
+
     companion object {
 
         fun isPublicStatus(status: PostStatus): Boolean {

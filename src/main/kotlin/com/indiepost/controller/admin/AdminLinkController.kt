@@ -1,5 +1,7 @@
 package com.indiepost.controller.admin
 
+import com.indiepost.dto.LinkBoxRequest
+import com.indiepost.dto.LinkBoxResponse
 import com.indiepost.dto.analytics.LinkDto
 import com.indiepost.service.LinkService
 import org.springframework.web.bind.annotation.*
@@ -23,6 +25,11 @@ constructor(private val linkService: LinkService) {
     @PostMapping
     fun createLink(@Valid @RequestBody linkDto: LinkDto): LinkDto {
         return linkService.save(linkDto)
+    }
+
+    @PostMapping("/linkbox")
+    fun createLinkBox(@Valid @RequestBody linkBoxRequest: LinkBoxRequest): LinkBoxResponse? {
+        return linkService.getLinkBox(linkBoxRequest)
     }
 
     @PutMapping("/{id}")

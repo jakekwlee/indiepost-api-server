@@ -1,9 +1,13 @@
 package com.indiepost.service
 
+import com.indiepost.dto.LinkBoxRequest
+import com.indiepost.dto.LinkBoxResponse
 import com.indiepost.dto.analytics.LinkDto
+import com.indiepost.exceptions.ResourceNotFoundException
 import com.indiepost.model.analytics.Link
 import com.indiepost.repository.ClickRepository
 import com.indiepost.repository.LinkRepository
+import com.indiepost.utils.DomUtil.extractInformationFromURL
 import org.apache.commons.lang3.RandomStringUtils
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -58,6 +62,15 @@ class LinkServiceImpl @Inject constructor(
         return links.stream()
                 .map { link -> linkToDto(link) }
                 .collect(Collectors.toList())
+    }
+
+    override fun getLinkBox(linkBoxRequest: LinkBoxRequest): LinkBoxResponse {
+        val infoUrl = linkBoxRequest.infoUrl
+                ?: throw ResourceNotFoundException("LinkBoxRequest::infoUrl cannot be null")
+//        TODO
+//        val targetUrl = linkBoxRequest.targetUrl
+        return extractInformationFromURL(infoUrl)
+                ?: throw ResourceNotFoundException("Linkbox information not found on `$infoUrl`")
     }
 
     override fun dtoToLink(linkDto: LinkDto): Link {
