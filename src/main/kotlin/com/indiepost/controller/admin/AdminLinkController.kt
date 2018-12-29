@@ -1,7 +1,7 @@
 package com.indiepost.controller.admin
 
-import com.indiepost.dto.LinkBoxRequest
-import com.indiepost.dto.LinkBoxResponse
+import com.indiepost.dto.LinkMetadataRequest
+import com.indiepost.dto.LinkMetadataResponse
 import com.indiepost.dto.analytics.LinkDto
 import com.indiepost.service.LinkService
 import org.springframework.web.bind.annotation.*
@@ -27,9 +27,17 @@ constructor(private val linkService: LinkService) {
         return linkService.save(linkDto)
     }
 
-    @PostMapping("/linkbox")
-    fun createLinkBox(@Valid @RequestBody linkBoxRequest: LinkBoxRequest): LinkBoxResponse? {
-        return linkService.getLinkBox(linkBoxRequest)
+    @PostMapping("/from-url")
+    fun linkFromUrl(@Valid @RequestBody linkMetadataRequest: LinkMetadataRequest): LinkMetadataResponse? {
+        return linkService.getLinkMetadata(linkMetadataRequest)
+    }
+
+    @GetMapping("/search/movie")
+    fun searchMovies(@RequestParam text: String, @RequestParam limit: Int): List<LinkMetadataResponse> {
+        if (text.isEmpty()) {
+            return emptyList()
+        }
+        return linkService.searchMovies(text, limit)
     }
 
     @PutMapping("/{id}")

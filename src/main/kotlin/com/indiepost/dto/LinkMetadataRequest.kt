@@ -1,6 +1,6 @@
 package com.indiepost.dto
 
-data class LinkBoxRequest(
+data class LinkMetadataRequest(
         var infoUrl: String?,
         var targetUrl: String?
 )

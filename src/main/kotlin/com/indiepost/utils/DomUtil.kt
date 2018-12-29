@@ -1,10 +1,12 @@
 package com.indiepost.utils
 
-import com.indiepost.dto.LinkBoxResponse
+import com.indiepost.dto.LinkMetadataResponse
 import com.indiepost.enums.Types
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Entities
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.regex.Pattern
 
@@ -34,7 +36,7 @@ object DomUtil {
         return imagePrefixList
     }
 
-    fun extractInformationFromURL(url: String): LinkBoxResponse? {
+    fun extractInformationFromURL(url: String): LinkMetadataResponse? {
         val urlSlices = url.split("/")
         val source = if (urlSlices.size > 2) urlSlices[2] else null
         if (source != "movie.naver.com") {
@@ -44,13 +46,20 @@ object DomUtil {
         val title = doc.select("meta[property='og:title']").attr("content")
         val image = doc.select("meta[property='og:image']").attr("content")
         val director = doc.select("div.mv_info > dl > dd:nth-child(4) > p").text()
-        val credits = doc.select("div.mv_info > dl > dd:nth-child(6) > p").text()
-        return LinkBoxResponse(
+        val actor = doc.select("div.mv_info > dl > dd:nth-child(6) > p").text()?.replace(Regex("\\(([^)]+)\\)"), "")
+        val pub: String? = doc.select("div.mv_info > dl > dd:nth-child(2) > p > span:nth-child(4)")?.text()?.replace(Regex("[\\D.]"), "")
+        var published: LocalDate? = null
+        if (pub != null && pub.length == 8) {
+            published = LocalDate.parse(pub, DateTimeFormatter.ofPattern("yyyyMMdd"))
+        }
+        return LinkMetadataResponse(
                 title = title,
                 imageUrl = image,
-                data = Arrays.asList(director, credits),
+                directors = director?.split(", "),
+                actors = actor?.split(", "),
                 source = source,
                 url = url,
+                published = published?.format(DateTimeFormatter.ISO_DATE),
                 type = Types.LinkBoxType.Movie.toString()
         )
     }

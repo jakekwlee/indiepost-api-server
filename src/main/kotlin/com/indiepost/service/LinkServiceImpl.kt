@@ -1,13 +1,15 @@
 package com.indiepost.service
 
-import com.indiepost.dto.LinkBoxRequest
-import com.indiepost.dto.LinkBoxResponse
+import com.indiepost.dto.LinkMetadataRequest
+import com.indiepost.dto.LinkMetadataResponse
 import com.indiepost.dto.analytics.LinkDto
+import com.indiepost.enums.Types
 import com.indiepost.exceptions.ResourceNotFoundException
 import com.indiepost.model.analytics.Link
 import com.indiepost.repository.ClickRepository
 import com.indiepost.repository.LinkRepository
 import com.indiepost.utils.DomUtil.extractInformationFromURL
+import com.mashape.unirest.http.Unirest
 import org.apache.commons.lang3.RandomStringUtils
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -64,13 +66,58 @@ class LinkServiceImpl @Inject constructor(
                 .collect(Collectors.toList())
     }
 
-    override fun getLinkBox(linkBoxRequest: LinkBoxRequest): LinkBoxResponse {
-        val infoUrl = linkBoxRequest.infoUrl
-                ?: throw ResourceNotFoundException("LinkBoxRequest::infoUrl cannot be null")
+    override fun getLinkMetadata(linkMetadataRequest: LinkMetadataRequest): LinkMetadataResponse {
+        val infoUrl = linkMetadataRequest.infoUrl
+                ?: throw ResourceNotFoundException("LinkMetadataRequest::infoUrl cannot be null")
 //        TODO
-//        val targetUrl = linkBoxRequest.targetUrl
+//        val targetUrl = linkMetadataRequest.targetUrl
         return extractInformationFromURL(infoUrl)
                 ?: throw ResourceNotFoundException("Linkbox information not found on `$infoUrl`")
+    }
+
+    override fun searchMovies(text: String, limit: Int): List<LinkMetadataResponse> {
+        val response = Unirest.get("https://openapi.naver.com/v1/search/movie").header("Content-Type", "plain/text")
+                .header("X-Naver-Client-Id", "9Q61_ESCrPSL3Tni3laW")
+                .header("X-Naver-Client-Secret", "YjMHi7Gcoe")
+                .queryString("query", text)
+                .queryString("display", limit)
+                .asJson()
+
+        val tagRegex = Regex("<[^>]*>")
+        val body = response.body.`object`
+        if (body.get("total") == 0) {
+            return emptyList()
+        } else {
+            val arr = body.getJSONArray("items")
+            return arr.toList().stream().map { item ->
+                val data = item as HashMap<String, String>
+                val title = data["title"]
+                        ?.replace(tagRegex, "")
+                val url = data["link"]
+                val published = data["pubDate"]
+                val directors = data["director"]
+                        ?.split("|")
+                        ?.filter { it != "" }
+                        ?.map { it.replace(tagRegex, "") }
+                val actors = data["actor"]
+                        ?.split("|")
+                        ?.filter { it != "" }
+                        ?.map { it.replace(tagRegex, "") }
+                val imageUrl = data["image"]
+                LinkMetadataResponse(
+                        title = title,
+                        url = url,
+                        directors = directors,
+                        actors = actors,
+                        source = "movie.naver.com",
+                        type = Types.LinkBoxType.Movie.toString(),
+                        imageUrl = imageUrl,
+                        published = published
+                )
+            }
+                    .collect(Collectors.toList())
+
+        }
     }
 
     override fun dtoToLink(linkDto: LinkDto): Link {

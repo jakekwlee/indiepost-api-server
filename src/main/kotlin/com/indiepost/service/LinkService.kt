@@ -1,7 +1,7 @@
 package com.indiepost.service
 
-import com.indiepost.dto.LinkBoxRequest
-import com.indiepost.dto.LinkBoxResponse
+import com.indiepost.dto.LinkMetadataRequest
+import com.indiepost.dto.LinkMetadataResponse
 import com.indiepost.dto.analytics.LinkDto
 import com.indiepost.model.analytics.Link
 
@@ -22,9 +22,11 @@ interface LinkService {
 
     fun findAll(): List<LinkDto>
 
-    fun getLinkBox(linkBoxRequest: LinkBoxRequest): LinkBoxResponse
+    fun getLinkMetadata(linkMetadataRequest: LinkMetadataRequest): LinkMetadataResponse
 
     fun dtoToLink(linkDto: LinkDto): Link
 
     fun linkToDto(link: Link): LinkDto
+
+    fun searchMovies(text: String, limit: Int): List<LinkMetadataResponse>
 }

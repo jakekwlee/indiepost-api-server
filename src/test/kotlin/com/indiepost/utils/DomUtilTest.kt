@@ -3,7 +3,7 @@ package com.indiepost.utils
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.indiepost.dto.LinkBoxResponse
+import com.indiepost.dto.LinkMetadataResponse
 import org.apache.commons.collections4.CollectionUtils
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -17,15 +17,16 @@ class DomUtilTest {
     @Throws(JsonProcessingException::class)
     fun extractInformationFromURL_workProperly() {
         val url = "https://movie.naver.com/movie/bi/mi/basic.nhn?code=171725"
-        val linkBoxResponse: LinkBoxResponse? = DomUtil.extractInformationFromURL(url)
-        assertThat(linkBoxResponse).isNotNull()
-        linkBoxResponse?.let {
+        val linkMetadataResponse: LinkMetadataResponse? = DomUtil.extractInformationFromURL(url)
+        assertThat(linkMetadataResponse).isNotNull()
+        linkMetadataResponse?.let {
             assertThat(it.title).isEqualTo("스파이더맨: 뉴 유니버스")
             assertThat(it.imageUrl).isEqualTo("https://movie-phinf.pstatic.net/20181207_3/1544172927548CbuaX_JPEG/movie_image.jpg?type=m665_443_2")
             assertThat(it.source).isEqualTo("movie.naver.com")
             assertThat(it.url).isEqualTo(url)
-            assertThat(it.data!![0]).isEqualTo("밥 퍼시케티, 피터 램지, 로드니 로스맨")
-            assertThat(it.data!![1]).isEqualTo("샤메익 무어(마일스 모랄레스/스파이더맨 목소리), 헤일리 스테인펠드(스파이더 그웬 목소리), 니콜라스 케이지(스파이더맨 누아르 목소리)")
+            assertThat(it.directors).isEqualTo(Arrays.asList("밥 퍼시케티", "피터 램지", "로드니 로스맨"))
+            assertThat(it.actors).isEqualTo(Arrays.asList("샤메익 무어", "헤일리 스테인펠드", "니콜라스 케이지"))
+            assertThat(it.published).isEqualTo("2018-12-12")
         }
     }
 
