@@ -5,6 +5,8 @@ import com.indiepost.enums.Types
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Entities
+import org.springframework.web.util.UriComponents
+import org.springframework.web.util.UriComponentsBuilder
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -37,9 +39,16 @@ object DomUtil {
     }
 
     fun extractInformationFromURL(url: String): LinkMetadataResponse? {
-        val urlSlices = url.split("/")
-        val source = if (urlSlices.size > 2) urlSlices[2] else null
-        if (source != "movie.naver.com") {
+        val host: String?
+        val code: Long?
+        try {
+            val urlComponents: UriComponents = UriComponentsBuilder.fromHttpUrl(url).build()
+            host = urlComponents.host
+            if (host != "movie.naver.com")
+                return null
+            code = urlComponents.queryParams["code"]?.first()?.toLong()
+        } catch (e: IllegalStateException) {
+            e.printStackTrace()
             return null
         }
         val doc = Jsoup.connect(url).get()
@@ -53,13 +62,15 @@ object DomUtil {
             published = LocalDate.parse(pub, DateTimeFormatter.ofPattern("yyyyMMdd"))
         }
         return LinkMetadataResponse(
+                id = code ?: Random().nextLong(),
+                contentId = code,
                 title = title,
                 imageUrl = image,
                 directors = director?.split(", "),
                 actors = actor?.split(", "),
-                source = source,
+                source = host,
                 url = url,
-                published = published?.format(DateTimeFormatter.ISO_DATE),
+                published = published?.year.toString(),
                 type = Types.LinkBoxType.Movie.toString()
         )
     }

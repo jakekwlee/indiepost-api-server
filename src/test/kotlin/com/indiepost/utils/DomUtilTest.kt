@@ -20,13 +20,15 @@ class DomUtilTest {
         val linkMetadataResponse: LinkMetadataResponse? = DomUtil.extractInformationFromURL(url)
         assertThat(linkMetadataResponse).isNotNull()
         linkMetadataResponse?.let {
+            assertThat(it.id).isNotNull()
+            assertThat(it.contentId).isNotNull()
             assertThat(it.title).isEqualTo("스파이더맨: 뉴 유니버스")
             assertThat(it.imageUrl).isEqualTo("https://movie-phinf.pstatic.net/20181207_3/1544172927548CbuaX_JPEG/movie_image.jpg?type=m665_443_2")
             assertThat(it.source).isEqualTo("movie.naver.com")
             assertThat(it.url).isEqualTo(url)
             assertThat(it.directors).isEqualTo(Arrays.asList("밥 퍼시케티", "피터 램지", "로드니 로스맨"))
             assertThat(it.actors).isEqualTo(Arrays.asList("샤메익 무어", "헤일리 스테인펠드", "니콜라스 케이지"))
-            assertThat(it.published).isEqualTo("2018-12-12")
+            assertThat(it.published).isEqualTo("2018")
         }
     }
 

@@ -1,6 +1,5 @@
 package com.indiepost.service
 
-import com.indiepost.dto.LinkMetadataRequest
 import com.indiepost.dto.LinkMetadataResponse
 import com.indiepost.dto.analytics.LinkDto
 import com.indiepost.model.analytics.Link
@@ -22,7 +21,7 @@ interface LinkService {
 
     fun findAll(): List<LinkDto>
 
-    fun getLinkMetadata(linkMetadataRequest: LinkMetadataRequest): LinkMetadataResponse
+    fun getLinkMetadata(url: String): List<LinkMetadataResponse>
 
     fun dtoToLink(linkDto: LinkDto): Link
 

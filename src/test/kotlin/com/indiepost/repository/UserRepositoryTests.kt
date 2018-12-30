@@ -72,7 +72,7 @@ class UserRepositoryTests {
 
         val size = 50
         val userList = repository.search(text, role, PageRequest.of(0, size))
-        assertThat(count).isEqualTo(userList.size.toLong())
+        assertThat(count).isGreaterThanOrEqualTo(userList.size.toLong())
     }
 
 }

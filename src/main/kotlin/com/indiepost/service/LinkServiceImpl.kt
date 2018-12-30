@@ -1,6 +1,5 @@
 package com.indiepost.service
 
-import com.indiepost.dto.LinkMetadataRequest
 import com.indiepost.dto.LinkMetadataResponse
 import com.indiepost.dto.analytics.LinkDto
 import com.indiepost.enums.Types
@@ -12,7 +11,10 @@ import com.indiepost.utils.DomUtil.extractInformationFromURL
 import com.mashape.unirest.http.Unirest
 import org.apache.commons.lang3.RandomStringUtils
 import org.springframework.stereotype.Service
+import org.springframework.web.util.UriComponents
+import org.springframework.web.util.UriComponentsBuilder
 import java.time.LocalDateTime
+import java.util.*
 import java.util.stream.Collectors
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -66,13 +68,10 @@ class LinkServiceImpl @Inject constructor(
                 .collect(Collectors.toList())
     }
 
-    override fun getLinkMetadata(linkMetadataRequest: LinkMetadataRequest): LinkMetadataResponse {
-        val infoUrl = linkMetadataRequest.infoUrl
-                ?: throw ResourceNotFoundException("LinkMetadataRequest::infoUrl cannot be null")
-//        TODO
-//        val targetUrl = linkMetadataRequest.targetUrl
-        return extractInformationFromURL(infoUrl)
-                ?: throw ResourceNotFoundException("Linkbox information not found on `$infoUrl`")
+    override fun getLinkMetadata(url: String): List<LinkMetadataResponse> {
+        val response = extractInformationFromURL(url)
+                ?: throw ResourceNotFoundException("Linkbox information not found on `$url`")
+        return Arrays.asList(response)
     }
 
     override fun searchMovies(text: String, limit: Int): List<LinkMetadataResponse> {
@@ -93,7 +92,9 @@ class LinkServiceImpl @Inject constructor(
                 val data = item as HashMap<String, String>
                 val title = data["title"]
                         ?.replace(tagRegex, "")
-                val url = data["link"]
+                val url = data["link"] ?: "https://indiepost.co.kr"
+                val urlComponents: UriComponents = UriComponentsBuilder.fromHttpUrl(url).build()
+                val code = urlComponents.queryParams["code"]?.first()?.toLong()
                 val published = data["pubDate"]
                 val directors = data["director"]
                         ?.split("|")
@@ -105,6 +106,8 @@ class LinkServiceImpl @Inject constructor(
                         ?.map { it.replace(tagRegex, "") }
                 val imageUrl = data["image"]
                 LinkMetadataResponse(
+                        id = code ?: Random().nextLong(),
+                        contentId = code,
                         title = title,
                         url = url,
                         directors = directors,

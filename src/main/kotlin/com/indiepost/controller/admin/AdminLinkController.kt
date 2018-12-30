@@ -1,6 +1,5 @@
 package com.indiepost.controller.admin
 
-import com.indiepost.dto.LinkMetadataRequest
 import com.indiepost.dto.LinkMetadataResponse
 import com.indiepost.dto.analytics.LinkDto
 import com.indiepost.service.LinkService
@@ -27,17 +26,13 @@ constructor(private val linkService: LinkService) {
         return linkService.save(linkDto)
     }
 
-    @PostMapping("/from-url")
-    fun linkFromUrl(@Valid @RequestBody linkMetadataRequest: LinkMetadataRequest): LinkMetadataResponse? {
-        return linkService.getLinkMetadata(linkMetadataRequest)
-    }
-
     @GetMapping("/search/movie")
-    fun searchMovies(@RequestParam text: String, @RequestParam limit: Int): List<LinkMetadataResponse> {
-        if (text.isEmpty()) {
+    fun searchMovies(@RequestParam text: String, @RequestParam size: Int): List<LinkMetadataResponse> {
+        if (text.isEmpty())
             return emptyList()
-        }
-        return linkService.searchMovies(text, limit)
+        if (text.contains("http"))
+            return linkService.getLinkMetadata(text)
+        return linkService.searchMovies(text, size)
     }
 
     @PutMapping("/{id}")
