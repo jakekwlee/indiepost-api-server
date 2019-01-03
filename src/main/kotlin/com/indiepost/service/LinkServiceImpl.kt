@@ -1,5 +1,7 @@
 package com.indiepost.service
 
+import com.indiepost.dto.LinkMetadataBookResponse
+import com.indiepost.dto.LinkMetadataFlimResponse
 import com.indiepost.dto.LinkMetadataResponse
 import com.indiepost.dto.analytics.LinkDto
 import com.indiepost.enums.Types
@@ -7,13 +9,17 @@ import com.indiepost.exceptions.ResourceNotFoundException
 import com.indiepost.model.analytics.Link
 import com.indiepost.repository.ClickRepository
 import com.indiepost.repository.LinkRepository
-import com.indiepost.utils.DomUtil.extractInformationFromURL
+import com.indiepost.utils.DomUtil.extractBookMetadataFromUrl
+import com.indiepost.utils.DomUtil.extractFlimMetadataFromUrl
+import com.indiepost.utils.DomUtil.extractMetadataFromUrl
 import com.mashape.unirest.http.Unirest
 import org.apache.commons.lang3.RandomStringUtils
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponents
 import org.springframework.web.util.UriComponentsBuilder
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.stream.Collectors
 import javax.inject.Inject
@@ -68,13 +74,71 @@ class LinkServiceImpl @Inject constructor(
                 .collect(Collectors.toList())
     }
 
-    override fun getLinkMetadata(url: String): List<LinkMetadataResponse> {
-        val response = extractInformationFromURL(url)
-                ?: throw ResourceNotFoundException("Linkbox information not found on `$url`")
-        return Arrays.asList(response)
+    override fun getFromUrl(url: String): List<LinkMetadataResponse> {
+        val result = extractMetadataFromUrl(url) ?: return emptyList()
+        return Arrays.asList(result)
     }
 
-    override fun searchMovies(text: String, limit: Int): List<LinkMetadataResponse> {
+    override fun searchBooks(text: String, limit: Int): List<LinkMetadataBookResponse> {
+        if (text.contains("http")) {
+            val response = extractBookMetadataFromUrl(text)
+                    ?: throw ResourceNotFoundException("Linkbox information not found on `$text`")
+            return Arrays.asList(response)
+        }
+        val response = Unirest.get("https://openapi.naver.com/v1/search/book_adv").header("Content-Type", "plain/text")
+                .header("X-Naver-Client-Id", "9Q61_ESCrPSL3Tni3laW")
+                .header("X-Naver-Client-Secret", "YjMHi7Gcoe")
+                .queryString("d_titl", text)
+                .queryString("display", limit)
+                .asJson()
+
+        val tagRegex = Regex("<[^>]*>")
+        val body = response.body.`object`
+        if (body.get("total") == 0) {
+            return emptyList()
+        } else {
+            val arr = body.getJSONArray("items")
+            return arr.toList().stream().map { item ->
+                val data = item as HashMap<String, String>
+                val title = data["title"]
+                        ?.replace(tagRegex, "")
+                val url = data["link"] ?: "https://indiepost.co.kr"
+                val urlComponents: UriComponents = UriComponentsBuilder.fromHttpUrl(url).build()
+                val code = urlComponents.queryParams["bid"]?.first()?.toLong()
+                val pubished = LocalDate.parse(data["pubdate"], DateTimeFormatter.ofPattern("yyyyMMdd"))
+                val authors = data["author"]
+                        ?.split("|")
+                        ?.filter { it != "" }
+                        ?.map { it.replace(tagRegex, "") }
+                val publisher = data["publisher"]
+                val imageUrl = data["image"]
+                val description = data["description"]
+                LinkMetadataBookResponse(
+                        id = code ?: Random().nextLong(),
+                        contentId = code,
+                        title = title,
+                        url = url,
+                        authors = authors,
+                        publisher = publisher,
+                        description = description,
+                        source = "book.naver.com",
+                        type = Types.LinkBoxType.Book.toString(),
+                        imageUrl = imageUrl,
+                        published = pubished.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))
+                )
+            }
+                    .collect(Collectors.toList())
+
+        }
+
+    }
+
+    override fun searchMovies(text: String, limit: Int): List<LinkMetadataFlimResponse> {
+        if (text.contains("http")) {
+            val response = extractFlimMetadataFromUrl(text)
+                    ?: throw ResourceNotFoundException("Linkbox information not found on `$text`")
+            return Arrays.asList(response)
+        }
         val response = Unirest.get("https://openapi.naver.com/v1/search/movie").header("Content-Type", "plain/text")
                 .header("X-Naver-Client-Id", "9Q61_ESCrPSL3Tni3laW")
                 .header("X-Naver-Client-Secret", "YjMHi7Gcoe")
@@ -105,7 +169,7 @@ class LinkServiceImpl @Inject constructor(
                         ?.filter { it != "" }
                         ?.map { it.replace(tagRegex, "") }
                 val imageUrl = data["image"]
-                LinkMetadataResponse(
+                LinkMetadataFlimResponse(
                         id = code ?: Random().nextLong(),
                         contentId = code,
                         title = title,
@@ -113,7 +177,7 @@ class LinkServiceImpl @Inject constructor(
                         directors = directors,
                         actors = actors,
                         source = "movie.naver.com",
-                        type = Types.LinkBoxType.Movie.toString(),
+                        type = Types.LinkBoxType.Flim.toString(),
                         imageUrl = imageUrl,
                         published = published
                 )

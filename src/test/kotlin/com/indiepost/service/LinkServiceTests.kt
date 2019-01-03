@@ -18,17 +18,33 @@ class LinkServiceTests {
     private lateinit var linkService: LinkService
 
     @Test
-    fun getLinkBox_shouldWorkProperly() {
-        val url = "https://movie.naver.com/movie/bi/mi/basic.nhn?code=171725"
-        val result = linkService.getLinkMetadata(url)
-        assertThat(result).isNotNull()
+    fun searchMovies_shouldWorkProperly() {
+        val text = "스타워즈"
+        val result = linkService.searchMovies(text, 10)
+        assertThat(result).isNotEmpty()
         printToJson(result)
     }
 
     @Test
-    fun searchMovies_shouldWorkProperly() {
-        val text = "스타워즈"
-        val result = linkService.searchMovies(text, 10)
+    fun searchMoviesWithUrl_shouldWorkProperly() {
+        val url = "https://movie.naver.com/movie/bi/mi/basic.nhn?code=171725"
+        val result = linkService.searchMovies(url, 1)
+        assertThat(result).isNotEmpty()
+        printToJson(result)
+    }
+
+    @Test
+    fun searchBooks_shouldWorkProperly() {
+        val text = "희지의 세계"
+        val result = linkService.searchBooks(text, 1)
+        assertThat(result).isNotEmpty()
+        printToJson(result)
+    }
+
+    @Test
+    fun searchBooksWithUrl_shouldWorkProperly() {
+        val url = "https://book.naver.com/bookdb/book_detail.nhn?bid=9587007"
+        val result = linkService.searchBooks(url, 1)
         assertThat(result).isNotEmpty()
         printToJson(result)
     }

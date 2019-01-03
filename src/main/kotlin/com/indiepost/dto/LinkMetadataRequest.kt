@@ -1,6 +1,8 @@
 package com.indiepost.dto
 
 data class LinkMetadataRequest(
-        var infoUrl: String?,
-        var targetUrl: String?
+        var text: String?,
+        var targetUrl: String?,
+        var type: String?,
+        var size: Int
 )

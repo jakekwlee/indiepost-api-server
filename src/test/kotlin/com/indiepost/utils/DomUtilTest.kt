@@ -3,6 +3,8 @@ package com.indiepost.utils
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.indiepost.dto.LinkMetadataBookResponse
+import com.indiepost.dto.LinkMetadataFlimResponse
 import com.indiepost.dto.LinkMetadataResponse
 import org.apache.commons.collections4.CollectionUtils
 import org.assertj.core.api.Java6Assertions.assertThat
@@ -15,11 +17,27 @@ import java.util.*
 class DomUtilTest {
     @Test
     @Throws(JsonProcessingException::class)
-    fun extractInformationFromURL_workProperly() {
+    fun extractMetadataFromUrl_workProperly() {
+        val url = "https://www.theguardian.com/international"
+        val res: LinkMetadataResponse? = DomUtil.extractMetadataFromUrl(url)
+        assertThat(res).isNotNull()
+        res?.let {
+            assertThat(it.id).isNotNull()
+            assertThat(it.title).isEqualTo("News, sport and opinion from the Guardian's global edition | The Guardian")
+            assertThat(it.imageUrl).isEqualTo("https://assets.guim.co.uk/images/eada8aa27c12fe2d5afa3a89d3fbae0d/fallback-logo.png")
+            assertThat(it.url).isEqualTo("http://www.theguardian.com/international")
+            assertThat(it.description).isEqualTo("Latest international news, sport and comment from the Guardian")
+            assertThat(it.source).isEqualTo("www.theguardian.com")
+        }
+    }
+
+    @Test
+    @Throws(JsonProcessingException::class)
+    fun extractFlimMetadataFromUrl_workProperly() {
         val url = "https://movie.naver.com/movie/bi/mi/basic.nhn?code=171725"
-        val linkMetadataResponse: LinkMetadataResponse? = DomUtil.extractInformationFromURL(url)
-        assertThat(linkMetadataResponse).isNotNull()
-        linkMetadataResponse?.let {
+        val res: LinkMetadataFlimResponse? = DomUtil.extractFlimMetadataFromUrl(url)
+        assertThat(res).isNotNull()
+        res?.let {
             assertThat(it.id).isNotNull()
             assertThat(it.contentId).isNotNull()
             assertThat(it.title).isEqualTo("스파이더맨: 뉴 유니버스")
@@ -29,6 +47,25 @@ class DomUtilTest {
             assertThat(it.directors).isEqualTo(Arrays.asList("밥 퍼시케티", "피터 램지", "로드니 로스맨"))
             assertThat(it.actors).isEqualTo(Arrays.asList("샤메익 무어", "헤일리 스테인펠드", "니콜라스 케이지"))
             assertThat(it.published).isEqualTo("2018")
+        }
+    }
+
+    @Test
+    @Throws(JsonProcessingException::class)
+    fun extractBookMetadataFromUrl_workProperly() {
+        val url = "https://book.naver.com/bookdb/book_detail.nhn?bid=9587007"
+        val res: LinkMetadataBookResponse? = DomUtil.extractBookMetadataFromUrl(url)
+        assertThat(res).isNotNull()
+        res?.let {
+            assertThat(it.id).isNotNull()
+            assertThat(it.contentId).isNotNull()
+            assertThat(it.title).isEqualTo("희지의 세계")
+            assertThat(it.imageUrl).isEqualTo("https://bookthumb-phinf.pstatic.net/cover/095/870/09587007.jpg?type=m5")
+            assertThat(it.source).isEqualTo("book.naver.com")
+            assertThat(it.url).isEqualTo(url)
+            assertThat(it.authors).isEqualTo(Arrays.asList("황인찬"))
+            assertThat(it.publisher).isEqualTo("민음사")
+            assertThat(it.published).isEqualTo("2015.09.18")
         }
     }
 
