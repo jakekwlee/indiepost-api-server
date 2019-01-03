@@ -70,7 +70,7 @@ interface Types {
     }
 
     enum class LinkBoxType {
-        Flim, Book, Album, Song, Default
+        Film, Book, Album, Song, Default
     }
 
     companion object {

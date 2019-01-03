@@ -12,5 +12,5 @@ data class LinkMetadataFlimResponse(
         var source: String?,
         var published: String?,
         var contentId: Long?,
-        var type: String = Types.LinkBoxType.Flim.toString()
+        var type: String = Types.LinkBoxType.Film.toString()
 )

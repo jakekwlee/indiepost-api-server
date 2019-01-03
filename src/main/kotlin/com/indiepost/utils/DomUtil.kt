@@ -142,7 +142,7 @@ object DomUtil {
                 source = host,
                 url = url,
                 published = published?.year.toString(),
-                type = Types.LinkBoxType.Flim.toString()
+                type = Types.LinkBoxType.Film.toString()
         )
     }
 

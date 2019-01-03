@@ -177,7 +177,7 @@ class LinkServiceImpl @Inject constructor(
                         directors = directors,
                         actors = actors,
                         source = "movie.naver.com",
-                        type = Types.LinkBoxType.Flim.toString(),
+                        type = Types.LinkBoxType.Film.toString(),
                         imageUrl = imageUrl,
                         published = published
                 )
