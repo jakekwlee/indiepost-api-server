@@ -1,7 +1,5 @@
 package com.indiepost.utils
 
-import com.indiepost.dto.LinkMetadataBookResponse
-import com.indiepost.dto.LinkMetadataFlimResponse
 import com.indiepost.dto.LinkMetadataResponse
 import com.indiepost.enums.Types
 import org.jsoup.Jsoup
@@ -49,6 +47,10 @@ object DomUtil {
             e.printStackTrace()
             return null
         }
+//        if (host == "movie.naver.com")
+//            return extractFlimMetadataFromUrl(urlString)
+//        if (host == "book.naver.com")
+//            return extractBookMetadataFromUrl(urlString)
         val doc = Jsoup.connect(urlString).get()
         var title = doc.select("meta[property='og:title']")?.attr("content")
         if (title == null || title.isEmpty())
@@ -69,7 +71,7 @@ object DomUtil {
         )
     }
 
-    fun extractBookMetadataFromUrl(url: String): LinkMetadataBookResponse? {
+    fun extractBookMetadataFromUrl(url: String): LinkMetadataResponse? {
         val host: String?
         val code: Long?
         try {
@@ -94,9 +96,9 @@ object DomUtil {
 //        if (pub.length == 8) {
 //            published = LocalDate.parse(pub, DateTimeFormatter.ofPattern("yyyyMMdd"))
 //        }
-        return LinkMetadataBookResponse(
+        return LinkMetadataResponse(
                 id = code ?: Random().nextLong(),
-                contentId = code,
+                productId = code,
                 title = title,
                 imageUrl = image,
                 authors = authors,
@@ -109,7 +111,7 @@ object DomUtil {
         )
     }
 
-    fun extractFlimMetadataFromUrl(url: String): LinkMetadataFlimResponse? {
+    fun extractFlimMetadataFromUrl(url: String): LinkMetadataResponse? {
         val host: String?
         val code: Long?
         try {
@@ -132,9 +134,9 @@ object DomUtil {
         if (pub != null && pub.length == 8) {
             published = LocalDate.parse(pub, DateTimeFormatter.ofPattern("yyyyMMdd"))
         }
-        return LinkMetadataFlimResponse(
+        return LinkMetadataResponse(
                 id = code ?: Random().nextLong(),
-                contentId = code,
+                productId = code,
                 title = title,
                 imageUrl = image,
                 directors = director?.split(", "),

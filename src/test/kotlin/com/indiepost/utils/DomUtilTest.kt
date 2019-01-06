@@ -3,8 +3,6 @@ package com.indiepost.utils
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.indiepost.dto.LinkMetadataBookResponse
-import com.indiepost.dto.LinkMetadataFlimResponse
 import com.indiepost.dto.LinkMetadataResponse
 import org.apache.commons.collections4.CollectionUtils
 import org.assertj.core.api.Java6Assertions.assertThat
@@ -33,13 +31,13 @@ class DomUtilTest {
 
     @Test
     @Throws(JsonProcessingException::class)
-    fun extractFlimMetadataFromUrl_workProperly() {
+    fun extractMetadataFromUrl_withNaverMovieURL_workProperly() {
         val url = "https://movie.naver.com/movie/bi/mi/basic.nhn?code=171725"
-        val res: LinkMetadataFlimResponse? = DomUtil.extractFlimMetadataFromUrl(url)
+        val res: LinkMetadataResponse? = DomUtil.extractFlimMetadataFromUrl(url)
         assertThat(res).isNotNull()
         res?.let {
             assertThat(it.id).isNotNull()
-            assertThat(it.contentId).isNotNull()
+            assertThat(it.productId).isNotNull()
             assertThat(it.title).isEqualTo("스파이더맨: 뉴 유니버스")
             assertThat(it.imageUrl).isEqualTo("https://movie-phinf.pstatic.net/20181207_3/1544172927548CbuaX_JPEG/movie_image.jpg?type=m665_443_2")
             assertThat(it.source).isEqualTo("movie.naver.com")
@@ -52,13 +50,13 @@ class DomUtilTest {
 
     @Test
     @Throws(JsonProcessingException::class)
-    fun extractBookMetadataFromUrl_workProperly() {
+    fun extractBookMetadataFromUrl_withNaverBookURL_workProperly() {
         val url = "https://book.naver.com/bookdb/book_detail.nhn?bid=9587007"
-        val res: LinkMetadataBookResponse? = DomUtil.extractBookMetadataFromUrl(url)
+        val res: LinkMetadataResponse? = DomUtil.extractBookMetadataFromUrl(url)
         assertThat(res).isNotNull()
         res?.let {
             assertThat(it.id).isNotNull()
-            assertThat(it.contentId).isNotNull()
+            assertThat(it.productId).isNotNull()
             assertThat(it.title).isEqualTo("희지의 세계")
             assertThat(it.imageUrl).isEqualTo("https://bookthumb-phinf.pstatic.net/cover/095/870/09587007.jpg?type=m5")
             assertThat(it.source).isEqualTo("book.naver.com")

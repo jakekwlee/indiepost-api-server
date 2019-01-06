@@ -1,7 +1,5 @@
 package com.indiepost.controller.admin
 
-import com.indiepost.dto.LinkMetadataBookResponse
-import com.indiepost.dto.LinkMetadataFlimResponse
 import com.indiepost.dto.LinkMetadataResponse
 import com.indiepost.dto.analytics.LinkDto
 import com.indiepost.service.LinkService
@@ -29,17 +27,17 @@ constructor(private val linkService: LinkService) {
     }
 
     @GetMapping("/search/film")
-    fun searchFilms(@RequestParam text: String, @RequestParam size: Int): List<LinkMetadataFlimResponse> {
+    fun searchFilms(@RequestParam text: String, @RequestParam size: Int): List<LinkMetadataResponse> {
         return linkService.searchMovies(text, size)
     }
 
     @GetMapping("/search/book")
-    fun searchBooks(@RequestParam text: String, @RequestParam size: Int): List<LinkMetadataBookResponse> {
+    fun searchBooks(@RequestParam text: String, @RequestParam size: Int): List<LinkMetadataResponse> {
         return linkService.searchBooks(text, size)
     }
 
     @GetMapping("/from-url")
-    fun fromUrl(@RequestParam url: String): List<LinkMetadataResponse> {
+    fun fromUrl(@RequestParam url: String): LinkMetadataResponse? {
         return linkService.getFromUrl(url)
     }
 
