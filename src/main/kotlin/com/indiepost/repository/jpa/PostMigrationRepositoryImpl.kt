@@ -1,5 +1,6 @@
 package com.indiepost.repository.jpa
 
+import com.indiepost.enums.Types
 import com.indiepost.model.Post
 import com.indiepost.model.Profile
 import com.indiepost.model.QPost
@@ -22,7 +23,10 @@ class PostMigrationRepositoryImpl : PostMigrationRepository {
         val p = QPost.post
 
         return queryFactory.selectFrom(p)
-                .where(p.displayName.notEqualsIgnoreCase("indiepost"))
+                .where(p.displayName.notEqualsIgnoreCase("indiepost").and(
+                        p.status.eq(Types.PostStatus.PUBLISH)
+                ))
+                .orderBy(p.publishedAt.desc())
                 .fetch()
     }
 

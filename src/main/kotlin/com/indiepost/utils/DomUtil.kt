@@ -148,6 +148,20 @@ object DomUtil {
         )
     }
 
+    fun findWriterInformationFromContent(content: String): String? {
+        val html = Jsoup.parseBodyFragment(content)
+        val settings = html.outputSettings()
+        settings.syntax(Document.OutputSettings.Syntax.xml)
+        settings.prettyPrint(false)
+        settings.escapeMode(Entities.EscapeMode.extended)
+        val postContent = html.select("p:contains(필자소개)")
+        return if (postContent.isNotEmpty()) {
+            postContent.prev().nextAll().html().trim().trimIndent()
+        } else {
+            null
+        }
+    }
+
     fun findAndRemoveWriterInformationFromContent(content: String): String? {
         val html = Jsoup.parseBodyFragment(content)
         val settings = html.outputSettings()

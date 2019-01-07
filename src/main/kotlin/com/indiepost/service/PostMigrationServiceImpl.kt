@@ -12,6 +12,7 @@ import javax.transaction.Transactional
 @Transactional
 class PostMigrationServiceImpl @Inject constructor(
         val postMigrationRepository: PostMigrationRepository) : PostMigrationService {
+
     override fun migrateProfiles() {
         val posts = postMigrationRepository.selectAllPostsWhereNotProfileSet()
         var profileAndContentUpdated = 0
@@ -21,6 +22,14 @@ class PostMigrationServiceImpl @Inject constructor(
         val bylineNameSet: HashSet<String> = HashSet()
         for (post in posts) {
             val profile = postMigrationRepository.findProfileByEtc(post.displayName)
+            if (profile != null && (profile.description.isNullOrEmpty())) {
+                val description = DomUtil.findWriterInformationFromContent(post.content)
+                if (description != null) {
+                    profile.description = description
+                    profile.showDescription = true
+                    logger.info("profile: ${profile.displayName}, description updated '${profile.description}'")
+                }
+            }
             val content = DomUtil.findAndRemoveWriterInformationFromContent(post.content)
             if (profile == null) {
                 logger.info("post: ${post.id}, byline: ${post.displayName}, no profile, no changed")
@@ -28,9 +37,14 @@ class PostMigrationServiceImpl @Inject constructor(
                 ++error
             } else {
                 if (post.postProfile.isNotEmpty()) {
-                    post.postProfile.forEach { it.priority = it.priority + 1 }
+                    val count = post.postProfile.stream().filter { it -> it.profile!!.id == profile.id }.count()
+                    if (count == 0L) {
+                        post.postProfile.forEach { it.priority = it.priority + 1 }
+                        post.addProfile(profile, 0)
+                    }
+                } else {
+                    post.addProfile(profile, 0)
                 }
-                post.addProfile(profile, 0)
                 if (content != null && content != post.content) {
                     logger.info("post: ${post.id}, byline: ${post.displayName}, profile attached: ${profile.fullName}, content changed")
                     post.content = content

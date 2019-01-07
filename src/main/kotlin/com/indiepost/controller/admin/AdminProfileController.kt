@@ -4,6 +4,7 @@ import com.indiepost.dto.CreateResponse
 import com.indiepost.dto.DeleteResponse
 import com.indiepost.dto.ProfileDto
 import com.indiepost.enums.Types
+import com.indiepost.service.PostMigrationService
 import com.indiepost.service.ProfileService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -14,7 +15,12 @@ import javax.validation.ValidationException
 @RestController
 @RequestMapping("/admin/profiles")
 class AdminProfileController @Inject
-constructor(private val profileService: ProfileService) {
+constructor(private val profileService: ProfileService, private val postMigrationService: PostMigrationService) {
+
+    @GetMapping("/migrate")
+    fun migrate() {
+        postMigrationService.migrateProfiles()
+    }
 
     @GetMapping
     fun getList(@RequestParam type: String?, pageable: Pageable): Page<ProfileDto> {
