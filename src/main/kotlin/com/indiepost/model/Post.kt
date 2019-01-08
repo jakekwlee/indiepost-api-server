@@ -92,6 +92,13 @@ data class Post(
     @Column(name = "categoryId", nullable = false, insertable = false, updatable = false)
     var categoryId: Long? = null
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "tagId", nullable = false)
+    var primaryTag: Tag? = null
+
+    @Column(name = "tagId", nullable = false, insertable = false, updatable = false)
+    var primaryTagId: Long? = null
+
     @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
     @OrderBy("priority")
     private val postTags: MutableList<PostTag> = ArrayList()

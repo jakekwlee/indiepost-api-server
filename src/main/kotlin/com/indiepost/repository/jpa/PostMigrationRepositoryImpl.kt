@@ -1,10 +1,7 @@
 package com.indiepost.repository.jpa
 
 import com.indiepost.enums.Types
-import com.indiepost.model.Post
-import com.indiepost.model.Profile
-import com.indiepost.model.QPost
-import com.indiepost.model.QProfile
+import com.indiepost.model.*
 import com.indiepost.repository.PostMigrationRepository
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
@@ -18,6 +15,32 @@ class PostMigrationRepositoryImpl : PostMigrationRepository {
 
     private val queryFactory: JPAQueryFactory
         get() = JPAQueryFactory(entityManager)
+
+    override fun selectAllPostsWherePrimaryTagNotSet(): List<Post> {
+        val p = QPost.post
+        return queryFactory.selectFrom(p).orderBy(p.id.asc()).fetch()
+    }
+
+    override fun selectATagByName(text: String): Tag {
+        val t = QTag.tag
+        return queryFactory.selectFrom(t).where(t.name.equalsIgnoreCase(text)).fetchOne()
+                ?: throw RuntimeException("Tag not found: $text")
+    }
+
+    override fun addTagsToCategoriesIfNotExists() {
+        val c = QCategory.category
+        val t = QTag.tag
+        val categories = queryFactory.selectFrom(c).orderBy(c.id.asc()).fetch()
+        for (category in categories) {
+            val categoryName = category.name
+            if (categoryName.isNullOrBlank())
+                continue
+            val tag = queryFactory.selectFrom(t).where(t.name.equalsIgnoreCase(categoryName)).fetchOne()
+            if (tag == null) {
+                entityManager.persist(Tag(name = categoryName))
+            }
+        }
+    }
 
     override fun selectAllPostsWhereNotProfileSet(): List<Post> {
         val p = QPost.post

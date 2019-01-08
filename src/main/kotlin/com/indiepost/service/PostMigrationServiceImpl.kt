@@ -11,17 +11,24 @@ import javax.transaction.Transactional
 @Service
 @Transactional
 class PostMigrationServiceImpl @Inject constructor(
-        val postMigrationRepository: PostMigrationRepository) : PostMigrationService {
+        val repository: PostMigrationRepository) : PostMigrationService {
+
+    override fun migrateCategoriesToTags() {
+        repository.addTagsToCategoriesIfNotExists()
+        val posts = repository.selectAllPostsWherePrimaryTagNotSet()
+
+
+    }
 
     override fun migrateProfiles() {
-        val posts = postMigrationRepository.selectAllPostsWhereNotProfileSet()
+        val posts = repository.selectAllPostsWhereNotProfileSet()
         var profileAndContentUpdated = 0
         var profileUpdated = 0
         var error = 0
 
         val bylineNameSet: HashSet<String> = HashSet()
         for (post in posts) {
-            val profile = postMigrationRepository.findProfileByEtc(post.displayName)
+            val profile = repository.findProfileByEtc(post.displayName)
             if (profile != null && (profile.description.isNullOrEmpty())) {
                 val description = DomUtil.findWriterInformationFromContent(post.content)
                 if (description != null) {
@@ -65,7 +72,7 @@ class PostMigrationServiceImpl @Inject constructor(
     }
 
     override fun findProfileByEtc(text: String): Profile? {
-        return postMigrationRepository.findProfileByEtc(text)
+        return repository.findProfileByEtc(text)
     }
 
     companion object {
