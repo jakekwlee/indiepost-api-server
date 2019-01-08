@@ -17,11 +17,6 @@ import javax.validation.ValidationException
 class AdminProfileController @Inject
 constructor(private val profileService: ProfileService, private val postMigrationService: PostMigrationService) {
 
-    @GetMapping("/migrate")
-    fun migrate() {
-        postMigrationService.migrateProfiles()
-    }
-
     @GetMapping
     fun getList(@RequestParam type: String?, pageable: Pageable): Page<ProfileDto> {
         return if (type != null) {

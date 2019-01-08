@@ -19,9 +19,8 @@ data class CachedPostStat(
 
         var uniquePageviews: Long? = null,
 
-        var legacyPageviews: Long? = null,
-
-        var legacyUniquePageviews: Long? = null
+        @Column(length = 100)
+        var profileNames: String? = null
 ) {
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "postId")

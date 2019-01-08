@@ -67,9 +67,7 @@ class AnalyticsServiceTests {
         assertThat(dto.title).isNotEmpty()
         assertThat(dto.publishedAt).isNotNull()
         assertThat(dto.pageviews).isGreaterThanOrEqualTo(0)
-        assertThat(dto.legacyPageviews).isGreaterThanOrEqualTo(0)
         assertThat(dto.uniquePageviews).isGreaterThanOrEqualTo(0)
-        assertThat(dto.legacyUniquePageviews).isGreaterThanOrEqualTo(0)
     }
 
     @Throws(JsonProcessingException::class)

@@ -18,9 +18,5 @@ data class PostStatDto(
 
         var pageviews: Long? = null,
 
-        var uniquePageviews: Long? = null,
-
-        var legacyPageviews: Long? = null,
-
-        var legacyUniquePageviews: Long? = null
+        var uniquePageviews: Long? = null
 )

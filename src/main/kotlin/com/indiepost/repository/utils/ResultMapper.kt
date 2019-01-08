@@ -109,29 +109,15 @@ object ResultMapper {
         return result.stream()
                 .map { obj ->
                     val o = obj as Array<*>
-                    val id = (o[0] as BigInteger).toLong()
-                    val title = o[1] as String
-                    val publishedAt = (o[2] as Timestamp).toLocalDateTime()
-                    val author = o[3] as String
-                    val category = o[4] as String
-                    val pageviews = (o[5] as BigInteger).toLong()
-                    val uniquePageviews = (o[6] as BigInteger).toLong()
-
-                    val dto = PostStatDto()
-                    if (obj.size == 9) {
-                        val legacyPageviews = (o[7] as BigInteger).toLong()
-                        val legacyUniquePageviews = (o[8] as BigInteger).toLong()
-                        dto.legacyPageviews = legacyPageviews
-                        dto.legacyUniquePageviews = legacyUniquePageviews
-                    }
-                    dto.id = id
-                    dto.title = title
-                    dto.publishedAt = publishedAt
-                    dto.author = author
-                    dto.category = category
-                    dto.pageviews = pageviews
-                    dto.uniquePageviews = uniquePageviews
-                    dto
+                    PostStatDto(
+                            id = (o[0] as BigInteger).toLong(),
+                            title = o[1] as String,
+                            publishedAt = (o[2] as Timestamp).toLocalDateTime(),
+                            author = o[3] as String?,
+                            category = o[4] as String,
+                            pageviews = (o[5] as BigInteger).toLong(),
+                            uniquePageviews = (o[6] as BigInteger).toLong()
+                    )
                 }.collect(Collectors.toList())
     }
 }
