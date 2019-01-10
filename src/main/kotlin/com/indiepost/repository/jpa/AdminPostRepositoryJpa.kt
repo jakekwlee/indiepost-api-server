@@ -1,6 +1,7 @@
 package com.indiepost.repository.jpa
 
 import com.indiepost.dto.post.AdminPostSummaryDto
+import com.indiepost.dto.post.Content
 import com.indiepost.dto.post.PostQuery
 import com.indiepost.dto.post.Title
 import com.indiepost.enums.Types
@@ -345,4 +346,40 @@ class AdminPostRepositoryJpa : AdminPostRepository {
         }
         return dtoList
     }
+
+    override fun findBrokenPosts(pageable: Pageable): List<AdminPostSummaryDto> {
+        val query = queryFactory.selectFrom(post)
+        addProjections(query)
+                .innerJoin(post.author, QUser.user)
+                .innerJoin(post.editor, QUser.user)
+                .innerJoin(post.category, QCategory.category)
+                .orderBy(post.publishedAt.desc())
+                .limit(pageable.pageSize.toLong())
+                .where(post.status.eq(PostStatus.PUBLISH).and(post.isBroken.isTrue()))
+                .offset(pageable.offset)
+                .distinct()
+        return toDtoList(query.fetch() as MutableList<Tuple>)
+    }
+
+    override fun countBrokenPosts(): Long {
+        return queryFactory.selectFrom(post)
+                .where(post.status.eq(PostStatus.PUBLISH).and(post.isBroken.isTrue()))
+                .distinct()
+                .fetchCount()
+    }
+
+    override fun findContentListIncludingVideo(): List<Content> {
+        val result = queryFactory
+                .select(post.id, post.content)
+                .from(post)
+                .where(post.status.eq(PostStatus.PUBLISH)
+                        .and(post.content.likeIgnoreCase("%www.youtube.com/embed/%")))
+                .orderBy(post.publishedAt.desc())
+                .fetch()
+        return result
+                .stream()
+                .map { row -> Content(row.get(post.id), row.get(post.content)) }
+                .collect(Collectors.toList())
+    }
+
 }

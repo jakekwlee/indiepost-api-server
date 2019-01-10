@@ -31,6 +31,8 @@ interface AdminPostService {
 
     fun findIdsIn(ids: List<Long>, pageable: Pageable): Page<AdminPostSummaryDto>
 
+    fun findIdsIncludingBrokenVideo(): List<Long>
+
     fun findText(text: String, status: Types.PostStatus, pageable: Pageable): Page<AdminPostSummaryDto>
 
     fun fullTextSearch(text: String, status: Types.PostStatus,
@@ -47,5 +49,5 @@ interface AdminPostService {
     fun bulkDeleteByIds(ids: List<Long>)
 
     fun bulkStatusUpdate(ids: List<Long>, changeTo: Types.PostStatus)
-
+    fun findIncludingBrokenLinks(pageable: Pageable): Page<AdminPostSummaryDto>
 }

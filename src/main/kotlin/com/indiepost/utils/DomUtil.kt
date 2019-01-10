@@ -1,5 +1,9 @@
 package com.indiepost.utils
 
+import com.google.api.client.googleapis.json.GoogleJsonResponseException
+import com.google.api.client.http.javanet.NetHttpTransport
+import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.services.youtube.YouTube
 import com.indiepost.dto.LinkMetadataResponse
 import com.indiepost.enums.Types
 import org.jsoup.Jsoup
@@ -7,18 +11,57 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Entities
 import org.springframework.web.util.UriComponents
 import org.springframework.web.util.UriComponentsBuilder
+import java.io.IOException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.regex.Pattern
+import java.util.stream.Collectors
 
 /**
  * Created by jake on 10/12/17.
  */
 object DomUtil {
+
+    val videoUrlPattern = Pattern.compile("www.youtube.com/embed/([a-zA-Z0-9_-]+)")
+
     fun htmlToText(html: String): String {
         val document = Jsoup.parseBodyFragment(html)
         return document.text()
+    }
+
+    fun findBrokenYouTubeVideoByIds(ids: Set<String>): Set<String> {
+        try {
+            val youTube = YouTube.Builder(NetHttpTransport(), JacksonFactory(), null)
+                    .setApplicationName("indiepost-backend-youtube").build()
+            val video = youTube.videos().list("id")
+            video.key = "AIzaSyChckWD5SRqIGlR9QGdeQOqzkMCpqWKVTc"
+            video.fields = "items"
+            video.maxResults = 50
+            video.id = ids.joinToString(",")
+            val response = video.execute()
+            val availableIds: Set<String> = response.items.stream()
+                    .map { it.id }
+                    .collect(Collectors.toSet())
+            return ids.subtract(availableIds).stream().collect(Collectors.toSet())
+        } catch (e: GoogleJsonResponseException) {
+            System.err.println("There was a service error: ${e.details.code} : ${e.details.message}")
+        } catch (e: IOException) {
+            System.err.println("There was an IO error: ${e.cause} : ${e.message}")
+        } catch (t: Throwable) {
+            t.printStackTrace()
+        }
+        return emptySet()
+    }
+
+    fun extractYouTubeVideoIds(html: String): Set<String> {
+        if (html.isBlank())
+            return emptySet()
+        val matcher = videoUrlPattern.matcher(html)
+        val ret = HashSet<String>()
+        while (matcher.find())
+            ret.add(matcher.group(1))
+        return ret
     }
 
     fun getImagePrefixes(content: String): Set<String> {

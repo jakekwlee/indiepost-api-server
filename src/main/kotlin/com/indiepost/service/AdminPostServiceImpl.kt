@@ -14,6 +14,7 @@ import com.indiepost.repository.AdminPostRepository
 import com.indiepost.repository.ProfileRepository
 import com.indiepost.repository.TagRepository
 import com.indiepost.repository.elasticsearch.PostEsRepository
+import com.indiepost.utils.DomUtil
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Caching
 import org.springframework.data.domain.*
@@ -116,6 +117,39 @@ constructor(private val userService: UserService,
         adminPostRepository.persist(post)
     }
 
+    override fun findIncludingBrokenLinks(pageable: Pageable): Page<AdminPostSummaryDto> {
+        val count = adminPostRepository.countBrokenPosts()
+        val result = adminPostRepository.findBrokenPosts(pageable)
+        return if (result.isEmpty()) {
+            PageImpl(emptyList(), pageable, count)
+        } else PageImpl(result, pageable, count)
+    }
+
+    override fun findIdsIncludingBrokenVideo(): List<Long> {
+        val posts = adminPostRepository.findContentListIncludingVideo()
+        if (posts.isEmpty())
+            return emptyList()
+        val videoIdToPost = HashMap<String, Long>()
+        for (post in posts) {
+            val id = post.id ?: continue
+            val content = post.content
+            if (content.isNullOrBlank())
+                continue
+            val ids = DomUtil.extractYouTubeVideoIds(content)
+            for (videoId in ids)
+                videoIdToPost[videoId] = id
+        }
+        val partitions: List<List<String>> = videoIdToPost.keys.chunked(50)
+        return partitions.parallelStream()
+                .flatMap {
+                    DomUtil.findBrokenYouTubeVideoByIds(it.toSet()).stream()
+                }
+                .map { videoIdToPost[it]!! }
+                .distinct()
+                .sorted(Comparator.reverseOrder<Long>())
+                .collect(Collectors.toList())
+    }
+
     override fun updateAutosave(requestDto: AdminPostRequestDto) {
         val currentUser = userService.findCurrentUser()
 
@@ -154,10 +188,16 @@ constructor(private val userService: UserService,
     }
 
     override fun findIdsIn(ids: List<Long>, pageable: Pageable): Page<AdminPostSummaryDto> {
-        val result = adminPostRepository.findByIdIn(ids)
-        return if (result.isEmpty()) {
-            PageImpl(emptyList(), PageRequest.of(0, pageable.pageSize), 0)
-        } else PageImpl(result, PageRequest.of(0, pageable.pageSize), ids.size.toLong())
+        val total = ids.size.toLong()
+        val postIds = ids.stream()
+                .skip(pageable.offset)
+                .limit(pageable.pageSize.toLong())
+                .collect(Collectors.toList())
+        if (postIds.isEmpty())
+            return PageImpl(emptyList(), pageable, total)
+        val result = adminPostRepository.findByIdIn(postIds)
+        return if (result.isEmpty()) PageImpl(emptyList(), pageable, total)
+        else PageImpl(result, pageable, ids.size.toLong())
     }
 
     override fun findText(text: String, status: PostStatus, pageable: Pageable): Page<AdminPostSummaryDto> {

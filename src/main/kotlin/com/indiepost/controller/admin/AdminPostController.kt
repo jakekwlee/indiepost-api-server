@@ -71,11 +71,14 @@ constructor(private val adminPostService: AdminPostService) {
     ): Page<AdminPostSummaryDto> {
         val postStatus = Types.PostStatus.valueOf(status.toUpperCase())
         if (query != null && query.isNotEmpty()) {
-            return try {
+            try {
                 val id = query.toLong()
-                adminPostService.findIdsIn(Arrays.asList(id), pageable)
+                return adminPostService.findIdsIn(Arrays.asList(id), pageable)
             } catch (e: NumberFormatException) {
-                adminPostService.findText(query, postStatus, pageable)
+                if (query == "BROKEN_VIDEO") {
+                    return adminPostService.findIncludingBrokenLinks(pageable)
+                }
+                return adminPostService.findText(query, postStatus, pageable)
             }
         }
         return adminPostService.find(postStatus, pageable)

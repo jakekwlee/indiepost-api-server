@@ -4,6 +4,7 @@ import com.indiepost.IndiepostBackendApplication
 import com.indiepost.dto.post.AdminPostRequestDto
 import com.indiepost.dto.post.Title
 import com.indiepost.enums.Types
+import com.indiepost.helper.printToJson
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -79,5 +80,27 @@ class AdminPostServiceTests {
     fun getAllTitles_shouldWorkProperly() {
         val titles = service.getAllTitles()
         assertThat(titles).isNotNull.hasAtLeastOneElementOfType(Title::class.java)
+    }
+
+    @Test
+    @WithMockUser("auth0|5a94f76a5c798c2296fd51ae")
+    fun findIdsIncludingBrokenVideo_shouldReturnResultProperly() {
+        val start = Instant.now()
+        val ids = service.findIdsIncludingBrokenVideo()
+        val end = Instant.now()
+        assertThat(ids.size).isGreaterThanOrEqualTo(1)
+        println(end.minusMillis(start.toEpochMilli()).toEpochMilli() / 1000.0)
+        printToJson(ids)
+    }
+
+    @Test
+    @WithMockUser("auth0|5a94f76a5c798c2296fd51ae")
+    fun findIncludingBrokenLink_shouldReturnResultProperly() {
+        val start = Instant.now()
+        val ids = service.findIdsIncludingBrokenVideo()
+        val end = Instant.now()
+        assertThat(ids.size).isGreaterThanOrEqualTo(1)
+        println(end.minusMillis(start.toEpochMilli()).toEpochMilli() / 1000.0)
+        printToJson(ids)
     }
 }

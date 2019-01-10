@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.indiepost.dto.LinkMetadataResponse
+import com.indiepost.utils.DomUtil.extractYouTubeVideoIds
+import com.indiepost.utils.DomUtil.findBrokenYouTubeVideoByIds
 import org.apache.commons.collections4.CollectionUtils
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -236,5 +238,22 @@ class DomUtilTest {
 <figure class="image"><img src="https://cdn.indiepost.co.kr/uploads/images/2017/02/itWQWa-539x376.jpeg" width="539px" height="376px" /></figure>
         """.trim().trimIndent()
         assertThat(DomUtil.findAndRemoveWriterInformationFromContent(content)).isEqualTo(expected)
+    }
+
+    @Test
+    fun extractYouTubeVideoIds_shouldReturnIDsProperly() {
+        val html = """
+           <p>재즈의 본질은 즉흥성(Improvisation)에 있다고 한다. 재즈의 발생기 때 스윙밴드의 악보에 “Jazz it up”이라 쓰인 부분에서 솔로 연주자가 자리에서 일어나 악보를 보지 않고 즉흥적으로 연주한데서 ‘재즈’라는 용어의 기원을 찾기도 한다. 원곡의 하모니를 유지하면서 얼마나 독창적으로 연주를 할 수 있는 지가 훌륭한 재즈 연주자의 척도인 셈이다.</p><figure class="image"><img src="https://cdn.indiepost.co.kr/uploads/images/2017/08/f3sUKM-311x162.jpeg" width="311px" height="162px"><figcaption><p><span style="font-size: 8pt;">"Jazz It Up"은 "To make something better and more exciting"이란 의미의 숙어로, 음악 외에도 다양하게 사용된다.</span></p></figcaption></figure><p>작곡가 월터 그로스(Walter Gross)에 의해 작곡된 'Tenderly'(1946)는 재즈 스탠더드가 되어 수많은 가수와 재즈 아티스트의 레퍼토리가 된 곡이다. 그 중 가장 유명한 것은 가수이자 배우인 로즈매리 클루니(Rosemary Clooney)의 1952년 &nbsp;발표작으로 빌보드 차트 17위까지 올랐다. 그녀는 배우 조지 클루니(George Clooney)의 숙모다.</p><figure class="image"><iframe src="//www.youtube.com/embed/MbQjDxA7g-M" data-mce-fragment="1" width="560" height="314"></iframe><figcaption>Rosemary Cooney 'Tenderly'(1946)</figcaption></figure><p>이 곡을 가장 유명한 3인의 재즈 피아니스트는 어떻게 다르게 연주했을까?<br>먼저 스윙시대 최고의 피아니스트로 군림했던 아트 테이텀(Art Tatum, 1909~1956)의 연주는 래그타임(Ragtime) 기반의 빠른 연주와 힘있는 터치가 특징이다. 1930~1940년대 최고의 인기를 누렸으나 스윙시대의 퇴조와 함께 쓸쓸한 말년을 보냈다고 한다.&nbsp;</p><figure class="image"><iframe src="//www.youtube.com/embed/NZRe14wt7rY" data-mce-fragment="1" width="560" height="314"></iframe><figcaption>Art Tatum 'Tenderly'(1948)</figcaption></figure><p>스윙시대부터 최근까지 최고의 연주 기량과 건실한 연주 생활로 존경과 인기를 누려온 오스카 피터슨(Oscar Peterson, 1925~2007)은 기타가 포함된 피아노 트리오 형식으로 현란한 연주 테크닉과 여러 스타일을 넘나드는 복합적인 연주 스타일을 보여준다.&nbsp;</p><figure class="image"><iframe src="//www.youtube.com/embed/yQ-s4EF_Ou0" data-mce-fragment="1" width="560" height="314"></iframe><figcaption>Oscar Peterson 'Tenderly'(1957)</figcaption></figure><p>재즈계의 쇼팽으로 불리는 빌 에반스(Bill Evans, 1929~1980)는, 항상 고개를 푹 숙이고 특유의 스토리텔링 스타일의 물 흐르는 듯한 연주가 특징이다. 항상 가까운 건반에 다음 음을 짚어 나가는 스타일로, 독창적이고 시적인 해석으로 평가 받는다. 국내에도 많은 팬을 확보하고 있다.</p><figure class="image"><iframe src="//www.youtube.com/embed/Ti7YR2W_vdY" data-mce-fragment="1" width="560" height="314"></iframe><figcaption>Bill Evans 'Tenderly'(1958)</figcaption></figure><p>같은 곡이지만 각기 다른 해석의 음악들로 재즈의 독창성을 느껴볼 수 있을 것이다.</p><p>&nbsp;</p>
+        """.trimIndent()
+        val expected = arrayOf("MbQjDxA7g-M", "NZRe14wt7rY", "yQ-s4EF_Ou0", "Ti7YR2W_vdY")
+        val result = extractYouTubeVideoIds(html).toTypedArray()
+        assertThat(result).isEqualTo(expected)
+    }
+
+    @Test
+    fun findBrokenYouTubeVideoByIds_shouldReturnBrokenVideoIDsProperly() {
+        val set = setOf("MbQjDxA7g-M", "4u_T7PS6rpg")
+        val result = findBrokenYouTubeVideoByIds(set)
+        println(result)
     }
 }

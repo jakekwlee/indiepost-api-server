@@ -1,6 +1,7 @@
 package com.indiepost.repository
 
 import com.indiepost.dto.post.AdminPostSummaryDto
+import com.indiepost.dto.post.Content
 import com.indiepost.dto.post.PostQuery
 import com.indiepost.dto.post.Title
 import com.indiepost.enums.Types
@@ -53,4 +54,10 @@ interface AdminPostRepository {
     fun disableSplashPosts()
 
     fun disableFeaturedPosts()
+
+    fun findContentListIncludingVideo(): List<Content>
+
+    fun findBrokenPosts(pageable: Pageable): List<AdminPostSummaryDto>
+
+    fun countBrokenPosts(): Long
 }
