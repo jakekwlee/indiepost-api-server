@@ -272,7 +272,8 @@ class AdminPostRepositoryJpa : AdminPostRepository {
 
     private fun addProjections(query: JPAQuery<*>): JPAQuery<*> {
         return query.select(
-                post.id, post.originalId, post.title, post.displayName, post.isSplash, post.isFeatured, post.isPicked,
+                post.id, post.originalId, post.title, post.displayName,
+                post.isSplash, post.isFeatured, post.isPicked, post.isBroken,
                 post.category.name, post.author.displayName, post.editor.displayName,
                 post.createdAt, post.modifiedAt, post.publishedAt, post.status
         )
@@ -314,6 +315,9 @@ class AdminPostRepositoryJpa : AdminPostRepository {
             }
             row.get(post.isPicked)?.let {
                 dto.isPicked = it
+            }
+            row.get(post.isBroken)?.let {
+                dto.isBroken = it
             }
             row.get(post.createdAt)?.let {
                 dto.createdAt = localDateTimeToInstant(it)

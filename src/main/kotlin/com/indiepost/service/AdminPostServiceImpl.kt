@@ -15,12 +15,14 @@ import com.indiepost.repository.ProfileRepository
 import com.indiepost.repository.TagRepository
 import com.indiepost.repository.elasticsearch.PostEsRepository
 import com.indiepost.utils.DomUtil
+import com.indiepost.utils.DomUtil.isBrokenYouTubeVideoIncluded
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Caching
 import org.springframework.data.domain.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
+import java.util.*
 import java.util.stream.Collectors
 import javax.inject.Inject
 
@@ -113,7 +115,8 @@ constructor(private val userService: UserService,
         val currentUser = userService.findCurrentUser()
         post.editor = currentUser
         post.modifiedAt = LocalDateTime.now()
-
+        val content = post.content
+        post.isBroken = isBrokenYouTubeVideoIncluded(content)
         adminPostRepository.persist(post)
     }
 
@@ -176,10 +179,21 @@ constructor(private val userService: UserService,
         return post.id
     }
 
-    // using
-    override fun find(status: PostStatus, pageable: Pageable): Page<AdminPostSummaryDto> {
-        val currentUser = userService.findCurrentUser() ?: throw UnauthorizedException()
+    override fun getPage(filter: PostFilter, pageable: Pageable): Page<AdminPostSummaryDto> {
+        val query = filter.q
+        val status = PostStatus.valueOf(filter.status.toUpperCase())
+        val isBroken = filter.isBroken
         val pageRequest = getPageable(pageable.pageNumber, pageable.pageSize, true)
+        if (!query.isNullOrBlank()) {
+            val id = query.toLongOrNull()
+            return if (id != null)
+                findIdsIn(Arrays.asList(id), pageRequest)
+            else
+                findText(query, status, pageRequest)
+        }
+        if (!isBroken.isNullOrBlank())
+            return findIncludingBrokenLinks(pageRequest)
+        val currentUser = userService.findCurrentUser() ?: throw UnauthorizedException()
         val result = adminPostRepository.find(currentUser, status, pageRequest)
         val count = adminPostRepository.count(status, currentUser)
         return if (result.isEmpty()) {

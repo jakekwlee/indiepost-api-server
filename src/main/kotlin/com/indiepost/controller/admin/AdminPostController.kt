@@ -2,16 +2,12 @@ package com.indiepost.controller.admin
 
 import com.indiepost.dto.CreateResponse
 import com.indiepost.dto.DeleteResponse
-import com.indiepost.dto.post.AdminPostRequestDto
-import com.indiepost.dto.post.AdminPostResponseDto
-import com.indiepost.dto.post.AdminPostSummaryDto
-import com.indiepost.dto.post.BulkStatusUpdateDto
+import com.indiepost.dto.post.*
 import com.indiepost.enums.Types
 import com.indiepost.service.AdminPostService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.*
-import java.util.*
 import javax.inject.Inject
 import javax.validation.ValidationException
 
@@ -22,6 +18,11 @@ import javax.validation.ValidationException
 @RequestMapping(value = ["/admin/posts"], produces = ["application/json; charset=UTF-8"])
 class AdminPostController @Inject
 constructor(private val adminPostService: AdminPostService) {
+
+    @GetMapping
+    fun getPage(filter: PostFilter, pageable: Pageable): Page<AdminPostSummaryDto> {
+        return adminPostService.getPage(filter, pageable)
+    }
 
     @GetMapping("/{id}")
     operator fun get(@PathVariable id: Long): AdminPostResponseDto? {
@@ -62,28 +63,6 @@ constructor(private val adminPostService: AdminPostService) {
         adminPostService.deleteById(id)
         return DeleteResponse(id)
     }
-
-    @GetMapping
-    fun getList(
-            @RequestParam("status") status: String,
-            @RequestParam(value = "query", required = false) query: String?,
-            pageable: Pageable
-    ): Page<AdminPostSummaryDto> {
-        val postStatus = Types.PostStatus.valueOf(status.toUpperCase())
-        if (query != null && query.isNotEmpty()) {
-            try {
-                val id = query.toLong()
-                return adminPostService.findIdsIn(Arrays.asList(id), pageable)
-            } catch (e: NumberFormatException) {
-                if (query == "BROKEN_VIDEO") {
-                    return adminPostService.findIncludingBrokenLinks(pageable)
-                }
-                return adminPostService.findText(query, postStatus, pageable)
-            }
-        }
-        return adminPostService.find(postStatus, pageable)
-    }
-
 
     @PutMapping("/_bulk")
     fun bulkUpdate(@RequestBody dto: BulkStatusUpdateDto) {

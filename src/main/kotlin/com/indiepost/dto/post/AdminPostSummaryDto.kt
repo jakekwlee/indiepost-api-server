@@ -43,5 +43,7 @@ data class AdminPostSummaryDto(
 
         var isSplash: Boolean = false,
 
+        var isBroken: Boolean = false,
+
         var likedCount: Int = 0
 )

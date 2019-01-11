@@ -35,6 +35,8 @@ open class AdminPostRequestDto {
 
     var isSplash: Boolean = false
 
+    var isBroken: Boolean = false
+
     var isShowLastUpdated: Boolean = false
 
     var categoryName: String? = null

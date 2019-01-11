@@ -30,6 +30,15 @@ object DomUtil {
         return document.text()
     }
 
+    fun isBrokenYouTubeVideoIncluded(html: String): Boolean {
+        if (html.isBlank()) {
+            return false
+        }
+        val insertedVideoIds = extractYouTubeVideoIds(html)
+        val brokenVideoIds = findBrokenYouTubeVideoByIds(insertedVideoIds)
+        return brokenVideoIds.isNotEmpty()
+    }
+
     fun findBrokenYouTubeVideoByIds(ids: Set<String>): Set<String> {
         try {
             val youTube = YouTube.Builder(NetHttpTransport(), JacksonFactory(), null)

@@ -27,7 +27,7 @@ interface AdminPostService {
 
     fun delete(post: Post): Long?
 
-    fun find(status: Types.PostStatus, pageable: Pageable): Page<AdminPostSummaryDto>
+    fun getPage(filter: PostFilter, pageable: Pageable): Page<AdminPostSummaryDto>
 
     fun findIdsIn(ids: List<Long>, pageable: Pageable): Page<AdminPostSummaryDto>
 
@@ -49,5 +49,6 @@ interface AdminPostService {
     fun bulkDeleteByIds(ids: List<Long>)
 
     fun bulkStatusUpdate(ids: List<Long>, changeTo: Types.PostStatus)
+
     fun findIncludingBrokenLinks(pageable: Pageable): Page<AdminPostSummaryDto>
 }

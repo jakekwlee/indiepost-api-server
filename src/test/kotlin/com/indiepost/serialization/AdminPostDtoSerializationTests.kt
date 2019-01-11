@@ -35,7 +35,7 @@ class AdminPostDtoSerializationTests {
     @Test
     @WithMockUser("auth0|5b213cd8064de34cde981b47")
     fun adminPostSummaryDtoListShouldSerializeCorrectly() {
-        val page = adminPostService.find(Types.PostStatus.PUBLISH, PageRequest.of(0, 10))
+        val page = adminPostService.getPage(Types.PostStatus.PUBLISH, PageRequest.of(0, 10))
         val objectMapper = ObjectMapper()
         objectMapper.registerModule(Hibernate5Module())
         println("*** Start serialize List<AdminPostResponseDto> ***")

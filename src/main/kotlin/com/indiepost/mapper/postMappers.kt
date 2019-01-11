@@ -143,6 +143,7 @@ fun Post.createAdminPostResponseDto(): AdminPostResponseDto {
     dto.isPicked = isPicked
     dto.isFeatured = isFeatured
     dto.isSplash = isSplash
+    dto.isBroken = isBroken
     dto.isShowLastUpdated = isShowLastUpdated
 
     dto.authorName = author?.displayName
