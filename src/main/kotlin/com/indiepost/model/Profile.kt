@@ -75,12 +75,12 @@ data class Profile(
         var created: LocalDateTime? = null,
 
         @Column(nullable = false)
-        var lastUpdated: LocalDateTime? = null
-) {
-    @OneToMany(
-            mappedBy = "profile",
-            cascade = [CascadeType.ALL],
-            orphanRemoval = true)
-    @OrderBy("id desc")
-    var postProfile: MutableList<PostProfile> = ArrayList()
-}
+        var lastUpdated: LocalDateTime? = null,
+
+        @OneToMany(
+                mappedBy = "profile",
+                cascade = [CascadeType.ALL],
+                orphanRemoval = true)
+        @OrderBy("id desc")
+        var postProfile: MutableList<PostProfile> = ArrayList()
+)

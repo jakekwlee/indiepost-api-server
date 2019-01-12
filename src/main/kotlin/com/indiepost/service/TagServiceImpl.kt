@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
+import java.util.stream.Collectors
 import javax.inject.Inject
 
 /**
@@ -16,7 +17,6 @@ import javax.inject.Inject
 @Transactional
 class TagServiceImpl @Inject constructor(
         private val tagRepository: TagRepository) : TagService {
-
     override fun save(tag: Tag) {
         tagRepository.save(tag)
     }
@@ -48,6 +48,15 @@ class TagServiceImpl @Inject constructor(
 
     override fun delete(tag: Tag) {
         tagRepository.delete(tag)
+    }
+
+    override fun findSelected(): List<String> {
+        val tags = tagRepository.findSelected()
+        return tags.stream().map { it.name!! }.collect(Collectors.toList())
+    }
+
+    override fun updateSelected(tags: List<String>) {
+        tagRepository.updateSelected(tags)
     }
 
 

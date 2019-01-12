@@ -23,10 +23,10 @@ class AdminCacheController {
         logger.info("Clear cache: static-page::rendered::$slug")
     }
 
-    @GetMapping("/category/{slug}")
-    @CacheEvict(cacheNames = ["category::rendered"], key = "#slug")
+    @GetMapping("/tag/{slug}")
+    @CacheEvict(cacheNames = ["tag::rendered"], key = "#slug")
     fun clearCategoryCache(@PathVariable slug: String) {
-        logger.info("Clear cache: category::rendered::$slug")
+        logger.info("Clear cache: tag::rendered::$slug")
     }
 
     @GetMapping("/home")

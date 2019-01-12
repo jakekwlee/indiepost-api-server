@@ -37,7 +37,7 @@ open class PostSummaryDto : Serializable {
 
     var status: PostStatus? = null
 
-    var categoryName: String? = null
+    var primaryTag: String? = null
 
     var commentsCount: Int = 0
 

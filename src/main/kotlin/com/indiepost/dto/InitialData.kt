@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page
  * Created by jake on 17. 1. 22.
  */
 data class InitialData(
-        var categories: List<CategoryDto>? = null,
+        var selectedTags: List<String>? = null,
 
         var currentUser: UserDto? = null,
 

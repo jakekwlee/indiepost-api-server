@@ -20,7 +20,6 @@ import javax.inject.Inject
 @Transactional
 class AdminServiceImpl @Inject constructor(
         private val adminPostService: AdminPostService,
-        private val categoryService: CategoryService,
         private val userService: UserService,
         private val tagService: TagService,
         private val profileService: ProfileService) : AdminService {
@@ -29,8 +28,8 @@ class AdminServiceImpl @Inject constructor(
         val currentUser = userService.findCurrentUser() ?: throw UnauthorizedException()
         val adminInitialResponse = AdminInitialResponse()
         adminInitialResponse.currentUser = currentUser.createDto()
-        adminInitialResponse.categories = categoryService.getDtoList()
         adminInitialResponse.authorNames = adminPostService.findAllBylineNames()
+        adminInitialResponse.selectedTags = tagService.findSelected()
         // TODO for test
         adminInitialResponse.profiles = profileService.getSummaryDtoList()
         adminInitialResponse.postTitles = adminPostService.getAllTitles()

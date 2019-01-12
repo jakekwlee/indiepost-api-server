@@ -1,8 +1,8 @@
 package com.indiepost.service
 
-import com.indiepost.repository.CategoryRepository
 import com.indiepost.repository.PostRepository
 import com.indiepost.repository.StaticPageRepository
+import com.indiepost.repository.TagRepository
 import cz.jiripinkas.jsitemapgenerator.WebPageBuilder
 import cz.jiripinkas.jsitemapgenerator.generator.SitemapGenerator
 import org.springframework.data.domain.PageRequest
@@ -18,7 +18,7 @@ import javax.inject.Inject
 @Transactional(readOnly = true)
 class SitemapServiceImpl @Inject constructor(
         private val postRepository: PostRepository,
-        private val categoryRepository: CategoryRepository,
+        private val tagRepository: TagRepository,
         private val staticPageRepository: StaticPageRepository) : SitemapService {
 
     override fun buildSitemap(): String {
@@ -36,9 +36,9 @@ class SitemapServiceImpl @Inject constructor(
                     .build()
             )
         }
-        for (category in categoryRepository.findAll()) {
+        for (tag in tagRepository.findSelected()) {
             sitemapGenerator.addPage(WebPageBuilder()
-                    .name("category/" + category.slug!!)
+                    .name("tag/$tag?primary=true")
                     .changeFreqDaily()
                     .priorityMax()
                     .build()

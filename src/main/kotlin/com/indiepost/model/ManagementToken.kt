@@ -8,20 +8,13 @@ import javax.validation.constraints.Size
 @Entity
 data class ManagementToken(
         @Id
-        var id: Int? = null,
+        var id: Int? = 1,
 
         @Size(max = 50)
-        var provider: String? = null,
+        var provider: String? = "AUTH0",
 
         @Size(max = 5000)
         var accessToken: String? = null,
 
         var expireAt: LocalDateTime? = null
-) {
-    constructor(accessToken: String, expireAt: LocalDateTime) : this() {
-        this.id = 1
-        this.accessToken = accessToken
-        this.expireAt = expireAt
-        this.provider = "AUTH0"
-    }
-}
+)

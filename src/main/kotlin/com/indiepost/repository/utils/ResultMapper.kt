@@ -114,7 +114,7 @@ object ResultMapper {
                             title = o[1] as String,
                             publishedAt = (o[2] as Timestamp).toLocalDateTime(),
                             author = o[3] as String?,
-                            category = o[4] as String,
+                            primaryTag = o[4] as String,
                             pageviews = (o[5] as BigInteger).toLong(),
                             uniquePageviews = (o[6] as BigInteger).toLong()
                     )

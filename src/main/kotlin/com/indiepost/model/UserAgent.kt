@@ -17,11 +17,11 @@ data class UserAgent(
 
         @Size(max = 2048)
         @Column(nullable = false, unique = true)
-        var uaString: String? = null
-) {
-    @Column(nullable = false, unique = true)
-    var uaHash: Long? = null
+        var uaString: String? = null,
 
+        @Column(nullable = false, unique = true)
+        var uaHash: Long? = null
+) {
     fun setUaHash(uaString: String) {
         this.uaHash = Murmur2.hash64(uaString.toByteArray(), uaString.length, 1110L)
     }

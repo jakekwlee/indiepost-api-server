@@ -12,19 +12,13 @@ data class PostProfile(
 
         @NotNull
         @Column(nullable = false)
-        var priority: Int = 0
-) {
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "postId")
-    var post: Post? = null
+        var priority: Int = 0,
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "profileId")
-    var profile: Profile? = null
+        @ManyToOne(fetch = FetchType.LAZY, optional = false)
+        @JoinColumn(name = "postId")
+        var post: Post? = null,
 
-    constructor(post: Post, profile: Profile, priority: Int) : this() {
-        this.post = post
-        this.profile = profile
-        this.priority = priority
-    }
-}
+        @ManyToOne(fetch = FetchType.EAGER, optional = false)
+        @JoinColumn(name = "profileId")
+        var profile: Profile? = null
+)

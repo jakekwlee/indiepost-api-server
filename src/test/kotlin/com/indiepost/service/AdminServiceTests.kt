@@ -1,7 +1,6 @@
 package com.indiepost.service
 
 import com.indiepost.IndiepostBackendApplication
-import com.indiepost.dto.CategoryDto
 import com.indiepost.dto.TagDto
 import com.indiepost.dto.post.Title
 import com.indiepost.helper.printToJson
@@ -28,9 +27,6 @@ class AdminServiceTests {
         assertThat(dto.authorNames)
                 .isNotNull
                 .hasAtLeastOneElementOfType(String::class.java)
-        assertThat(dto.categories)
-                .isNotNull
-                .hasAtLeastOneElementOfType(CategoryDto::class.java)
         assertThat(dto.currentUser).isNotNull
         assertThat(dto.tags)
                 .isNotNull

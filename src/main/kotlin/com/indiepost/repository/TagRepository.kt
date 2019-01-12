@@ -20,5 +20,9 @@ interface TagRepository {
 
     fun findByNameIn(tagNames: List<String>): List<Tag>
 
+    fun findSelected(): List<Tag>
+
     fun delete(tag: Tag)
+
+    fun updateSelected(tagNames: List<String>)
 }

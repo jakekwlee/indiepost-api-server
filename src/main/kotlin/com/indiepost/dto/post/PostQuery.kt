@@ -10,7 +10,7 @@ import java.time.LocalDateTime
  */
 class PostQuery private constructor() {
 
-    var category: String? = null
+    var primaryTag: String? = null
         private set
 
     var displayName: String? = null
@@ -46,7 +46,7 @@ class PostQuery private constructor() {
     class Builder {
         private var status: PostStatus? = null
 
-        private var category: String? = null
+        private var primaryTag: String? = null
 
         private var displayName: String? = null
 
@@ -74,8 +74,8 @@ class PostQuery private constructor() {
             this.status = PostStatus.valueOf(status)
         }
 
-        fun category(category: String): Builder {
-            this.category = category
+        fun primaryTag(tag: String): Builder {
+            this.primaryTag = tag
             return this
         }
 
@@ -130,8 +130,8 @@ class PostQuery private constructor() {
             // Required
             query.status = status
 
-            if (category != null) {
-                query.category = category
+            if (primaryTag != null) {
+                query.primaryTag = primaryTag
             }
             if (displayName != null) {
                 query.displayName = displayName

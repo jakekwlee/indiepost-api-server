@@ -92,7 +92,7 @@ constructor(private val userService: UserService,
     @Caching(evict = [
         CacheEvict(cacheNames = arrayOf("post::rendered"), key = "#requestDto.id"),
         CacheEvict(cacheNames = arrayOf("home::rendered"), allEntries = true),
-        CacheEvict(cacheNames = arrayOf("category::rendered"), key = "#requestDto.categoryName.toLowerCase()")])
+        CacheEvict(cacheNames = arrayOf("tag::rendered"), key = "#requestDto.primaryTag.toLowerCase()")])
     override fun update(requestDto: AdminPostRequestDto) {
         val status = PostStatus.valueOf(requestDto.status!!)
         disableCurrentFeaturePostIfNeeded(status, requestDto.isSplash, requestDto.isFeatured)
@@ -357,7 +357,7 @@ constructor(private val userService: UserService,
             val subList = tagListLowerCased.subtract(tagNames)
             if (!subList.isEmpty()) {
                 for (name in subList) {
-                    tagRepository.save(Tag(name.toLowerCase()))
+                    tagRepository.save(Tag(name = name.toLowerCase()))
                 }
                 tags = tagRepository.findByNameIn(tagListLowerCased)
             }

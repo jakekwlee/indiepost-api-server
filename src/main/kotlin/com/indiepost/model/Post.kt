@@ -74,6 +74,13 @@ data class Post(
     @Column(name = "titleImageId", insertable = false, updatable = false)
     var titleImageId: Long? = null
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "primaryTagId", nullable = true)
+    var primaryTag: Tag? = null
+
+    @Column(name = "primaryTagId", insertable = false, updatable = false)
+    var primaryTagId: Long? = null
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "authorId", nullable = false)
     var author: User? = null
@@ -124,7 +131,7 @@ data class Post(
                 .collect(Collectors.toList())
 
     fun addTag(tag: Tag, priority: Int) {
-        val postTag = PostTag(this, tag, priority)
+        val postTag = PostTag(post = this, tag = tag, priority = priority)
         this.postTags.add(postTag)
         tag.postTags.add(postTag)
     }
@@ -136,9 +143,7 @@ data class Post(
 
             if (postTag.post == this && postTag.tag == tag) {
                 iterator.remove()
-                postTag.tag?.let {
-                    it.postTags.remove(postTag)
-                }
+                postTag.tag?.postTags?.remove(postTag)
                 postTag.post = null
                 postTag.tag = null
             }
@@ -151,7 +156,7 @@ data class Post(
 
 
     fun addProfile(profile: Profile, priority: Int) {
-        val postProfile = PostProfile(this, profile, priority)
+        val postProfile = PostProfile(post = this, profile = profile, priority = priority)
         this.postProfile.add(postProfile)
         profile.postProfile.add(postProfile)
     }
@@ -177,7 +182,7 @@ data class Post(
     }
 
     fun addRelatedPost(post: Post, priority: Int) {
-        val postPost = PostPost(this, post, priority)
+        val postPost = PostPost(post = this, relatedPost = post, priority = priority)
         this.postPosts.add(postPost)
     }
 

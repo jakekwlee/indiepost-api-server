@@ -10,4 +10,5 @@ interface PostMigrationRepository {
     fun selectAllPostsWherePrimaryTagNotSet(): List<Post>
     fun addTagsToCategoriesIfNotExists()
     fun selectATagByName(text: String): Tag
+    fun isTagAttached(postId: Long, tagId: Long): Boolean
 }

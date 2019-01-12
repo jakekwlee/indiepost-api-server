@@ -16,17 +16,17 @@ import javax.inject.Inject
 @Service
 @Transactional(readOnly = true)
 class InitialDataServiceImpl @Inject constructor(
-        private val categoryService: CategoryService,
         private val userService: UserService,
         private val postService: PostService,
+        private val tagService: TagService,
         private val staticPageService: StaticPageService,
         private val config: AppConfig,
         private val campaignService: CampaignService) : InitialDataService {
 
     override fun getInitialData(withLatestPosts: Boolean): InitialData {
         val initialData = InitialData()
-        initialData.categories = categoryService.getDtoList()
         initialData.currentUser = userService.currentUserDto
+        initialData.selectedTags = tagService.findSelected()
         initialData.isWithLatestPosts = withLatestPosts
         val page = staticPageService.find(
                 Types.PostStatus.PUBLISH, PageRequest.of(0, 100, Sort.Direction.DESC, "displayOrder"))

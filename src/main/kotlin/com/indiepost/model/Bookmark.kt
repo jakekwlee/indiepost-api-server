@@ -11,26 +11,18 @@ data class Bookmark(
         var id: Long? = null,
 
         @Column(nullable = false)
-        var created: LocalDateTime? = null
-) {
+        var created: LocalDateTime? = null,
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "postId", nullable = false)
+        var post: Post? = null,
 
-    constructor(user: User, post: Post) : this() {
-        this.user = user
-        this.post = post
-        this.created = LocalDateTime.now()
-    }
+        @Column(name = "postId", insertable = false, updatable = false)
+        var postId: Long? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "postId", nullable = false)
-    var post: Post? = null
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "userId", nullable = false)
+        var user: User? = null,
 
-    @Column(name = "postId", insertable = false, updatable = false)
-    var postId: Long? = null
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", nullable = false)
-    var user: User? = null
-
-    @Column(name = "userId", insertable = false, updatable = false)
-    var userId: Long? = null
-}
+        @Column(name = "userId", insertable = false, updatable = false)
+        var userId: Long? = null
+)

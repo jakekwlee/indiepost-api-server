@@ -3,7 +3,7 @@ package com.indiepost.dto.analytics
 data class TopStats(
         var period: PeriodDto? = null,
 
-        var pageviewByCategory: List<ShareStat>? = null,
+        var pageviewByPrimaryTag: List<ShareStat>? = null,
 
         var pageviewByAuthor: List<ShareStat>? = null,
 

@@ -19,7 +19,7 @@ data class AdminPostSummaryDto(
 
         var displayName: String? = null,
 
-        var categoryName: String? = null,
+        var primaryTag: String? = null,
 
         var authorDisplayName: String? = null,
 

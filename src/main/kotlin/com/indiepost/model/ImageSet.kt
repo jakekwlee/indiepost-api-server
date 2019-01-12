@@ -32,16 +32,16 @@ data class ImageSet(
         var prefix: String? = null,
 
         @Column(nullable = false)
-        var uploadedAt: LocalDateTime? = null
-) {
-    @Fetch(FetchMode.JOIN)
-    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
-    @Cascade(CascadeType.ALL, CascadeType.SAVE_UPDATE)
-    @JoinColumn(name = "imageSetId")
-    @BatchSize(size = 30)
-    @JsonIgnore
-    var images: MutableSet<Image> = HashSet()
+        var uploadedAt: LocalDateTime? = null,
 
+        @Fetch(FetchMode.JOIN)
+        @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
+        @Cascade(CascadeType.ALL, CascadeType.SAVE_UPDATE)
+        @JoinColumn(name = "imageSetId")
+        @BatchSize(size = 30)
+        @JsonIgnore
+        var images: MutableSet<Image> = HashSet()
+) {
     val original: Image?
         get() = findByImageSize(ImageSize.ORIGINAL)
 

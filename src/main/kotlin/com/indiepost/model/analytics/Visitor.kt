@@ -52,16 +52,16 @@ data class Visitor(
         var channel: Types.Channel = Types.Channel.NONE,
 
         @NotNull
-        var timestamp: LocalDateTime? = null
-) {
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
-    var user: User? = null
+        var timestamp: LocalDateTime? = null,
 
-    @Column(name = "userId", insertable = false, updatable = false)
-    var userId: Long? = null
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "userId")
+        var user: User? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.MERGE])
-    @JoinColumn(name = "userAgentId")
-    var userAgent: UserAgent? = null
-}
+        @Column(name = "userId", insertable = false, updatable = false)
+        var userId: Long? = null,
+
+        @ManyToOne(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.MERGE])
+        @JoinColumn(name = "userAgentId")
+        var userAgent: UserAgent? = null
+)

@@ -35,13 +35,13 @@ data class StaticPage(
 
         @Column(nullable = false)
         @Enumerated(EnumType.STRING)
-        var status: Types.PostStatus = Types.PostStatus.PUBLISH
+        var status: Types.PostStatus = Types.PostStatus.PUBLISH,
 
-) {
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "authorId", nullable = false)
-    var author: User? = null
+        @ManyToOne(fetch = FetchType.LAZY, optional = false)
+        @JoinColumn(name = "authorId", nullable = false)
+        var author: User? = null,
 
-    @Column(name = "authorId", nullable = false, insertable = false, updatable = false)
-    var authorId: Long? = null
-}
+        @Column(name = "authorId", nullable = false, insertable = false, updatable = false)
+        var authorId: Long? = null
+
+)

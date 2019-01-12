@@ -191,12 +191,12 @@ class StatRepositoryTests {
 
     @Test
     @Throws(JsonProcessingException::class)
-    fun testGetPageviewsByCategory() {
+    fun testGetPageviewsByPrimaryTag() {
         val dto = getOneDayPeriod()
         val since = dto.startDate!!.atStartOfDay()
         val until = dto.endDate!!.atTime(23, 59, 59)
-        val share = statRepository.getPageviewsByCategory(since, until, 30)
-        testSerializeAndPrintStats(share, dto, "Pageview By Category")
+        val share = statRepository.getPageviewsByPrimaryTag(since, until, 30)
+        testSerializeAndPrintStats(share, dto, "Pageview By Primary Tag")
         assertThat(share.size).isGreaterThan(0)
     }
 

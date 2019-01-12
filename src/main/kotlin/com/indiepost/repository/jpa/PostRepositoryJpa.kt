@@ -44,7 +44,7 @@ class PostRepositoryJpa : PostRepository {
     override fun findById(id: Long): Post? {
         return queryFactory
                 .selectFrom(post)
-                .join(post.category, QCategory.category)
+                .join(post.primaryTag, QTag.tag)
                 .leftJoin(post.titleImage, QImageSet.imageSet)
                 .fetchJoin()
                 .where(post.id.eq(id))
@@ -71,7 +71,7 @@ class PostRepositoryJpa : PostRepository {
         }
         val query = queryFactory.from(post)
         addProjections(query)
-                .innerJoin(post.category, QCategory.category)
+                .innerJoin(post.primaryTag, QTag.tag)
                 .leftJoin(post.titleImage, QImageSet.imageSet)
                 .where(post.id.`in`(ids))
                 .distinct()
@@ -89,9 +89,9 @@ class PostRepositoryJpa : PostRepository {
         return toDtoList(result)
     }
 
-    override fun findByCategorySlug(slug: String, pageable: Pageable): Page<PostSummaryDto> {
+    override fun findByPrimaryTagName(tagName: String, pageable: Pageable): Page<PostSummaryDto> {
         val query = PostQuery.Builder(PostStatus.PUBLISH)
-                .category(slug)
+                .primaryTag(tagName)
                 .build()
         return this.query(query, pageable)
     }
@@ -100,7 +100,7 @@ class PostRepositoryJpa : PostRepository {
         val tag = tagName.toLowerCase()
         val query = queryFactory.from(post)
         addProjections(query)
-                .innerJoin(post.category, QCategory.category)
+                .innerJoin(post.primaryTag, QTag.tag)
                 .innerJoin(post.postTags, QPostTag.postTag)
                 .innerJoin(QPostTag.postTag.tag, QTag.tag)
                 .leftJoin(post.titleImage, QImageSet.imageSet)
@@ -133,7 +133,6 @@ class PostRepositoryJpa : PostRepository {
     }
 
     override fun findRelatedPostsById(id: Long): Page<PostSummaryDto> {
-        val ct = QCategory.category
         val im = QImageSet.imageSet
         val pt = QPostTag.postTag
         val t = QTag.tag
@@ -143,7 +142,7 @@ class PostRepositoryJpa : PostRepository {
                 .selectFrom(pp)
         addProjections(query)
                 .innerJoin(pp.relatedPost, post)
-                .innerJoin(pp.relatedPost.category, ct)
+                .innerJoin(pp.relatedPost.primaryTag, t)
                 .leftJoin(pp.relatedPost.postTags, pt)
                 .leftJoin(pt.tag, t)
                 .leftJoin(pp.relatedPost.titleImage, im)
@@ -159,7 +158,7 @@ class PostRepositoryJpa : PostRepository {
     override fun findScheduledPosts(): List<PostSummaryDto> {
         val query = queryFactory.from(post)
         addProjections(query)
-                .innerJoin(post.category, QCategory.category)
+                .innerJoin(post.primaryTag, QTag.tag)
                 .leftJoin(post.titleImage, QImageSet.imageSet)
                 .where(post.status.eq(PostStatus.FUTURE))
                 .orderBy(post.publishedAt.asc())
@@ -172,7 +171,7 @@ class PostRepositoryJpa : PostRepository {
         val query = queryFactory.from(post)
         val builder = addConjunction(postQuery, BooleanBuilder())
         addProjections(query)
-                .innerJoin(post.category, QCategory.category)
+                .innerJoin(post.primaryTag, QTag.tag)
                 .leftJoin(post.titleImage, QImageSet.imageSet)
                 .where(builder)
                 .orderBy(post.publishedAt.desc())
@@ -194,7 +193,7 @@ class PostRepositoryJpa : PostRepository {
     }
 
     override fun findReadingHistoryByUserId(userId: Long, request: TimelineRequest): Timeline<PostSummaryDto> {
-        val ct = QCategory.category
+        val t = QTag.tag
         val im = QImageSet.imageSet
         val r = QPostReading.postReading
 
@@ -216,7 +215,7 @@ class PostRepositoryJpa : PostRepository {
 
         val query = queryFactory.from(post)
         addProjections(query)
-                .innerJoin(post.category, ct)
+                .innerJoin(post.primaryTag, t)
                 .innerJoin(post.postReadings, r)
                 .innerJoin(r.post, post)
                 .leftJoin(post.titleImage, im)
@@ -239,7 +238,7 @@ class PostRepositoryJpa : PostRepository {
     }
 
     override fun findBookmarksByUserId(userId: Long, request: TimelineRequest): Timeline<PostSummaryDto> {
-        val ct = QCategory.category
+        val t = QTag.tag
         val im = QImageSet.imageSet
         val b = QBookmark.bookmark
 
@@ -260,7 +259,7 @@ class PostRepositoryJpa : PostRepository {
 
         val query = queryFactory.from(post)
         addProjections(query)
-                .innerJoin(post.category, ct)
+                .innerJoin(post.primaryTag, t)
                 .innerJoin(post.postBookmarks, b)
                 .innerJoin(b.post, post)
                 .leftJoin(post.titleImage, im)
@@ -282,14 +281,14 @@ class PostRepositoryJpa : PostRepository {
     }
 
     override fun findByProfileSlug(slug: String, pageable: Pageable): Page<PostSummaryDto> {
-        val ct = QCategory.category
+        val t = QTag.tag
         val pp = QPostProfile.postProfile
         val p = QProfile.profile
         val i = QImageSet.imageSet
 
         val query = queryFactory.from(post)
         addProjections(query)
-                .innerJoin(post.category, ct)
+                .innerJoin(post.primaryTag, t)
                 .innerJoin(post.postProfile, pp)
                 .innerJoin(pp.profile, p)
                 .leftJoin(post.titleImage, i)
@@ -347,7 +346,7 @@ class PostRepositoryJpa : PostRepository {
 
     private fun addProjections(query: JPAQuery<*>): JPAQuery<*> {
         return query.select(
-                post.id, post.categoryId, post.category.name, post.category.slug, post.isSplash, post.isPicked, post.isFeatured,
+                post.id, post.primaryTagId, post.primaryTag.name, post.isSplash, post.isPicked, post.isFeatured,
                 post.displayName, post.title, post.publishedAt, post.modifiedAt, post.excerpt, post.titleImage, post.isShowLastUpdated)
     }
 
@@ -378,7 +377,7 @@ class PostRepositoryJpa : PostRepository {
                 dto.titleImage = it.createDto()
                 dto.titleImageId = it.id
             }
-            dto.categoryName = row.get(post.category.slug)
+            dto.primaryTag = row.get(post.primaryTag.name)
             dtoList.add(dto)
         }
         return dtoList

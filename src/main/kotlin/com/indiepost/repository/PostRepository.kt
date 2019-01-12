@@ -28,7 +28,7 @@ interface PostRepository {
 
     fun query(postQuery: PostQuery, pageable: Pageable): Page<PostSummaryDto>
 
-    fun findByCategorySlug(slug: String, pageable: Pageable): Page<PostSummaryDto>
+    fun findByPrimaryTagName(slug: String, pageable: Pageable): Page<PostSummaryDto>
 
     fun findByTagName(tagName: String, pageable: Pageable): Page<PostSummaryDto>
 

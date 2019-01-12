@@ -42,6 +42,8 @@ class SpringSecurityConfigurer @Inject constructor(
                 .cors()
                 .and()
                 .authorizeRequests()
+                .antMatchers("/admin/migration/**")
+                .access("hasAuthority('Administrator')")
                 .antMatchers("/admin/**")
                 .access("hasAuthority('Editor')")
                 .antMatchers(HttpMethod.PUT, "/user/**")

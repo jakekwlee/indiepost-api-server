@@ -2,7 +2,6 @@ package com.indiepost.service
 
 import com.indiepost.IndiepostBackendApplication
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit.jupiter.SpringExtension
@@ -14,19 +13,23 @@ import javax.transaction.Transactional
 @SpringBootTest(classes = [IndiepostBackendApplication::class])
 @Transactional
 @WebAppConfiguration
-internal class PostMigrationServiceImplTest {
+internal class PostMigrationServiceTest {
     @Inject
     private lateinit var service: PostMigrationService
 
-    @Test
+    //    @Test
     fun migratePostProfile_shouldWorkAsExpected() {
         service.migrateProfiles()
     }
 
-    @Test
+    //    @Test
     fun findProfileByEtc_shouldReturnProfileProperly() {
         val profile = service.findProfileByEtc("ari song")
         assertThat(profile).isNotNull()
+    }
 
+    //    @Test
+    fun migrateCategoriesToTags_shouldReturnProfileProperly() {
+        service.migrateCategoriesToTags()
     }
 }

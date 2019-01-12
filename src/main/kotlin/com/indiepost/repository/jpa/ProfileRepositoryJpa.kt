@@ -25,6 +25,7 @@ class ProfileRepositoryJpa : ProfileRepository {
 
     override fun save(profile: Profile): Long? {
         entityManager.persist(profile)
+        entityManager.flush()
         return profile.id
     }
 

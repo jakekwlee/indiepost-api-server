@@ -1,12 +1,15 @@
 package com.indiepost.repository.jpa
 
 import com.indiepost.model.QTag
+import com.indiepost.model.QTagSelected
 import com.indiepost.model.Tag
+import com.indiepost.model.TagSelected
 import com.indiepost.repository.TagRepository
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import java.util.*
+import java.util.stream.Collectors
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 
@@ -15,7 +18,6 @@ import javax.persistence.PersistenceContext
  */
 @Repository
 class TagRepositoryJpa : TagRepository {
-
     @PersistenceContext
     private lateinit var entityManager: EntityManager
 
@@ -40,6 +42,29 @@ class TagRepositoryJpa : TagRepository {
                 .selectFrom(t)
                 .where(t.id.eq(id))
                 .fetchOne()
+    }
+
+    override fun findSelected(): List<Tag> {
+        val ts = QTagSelected.tagSelected
+        val selected = jpaQueryFactory
+                .selectFrom(ts)
+                .innerJoin(ts.tag)
+                .orderBy(ts.priority.asc())
+                .fetch()
+        return selected.stream()
+                .map { it.tag }.collect(Collectors.toList())
+    }
+
+    override fun updateSelected(tagNames: List<String>) {
+        if (tagNames.isNullOrEmpty())
+            return
+        val ts = QTagSelected.tagSelected
+        jpaQueryFactory.delete(ts).where(t.id.goe(0)).execute()
+        val tags = findByNameIn(tagNames)
+        for (tag in tags) {
+            val selected = TagSelected(tag = tag)
+            entityManager.persist(selected)
+        }
     }
 
     override fun findAll(): List<Tag> {

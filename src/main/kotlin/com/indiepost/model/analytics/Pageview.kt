@@ -15,9 +15,9 @@ data class Pageview(
         var isLandingPage: Boolean? = false,
 
         @Column(name = "postId", updatable = false, insertable = false)
-        var postId: Long? = null
-) : Stat() {
-    @ManyToOne
-    @JoinColumn(name = "postId")
-    var post: Post? = null
-}
+        var postId: Long? = null,
+
+        @ManyToOne
+        @JoinColumn(name = "postId")
+        var post: Post? = null
+) : Stat()

@@ -50,9 +50,9 @@ class AdminPostRepositoryJpa : AdminPostRepository {
     }
 
     override fun persist(post: Post): Long? {
-        if (post.categoryId != null) {
-            val categoryReference = entityManager.getReference(Category::class.java, post.categoryId)
-            post.category = categoryReference
+        if (post.primaryTagId != null) {
+            val tagReference = entityManager.getReference(Tag::class.java, post.primaryTagId)
+            post.primaryTag = tagReference
         }
         if (post.titleImageId != null) {
             val titleImageReference = entityManager.getReference(ImageSet::class.java, post.titleImageId)
@@ -65,7 +65,7 @@ class AdminPostRepositoryJpa : AdminPostRepository {
     override fun findOne(id: Long?): Post? {
         return queryFactory
                 .selectFrom(post)
-                .innerJoin(post.category, QCategory.category)
+                .innerJoin(post.primaryTag, QTag.tag)
                 .leftJoin(post.titleImage, QImageSet.imageSet)
                 .fetchJoin()
                 .where(post.id.eq(id))
@@ -94,7 +94,7 @@ class AdminPostRepositoryJpa : AdminPostRepository {
         addProjections(query)
                 .innerJoin(post.author, QUser.user)
                 .innerJoin(post.editor, QUser.user)
-                .innerJoin(post.category, QCategory.category)
+                .innerJoin(post.primaryTag, QTag.tag)
                 .distinct()
 
         val builder = BooleanBuilder()
@@ -124,7 +124,7 @@ class AdminPostRepositoryJpa : AdminPostRepository {
         addProjections(query)
                 .innerJoin(post.author, QUser.user)
                 .innerJoin(post.editor, QUser.user)
-                .innerJoin(post.category, QCategory.category)
+                .innerJoin(post.primaryTag, QTag.tag)
                 .orderBy(post.publishedAt.desc())
                 .limit(pageable.pageSize.toLong())
                 .offset(pageable.offset)
@@ -274,7 +274,7 @@ class AdminPostRepositoryJpa : AdminPostRepository {
         return query.select(
                 post.id, post.originalId, post.title, post.displayName,
                 post.isSplash, post.isFeatured, post.isPicked, post.isBroken,
-                post.category.name, post.author.displayName, post.editor.displayName,
+                post.primaryTag.name, post.author.displayName, post.editor.displayName,
                 post.createdAt, post.modifiedAt, post.publishedAt, post.status
         )
     }
@@ -328,7 +328,7 @@ class AdminPostRepositoryJpa : AdminPostRepository {
             row.get(post.publishedAt)?.let {
                 dto.publishedAt = localDateTimeToInstant(it)
             }
-            dto.categoryName = row.get(post.category.name)
+            dto.primaryTag = row.get(post.primaryTag.name)
             dto.authorDisplayName = row.get(post.author.displayName)
             dto.editorDisplayName = row.get(post.editor.displayName)
             dto.status = row.get(post.status).toString()
@@ -356,7 +356,7 @@ class AdminPostRepositoryJpa : AdminPostRepository {
         addProjections(query)
                 .innerJoin(post.author, QUser.user)
                 .innerJoin(post.editor, QUser.user)
-                .innerJoin(post.category, QCategory.category)
+                .innerJoin(post.primaryTag, QTag.tag)
                 .orderBy(post.publishedAt.desc())
                 .limit(pageable.pageSize.toLong())
                 .where(post.status.eq(PostStatus.PUBLISH).and(post.isBroken.isTrue()))

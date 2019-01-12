@@ -45,13 +45,13 @@ import javax.persistence.*
                 query = """select makedate(year(s.timestamp), 1) as dateTime, COUNT(*) as pageviews, COUNT(IF(DATE_ADD(p.publishedAt, interval 10 day) > s.timestamp, true, null)) as recentPageviews from Stats s inner join Posts p on s.postId = p.id where s.timestamp between :since and :until and s.class <> 'Click' group by dateTime order by dateTime"""),
         NamedNativeQuery(
                 name = "@GET_POST_STATS_ORDER_BY_PAGEVIEWS",
-                query = """select p.id, p.title, p.publishedAt, group_concat(distinct pf.displayName separator ', ') as profileNames, c.name category, count(*) as pageviews, count(distinct v.id) as uniquePageviews from Stats s inner join Visitors v on s.visitorId = v.id inner join Posts p on s.postId = p.id inner join Categories c on p.categoryId = c.id left join Posts_Profiles pp on pp.postId = p.id left join Profiles pf on pf.id = pp.profileId where s.timestamp between :since and :until and p.status ='PUBLISH' group by p.id order by pageviews desc , p.id desc limit :limit"""),
+                query = """select p.id, p.title, p.publishedAt, group_concat(distinct pf.displayName separator ', ') as profileNames, t.name primaryTag, count(*) as pageviews, count(distinct v.id) as uniquePageviews from Stats s inner join Visitors v on s.visitorId = v.id inner join Posts p on s.postId = p.id inner join Tags t on p.primaryTagId = t.id left join Posts_Profiles pp on pp.postId = p.id left join Profiles pf on pf.id = pp.profileId where s.timestamp between :since and :until and p.status ='PUBLISH' group by p.id order by pageviews desc , p.id desc limit :limit"""),
         NamedNativeQuery(
                 name = "@GET_PAGEVIEWS_ORDER_BY_AUTHOR",
                 query = """select p.displayName as statName, count(*) as statValue from Stats s inner join Posts p on s.postId = p.id where s.timestamp between :since and :until group by p.displayName order by statValue desc limit :limit"""),
         NamedNativeQuery(
-                name = "@GET_PAGEVIEWS_ORDER_BY_CATEGORY",
-                query = """select c.name as statName, count(*) as statValue from Stats s inner join Posts p on s.postId = p.id inner join Categories c on p.categoryId = c.id where s.timestamp between :since and :until group by c.name order by statValue desc limit :limit"""),
+                name = "@GET_PAGEVIEWS_ORDER_BY_PRIMARY_TAG",
+                query = """select t.name as statName, count(*) as statValue from Stats s inner join Posts p on s.postId = p.id inner join Tags t on p.primaryTagId = t.id where s.timestamp between :since and :until group by t.name order by statValue desc limit :limit"""),
         NamedNativeQuery(
                 name = "@GET_TOP_PAGES",
                 query = """select ifnull(p.title, s.path) as statName, count(*) as statValue from Stats s left join Posts p on s.postId = p.id where s.timestamp between :since and :until and s.class <> 'Click' group by s.path order by statValue desc limit :limit"""),
@@ -120,10 +120,10 @@ import javax.persistence.*
                 query = """select v.channel as statName, count(*) as statValue from Visitors v where v.timestamp between :since and :until and v.appName = :client group by v.channel order by statValue desc limit :limit"""),
         NamedNativeQuery(
                 name = "@GET_ALL_POST_STATS",
-                query = """select p.id, p.title, p.publishedAt, group_concat(distinct pf.displayName separator ', ') as profileNames, c.name category, count(*) as pageviews, count(distinct v.id) as uniquePageviews from Stats s inner join Visitors v on s.visitorId = v.id inner join Posts p on s.postId = p.id inner join Categories c on p.categoryId = c.id left join Posts_Profiles pp on pp.postId = p.id left join Profiles pf on pf.id = pp.profileId where s.timestamp between :since and :until and p.status ='PUBLISH' group by p.id order by pageviews desc , p.id desc limit :limit"""),
+                query = """select p.id, p.title, p.publishedAt, group_concat(distinct pf.displayName separator ', ') as profileNames, t.name primaryTag, count(*) as pageviews, count(distinct v.id) as uniquePageviews from Stats s inner join Visitors v on s.visitorId = v.id inner join Posts p on s.postId = p.id inner join Tags t on p.primaryTagId = t.id left join Posts_Profiles pp on pp.postId = p.id left join Profiles pf on pf.id = pp.profileId where s.timestamp between :since and :until and p.status ='PUBLISH' group by p.id order by pageviews desc , p.id desc limit :limit"""),
         NamedNativeQuery(
                 name = "@GET_ALL_POST_STATS_FROM_CACHE",
-                query = """select p.id, p.title, p.publishedAt, s.profileNames profileNames, c.name category, s.pageviews, s.uniquePageviews from CachedPostStats s inner join Posts p on s.postId = p.id inner join Categories c on p.categoryId = c.id order by p.publishedAt desc"""),
+                query = """select p.id, p.title, p.publishedAt, s.profileNames profileNames, t.name primaryTag, s.pageviews, s.uniquePageviews from CachedPostStats s inner join Posts p on s.postId = p.id inner join Tags t on p.primaryTagId = t.id order by p.publishedAt desc"""),
         NamedNativeQuery(
                 name = "@GET_LINKS_BY_CAMPAIGN_ID_ORDER_BY_CLICKS",
                 query = """select l.id, l.campaignId, l.name, l.uid, l.url, l.createdAt, ifnull(i.clicks, 0) validClicks, l.linkType, b.id bannerId, b.bannerType, b.bgColor, b.imageUrl, b.internalUrl, b.isCover,  b.title, b.subtitle from Links l left join Banners b on b.linkId = l.id inner join Campaigns c on c.id = l.campaignId left outer join (   select l.id, count(distinct s.visitorId) clicks    from Campaigns c    inner join Links l on c.id = l.campaignId    inner join Stats s on l.id = s.linkId    where c.id = :id    and s.timestamp between c.startAt and c.endAt    group by l.id) i on i.id = l.id where c.id = :id order by clicks desc, id asc"""),

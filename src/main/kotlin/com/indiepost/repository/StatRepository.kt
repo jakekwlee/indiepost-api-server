@@ -46,7 +46,7 @@ interface StatRepository {
 
     fun getPostStatsOrderByPageviews(since: LocalDateTime, until: LocalDateTime, limit: Int): List<PostStatDto>
 
-    fun getPageviewsByCategory(since: LocalDateTime, until: LocalDateTime, limit: Int): List<ShareStat>
+    fun getPageviewsByPrimaryTag(since: LocalDateTime, until: LocalDateTime, limit: Int): List<ShareStat>
 
     fun getPageviewsByAuthor(since: LocalDateTime, until: LocalDateTime, limit: Int): List<ShareStat>
 

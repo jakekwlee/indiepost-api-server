@@ -42,9 +42,10 @@ class AdminPostRepositoryTests {
                 excerpt = "",
                 status = PUBLISH
         )
-        post.categoryId = 2L
+        post.categoryId = 2L // Film
+        post.primaryTagId = 8739L // Music
         post.author = testPost!!.author
-        post.editor = testPost!!.editor
+        post.editor = testPost.editor
         repository.persist(post)
     }
 }

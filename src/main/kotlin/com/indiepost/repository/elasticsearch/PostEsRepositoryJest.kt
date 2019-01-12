@@ -902,7 +902,7 @@ class PostEsRepositoryJest @Inject constructor(
 
     private fun mapHitToPostES(hit: SearchResult.Hit<PostEs, Void>): PostEs {
         val id = java.lang.Long.parseLong(hit.id)
-        val postEs = PostEs(id)
+        val postEs = PostEs(id = id)
 
         if (hit.highlight == null) {
             return postEs

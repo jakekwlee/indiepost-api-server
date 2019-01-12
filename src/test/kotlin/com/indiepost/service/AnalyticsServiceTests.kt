@@ -63,7 +63,7 @@ class AnalyticsServiceTests {
         assertThat(dto).isNotNull()
         assertThat(dto.id).isNotNull()
         assertThat(dto.author).isNotEmpty()
-        assertThat(dto.category).isNotEmpty()
+        assertThat(dto.primaryTag).isNotEmpty()
         assertThat(dto.title).isNotEmpty()
         assertThat(dto.publishedAt).isNotNull()
         assertThat(dto.pageviews).isGreaterThanOrEqualTo(0)

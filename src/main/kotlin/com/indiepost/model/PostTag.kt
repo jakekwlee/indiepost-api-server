@@ -12,19 +12,20 @@ data class PostTag(
 
         @NotNull
         @Column(nullable = false)
-        var priority: Int = 0
-) {
-    constructor(post: Post, tag: Tag, @NotNull priority: Int) : this() {
-        this.post = post
-        this.tag = tag
-        this.priority = priority
-    }
+        var priority: Int = 0,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "postId")
-    var post: Post? = null
+        @Column(name = "postId", insertable = false, updatable = false)
+        var postId: Long? = null,
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "tagId")
-    var tag: Tag? = null
-}
+        @Column(name = "tagId", insertable = false, updatable = false)
+        var tagId: Long? = null,
+
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "postId")
+        var post: Post? = null,
+
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "tagId")
+        var tag: Tag? = null
+)
+

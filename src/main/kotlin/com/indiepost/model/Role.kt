@@ -16,8 +16,8 @@ data class Role(
         @Enumerated(EnumType.STRING)
         var roleType: Types.UserRole? = null,
 
-        var level: Int = 1
-) {
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
-    var users: MutableList<User>? = null
-}
+        var level: Int = 1,
+
+        @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+        var users: MutableList<User>? = null
+)

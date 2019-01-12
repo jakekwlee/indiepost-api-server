@@ -37,17 +37,16 @@ data class Link(
         var campaignId: Long? = null,
 
         @Enumerated(EnumType.STRING)
-        var linkType: LinkType = LinkType.Standard
+        var linkType: LinkType = LinkType.Standard,
 
-) {
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "link")
-    @LazyCollection(LazyCollectionOption.EXTRA)
-    var clicks: MutableList<Click>? = null
+        @OneToMany(fetch = FetchType.LAZY, mappedBy = "link")
+        @LazyCollection(LazyCollectionOption.EXTRA)
+        var clicks: MutableList<Click>? = null,
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "campaignId")
-    var campaign: Campaign? = null
+        @ManyToOne(optional = false, fetch = FetchType.LAZY)
+        @JoinColumn(name = "campaignId")
+        var campaign: Campaign? = null,
 
-    @OneToOne(mappedBy = "link", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
-    var banner: Banner? = null
-}
+        @OneToOne(mappedBy = "link", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
+        var banner: Banner? = null
+)

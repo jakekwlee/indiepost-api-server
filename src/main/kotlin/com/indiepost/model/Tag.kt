@@ -1,8 +1,5 @@
 package com.indiepost.model
 
-import java.io.Serializable
-import java.util.*
-import java.util.stream.Collectors
 import javax.persistence.*
 import javax.validation.constraints.Size
 
@@ -23,19 +20,5 @@ data class Tag(
 
         @OneToMany(mappedBy = "tag", cascade = [CascadeType.ALL], orphanRemoval = true)
         var postTags: MutableList<PostTag> = ArrayList()
-) : Serializable {
-
-    val posts: MutableList<Post>
-        get() = postTags.stream()
-                .map { postTag -> postTag.post }
-                .collect(Collectors.toList())
-
-    constructor(name: String) : this() {
-        this.name = name
-    }
-
-    companion object {
-        private const val serialVersionUID = 4776718128460861941L
-    }
-}
+)
 

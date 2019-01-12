@@ -25,7 +25,7 @@ open class AdminPostRequestDto {
 
     var status: String? = null
 
-    var categoryId: Long? = null
+    var primaryTagId: Long? = null
 
     var publishedAt: Instant? = null
 
@@ -39,7 +39,7 @@ open class AdminPostRequestDto {
 
     var isShowLastUpdated: Boolean = false
 
-    var categoryName: String? = null
+    var primaryTag: String? = null
 
     var relatedPostIds: List<Long> = ArrayList()
 

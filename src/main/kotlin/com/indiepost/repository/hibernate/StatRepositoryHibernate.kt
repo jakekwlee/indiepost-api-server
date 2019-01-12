@@ -204,8 +204,8 @@ class StatRepositoryHibernate : StatRepository {
         return toPostStatDtoList(query, since, until, limit)
     }
 
-    override fun getPageviewsByCategory(since: LocalDateTime, until: LocalDateTime, limit: Int): List<ShareStat> {
-        val query = getNamedQuery("@GET_PAGEVIEWS_ORDER_BY_CATEGORY")
+    override fun getPageviewsByPrimaryTag(since: LocalDateTime, until: LocalDateTime, limit: Int): List<ShareStat> {
+        val query = getNamedQuery("@GET_PAGEVIEWS_ORDER_BY_PRIMARY_TAG")
         return toShareStateList(query, since, until, limit)
     }
 

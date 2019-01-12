@@ -16,6 +16,10 @@ interface TagService {
 
     fun findAllToStringList(): List<String>
 
+    fun findSelected(): List<String>
+
+    fun updateSelected(tags: List<String>)
+
     fun findAll(page: Int, maxResults: Int): List<Tag>
 
     fun delete(tag: Tag)

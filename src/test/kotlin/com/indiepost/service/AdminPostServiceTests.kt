@@ -36,7 +36,7 @@ class AdminPostServiceTests {
         post.content = "test content"
         post.title = "test title"
         post.excerpt = "test except"
-        post.categoryId = 2L
+        post.primaryTagId = 8735L // Film
         post.displayName = "TEST name"
         post.publishedAt = Instant.now()
         insertedId = service.createDraft(post)
@@ -49,7 +49,7 @@ class AdminPostServiceTests {
         post.content = "test content"
         post.title = "test title"
         post.excerpt = "test except"
-        post.categoryId = 2L
+        post.primaryTagId = 2L
         post.displayName = "TEST name"
         post.publishedAt = Instant.now()
         val id = service.createAutosave(post)

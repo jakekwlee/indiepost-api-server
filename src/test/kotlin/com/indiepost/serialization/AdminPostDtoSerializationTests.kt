@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module
 import com.indiepost.IndiepostBackendApplication
+import com.indiepost.dto.post.PostFilter
 import com.indiepost.enums.Types
 import com.indiepost.service.AdminPostService
 import org.junit.jupiter.api.Test
@@ -35,7 +36,7 @@ class AdminPostDtoSerializationTests {
     @Test
     @WithMockUser("auth0|5b213cd8064de34cde981b47")
     fun adminPostSummaryDtoListShouldSerializeCorrectly() {
-        val page = adminPostService.getPage(Types.PostStatus.PUBLISH, PageRequest.of(0, 10))
+        val page = adminPostService.getPage(PostFilter(Types.PostStatus.PUBLISH.toString()), PageRequest.of(0, 10))
         val objectMapper = ObjectMapper()
         objectMapper.registerModule(Hibernate5Module())
         println("*** Start serialize List<AdminPostResponseDto> ***")

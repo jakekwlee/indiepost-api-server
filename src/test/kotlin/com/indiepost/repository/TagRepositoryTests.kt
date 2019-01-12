@@ -30,4 +30,13 @@ class TagRepositoryTests {
         tags.stream().map { (_, name) -> name!!.toLowerCase() }.collect(Collectors.toList()).toTypedArray()
         assertThat<String>(result).isEqualTo(expected)
     }
+
+    @Test
+    fun updateSelected_shouldExecuteWithoutError() {
+        val tagNames = Arrays.asList("Music", "Film")
+        tagRepository.updateSelected(tagNames)
+        val tags = tagRepository.findSelected()
+        val result = tags.map { it.name }
+        assertThat(result).isEqualTo(tagNames)
+    }
 }

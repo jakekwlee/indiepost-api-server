@@ -43,7 +43,7 @@ class PostEsRepositoryTests {
         assertThat(post.excerpt).isNotEmpty()
         assertThat(post.bylineName).isNotEmpty()
         assertThat(post.content).isNotEmpty()
-        assertThat(post.getTags().size).isGreaterThan(0)
+        assertThat(post.tags.size).isGreaterThan(0)
         printToJson(post)
     }
 
@@ -62,8 +62,8 @@ class PostEsRepositoryTests {
                 .isEqualTo(287L)
         assertThat(post.content).isNull()
         assertThat(post.status).isNull()
-        assertThat(post.getTags()).hasSize(0)
-        assertThat(post.getProfiles()).hasSize(0)
+        assertThat(post.tags).hasSize(0)
+        assertThat(post.profiles).hasSize(0)
         assertThat(post.title)
                 .isNotEmpty()
                 .contains("em", "무지갯", "영화")
@@ -90,7 +90,7 @@ class PostEsRepositoryTests {
             assertThat(post.id).isNotNull()
             assertThat(post.content).isNull()
             assertThat(post.status).isNull()
-            assertThat(post.getTags()).hasSize(0)
+            assertThat(post.tags).hasSize(0)
             assertThat(post.excerpt).isNull()
         }
     }

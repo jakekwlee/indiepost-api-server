@@ -16,9 +16,9 @@ data class PostEs(
 
         var bylineName: String? = null,
 
-        private var profiles: MutableList<String> = ArrayList(),
+        var profiles: MutableList<String> = ArrayList(),
 
-        private var tags: MutableList<String> = ArrayList(),
+        var tags: MutableList<String> = ArrayList(),
 
         var status: String? = null,
 
@@ -33,42 +33,6 @@ data class PostEs(
         var categoryName: String? = null
 
 ) : Serializable {
-    constructor(id: Long?) : this() {
-        this.id = id
-    }
-
-    fun getProfiles(): MutableList<String> {
-        return profiles
-    }
-
-    fun setProfiles(profiles: MutableList<String>) {
-        this.profiles = profiles
-    }
-
-    fun getTags(): MutableList<String> {
-        return tags
-    }
-
-    fun setTags(tags: MutableList<String>) {
-        this.tags = tags
-    }
-
-    fun addTag(tag: String) {
-        tags.add(tag)
-    }
-
-    fun removeTag(tag: String) {
-        tags.remove(tag)
-    }
-
-    fun addProfile(profile: String) {
-        profiles.add(profile)
-    }
-
-    fun removeProfile(profile: String) {
-        profiles.remove(profile)
-    }
-
     companion object {
         private const val serialVersionUID = 6587432935142567307L
     }

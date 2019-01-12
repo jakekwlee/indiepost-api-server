@@ -1,7 +1,6 @@
 package com.indiepost.model
 
 import com.indiepost.enums.Types.*
-import java.io.Serializable
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
@@ -57,23 +56,21 @@ data class User(
         @Enumerated(EnumType.STRING)
         var gender: UserGender? = null,
 
-
         @Enumerated(EnumType.STRING)
-        var roleType: UserRole? = null
-) : Serializable {
+        var roleType: UserRole? = null,
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    var postReadings: MutableList<PostReading>? = null
+        @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+        var postReadings: MutableList<PostReading>? = null,
 
-    @Column(nullable = false)
-    @ManyToMany(cascade = [CascadeType.ALL])
-    @JoinTable(
-            name = "Users_Roles",
-            joinColumns = [JoinColumn(name = "userId")],
-            inverseJoinColumns = [JoinColumn(name = "roleId")]
-    )
-    var roles: MutableList<Role> = ArrayList()
-
+        @Column(nullable = false)
+        @ManyToMany(cascade = [CascadeType.ALL])
+        @JoinTable(
+                name = "Users_Roles",
+                joinColumns = [JoinColumn(name = "userId")],
+                inverseJoinColumns = [JoinColumn(name = "roleId")]
+        )
+        var roles: MutableList<Role> = ArrayList()
+) {
     val highestRole: UserRole
         get() {
             var userLevel = 1

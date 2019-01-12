@@ -16,8 +16,16 @@ class PostMigrationServiceImpl @Inject constructor(
     override fun migrateCategoriesToTags() {
         repository.addTagsToCategoriesIfNotExists()
         val posts = repository.selectAllPostsWherePrimaryTagNotSet()
-
-
+        for (post in posts) {
+            val category = post.category ?: throw RuntimeException("Post::category is null")
+            val categoryName = category.name ?: throw RuntimeException("Post::category is null")
+            val tag = repository.selectATagByName(categoryName)
+            post.primaryTag = tag
+            val isTagAlreadyAttached = repository.isTagAttached(post.id!!, tag.id!!)
+            if (isTagAlreadyAttached)
+                continue
+            post.addTag(tag, 0)
+        }
     }
 
     override fun migrateProfiles() {

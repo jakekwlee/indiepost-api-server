@@ -27,8 +27,8 @@ fun Post.createDto(): PostDto {
     this.modifiedAt?.let {
         postDto.modifiedAt = localDateTimeToInstant(it)
     }
-    this.category?.let {
-        postDto.categoryName = it.name
+    this.primaryTag?.let {
+        postDto.primaryTag = it.name
     }
     this.titleImage?.let {
         postDto.titleImage = it.createDto()
@@ -60,7 +60,7 @@ fun Post.merge(requestDto: AdminPostRequestDto) {
     isPicked = requestDto.isPicked
     isShowLastUpdated = requestDto.isShowLastUpdated
 
-    categoryId = requestDto.categoryId
+    primaryTagId = requestDto.primaryTagId
     titleImageId = requestDto.titleImageId
     modifiedAt = LocalDateTime.now()
 }
@@ -109,7 +109,7 @@ fun AdminPostRequestDto.createPost(): Post {
     post.isShowLastUpdated = isShowLastUpdated
 
     post.titleImageId = titleImageId
-    post.categoryId = categoryId
+    post.primaryTagId = primaryTagId
     post.createdAt = LocalDateTime.now()
     post.modifiedAt = LocalDateTime.now()
     return post
@@ -136,7 +136,7 @@ fun Post.createAdminPostResponseDto(): AdminPostResponseDto {
         dto.publishedAt = localDateTimeToInstant(it)
     }
 
-    dto.categoryId = categoryId
+    dto.primaryTagId = primaryTagId
     dto.authorId = authorId
     dto.editorId = editorId
 
@@ -148,7 +148,7 @@ fun Post.createAdminPostResponseDto(): AdminPostResponseDto {
 
     dto.authorName = author?.displayName
     dto.editorName = editor?.displayName
-    dto.categoryName = category?.name
+    dto.primaryTag = primaryTag?.name
     dto.originalId = original?.id
     original?.let {
         dto.originalStatus = it.status.toString()
@@ -185,7 +185,7 @@ fun Post.createPostEs(): PostEs {
     status?.let {
         postEs.status = it.toString()
     }
-    category?.let {
+    primaryTag?.let {
         postEs.categoryName = it.name
     }
     editor?.let {
@@ -198,12 +198,12 @@ fun Post.createPostEs(): PostEs {
     val profiles = profiles.stream()
             .map<String> { (_, displayName) -> displayName }
             .collect(Collectors.toList())
-    postEs.setProfiles(profiles)
+    postEs.profiles = profiles
 
     val tags = tags.stream()
             .map { (_, name) -> name!!.replace("_".toRegex(), " ") }
             .collect(Collectors.toList())
-    postEs.setTags(tags)
+    postEs.tags = tags
     postEs.content = htmlToText(content)
     return postEs
 }

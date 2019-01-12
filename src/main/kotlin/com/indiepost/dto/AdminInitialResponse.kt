@@ -9,11 +9,11 @@ import com.indiepost.dto.user.UserDto
 data class AdminInitialResponse(
         var authorNames: List<String>? = null,
 
+        var selectedTags: List<String>? = null,
+
         var tags: List<TagDto>? = null,
 
         var currentUser: UserDto? = null,
-
-        var categories: List<CategoryDto>? = null,
 
         var profiles: List<ProfileSummaryDto>? = null,
 

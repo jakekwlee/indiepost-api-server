@@ -13,23 +13,23 @@ import javax.validation.constraints.Size
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "class", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("Stat")
-open class Stat(
+class Stat(
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
-        open var id: Long? = null,
+        var id: Long? = null,
 
         @NotNull
         @Size(max = 200)
-        open var path: String? = null,
+        var path: String? = null,
 
         @NotNull
-        open var timestamp: LocalDateTime? = null
-) {
-    @NotNull
-    @Column(name = "visitorId", updatable = false, insertable = false, nullable = false)
-    open var visitorId: Long? = null
+        var timestamp: LocalDateTime? = null,
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "visitorId", nullable = false)
-    open var visitor: Visitor? = null
-}
+        @NotNull
+        @Column(name = "visitorId", updatable = false, insertable = false, nullable = false)
+        var visitorId: Long? = null,
+
+        @ManyToOne(optional = false)
+        @JoinColumn(name = "visitorId", nullable = false)
+        var visitor: Visitor? = null
+)

@@ -71,7 +71,7 @@ class AnalyticsServiceImpl @Inject constructor(private val metadataRepository: M
         stats.topPagesWebapp = statRepository.getTopPages(since, until, 10)
         stats.topPosts = statRepository.getTopPosts(since, until, 10)
         stats.pageviewByAuthor = statRepository.getPageviewsByAuthor(since, until, 10)
-        stats.pageviewByCategory = statRepository.getPageviewsByCategory(since, until, 10)
+        stats.pageviewByPrimaryTag = statRepository.getPageviewsByPrimaryTag(since, until, 10)
         stats.topBrowser = visitorRepository.getTopWebBrowsers(since, until, 10)
         stats.topChannel = visitorRepository.getTopChannel(since, until, 10)
         stats.topReferrer = visitorRepository.getTopReferrers(since, until, 10)

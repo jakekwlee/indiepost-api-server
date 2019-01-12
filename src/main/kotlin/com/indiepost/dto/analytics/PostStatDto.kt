@@ -12,7 +12,7 @@ data class PostStatDto(
 
         var title: String? = null,
 
-        var category: String? = null,
+        var primaryTag: String? = null,
 
         var author: String? = null,
 

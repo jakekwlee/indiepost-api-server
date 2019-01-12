@@ -42,14 +42,11 @@ constructor(private val postService: PostService, private val imageService: Imag
         return postService.query(postQuery, pageable)
     }
 
-    @GetMapping("/category/{slug}")
-    fun getPostsByCategoryName(@PathVariable slug: String, pageable: Pageable): Page<PostSummaryDto> {
-        return postService.findByCategorySlug(slug, pageable)
-    }
-
     @GetMapping("/tag/{tagName}")
-    fun getPostsByTagName(@PathVariable tagName: String, pageable: Pageable): Page<PostSummaryDto> {
-        return postService.findByTagName(tagName, pageable)
+    fun getPostsByTagName(@PathVariable tagName: String,
+                          @RequestParam(defaultValue = "false") primary: Boolean,
+                          pageable: Pageable): Page<PostSummaryDto> {
+        return postService.findByTagName(tagName, pageable, primary)
     }
 
     @GetMapping("/profile/{slug}")

@@ -13,9 +13,9 @@ object CriteriaUtils {
 
         builder.and(post.status.eq(query.status))
 
-        val category = query.category
-        if (category != null) {
-            builder.and(post.category.slug.eq(category.toLowerCase()))
+        val tagName = query.primaryTag
+        if (tagName != null) {
+            builder.and(post.primaryTag.name.eq(tagName.toLowerCase()))
         }
         if (query.publishedAfter != null) {
             builder.and(post.publishedAt.goe(query.publishedAfter))

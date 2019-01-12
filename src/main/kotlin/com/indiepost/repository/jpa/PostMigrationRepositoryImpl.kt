@@ -18,13 +18,18 @@ class PostMigrationRepositoryImpl : PostMigrationRepository {
 
     override fun selectAllPostsWherePrimaryTagNotSet(): List<Post> {
         val p = QPost.post
-        return queryFactory.selectFrom(p).orderBy(p.id.asc()).fetch()
+        return queryFactory.selectFrom(p).where(p.primaryTag.isNull).orderBy(p.id.asc()).fetch()
     }
 
     override fun selectATagByName(text: String): Tag {
         val t = QTag.tag
         return queryFactory.selectFrom(t).where(t.name.equalsIgnoreCase(text)).fetchOne()
                 ?: throw RuntimeException("Tag not found: $text")
+    }
+
+    override fun isTagAttached(postId: Long, tagId: Long): Boolean {
+        val pt = QPostTag.postTag
+        return queryFactory.selectFrom(pt).where(pt.postId.eq(postId).and(pt.tagId.eq(tagId))).fetchCount() > 0
     }
 
     override fun addTagsToCategoriesIfNotExists() {

@@ -65,7 +65,7 @@ class UserServiceImpl @Inject constructor(
                 managementToken.accessToken = accessToken
                 managementToken.expireAt = expireAt
             } else {
-                managementToken = ManagementToken(accessToken, expireAt)
+                managementToken = ManagementToken(accessToken = accessToken, expireAt = expireAt)
             }
 
             tokenRepository.save(managementToken)

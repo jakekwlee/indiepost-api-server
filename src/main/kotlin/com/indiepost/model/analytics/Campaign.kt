@@ -30,9 +30,8 @@ data class Campaign(
         @NotNull
         var createdAt: LocalDateTime? = null,
 
-        var goal: Long? = null
-) {
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "campaign", cascade = [CascadeType.ALL])
-    var links: MutableList<Link> = ArrayList()
+        var goal: Long? = null,
 
-}
+        @OneToMany(fetch = FetchType.LAZY, mappedBy = "campaign", cascade = [CascadeType.ALL])
+        var links: MutableList<Link> = ArrayList()
+)

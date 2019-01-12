@@ -7,6 +7,7 @@ import com.indiepost.model.User
 import com.indiepost.repository.BookmarkRepository
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
@@ -30,7 +31,7 @@ class BookmarkRepositoryJpa : BookmarkRepository {
         }
         val userRef = entityManager.getReference(User::class.java, userId)
         val postRef = entityManager.getReference(Post::class.java, postId)
-        bookmark = Bookmark(userRef, postRef)
+        bookmark = Bookmark(user = userRef, post = postRef, created = LocalDateTime.now())
         save(bookmark)
     }
 
