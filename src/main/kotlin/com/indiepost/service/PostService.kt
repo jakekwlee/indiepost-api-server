@@ -24,7 +24,7 @@ interface PostService {
 
     fun findPublicPosts(pageable: Pageable): Page<PostSummaryDto>
 
-    fun findByTagName(tagName: String, pageable: Pageable, isPrimary: Boolean = false): Page<PostSummaryDto>
+    fun findByTagName(tagName: String, pageable: Pageable): Page<PostSummaryDto>
 
     fun query(postQuery: PostQuery, pageable: Pageable): Page<PostSummaryDto>
 

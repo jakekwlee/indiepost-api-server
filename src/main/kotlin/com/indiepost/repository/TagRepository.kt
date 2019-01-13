@@ -1,5 +1,6 @@
 package com.indiepost.repository
 
+import com.indiepost.dto.SelectedTagDto
 import com.indiepost.model.Tag
 import org.springframework.data.domain.Pageable
 
@@ -20,7 +21,7 @@ interface TagRepository {
 
     fun findByNameIn(tagNames: List<String>): List<Tag>
 
-    fun findSelected(): List<Tag>
+    fun findSelected(): List<SelectedTagDto>
 
     fun delete(tag: Tag)
 

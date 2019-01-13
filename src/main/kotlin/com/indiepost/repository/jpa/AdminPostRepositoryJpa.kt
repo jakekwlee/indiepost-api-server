@@ -42,6 +42,7 @@ class AdminPostRepositoryJpa : AdminPostRepository {
                 .select(post.id, post.title)
                 .from(post)
                 .where(post.status.eq(PostStatus.PUBLISH))
+                .orderBy(post.id.desc())
                 .fetch()
         return result
                 .stream()
@@ -50,10 +51,6 @@ class AdminPostRepositoryJpa : AdminPostRepository {
     }
 
     override fun persist(post: Post): Long? {
-        if (post.primaryTagId != null) {
-            val tagReference = entityManager.getReference(Tag::class.java, post.primaryTagId)
-            post.primaryTag = tagReference
-        }
         if (post.titleImageId != null) {
             val titleImageReference = entityManager.getReference(ImageSet::class.java, post.titleImageId)
             post.titleImage = titleImageReference
@@ -65,7 +62,7 @@ class AdminPostRepositoryJpa : AdminPostRepository {
     override fun findOne(id: Long?): Post? {
         return queryFactory
                 .selectFrom(post)
-                .innerJoin(post.primaryTag, QTag.tag)
+                .leftJoin(post.primaryTag, QTag.tag)
                 .leftJoin(post.titleImage, QImageSet.imageSet)
                 .fetchJoin()
                 .where(post.id.eq(id))
@@ -94,7 +91,7 @@ class AdminPostRepositoryJpa : AdminPostRepository {
         addProjections(query)
                 .innerJoin(post.author, QUser.user)
                 .innerJoin(post.editor, QUser.user)
-                .innerJoin(post.primaryTag, QTag.tag)
+                .leftJoin(post.primaryTag, QTag.tag)
                 .distinct()
 
         val builder = BooleanBuilder()
@@ -119,21 +116,28 @@ class AdminPostRepositoryJpa : AdminPostRepository {
         return Collections.emptyList()
     }
 
-    override fun find(currentUser: User, status: PostStatus, pageable: Pageable): List<AdminPostSummaryDto> {
+    override fun find(currentUser: User,
+                      status: PostStatus,
+                      tag: String?,
+                      pageable: Pageable): List<AdminPostSummaryDto> {
         val query = queryFactory.selectFrom(post)
         addProjections(query)
                 .innerJoin(post.author, QUser.user)
                 .innerJoin(post.editor, QUser.user)
-                .innerJoin(post.primaryTag, QTag.tag)
-                .orderBy(post.publishedAt.desc())
+                .leftJoin(post.primaryTag, QTag.tag)
+                .orderBy(post.publishedAt.desc(), post.id.desc())
                 .limit(pageable.pageSize.toLong())
                 .offset(pageable.offset)
                 .distinct()
 
         val builder = BooleanBuilder()
         builder.and(post.status.eq(status))
+        if (!tag.isNullOrBlank()) {
+            query.innerJoin(post.postTags, QPostTag.postTag)
+            query.innerJoin(QPostTag.postTag.tag, QTag.tag)
+            builder.and(QTag.tag.name.equalsIgnoreCase(tag))
+        }
         addPrivacyCriteria(builder, status, currentUser)
-
         query.where(builder)
         return toDtoList(query.fetch() as MutableList<Tuple>)
     }
@@ -172,7 +176,7 @@ class AdminPostRepositoryJpa : AdminPostRepository {
                 .leftJoin(QPostProfile.postProfile.profile, QProfile.profile)
                 .leftJoin(post.postTags, QPostTag.postTag)
                 .leftJoin(QPostTag.postTag.tag, QTag.tag)
-                .orderBy(post.id.desc())
+                .orderBy(post.publishedAt.desc(), post.id.desc())
                 .offset(pageable.offset)
                 .limit(pageable.pageSize.toLong())
 
@@ -236,13 +240,17 @@ class AdminPostRepositoryJpa : AdminPostRepository {
         return query.fetchCount()
     }
 
-    override fun count(status: PostStatus, currentUser: User): Long {
+    override fun count(status: PostStatus, currentUser: User, tag: String?): Long {
         val query = queryFactory.from(post)
-
         val builder = BooleanBuilder()
         builder.and(post.status.eq(status))
+        if (!tag.isNullOrBlank()) {
+            query.innerJoin(post.postTags, QPostTag.postTag)
+            query.innerJoin(QPostTag.postTag.tag, QTag.tag)
+            query.distinct()
+            builder.and(QTag.tag.name.equalsIgnoreCase(tag))
+        }
         addPrivacyCriteria(builder, status, currentUser)
-
         query.where(builder)
         return query.fetchCount()
     }
@@ -356,7 +364,7 @@ class AdminPostRepositoryJpa : AdminPostRepository {
         addProjections(query)
                 .innerJoin(post.author, QUser.user)
                 .innerJoin(post.editor, QUser.user)
-                .innerJoin(post.primaryTag, QTag.tag)
+                .leftJoin(post.primaryTag, QTag.tag)
                 .orderBy(post.publishedAt.desc())
                 .limit(pageable.pageSize.toLong())
                 .where(post.status.eq(PostStatus.PUBLISH).and(post.isBroken.isTrue()))

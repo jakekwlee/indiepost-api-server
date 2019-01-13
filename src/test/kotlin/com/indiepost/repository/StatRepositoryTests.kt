@@ -5,12 +5,15 @@ import com.indiepost.IndiepostBackendApplication
 import com.indiepost.dto.analytics.PeriodDto
 import com.indiepost.enums.Types.ClientType
 import com.indiepost.enums.Types.TimeDomainDuration
+import com.indiepost.helper.printToJson
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.context.web.WebAppConfiguration
+import java.time.LocalDateTime
+import java.time.Month
 import javax.inject.Inject
 import javax.transaction.Transactional
 
@@ -296,5 +299,15 @@ class StatRepositoryTests {
         val share = statRepository.getTopTags(since, until, 10)
         testSerializeAndPrintStats(share, dto, "Top Tags")
         assertThat(share.size).isGreaterThan(0)
+    }
+
+    @Test
+    @Throws(JsonProcessingException::class)
+    fun getPostCountsByPrimaryTags_shouldReturnStatsProperly() {
+        val result = statRepository.getPostCountsByPrimaryTags(
+                LocalDateTime.of(2018, Month.DECEMBER, 1, 0, 0), LocalDateTime.of(2019, Month.JANUARY, 1, 1, 0))
+        assertThat(result).isNotEmpty()
+        assertThat(result.size).isEqualTo(9)
+        printToJson(result)
     }
 }

@@ -60,7 +60,6 @@ fun Post.merge(requestDto: AdminPostRequestDto) {
     isPicked = requestDto.isPicked
     isShowLastUpdated = requestDto.isShowLastUpdated
 
-    primaryTagId = requestDto.primaryTagId
     titleImageId = requestDto.titleImageId
     modifiedAt = LocalDateTime.now()
 }
@@ -109,7 +108,6 @@ fun AdminPostRequestDto.createPost(): Post {
     post.isShowLastUpdated = isShowLastUpdated
 
     post.titleImageId = titleImageId
-    post.primaryTagId = primaryTagId
     post.createdAt = LocalDateTime.now()
     post.modifiedAt = LocalDateTime.now()
     return post
@@ -136,7 +134,6 @@ fun Post.createAdminPostResponseDto(): AdminPostResponseDto {
         dto.publishedAt = localDateTimeToInstant(it)
     }
 
-    dto.primaryTagId = primaryTagId
     dto.authorId = authorId
     dto.editorId = editorId
 

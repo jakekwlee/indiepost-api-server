@@ -36,7 +36,13 @@ class TagRepositoryTests {
         val tagNames = Arrays.asList("Music", "Film")
         tagRepository.updateSelected(tagNames)
         val tags = tagRepository.findSelected()
-        val result = tags.map { it.name }
+        val result = tags.map { it.text }
         assertThat(result).isEqualTo(tagNames)
+    }
+
+    @Test
+    fun findSelected_shouldReturnSelectedTagsProperly() {
+        val selectedTags = tagRepository.findSelected()
+        assertThat(selectedTags.size).isGreaterThanOrEqualTo(1)
     }
 }

@@ -70,4 +70,5 @@ interface StatRepository {
 
     fun getTopOldPosts(since: LocalDateTime, until: LocalDateTime, limit: Int): List<ShareStat>
 
+    fun getPostCountsByPrimaryTags(since: LocalDateTime, until: LocalDateTime): List<ShareStat>
 }

@@ -10,9 +10,12 @@ data class TagSelected(
         @GeneratedValue(strategy = GenerationType.AUTO)
         var id: Long? = null,
 
-        @ManyToOne(fetch = FetchType.LAZY)
+        @OneToOne
         @JoinColumn(name = "tagId")
         var tag: Tag,
+
+        @Column(name = "tagId", insertable = false, updatable = false)
+        var tagId: Long? = null,
 
         @NotNull
         @Column(nullable = false)

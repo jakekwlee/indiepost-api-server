@@ -18,7 +18,7 @@ data class Tag(
         @Column(nullable = false, unique = true)
         var name: String? = null,
 
-        @OneToMany(mappedBy = "tag", cascade = [CascadeType.ALL], orphanRemoval = true)
+        @OneToMany(mappedBy = "tag", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
         var postTags: MutableList<PostTag> = ArrayList()
 )
 

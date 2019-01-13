@@ -1,5 +1,6 @@
 package com.indiepost.repository.jpa
 
+import com.indiepost.dto.SelectedTagDto
 import com.indiepost.model.QTag
 import com.indiepost.model.QTagSelected
 import com.indiepost.model.Tag
@@ -9,7 +10,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import java.util.*
-import java.util.stream.Collectors
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 
@@ -44,15 +44,18 @@ class TagRepositoryJpa : TagRepository {
                 .fetchOne()
     }
 
-    override fun findSelected(): List<Tag> {
+    override fun findSelected(): List<SelectedTagDto> {
+        val t = QTag.tag
         val ts = QTagSelected.tagSelected
-        val selected = jpaQueryFactory
-                .selectFrom(ts)
-                .innerJoin(ts.tag)
+        val tupleList = jpaQueryFactory
+                .select(t.id, t.name, ts.priority)
+                .from(ts)
+                .innerJoin(ts.tag, t)
                 .orderBy(ts.priority.asc())
                 .fetch()
-        return selected.stream()
-                .map { it.tag }.collect(Collectors.toList())
+        return tupleList.map {
+            SelectedTagDto(id = it[t.id], text = it[t.name], priority = it[ts.priority])
+        }
     }
 
     override fun updateSelected(tagNames: List<String>) {

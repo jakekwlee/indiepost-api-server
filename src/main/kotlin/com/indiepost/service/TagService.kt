@@ -1,5 +1,6 @@
 package com.indiepost.service
 
+import com.indiepost.dto.SelectedTagDto
 import com.indiepost.model.Tag
 
 /**
@@ -16,7 +17,7 @@ interface TagService {
 
     fun findAllToStringList(): List<String>
 
-    fun findSelected(): List<String>
+    fun findSelected(): List<SelectedTagDto>
 
     fun updateSelected(tags: List<String>)
 

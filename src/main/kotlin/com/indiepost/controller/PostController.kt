@@ -44,9 +44,8 @@ constructor(private val postService: PostService, private val imageService: Imag
 
     @GetMapping("/tag/{tagName}")
     fun getPostsByTagName(@PathVariable tagName: String,
-                          @RequestParam(defaultValue = "false") primary: Boolean,
                           pageable: Pageable): Page<PostSummaryDto> {
-        return postService.findByTagName(tagName, pageable, primary)
+        return postService.findByTagName(tagName, pageable)
     }
 
     @GetMapping("/profile/{slug}")

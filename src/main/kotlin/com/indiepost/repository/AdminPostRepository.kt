@@ -8,6 +8,7 @@ import com.indiepost.enums.Types
 import com.indiepost.model.Post
 import com.indiepost.model.User
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 
 /**
@@ -31,7 +32,10 @@ interface AdminPostRepository {
 
     fun find(currentUser: User, pageable: Pageable): List<AdminPostSummaryDto>
 
-    fun find(currentUser: User, status: Types.PostStatus, pageable: Pageable): List<AdminPostSummaryDto>
+    fun find(currentUser: User,
+             status: Types.PostStatus,
+             tag: String? = null,
+             pageable: Pageable = PageRequest.of(0, 50)): List<AdminPostSummaryDto>
 
     fun findAll(): List<Post>
 
@@ -47,7 +51,7 @@ interface AdminPostRepository {
 
     fun count(postQuery: PostQuery): Long
 
-    fun count(status: Types.PostStatus, currentUser: User): Long
+    fun count(status: Types.PostStatus, currentUser: User, tag: String? = null): Long
 
     fun findScheduledToBePublished(): List<Post>
 

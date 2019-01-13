@@ -1,5 +1,6 @@
 package com.indiepost.service
 
+import com.indiepost.dto.SelectedTagDto
 import com.indiepost.model.Tag
 import com.indiepost.repository.TagRepository
 import org.springframework.data.domain.PageRequest
@@ -7,7 +8,6 @@ import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
-import java.util.stream.Collectors
 import javax.inject.Inject
 
 /**
@@ -50,14 +50,11 @@ class TagServiceImpl @Inject constructor(
         tagRepository.delete(tag)
     }
 
-    override fun findSelected(): List<String> {
-        val tags = tagRepository.findSelected()
-        return tags.stream().map { it.name!! }.collect(Collectors.toList())
+    override fun findSelected(): List<SelectedTagDto> {
+        return tagRepository.findSelected()
     }
 
     override fun updateSelected(tags: List<String>) {
         tagRepository.updateSelected(tags)
     }
-
-
 }

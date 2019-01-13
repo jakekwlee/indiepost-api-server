@@ -82,11 +82,8 @@ class PostServiceImpl @Inject constructor(
         return postRepository.findPublicPosts(getPageRequest(pageable), includeFeatured = false)
     }
 
-    override fun findByTagName(tagName: String, pageable: Pageable, isPrimary: Boolean): Page<PostSummaryDto> {
-        return if (isPrimary)
-            postRepository.findByPrimaryTagName(tagName, pageable)
-        else
-            postRepository.findByTagName(tagName, getPageRequest(pageable))
+    override fun findByTagName(tagName: String, pageable: Pageable): Page<PostSummaryDto> {
+        return postRepository.findByTagName(tagName, getPageRequest(pageable))
     }
 
     override fun findReadingHistory(request: TimelineRequest): Timeline<PostSummaryDto> {

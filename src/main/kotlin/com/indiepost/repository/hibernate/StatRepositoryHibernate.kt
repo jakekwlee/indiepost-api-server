@@ -7,6 +7,10 @@ import com.indiepost.dto.analytics.TimeDomainStat
 import com.indiepost.enums.Types
 import com.indiepost.enums.Types.ClientType
 import com.indiepost.enums.Types.TimeDomainDuration
+import com.indiepost.model.QPost
+import com.indiepost.model.QPostTag
+import com.indiepost.model.QTag
+import com.indiepost.model.QTagSelected
 import com.indiepost.model.analytics.Stat
 import com.indiepost.model.analytics.Visitor
 import com.indiepost.repository.StatRepository
@@ -16,6 +20,7 @@ import com.indiepost.repository.utils.ResultMapper.toTimeDomainDoubleStatList
 import com.indiepost.repository.utils.ResultMapper.toTimeDomainStatList
 import com.indiepost.utils.DateUtil.localDateTimeToDate
 import com.indiepost.utils.DateUtil.normalizeTimeDomainStats
+import com.querydsl.jpa.impl.JPAQueryFactory
 import org.hibernate.Criteria
 import org.hibernate.Session
 import org.hibernate.criterion.Projections
@@ -35,6 +40,9 @@ class StatRepositoryHibernate : StatRepository {
 
     @PersistenceContext
     private lateinit var entityManager: EntityManager
+
+    private val queryFactory: JPAQueryFactory
+        get() = JPAQueryFactory(entityManager)
 
     override fun getAllPostStats(): List<PostStatDto> {
         val query = getNamedQuery("@GET_ALL_POST_STATS")
@@ -262,6 +270,27 @@ class StatRepositoryHibernate : StatRepository {
     override fun getTopOldPosts(since: LocalDateTime, until: LocalDateTime, limit: Int): List<ShareStat> {
         val query = getNamedQuery("@GET_TOP_OLD_POSTS")
         return toShareStateList(query, since, until, limit, null)
+    }
+
+    override fun getPostCountsByPrimaryTags(since: LocalDateTime, until: LocalDateTime): List<ShareStat> {
+        val t = QTag.tag
+        val ts = QTagSelected.tagSelected
+        val p = QPost.post
+        val pt = QPostTag.postTag
+        val tupleList = queryFactory
+                .selectDistinct(t.name, p.id.countDistinct())
+                .from(ts)
+                .innerJoin(ts.tag, t)
+                .leftJoin(t.postTags, pt)
+                .leftJoin(pt.post, p)
+                .where(p.status.eq(Types.PostStatus.PUBLISH)
+                        .and(p.publishedAt.between(since, until)))
+                .groupBy(t.id)
+                .orderBy(ts.priority.asc())
+                .fetch()
+        return tupleList.map {
+            ShareStat(statName = it[t.name]!!, statValue = it[p.id.countDistinct()] ?: 0)
+        }
     }
 
     private fun getNamedQuery(queryName: String): Query {

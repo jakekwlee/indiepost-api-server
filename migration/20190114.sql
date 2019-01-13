@@ -23,3 +23,22 @@ alter table `indiepost`.`Posts`
   add constraint `FKmw94kk1l9cksjiklj42swgm2d`
     foreign key (`categoryId`)
       references `indiepost`.`Categories`(`id`);
+
+insert into `indiepost`.`Tags_Selected` (`priority`, `tagId`)
+values ('0', '8735');
+insert into `indiepost`.`Tags_Selected` (`priority`, `tagId`)
+values ('1', '4400');
+insert into `indiepost`.`Tags_Selected` (`priority`, `tagId`)
+values ('2', '8739');
+insert into `indiepost`.`Tags_Selected` (`priority`, `tagId`)
+values ('3', '138');
+insert into `indiepost`.`Tags_Selected` (`priority`, `tagId`)
+values ('4', '8740');
+insert into `indiepost`.`Tags_Selected` (`priority`, `tagId`)
+values ('5', '8738');
+insert into `indiepost`.`Tags_Selected` (`priority`, `tagId`)
+values ('6', '1804');
+insert into `indiepost`.`Tags_Selected` (`priority`, `tagId`)
+values ('7', '8736');
+insert into `indiepost`.`Tags_Selected` (`priority`, `tagId`)
+values ('8', '8737');

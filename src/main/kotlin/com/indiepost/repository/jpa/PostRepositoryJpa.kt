@@ -174,7 +174,7 @@ class PostRepositoryJpa : PostRepository {
                 .innerJoin(post.primaryTag, QTag.tag)
                 .leftJoin(post.titleImage, QImageSet.imageSet)
                 .where(builder)
-                .orderBy(post.publishedAt.desc())
+                .orderBy(post.publishedAt.desc(), post.id.desc())
                 .offset(pageable.offset)
                 .limit(pageable.pageSize.toLong()).distinct()
         val result = query.fetch()
@@ -355,25 +355,25 @@ class PostRepositoryJpa : PostRepository {
         val dtoList = ArrayList<PostSummaryDto>()
         for (row in result) {
             val dto = PostSummaryDto()
-            dto.id = row.get(post.id)
-            dto.title = row.get(post.title)
-            dto.displayName = row.get(post.displayName)
-            dto.publishedAt = localDateTimeToInstant(row.get(post.publishedAt)!!)
-            dto.modifiedAt = localDateTimeToInstant(row.get(post.modifiedAt)!!)
+            dto.id = row[post.id]
+            dto.title = row[post.title]
+            dto.displayName = row[post.displayName]
+            dto.publishedAt = localDateTimeToInstant(row[post.publishedAt]!!)
+            dto.modifiedAt = localDateTimeToInstant(row[post.modifiedAt]!!)
             dto.excerpt = row.get(post.excerpt)
-            row.get(post.isSplash)?.let {
+            row[post.isSplash]?.let {
                 dto.isSplash = it
             }
-            row.get(post.isFeatured)?.let {
+            row[post.isFeatured]?.let {
                 dto.isFeatured = it
             }
-            row.get(post.isPicked)?.let {
+            row[post.isPicked]?.let {
                 dto.isPicked = it
             }
-            row.get(post.isShowLastUpdated)?.let {
+            row[post.isShowLastUpdated]?.let {
                 dto.isShowLastUpdated = it
             }
-            row.get(post.titleImage)?.let {
+            row[post.titleImage]?.let {
                 dto.titleImage = it.createDto()
                 dto.titleImageId = it.id
             }

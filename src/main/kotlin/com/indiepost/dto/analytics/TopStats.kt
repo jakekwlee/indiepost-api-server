@@ -25,5 +25,7 @@ data class TopStats(
 
         var topTags: List<ShareStat>? = null,
 
-        var topChannel: List<ShareStat>? = null
+        var topChannel: List<ShareStat>? = null,
+
+        var postCountsByPrimaryTag: List<ShareStat>? = null
 )

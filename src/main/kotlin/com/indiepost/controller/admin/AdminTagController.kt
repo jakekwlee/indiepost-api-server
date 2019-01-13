@@ -1,5 +1,6 @@
 package com.indiepost.controller.admin
 
+import com.indiepost.dto.SelectedTagDto
 import com.indiepost.service.TagService
 import org.slf4j.LoggerFactory
 import org.springframework.cache.annotation.CacheEvict
@@ -18,7 +19,7 @@ class AdminTagController @Inject constructor(private val tagService: TagService)
     }
 
     @GetMapping("/selected")
-    fun getSelectedTags(): List<String> {
+    fun getSelectedTags(): List<SelectedTagDto> {
         return tagService.findSelected()
     }
 

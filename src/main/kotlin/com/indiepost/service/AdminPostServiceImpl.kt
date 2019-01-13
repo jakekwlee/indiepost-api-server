@@ -62,7 +62,7 @@ constructor(private val userService: UserService,
         post.status = PostStatus.AUTOSAVE
 
         val postId = adminPostRepository.persist(post)
-        addManyToManyAttributes(post, requestDto)
+        attachRelations(post, requestDto)
         return postId
     }
 
@@ -85,7 +85,7 @@ constructor(private val userService: UserService,
         post.status = PostStatus.DRAFT
         adminPostRepository.persist(post)
 
-        addManyToManyAttributes(post, dto)
+        attachRelations(post, dto)
         return post.id
     }
 
@@ -110,7 +110,7 @@ constructor(private val userService: UserService,
                 ?: throw EntityNotExistsException("No post with id with: " + requestDto.id)
         post.merge(requestDto)
 
-        addManyToManyAttributes(post, requestDto)
+        attachRelations(post, requestDto)
 
         val currentUser = userService.findCurrentUser()
         post.editor = currentUser
@@ -160,8 +160,7 @@ constructor(private val userService: UserService,
                 ?: throw EntityNotExistsException("No post with id with: " + requestDto.id)
 
         post.merge(requestDto)
-
-        addManyToManyAttributes(post, requestDto)
+        attachRelations(post, requestDto)
 
         post.editor = currentUser
         post.status = PostStatus.AUTOSAVE
@@ -183,6 +182,7 @@ constructor(private val userService: UserService,
         val query = filter.q
         val status = PostStatus.valueOf(filter.status.toUpperCase())
         val isBroken = filter.isBroken
+        val tag = filter.tag
         val pageRequest = getPageable(pageable.pageNumber, pageable.pageSize, true)
         if (!query.isNullOrBlank()) {
             val id = query.toLongOrNull()
@@ -194,8 +194,12 @@ constructor(private val userService: UserService,
         if (!isBroken.isNullOrBlank())
             return findIncludingBrokenLinks(pageRequest)
         val currentUser = userService.findCurrentUser() ?: throw UnauthorizedException()
-        val result = adminPostRepository.find(currentUser, status, pageRequest)
-        val count = adminPostRepository.count(status, currentUser)
+        val result = adminPostRepository.find(
+                currentUser = currentUser,
+                status = status,
+                tag = tag,
+                pageable = pageRequest)
+        val count = adminPostRepository.count(status = status, currentUser = currentUser, tag = tag)
         return if (result.isEmpty()) {
             PageImpl(emptyList(), pageRequest, 0)
         } else PageImpl(result, pageRequest, count)
@@ -327,7 +331,7 @@ constructor(private val userService: UserService,
         return PageRequest.of(page, maxResults, direction, "publishedAt")
     }
 
-    private fun addManyToManyAttributes(post: Post, dto: AdminPostRequestDto) {
+    private fun attachRelations(post: Post, dto: AdminPostRequestDto) {
         post.clearRelatedPosts()
         post.clearProfiles()
         post.clearTags()
@@ -346,22 +350,42 @@ constructor(private val userService: UserService,
                 post.addProfiles(profiles)
             }
         }
-        if (dto.tags.isNotEmpty()) {
-            val tagListLowerCased = dto.tags.stream()
-                    .map { t -> t.toLowerCase() }
-                    .collect(Collectors.toList())
-            var tags = tagRepository.findByNameIn(tagListLowerCased)
-            val tagNames = tags.stream()
-                    .map { (_, name) -> name!!.toLowerCase() }
-                    .collect(Collectors.toList())
-            val subList = tagListLowerCased.subtract(tagNames)
-            if (!subList.isEmpty()) {
-                for (name in subList) {
-                    tagRepository.save(Tag(name = name.toLowerCase()))
-                }
-                tags = tagRepository.findByNameIn(tagListLowerCased)
+        if (dto.tags.isEmpty()) {
+            post.primaryTag = null
+            return
+        }
+        val tagListLowerCased = dto.tags.stream()
+                .map { t -> t.toLowerCase() }
+                .collect(Collectors.toList())
+        var tags = tagRepository.findByNameIn(tagListLowerCased)
+        val tagNames = tags.stream()
+                .map { (_, name) -> name!!.toLowerCase() }
+                .collect(Collectors.toList())
+        val subList = tagListLowerCased.subtract(tagNames)
+        if (!subList.isEmpty()) {
+            for (name in subList) {
+                tagRepository.save(Tag(name = name.toLowerCase()))
             }
-            post.addTags(tags)
+            tags = tagRepository.findByNameIn(tagListLowerCased)
+        }
+        post.addTags(tags)
+        val requestedPrimaryTagName = dto.primaryTag
+        if (requestedPrimaryTagName.isNullOrEmpty()) {
+            post.primaryTag = post.tags[0]
+            return
+        }
+        // find primary tag from attached tag list
+        val tag = post.tags.filter {
+            it.name!!.toLowerCase() == requestedPrimaryTagName.toLowerCase()
+        }
+        if (tag.isNotEmpty()) {
+            post.primaryTag = tag[0]
+            return
+        }
+        val primaryTag = tagRepository.findByTagName(requestedPrimaryTagName)
+        if (primaryTag != null) {
+            post.addTag(primaryTag, 0)
+            post.primaryTag = primaryTag
         }
     }
 
