@@ -182,9 +182,6 @@ fun Post.createPostEs(): PostEs {
     status?.let {
         postEs.status = it.toString()
     }
-    primaryTag?.let {
-        postEs.categoryName = it.name
-    }
     editor?.let {
         postEs.modifiedUserName = it.displayName
     }

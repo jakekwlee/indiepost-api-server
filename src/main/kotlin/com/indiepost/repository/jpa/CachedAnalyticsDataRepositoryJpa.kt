@@ -3,12 +3,8 @@ package com.indiepost.repository.jpa
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.indiepost.dto.analytics.OverviewStats
-import com.indiepost.dto.analytics.PostStatsDto
-import com.indiepost.dto.analytics.TopStats
 import com.indiepost.enums.Types
 import com.indiepost.model.CachedAnalyticsData
-import com.indiepost.model.QCachedAnalyticsData
 import com.indiepost.repository.CachedAnalyticsDataRepository
 import com.querydsl.jpa.impl.JPAQueryFactory
 import java.time.LocalDate
@@ -31,20 +27,21 @@ class CachedAnalyticsDataRepositoryJpa : CachedAnalyticsDataRepository {
         if (filterType != Types.CachedStatsFilterType.NoFilter)
             return null
 
-        val d = QCachedAnalyticsData.cachedAnalyticsData
-        val result = queryFactory.select(d.serializedData)
-                .from(d)
-                .where(d.filterType.eq(filterType)
-                        .and(d.startDate.eq(startDate))
-                        .and(d.endDate.eq(endDate))
-                        .and(d.statsType.eq(statsType))
-                ).fetch()
-        val serializedData = result.firstOrNull() ?: return null
-        return when (statsType) {
-            Types.CachedStatsType.Overview -> objectMapper.readValue(serializedData, OverviewStats::class.java) as T
-            Types.CachedStatsType.Tops -> objectMapper.readValue(serializedData, TopStats::class.java) as T
-            Types.CachedStatsType.Posts -> objectMapper.readValue(serializedData, PostStatsDto::class.java) as T
-        }
+//        val d = QCachedAnalyticsData.cachedAnalyticsData
+//        val result = queryFactory.select(d.serializedData)
+//                .from(d)
+//                .where(d.filterType.eq(filterType)
+//                        .and(d.startDate.eq(startDate))
+//                        .and(d.endDate.eq(endDate))
+//                        .and(d.statsType.eq(statsType))
+//                ).fetch()
+//        val serializedData = result.firstOrNull() ?: return null
+//        return when (statsType) {
+//            Types.CachedStatsType.Overview -> objectMapper.readValue(serializedData, OverviewStats::class.java) as T
+//            Types.CachedStatsType.Tops -> objectMapper.readValue(serializedData, TopStats::class.java) as T
+//            Types.CachedStatsType.Posts -> objectMapper.readValue(serializedData, PostStatsDto::class.java) as T
+//        }
+        return null
     }
 
     override fun save(stats: CachedAnalyticsData) {

@@ -31,7 +31,7 @@ allOpen {
 }
 
 group = "com.indiepost"
-version = "2.9.1-SNAPSHOT"
+version = "2.9.2-SNAPSHOT"
 sourceCompatibility = 1.8
 
 test {

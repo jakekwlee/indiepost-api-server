@@ -28,9 +28,7 @@ data class PostEs(
 
         var creatorName: String? = null,
 
-        var modifiedUserName: String? = null,
-
-        var categoryName: String? = null
+        var modifiedUserName: String? = null
 
 ) : Serializable {
     companion object {

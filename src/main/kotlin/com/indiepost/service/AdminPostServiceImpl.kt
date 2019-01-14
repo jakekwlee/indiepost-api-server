@@ -251,10 +251,6 @@ constructor(private val userService: UserService,
                 highlight.bylineName = it
                 highlightExist = true
             }
-            postEs.categoryName?.let {
-                highlight.categoryName = it
-                highlightExist = true
-            }
             postEs.creatorName?.let {
                 highlight.creatorName = it
                 highlightExist = true

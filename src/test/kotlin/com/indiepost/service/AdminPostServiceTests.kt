@@ -72,8 +72,8 @@ class AdminPostServiceTests {
     fun findText_shouldReturnResultProperly() {
         val resultWhenFindWithWhiteSpace = service.findText("틸다 스윈튼", Types.PostStatus.PUBLISH, PageRequest.of(0, 10))
         val resultWhenFindWithoutWhiteSpace = service.findText("틸다스윈튼", Types.PostStatus.PUBLISH, PageRequest.of(0, 10))
-        assertThat(resultWhenFindWithWhiteSpace.totalElements)
-                .isLessThanOrEqualTo(resultWhenFindWithoutWhiteSpace.totalElements)
+        assertThat(resultWhenFindWithoutWhiteSpace.totalElements)
+                .isLessThanOrEqualTo(resultWhenFindWithWhiteSpace.totalElements)
 
     }
 

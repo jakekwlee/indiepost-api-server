@@ -56,7 +56,8 @@ class PostEsRepositoryTests {
                 Types.PostStatus.PUBLISH,
                 PageRequest.of(0, 24)
         )
-        assertThat(postEsList).isNotNull.hasSize(3)
+        assertThat(postEsList).isNotNull()
+        assertThat(postEsList.size).isGreaterThanOrEqualTo(3)
         val post = postEsList[0]
         assertThat(post.id)
                 .isEqualTo(287L)
