@@ -73,6 +73,14 @@ interface Types {
         Film, Book, Album, Song, Default
     }
 
+    enum class CachedStatsType {
+        Overview, Tops, Posts
+    }
+
+    enum class CachedStatsFilterType {
+        Tag, Profile, NoFilter
+    }
+
     companion object {
 
         fun isPublicStatus(status: PostStatus): Boolean {

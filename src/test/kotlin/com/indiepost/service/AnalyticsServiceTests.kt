@@ -3,7 +3,9 @@ package com.indiepost.service
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.indiepost.IndiepostBackendApplication
+import com.indiepost.dto.analytics.OverviewStats
 import com.indiepost.dto.analytics.PeriodDto
 import com.indiepost.dto.analytics.PostStatDto
 import org.assertj.core.api.Java6Assertions.assertThat
@@ -14,6 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.context.web.WebAppConfiguration
 import java.time.LocalDate
 import javax.inject.Inject
+
 
 /**
  * Created by jake on 17. 4. 28.
@@ -36,6 +39,28 @@ class AnalyticsServiceTests {
                 )
         )
         serializeAndPrintStats(stats, "Overview Stats")
+    }
+
+    @Test
+    @Throws(JsonProcessingException::class)
+    fun overviewStatsShouldSerializeAndDeserializeCorrectly() {
+        val stats = analyticsService.getOverviewStats(
+                PeriodDto(
+                        LocalDate.of(2018, 11, 1),
+                        LocalDate.of(2018, 12, 1)
+                )
+        )
+        val mapper = ObjectMapper()
+
+        mapper.registerModule(JavaTimeModule())
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+
+        val jsonSerialized = mapper.writeValueAsString(stats)
+        println(jsonSerialized.length)
+
+        val statFromJson = mapper.readValue<OverviewStats>(jsonSerialized, OverviewStats::class.java)
+
+        serializeAndPrintStats(statFromJson, "json")
     }
 
     @Test

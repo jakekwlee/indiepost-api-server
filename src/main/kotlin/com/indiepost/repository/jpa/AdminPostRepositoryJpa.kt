@@ -183,13 +183,22 @@ class AdminPostRepositoryJpa : AdminPostRepository {
         val builder = BooleanBuilder()
         builder.and(post.status.eq(status))
         addPrivacyCriteria(builder, status, currentUser)
-        builder.and(post.title.like(like)
+        val booleanExpression = post.title.like(like)
                 .or(post.excerpt.like(like))
                 .or(post.displayName.like(like))
                 .or(QTag.tag.name.like(like))
-                .or(QProfile.profile.displayName.like(like))
-        )
-
+                .or(QProfile.profile.displayName.like(like)
+                )
+        val likeWithoutWhiteSpaces = like.replace(" ", "")
+        if (like != likeWithoutWhiteSpaces) {
+            booleanExpression
+                    .or(post.title.like(likeWithoutWhiteSpaces))
+                    .or(post.excerpt.like(likeWithoutWhiteSpaces))
+                    .or(post.displayName.like(likeWithoutWhiteSpaces))
+                    .or(QTag.tag.name.like(likeWithoutWhiteSpaces))
+                    .or(QProfile.profile.displayName.like(likeWithoutWhiteSpaces))
+        }
+        builder.and(booleanExpression)
         query.where(builder)
 
         val count = query.fetchCount()

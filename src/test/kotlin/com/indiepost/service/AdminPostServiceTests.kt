@@ -70,8 +70,10 @@ class AdminPostServiceTests {
     @Test
     @WithMockUser(username = "auth0|5a94f76a5c798c2296fd51ae")
     fun findText_shouldReturnResultProperly() {
-        val page = service.findText("인스타그램", Types.PostStatus.PUBLISH, PageRequest.of(0, 500))
-        assertThat(page.content).hasSize(18)
+        val resultWhenFindWithWhiteSpace = service.findText("틸다 스윈튼", Types.PostStatus.PUBLISH, PageRequest.of(0, 10))
+        val resultWhenFindWithoutWhiteSpace = service.findText("틸다스윈튼", Types.PostStatus.PUBLISH, PageRequest.of(0, 10))
+        assertThat(resultWhenFindWithWhiteSpace.totalElements)
+                .isLessThanOrEqualTo(resultWhenFindWithoutWhiteSpace.totalElements)
 
     }
 
