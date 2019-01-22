@@ -1,7 +1,5 @@
 package com.indiepost.repository.jpa
 
-import com.indiepost.dto.Timeline
-import com.indiepost.dto.TimelineRequest
 import com.indiepost.dto.post.PostQuery
 import com.indiepost.dto.post.PostSummaryDto
 import com.indiepost.enums.Types.PostStatus
@@ -10,11 +8,9 @@ import com.indiepost.model.*
 import com.indiepost.model.QPost.post
 import com.indiepost.repository.PostRepository
 import com.indiepost.repository.utils.CriteriaUtils.addConjunction
-import com.indiepost.utils.DateUtil.instantToLocalDateTime
 import com.indiepost.utils.DateUtil.localDateTimeToInstant
 import com.querydsl.core.BooleanBuilder
 import com.querydsl.core.Tuple
-import com.querydsl.core.types.OrderSpecifier
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
@@ -24,7 +20,6 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
-import java.time.Instant
 import java.util.*
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
@@ -192,26 +187,16 @@ class PostRepositoryJpa : PostRepository {
                 .fetchOne()
     }
 
-    override fun findReadingHistoryByUserId(userId: Long, request: TimelineRequest): Timeline<PostSummaryDto> {
+    override fun findReadingHistoryByUserId(userId: Long, pageable: Pageable): Page<PostSummaryDto> {
         val t = QTag.tag
         val im = QImageSet.imageSet
         val r = QPostReading.postReading
 
         val whereClause: BooleanExpression
-        val orderClause: OrderSpecifier<*>
-        val isAfter = request.isAfter
-        val instant = Instant.ofEpochSecond(request.timepoint)
-        val timepoint = instantToLocalDateTime(instant)
 
         whereClause = post.status.eq(PostStatus.PUBLISH)
                 .and(r.isVisible.isTrue)
                 .and(r.userId.eq(userId))
-                .and(if (isAfter)
-                    r.lastRead.after(timepoint)
-                else
-                    r.lastRead.before(timepoint)
-                )
-        orderClause = r.lastRead.desc()
 
         val query = queryFactory.from(post)
         addProjections(query)
@@ -220,11 +205,13 @@ class PostRepositoryJpa : PostRepository {
                 .innerJoin(r.post, post)
                 .leftJoin(post.titleImage, im)
                 .where(whereClause)
-                .orderBy(orderClause)
-                .limit(request.size.toLong()).distinct()
+                .orderBy(r.lastRead.desc())
+                .offset(pageable.offset)
+                .limit(pageable.pageSize.toLong())
+                .distinct()
         val result = query.fetch()
         if (result.size == 0) {
-            return Timeline(emptyList(), request, 0)
+            return PageImpl(emptyList(), pageable, 0)
         }
         val dtoList = toDtoList(result as List<Tuple>)
         val total = queryFactory.selectFrom(post)
@@ -234,28 +221,16 @@ class PostRepositoryJpa : PostRepository {
                         .and(r.isVisible.isTrue)
                         .and(r.userId.eq(userId)))
                 .fetchCount()
-        return Timeline(dtoList, request, total.toInt())
+        return PageImpl(dtoList, pageable, total)
     }
 
-    override fun findBookmarksByUserId(userId: Long, request: TimelineRequest): Timeline<PostSummaryDto> {
+    override fun findBookmarksByUserId(userId: Long, pageable: Pageable): Page<PostSummaryDto> {
         val t = QTag.tag
         val im = QImageSet.imageSet
         val b = QBookmark.bookmark
 
-        val whereClause: BooleanExpression
-        val orderClause: OrderSpecifier<*>
-        val isAfter = request.isAfter
-        val instant = Instant.ofEpochSecond(request.timepoint)
-        val timepoint = instantToLocalDateTime(instant)
-
-        whereClause = post.status.eq(PostStatus.PUBLISH)
+        val whereClause = post.status.eq(PostStatus.PUBLISH)
                 .and(b.userId.eq(userId))
-                .and(if (isAfter)
-                    b.created.after(timepoint)
-                else
-                    b.created.before(timepoint)
-                )
-        orderClause = b.created.desc()
 
         val query = queryFactory.from(post)
         addProjections(query)
@@ -264,11 +239,11 @@ class PostRepositoryJpa : PostRepository {
                 .innerJoin(b.post, post)
                 .leftJoin(post.titleImage, im)
                 .where(whereClause)
-                .orderBy(orderClause)
-                .limit(request.size.toLong()).distinct()
+                .orderBy(b.created.desc())
+                .limit(pageable.pageSize.toLong()).distinct()
         val result = query.fetch()
         if (result.size == 0) {
-            return Timeline(emptyList(), request, 0)
+            return PageImpl(emptyList(), pageable, 0)
         }
         val dtoList = toDtoList(result as List<Tuple>)
         val total = queryFactory.selectFrom(post)
@@ -277,7 +252,7 @@ class PostRepositoryJpa : PostRepository {
                 .where(post.status.eq(PostStatus.PUBLISH)
                         .and(b.userId.eq(userId)))
                 .fetchCount()
-        return Timeline(dtoList, request, total.toInt())
+        return PageImpl(dtoList, pageable, total)
     }
 
     override fun findByProfileSlug(slug: String, pageable: Pageable): Page<PostSummaryDto> {

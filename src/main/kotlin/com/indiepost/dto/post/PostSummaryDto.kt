@@ -45,8 +45,6 @@ open class PostSummaryDto : Serializable {
 
     var bookmarked: Instant? = null
 
-    var isInteractionFetched: Boolean = false
-
     var highlight: Highlight? = null
 
 }

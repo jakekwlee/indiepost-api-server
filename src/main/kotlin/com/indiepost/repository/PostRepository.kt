@@ -1,7 +1,5 @@
 package com.indiepost.repository
 
-import com.indiepost.dto.Timeline
-import com.indiepost.dto.TimelineRequest
 import com.indiepost.dto.post.PostQuery
 import com.indiepost.dto.post.PostSummaryDto
 import com.indiepost.enums.Types
@@ -40,7 +38,7 @@ interface PostRepository {
 
     fun findRelatedPostsById(id: Long): Page<PostSummaryDto>
 
-    fun findReadingHistoryByUserId(userId: Long, request: TimelineRequest): Timeline<PostSummaryDto>
+    fun findReadingHistoryByUserId(userId: Long, pageable: Pageable): Page<PostSummaryDto>
 
-    fun findBookmarksByUserId(userId: Long, request: TimelineRequest): Timeline<PostSummaryDto>
+    fun findBookmarksByUserId(userId: Long, pageable: Pageable): Page<PostSummaryDto>
 }

@@ -1,14 +1,11 @@
 package com.indiepost.service
 
 import com.indiepost.dto.PageWithProfile
-import com.indiepost.dto.Timeline
-import com.indiepost.dto.TimelineRequest
 import com.indiepost.dto.post.PostDto
 import com.indiepost.dto.post.PostQuery
 import com.indiepost.dto.post.PostSummaryDto
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-
 import java.time.LocalDateTime
 
 /**
@@ -34,9 +31,9 @@ interface PostService {
 
     fun recommendations(pageable: Pageable): Page<PostSummaryDto>
 
-    fun findReadingHistory(request: TimelineRequest): Timeline<PostSummaryDto>
+    fun findReadingHistory(pageable: Pageable): Page<PostSummaryDto>
 
-    fun findBookmarks(request: TimelineRequest): Timeline<PostSummaryDto>
+    fun findBookmarks(pageable: Pageable): Page<PostSummaryDto>
 
     fun findByIds(ids: List<Long>): List<PostSummaryDto>
 

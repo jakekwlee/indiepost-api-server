@@ -2,8 +2,6 @@ package com.indiepost.service
 
 import com.indiepost.dto.Highlight
 import com.indiepost.dto.PageWithProfile
-import com.indiepost.dto.Timeline
-import com.indiepost.dto.TimelineRequest
 import com.indiepost.dto.post.PostDto
 import com.indiepost.dto.post.PostQuery
 import com.indiepost.dto.post.PostSummaryDto
@@ -16,7 +14,6 @@ import com.indiepost.utils.DateUtil.localDateTimeToInstant
 import org.springframework.data.domain.*
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
 import java.util.stream.Collectors
@@ -61,7 +58,6 @@ class PostServiceImpl @Inject constructor(
             if (bookmark != null) {
                 dto.bookmarked = localDateTimeToInstant(bookmark.created!!)
             }
-            dto.isInteractionFetched = true
         }
         return dto
     }
@@ -86,16 +82,16 @@ class PostServiceImpl @Inject constructor(
         return postRepository.findByTagName(tagName, getPageRequest(pageable))
     }
 
-    override fun findReadingHistory(request: TimelineRequest): Timeline<PostSummaryDto> {
-        val (userId) = userRepository.findCurrentUser() ?: return Timeline(emptyList(), request, 0)
-        val result = postRepository.findReadingHistoryByUserId(userId!!, request)
-        return addInteraction(result, request, userId, false)
+    override fun findReadingHistory(pageable: Pageable): Page<PostSummaryDto> {
+        val (userId) = userRepository.findCurrentUser() ?: return PageImpl(emptyList(), pageable, 0)
+        val result = postRepository.findReadingHistoryByUserId(userId!!, pageable)
+        return addInteraction(result, pageable, userId, false)
     }
 
-    override fun findBookmarks(request: TimelineRequest): Timeline<PostSummaryDto> {
-        val (userId) = userRepository.findCurrentUser() ?: return Timeline(emptyList(), request, 0)
-        val result = postRepository.findBookmarksByUserId(userId!!, request)
-        return addInteraction(result, request, userId, true)
+    override fun findBookmarks(pageable: Pageable): Page<PostSummaryDto> {
+        val (userId) = userRepository.findCurrentUser() ?: return PageImpl(emptyList(), pageable, 0)
+        val result = postRepository.findBookmarksByUserId(userId!!, pageable)
+        return addInteraction(result, pageable, userId, true)
     }
 
     override fun findTopRatedPosts(since: LocalDateTime, until: LocalDateTime, limit: Int): List<PostSummaryDto> {
@@ -183,11 +179,9 @@ class PostServiceImpl @Inject constructor(
             return defaultRecommendations(pageable)
         }
         val user = userRepository.findCurrentUser()
-        val now = Instant.now().epochSecond
-
         val userId = user!!.id
-        val watchedPosts = postRepository.findReadingHistoryByUserId(userId!!, TimelineRequest(now, 10))
-        val bookmarkedPosts = postRepository.findBookmarksByUserId(userId, TimelineRequest(now, 10))
+        val watchedPosts = postRepository.findReadingHistoryByUserId(userId!!, PageRequest.of(0, 10))
+        val bookmarkedPosts = postRepository.findBookmarksByUserId(userId, PageRequest.of(0, 10))
 
         if (watchedPosts.numberOfElements == 0 && bookmarkedPosts.numberOfElements == 0) {
             return defaultRecommendations(pageable)
@@ -261,13 +255,14 @@ class PostServiceImpl @Inject constructor(
     }
 
     private fun addInteraction(
-            timeline: Timeline<PostSummaryDto>,
-            request: TimelineRequest, userId: Long,
-            bookmarked: Boolean): Timeline<PostSummaryDto> {
-        if (timeline.content.isEmpty()) {
-            return timeline
+            page: Page<PostSummaryDto>,
+            pageable: Pageable,
+            userId: Long,
+            bookmarked: Boolean): Page<PostSummaryDto> {
+        if (page.content.isEmpty()) {
+            return page
         }
-        val posts = timeline.content
+        val posts = page.content
         val ids = posts.stream()
                 .map<Long> { post -> post.id }
                 .collect(Collectors.toList())
@@ -276,15 +271,11 @@ class PostServiceImpl @Inject constructor(
         for ((_, _, postId, _, lastRead) in postReadings) {
             for (post in posts) {
                 if (postId == post.id) {
-                    post.isInteractionFetched = true
                     post.lastRead = localDateTimeToInstant(lastRead!!)
                     break
                 }
             }
         }
-        val oldest: Instant?
-        val newest: Instant?
-
         if (bookmarked) {
             val bookmarks = bookmarkRepository.findByUserIdAndPostIds(userId, ids)
             for (bookmark in bookmarks) {
@@ -295,14 +286,8 @@ class PostServiceImpl @Inject constructor(
                     }
                 }
             }
-            oldest = posts[posts.size - 1].bookmarked
-            newest = posts[0].bookmarked
-        } else {
-            oldest = posts[posts.size - 1].lastRead
-            newest = posts[0].lastRead
         }
-
-        return Timeline(posts, request, newest!!, oldest!!, timeline.totalElements)
+        return PageImpl(posts, pageable, page.totalElements)
     }
 
     private fun getPageRequest(pageable: Pageable): Pageable {

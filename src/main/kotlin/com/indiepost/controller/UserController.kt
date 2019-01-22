@@ -1,7 +1,5 @@
 package com.indiepost.controller
 
-import com.indiepost.dto.Timeline
-import com.indiepost.dto.TimelineRequest
 import com.indiepost.dto.post.PostSummaryDto
 import com.indiepost.dto.post.PostUserInteraction
 import com.indiepost.dto.user.SyncAuthorizationResponse
@@ -15,7 +13,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.*
-
 import javax.inject.Inject
 
 @RestController
@@ -47,8 +44,8 @@ class UserController @Inject constructor(
     }
 
     @GetMapping("/reading_history")
-    fun getReadingHistoryList(request: TimelineRequest): Timeline<PostSummaryDto> {
-        return postService.findReadingHistory(request)
+    fun getReadingHistoryList(pageable: Pageable): Page<PostSummaryDto> {
+        return postService.findReadingHistory(pageable)
     }
 
     @DeleteMapping("/reading_history/{postId}")
@@ -62,8 +59,8 @@ class UserController @Inject constructor(
     }
 
     @GetMapping("/bookmark")
-    fun getBookmarkedPosts(request: TimelineRequest): Timeline<PostSummaryDto> {
-        return postService.findBookmarks(request)
+    fun getBookmarkedPosts(pageable: Pageable): Page<PostSummaryDto> {
+        return postService.findBookmarks(pageable)
     }
 
     @PutMapping("/bookmark/{postId}")
