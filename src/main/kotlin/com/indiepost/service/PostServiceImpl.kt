@@ -91,7 +91,7 @@ class PostServiceImpl @Inject constructor(
     override fun findBookmarks(pageable: Pageable): Page<PostSummaryDto> {
         val (userId) = userRepository.findCurrentUser() ?: return PageImpl(emptyList(), pageable, 0)
         val result = postRepository.findBookmarksByUserId(userId!!, pageable)
-        return addInteraction(result, pageable, userId, true)
+        return addInteraction(result, result.pageable, userId, true)
     }
 
     override fun findTopRatedPosts(since: LocalDateTime, until: LocalDateTime, limit: Int): List<PostSummaryDto> {

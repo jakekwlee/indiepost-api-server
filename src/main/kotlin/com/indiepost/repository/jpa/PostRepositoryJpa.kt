@@ -234,12 +234,13 @@ class PostRepositoryJpa : PostRepository {
 
         val query = queryFactory.from(post)
         addProjections(query)
-                .innerJoin(post.primaryTag, t)
                 .innerJoin(post.postBookmarks, b)
                 .innerJoin(b.post, post)
                 .leftJoin(post.titleImage, im)
+                .leftJoin(post.primaryTag, t)
                 .where(whereClause)
                 .orderBy(b.created.desc())
+                .offset(pageable.offset)
                 .limit(pageable.pageSize.toLong()).distinct()
         val result = query.fetch()
         if (result.size == 0) {
@@ -249,8 +250,7 @@ class PostRepositoryJpa : PostRepository {
         val total = queryFactory.selectFrom(post)
                 .innerJoin(post.postBookmarks, b)
                 .innerJoin(b.post, post)
-                .where(post.status.eq(PostStatus.PUBLISH)
-                        .and(b.userId.eq(userId)))
+                .where(whereClause)
                 .fetchCount()
         return PageImpl(dtoList, pageable, total)
     }
