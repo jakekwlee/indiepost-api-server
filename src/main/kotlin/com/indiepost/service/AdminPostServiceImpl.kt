@@ -92,7 +92,8 @@ constructor(private val userService: UserService,
     @Caching(evict = [
         CacheEvict(cacheNames = arrayOf("post::rendered"), key = "#requestDto.id"),
         CacheEvict(cacheNames = arrayOf("home::rendered"), allEntries = true),
-        CacheEvict(cacheNames = arrayOf("tag::rendered"), key = "#requestDto.primaryTag.toLowerCase()")])
+        CacheEvict(cacheNames = arrayOf("latest::rendered"), allEntries = true)]
+    )
     override fun update(requestDto: AdminPostRequestDto) {
         val status = PostStatus.valueOf(requestDto.status!!)
         disableCurrentFeaturePostIfNeeded(status, requestDto.isSplash, requestDto.isFeatured)

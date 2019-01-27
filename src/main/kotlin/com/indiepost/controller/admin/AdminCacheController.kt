@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/admin/cache")
 class AdminCacheController {
 
-    @GetMapping("/post/{id}")
-    @CacheEvict(cacheNames = ["post::rendered"], key = "#id")
-    fun clearPostCache(@PathVariable id: Long) {
-        logger.info("Clear cache: post::rendered::$id")
+    @GetMapping("/home")
+    @CacheEvict(cacheNames = ["home::rendered"], key = "0")
+    fun clearHomepageCache() {
+        logger.info("Clear cache: home::rendered::0")
     }
+
 
     @GetMapping("/page/{slug}")
     @CacheEvict(cacheNames = ["static-page::rendered"], key = "#slug")
@@ -23,16 +24,16 @@ class AdminCacheController {
         logger.info("Clear cache: static-page::rendered::$slug")
     }
 
-    @GetMapping("/tag/{slug}")
-    @CacheEvict(cacheNames = ["tag::rendered"], key = "#slug")
-    fun clearCategoryCache(@PathVariable slug: String) {
-        logger.info("Clear cache: tag::rendered::$slug")
+    @GetMapping("/post/{id}")
+    @CacheEvict(cacheNames = ["post::rendered"], key = "#id")
+    fun clearPostCache(@PathVariable id: Long) {
+        logger.info("Clear cache: post::rendered::$id")
     }
 
-    @GetMapping("/home")
-    @CacheEvict(cacheNames = ["home::rendered"], key = "0")
-    fun clearHomepageCache() {
-        logger.info("Clear cache: home::rendered::0")
+    @GetMapping("/latest")
+    @CacheEvict(cacheNames = ["latest::rendered"], allEntries = true)
+    fun clearLatestCache() {
+        logger.info("Clear cache: latest::rendered::all")
     }
 
     companion object {

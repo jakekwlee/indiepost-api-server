@@ -22,7 +22,7 @@ class AdminMigrationController @Inject constructor(private val service: PostMigr
         val ipAddress = request.getHeader("X-FORWARDED-FOR") ?: request.remoteAddr
         val username = principal.name
         logger.info("'Migrate Categories to Tags' has been triggered: $username ($ipAddress)")
-        service.migrateCategoriesToTags()
+//        service.migrateCategoriesToTags()
         logger.info("Migration complete")
     }
 }
