@@ -2,7 +2,6 @@ package com.indiepost.model
 
 import com.indiepost.enums.Types
 import java.time.LocalDateTime
-import java.util.*
 import java.util.stream.Collectors
 import javax.persistence.*
 import javax.validation.constraints.Size
@@ -36,6 +35,10 @@ data class Post(
         @Column(nullable = false, columnDefinition = "LONGTEXT")
         var content: String = "",
 
+        @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
+        @OrderBy("priority asc")
+        var contentBlocks: MutableList<ContentBlock> = ArrayList(),
+
         @Column(nullable = false)
         @Size(max = 400)
         var excerpt: String = "",
@@ -58,68 +61,68 @@ data class Post(
 
         @Column(nullable = false)
         @Enumerated(EnumType.STRING)
-        var status: Types.PostStatus? = null
+        var status: Types.PostStatus? = null,
+
+        @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
+        var postReadings: MutableList<PostReading> = ArrayList(),
+
+        @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
+        var postBookmarks: MutableList<Bookmark> = ArrayList(),
+
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "originalId")
+        var original: Post? = null,
+
+        @Column(name = "originalId", nullable = false, insertable = false, updatable = false)
+        var originalId: Long? = null,
+
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "titleImageId")
+        var titleImage: ImageSet? = null,
+
+        @Column(name = "titleImageId", insertable = false, updatable = false)
+        var titleImageId: Long? = null,
+
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "primaryTagId", nullable = true)
+        var primaryTag: Tag? = null,
+
+        @Column(name = "primaryTagId", insertable = false, updatable = false)
+        var primaryTagId: Long? = null,
+
+        @ManyToOne(fetch = FetchType.LAZY, optional = false)
+        @JoinColumn(name = "authorId", nullable = false)
+        var author: User? = null,
+
+        @Column(name = "authorId", nullable = false, insertable = false, updatable = false)
+        var authorId: Long? = null,
+
+        @ManyToOne(fetch = FetchType.LAZY, optional = false)
+        @JoinColumn(name = "editorId", nullable = false)
+        var editor: User? = null,
+
+        @Column(name = "editorId", nullable = false, insertable = false, updatable = false)
+        var editorId: Long? = null,
+
+        @ManyToOne(fetch = FetchType.LAZY, optional = false)
+        @JoinColumn(name = "categoryId", nullable = false)
+        var category: Category? = null,
+
+        @Column(name = "categoryId", nullable = false, insertable = false, updatable = false)
+        var categoryId: Long? = null,
+
+        @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
+        @OrderBy("priority")
+        private val postTags: MutableList<PostTag> = ArrayList(),
+
+        @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
+        @OrderBy("priority")
+        var postProfile: MutableList<PostProfile> = ArrayList(),
+
+        @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
+        @OrderBy("priority")
+        private var postPosts: MutableList<PostPost> = ArrayList()
 ) {
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "originalId")
-    var original: Post? = null
-
-    @Column(name = "originalId", nullable = false, insertable = false, updatable = false)
-    var originalId: Long? = null
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "titleImageId")
-    var titleImage: ImageSet? = null
-
-    @Column(name = "titleImageId", insertable = false, updatable = false)
-    var titleImageId: Long? = null
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "primaryTagId", nullable = true)
-    var primaryTag: Tag? = null
-
-    @Column(name = "primaryTagId", insertable = false, updatable = false)
-    var primaryTagId: Long? = null
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "authorId", nullable = false)
-    var author: User? = null
-
-    @Column(name = "authorId", nullable = false, insertable = false, updatable = false)
-    var authorId: Long? = null
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "editorId", nullable = false)
-    var editor: User? = null
-
-    @Column(name = "editorId", nullable = false, insertable = false, updatable = false)
-    var editorId: Long? = null
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "categoryId", nullable = false)
-    var category: Category? = null
-
-    @Column(name = "categoryId", nullable = false, insertable = false, updatable = false)
-    var categoryId: Long? = null
-
-    @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
-    @OrderBy("priority")
-    private val postTags: MutableList<PostTag> = ArrayList()
-
-    @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
-    @OrderBy("priority")
-    var postProfile: MutableList<PostProfile> = ArrayList()
-
-    @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var postReadings: MutableList<PostReading> = ArrayList()
-
-    @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var postBookmarks: MutableList<Bookmark> = ArrayList()
-
-    @OneToMany(mappedBy = "post", cascade = [CascadeType.ALL], orphanRemoval = true)
-    @OrderBy("priority")
-    private var postPosts: MutableList<PostPost> = ArrayList()
-
     val tags: MutableList<Tag>
         get() = postTags.stream()
                 .map { postTag -> postTag.tag }

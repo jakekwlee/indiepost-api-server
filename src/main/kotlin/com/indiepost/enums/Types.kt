@@ -73,12 +73,24 @@ interface Types {
         Film, Book, Album, Song, Default
     }
 
+    enum class LinkBoxFigure {
+        FullSize, Landscape, Portrait, Square
+    }
+
     enum class CachedStatsType {
         Overview, Tops, Posts
     }
 
     enum class CachedStatsFilterType {
         Tag, Profile, NoFilter
+    }
+
+    enum class PostBlockType {
+        Paragraph, Video, Image, LinkBox
+    }
+
+    enum class VideoSource {
+        YouTube, Vimeo, Etc
     }
 
     companion object {
