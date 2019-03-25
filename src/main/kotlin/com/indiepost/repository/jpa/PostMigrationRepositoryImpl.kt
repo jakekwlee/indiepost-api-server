@@ -10,6 +10,7 @@ import javax.persistence.PersistenceContext
 
 @Repository
 class PostMigrationRepositoryImpl : PostMigrationRepository {
+
     @PersistenceContext
     private lateinit var entityManager: EntityManager
 
@@ -21,10 +22,28 @@ class PostMigrationRepositoryImpl : PostMigrationRepository {
         return queryFactory.selectFrom(p).where(p.primaryTag.isNull).orderBy(p.id.asc()).fetch()
     }
 
-    override fun selectATagByName(text: String): Tag {
+    override fun findAllPrimaryTags(): List<PTag> {
+        val pt = QPTag.pTag
+        return queryFactory.selectFrom(pt).orderBy(pt.postId.asc()).fetch()
+    }
+
+    override fun saveTag(tag: Tag) {
+        entityManager.persist(tag)
+    }
+
+    override fun isTagExists(text: String): Boolean {
+        val t = QTag.tag
+        return queryFactory.selectFrom(t).where(t.name.equalsIgnoreCase(text)).fetchCount() == 1L
+    }
+
+    override fun selectATagByName(text: String): Tag? {
         val t = QTag.tag
         return queryFactory.selectFrom(t).where(t.name.equalsIgnoreCase(text)).fetchOne()
-                ?: throw RuntimeException("Tag not found: $text")
+    }
+
+    override fun selectPostById(id: Long): Post? {
+        val p = QPost.post
+        return queryFactory.selectFrom(p).where(p.id.eq(id)).fetchOne()
     }
 
     override fun isTagAttached(postId: Long, tagId: Long): Boolean {

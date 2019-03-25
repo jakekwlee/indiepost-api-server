@@ -17,12 +17,15 @@ class AdminMigrationController @Inject constructor(private val service: PostMigr
         private val logger = LoggerFactory.getLogger(AdminMigrationController::class.java)
     }
 
-    @GetMapping("/20190112")
+    @GetMapping("/20190325")
     fun migrate(request: HttpServletRequest, principal: Principal) {
         val ipAddress = request.getHeader("X-FORWARDED-FOR") ?: request.remoteAddr
         val username = principal.name
-        logger.info("'Migrate Categories to Tags' has been triggered: $username ($ipAddress)")
-//        service.migrateCategoriesToTags()
+        logger.info("'Migrate Primary Tags' has been triggered: $username ($ipAddress)")
+        val insertedCount = service.insertNewTags()
+        logger.info("Tag inserted: $insertedCount")
+        val attachedCount = service.migratePrimaryTags()
+        logger.info("Tag attached: $attachedCount")
         logger.info("Migration complete")
     }
 }

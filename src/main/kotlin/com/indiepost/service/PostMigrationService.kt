@@ -7,5 +7,7 @@ interface PostMigrationService {
 
     fun findProfileByEtc(text: String): Profile?
 
-    fun migrateCategoriesToTags()
+    fun migratePrimaryTags(): Int
+
+    fun insertNewTags(): Int
 }

@@ -92,7 +92,7 @@ class PostRepositoryJpa : PostRepository {
     }
 
     override fun findByTagName(tagName: String, pageable: Pageable): Page<PostSummaryDto> {
-        val tag = tagName.toLowerCase()
+        val tag = tagName.trim().toLowerCase()
         val query = queryFactory.from(post)
         addProjections(query)
                 .innerJoin(post.primaryTag, QTag.tag)

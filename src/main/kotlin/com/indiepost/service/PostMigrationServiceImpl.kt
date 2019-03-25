@@ -1,10 +1,12 @@
 package com.indiepost.service
 
 import com.indiepost.model.Profile
+import com.indiepost.model.Tag
 import com.indiepost.repository.PostMigrationRepository
 import com.indiepost.utils.DomUtil
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.util.*
 import javax.inject.Inject
 import javax.transaction.Transactional
 
@@ -13,19 +15,40 @@ import javax.transaction.Transactional
 class PostMigrationServiceImpl @Inject constructor(
         val repository: PostMigrationRepository) : PostMigrationService {
 
-    override fun migrateCategoriesToTags() {
-        repository.addTagsToCategoriesIfNotExists()
-        val posts = repository.selectAllPostsWherePrimaryTagNotSet()
-        for (post in posts) {
-            val category = post.category ?: throw RuntimeException("Post::category is null")
-            val categoryName = category.name ?: throw RuntimeException("Post::category is null")
-            val tag = repository.selectATagByName(categoryName)
-            post.primaryTag = tag
-            val isTagAlreadyAttached = repository.isTagAttached(post.id!!, tag.id!!)
-            if (isTagAlreadyAttached)
-                continue
-            post.addTag(tag, 0)
+    override fun insertNewTags(): Int {
+        var count = 0
+        val pTagList = repository.findAllPrimaryTags()
+        val tags: List<String?> = pTagList
+                .map { it.primaryTag?.trim()?.toLowerCase() }
+                .filter { !it.isNullOrEmpty() }
+                .distinct()
+        for (text in tags) {
+            if (!repository.isTagExists(text!!)) {
+                repository.saveTag(Tag(name = text))
+                ++count
+            }
         }
+        return count
+    }
+
+    override fun migratePrimaryTags(): Int {
+        val pTagList = repository.findAllPrimaryTags()
+        var count = 0
+        for (pTag in pTagList) {
+            val postId = pTag.postId ?: continue
+            val post = repository.selectPostById(postId) ?: continue
+            val text = pTag.primaryTag
+            if (!text.isNullOrEmpty()) {
+                val tag: Tag = repository.selectATagByName(text.trim().toLowerCase()) ?: continue
+                val isContains = post.tags.contains(tag)
+                if (!isContains) {
+                    post.addTag(tag, 100)
+                }
+                post.primaryTag = tag
+                ++count
+            }
+        }
+        return count
     }
 
     override fun migrateProfiles() {

@@ -2,6 +2,7 @@ package com.indiepost.service
 
 import com.indiepost.IndiepostBackendApplication
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit.jupiter.SpringExtension
@@ -28,8 +29,12 @@ internal class PostMigrationServiceTest {
         assertThat(profile).isNotNull()
     }
 
-    //    @Test
-    fun migrateCategoriesToTags_shouldReturnProfileProperly() {
-        service.migrateCategoriesToTags()
+    @Test
+    fun migratePrimaryTags_worksProperly() {
+        val insertedCount = service.insertNewTags()
+        val attachedCount = service.migratePrimaryTags()
+        println("Tag inserted : $insertedCount")
+        println("Tag attached : $attachedCount")
+
     }
 }

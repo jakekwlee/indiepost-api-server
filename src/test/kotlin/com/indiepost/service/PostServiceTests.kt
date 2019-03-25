@@ -1,7 +1,6 @@
 package com.indiepost.service
 
 import com.indiepost.IndiepostBackendApplication
-import com.indiepost.dto.TimelineRequest
 import com.indiepost.helper.printToJson
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.junit.jupiter.api.Test
@@ -11,7 +10,6 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.context.web.WebAppConfiguration
-import java.time.Instant
 import java.util.*
 import javax.inject.Inject
 
@@ -76,11 +74,8 @@ class PostServiceTests {
     @WithMockUser("auth0|5a94f788fbf06a78e80360d0")
     fun findReadingHistory_shouldReturnResultProperly() {
         // TODO it takes too much time...
-        val request = TimelineRequest()
-        request.size = 100
-        request.timepoint = Instant.now().toEpochMilli() / 1000
         val startTime = System.nanoTime()
-        val result = postService.findReadingHistory(request)
+        val result = postService.findReadingHistory(PageRequest.of(0, 100))
         val endTime = System.nanoTime()
         assertThat(result.content.size).isEqualTo(result.numberOfElements)
         assertThat(result.content.size).isEqualTo(100)
