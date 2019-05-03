@@ -1,6 +1,7 @@
 package com.indiepost.repository.jpa
 
 import com.indiepost.dto.SelectedTagDto
+import com.indiepost.enums.Types
 import com.indiepost.model.QTag
 import com.indiepost.model.QTagSelected
 import com.indiepost.model.Tag
@@ -84,6 +85,11 @@ class TagRepositoryJpa : TagRepository {
                 .offset(pageable.offset)
                 .limit(pageable.pageSize.toLong())
                 .fetch()
+    }
+
+    override fun findAll(pageable: Pageable, tagType: Types.TagType?, text: String?): List<Tag> {
+        // TODO 05-01
+        return emptyList()
     }
 
     override fun findByNameIn(tagNames: List<String>): List<Tag> {

@@ -33,7 +33,7 @@ class AdminServiceImpl @Inject constructor(
         // TODO for test
         adminInitialResponse.profiles = profileService.getSummaryDtoList()
         adminInitialResponse.postTitles = adminPostService.getAllTitles()
-        val tagList = tagService.findAll()
+        val tagList = tagService.find()
         val tags = tagList.stream()
                 .map { (id, name) -> TagDto(id, name!!.toLowerCase()) }
                 .collect(Collectors.toList())

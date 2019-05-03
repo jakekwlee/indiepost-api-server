@@ -1,6 +1,7 @@
 package com.indiepost.repository
 
 import com.indiepost.dto.SelectedTagDto
+import com.indiepost.enums.Types
 import com.indiepost.model.Tag
 import org.springframework.data.domain.Pageable
 
@@ -18,6 +19,8 @@ interface TagRepository {
     fun findAll(): List<Tag>
 
     fun findAll(pageable: Pageable): List<Tag>
+
+    fun findAll(pageable: Pageable, tagType: Types.TagType?, text: String?): List<Tag>
 
     fun findByNameIn(tagNames: List<String>): List<Tag>
 

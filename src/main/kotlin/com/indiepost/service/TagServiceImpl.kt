@@ -1,13 +1,18 @@
 package com.indiepost.service
 
 import com.indiepost.dto.SelectedTagDto
+import com.indiepost.dto.TagDto
+import com.indiepost.enums.Types
+import com.indiepost.mapper.toDto
 import com.indiepost.model.Tag
 import com.indiepost.repository.TagRepository
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
+import java.util.stream.Collectors
 import javax.inject.Inject
 
 /**
@@ -29,12 +34,12 @@ class TagServiceImpl @Inject constructor(
         return tagRepository.findByTagName(name)
     }
 
-    override fun findAll(): List<Tag> {
+    override fun find(): List<Tag> {
         return tagRepository.findAll()
     }
 
     override fun findAllToStringList(): List<String> {
-        val tags = findAll()
+        val tags = find()
         val result = ArrayList<String>()
         for ((_, name) in tags) {
             result.add(name!!)
@@ -42,8 +47,11 @@ class TagServiceImpl @Inject constructor(
         return result
     }
 
-    override fun findAll(page: Int, maxResults: Int): List<Tag> {
-        return tagRepository.findAll(PageRequest.of(page, maxResults, Sort.Direction.DESC, "id"))
+    override fun find(pageable: Pageable, tagType: Types.TagType?, query: String?): List<TagDto> {
+        // TODO
+        val tagList = tagRepository.findAll(
+                PageRequest.of(pageable.pageNumber, pageable.pageSize, Sort.Direction.DESC, "id"))
+        return tagList.stream().map { it.toDto() }.collect(Collectors.toList())
     }
 
     override fun delete(tag: Tag) {

@@ -93,6 +93,10 @@ interface Types {
         YouTube, Vimeo, Etc
     }
 
+    enum class TagType {
+        NORMAL, SELECTED, PRIMARY
+    }
+
     companion object {
 
         fun isPublicStatus(status: PostStatus): Boolean {
