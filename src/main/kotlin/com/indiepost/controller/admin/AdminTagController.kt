@@ -15,7 +15,7 @@ class AdminTagController @Inject constructor(private val tagService: TagService)
 
     @GetMapping
     fun getTags(@RequestParam pageable: Pageable): List<TagDto> {
-        return tagService.find(page = pageable.pageSize, size = pageable.pageSize)
+        return tagService.find(pageable = pageable)
     }
 
     @PostMapping("/selected")

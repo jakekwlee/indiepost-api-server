@@ -47,7 +47,7 @@ class TagServiceImpl @Inject constructor(
         return result
     }
 
-    override fun find(pageable: Pageable, tagType: Types.TagType?, query: String?): List<TagDto> {
+    override fun find(pageable: Pageable): List<TagDto> {
         // TODO
         val tagList = tagRepository.findAll(
                 PageRequest.of(pageable.pageNumber, pageable.pageSize, Sort.Direction.DESC, "id"))

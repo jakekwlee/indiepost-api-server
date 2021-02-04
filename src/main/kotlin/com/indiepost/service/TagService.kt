@@ -26,5 +26,5 @@ interface TagService {
 
     fun delete(tag: Tag)
 
-    fun find(pageable: Pageable, tagType: Types.TagType?, query: String?): List<TagDto>
+    fun find(pageable: Pageable): List<TagDto>
 }
